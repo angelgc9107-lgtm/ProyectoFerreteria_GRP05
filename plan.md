@@ -172,21 +172,4 @@ Los cálculos de cantidades, subtotales, totales, intereses, financiación y cuo
 
 La información relacionada con precios, intereses, cuotas y totales deberá presentarse de forma clara para que el usuario pueda comprender las condiciones de la compra antes de confirmarla.
 
----
-
-# Alcance del proyecto
-
-El proyecto contempla el desarrollo de un **sitio web para una ferretería destinado a exhibir y comercializar sus productos por Internet**.
-
-En la primera etapa se desarrollará principalmente la estructura del sitio utilizando **HTML5**, presentando el catálogo de productos, categorías, información comercial, imágenes, precios, enlaces, formularios, listas y tablas relacionadas con la actividad de la ferretería.
-
-La estructura utilizará **etiquetas semánticas de HTML5** y tendrá en cuenta aspectos básicos de **accesibilidad y SEO**, buscando que el contenido se encuentre correctamente organizado y pueda ser interpretado tanto por los usuarios como por los motores de búsqueda.
-
-Durante esta primera etapa, **CSS y JavaScript no serán implementados como parte principal de la funcionalidad**, pero el código HTML incluirá comentarios y marcadores que indiquen dónde se incorporarán posteriormente los estilos y las funcionalidades interactivas.
-
-El proyecto estará preparado para evolucionar progresivamente hacia una plataforma de venta más completa. En futuras etapas se incorporarán funcionalidades como **búsqueda y filtrado de productos, carrito de compras, selección de cantidades, cálculo de subtotales y totales, validación de formularios y confirmación de pedidos**.
-
-También se contempla la incorporación de **diferentes métodos de pago**. Cuando el método seleccionado permita financiación, el usuario podrá elegir entre distintas cantidades de cuotas. El sistema deberá calcular los **intereses o recargos correspondientes, el total financiado y el valor de cada cuota**, mostrando esta información antes de confirmar la compra.
-
-En esta etapa, el proyecto estará orientado a establecer una **base estructural, funcional y escalable** que permita incorporar estas características progresivamente durante las siguientes entregas de la cursada.
 
