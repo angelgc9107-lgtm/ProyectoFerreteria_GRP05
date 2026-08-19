@@ -1,414 +1,61 @@
-# Spec — Coordinador / DevOps
-## Actividad Obligatoria N.° 1
+# Spec: Configuración inicial del repositorio y gestión DevOps
 
-## 1. Rol
+**Rol:** Coordinador / DevOps
+**Se traza contra:** plan.md — RNF7, RNF8, RNF9, RNF10, RNF11, RNF12, RNF13
+**Entrega:** Actividad Obligatoria N°1 — FerroLab
 
-**Coordinador / DevOps**
+## Qué se va a hacer
 
----
+Se configurará la estructura inicial del repositorio de **FerroLab** en GitHub, estableciendo las ramas `master` y `develop` como ramas principales del flujo de trabajo. Se configurarán reglas de protección para impedir cambios directos y requerir revisión mediante Pull Requests antes de integrar modificaciones.
 
-## 2. Objetivo
+También se preparará la estructura base de archivos y carpetas definida para la Actividad Obligatoria N°1, incluyendo `index.html`, `README.md`, `plan.md`, `changelog.md`, las plantillas de Pull Request y las carpetas destinadas al mockup, especificaciones técnicas y documentación de prompts de inteligencia artificial.
 
-Configurar la infraestructura del repositorio GitHub y coordinar el flujo de trabajo colaborativo del proyecto **Ferretería Web**, garantizando que las ramas, Pull Requests, revisiones, documentación y publicación de la entrega cumplan con los requisitos establecidos.
+Como parte del rol se administrarán las Pull Requests del equipo, verificando que las implementaciones cumplan con los requisitos establecidos en `plan.md` y en el `spec-[rol].md` correspondiente. Cada PR deberá contar con al menos una revisión antes de integrarse a `develop`, incluyendo las revisiones asistidas con IA requeridas por la actividad.
 
-El archivo `plan.md` será utilizado como especificación maestra para verificar el cumplimiento de los requerimientos del proyecto.
+Una vez integrados y aprobados los trabajos individuales en `develop`, se creará la rama `release/actividad-obligatoria-1`, se configurará GitHub Pages para publicar la entrega y se preparará la Pull Request final hacia `master`.
 
----
+## Por qué
 
-# PARTE 1 — DEVOPS
+Esta tarea permite establecer una estructura de trabajo colaborativa y organizada para el proyecto, facilitando que cada integrante desarrolle sus tareas de manera independiente y que los cambios sean revisados antes de incorporarse al proyecto.
 
-## 3. Responsabilidades DevOps
+Se relaciona principalmente con los requisitos no funcionales definidos en `plan.md`, especialmente los vinculados con la **mantenibilidad, legibilidad, separación de responsabilidades, escalabilidad, extensibilidad, organización de archivos y compatibilidad del proyecto**.
 
-El área DevOps será responsable de la configuración técnica del repositorio, ramas, estructura del proyecto y publicación mediante GitHub Pages.
+La configuración de ramas, Pull Requests y revisiones permite además mantener control sobre los cambios realizados y utilizar `plan.md` como referencia general para verificar que cada implementación se mantenga dentro del alcance definido para FerroLab.
 
----
+## Criterios de aceptación
 
-## DEVOPS-01 — Configuración del repositorio
+* [X] Dado que el proyecto FerroLab necesita un repositorio colaborativo, cuando se configure el repositorio en GitHub, entonces deberán existir las ramas `master` y `develop`.
 
-Crear y configurar el repositorio GitHub utilizado para el desarrollo colaborativo del proyecto.
+* [X] Dado que `master` representa la versión estable del proyecto, cuando se configure la protección de la rama, entonces deberá requerir al menos una revisión y bloquear los cambios directos.
 
-### Criterios de aceptación
+* [X] Dado que `develop` funciona como rama de integración del equipo, cuando se configure su protección, entonces deberá requerir al menos una revisión y bloquear los cambios directos.
 
-- [x] El repositorio está creado en GitHub.
-- [x] El repositorio puede ser utilizado por los integrantes del equipo.
-- [x] La estructura inicial del proyecto está disponible en el repositorio.
+* [X] Dado que el equipo necesita una estructura inicial común, cuando se realice el commit inicial, entonces deberán estar creados `index.html` y las carpetas necesarias definidas para la actividad.
 
----
+* [X] Dado que `plan.md` es la especificación maestra de FerroLab, cuando comience el desarrollo del proyecto, entonces deberá existir previamente en la raíz del repositorio con los requisitos funcionales, no funcionales y el alcance acordado.
 
-## DEVOPS-02 — Configuración de ramas principales
+* [X] Dado que el proyecto utiliza Spec-Driven Development, cuando el Coordinador/DevOps comience las tareas correspondientes a su rol, entonces `spec-devops.md` deberá haber sido creado y commiteado previamente.
 
-Crear las ramas principales:
+* [ ] Dado que cada integrante deberá trabajar de forma independiente, cuando realice una tarea del proyecto, entonces deberá utilizar una rama con el formato `feature/<rol>-<descripción>` creada desde `develop`.
 
-- `master`
-- `develop`
+* [ ] Dado que los cambios deben ser controlados antes de integrarse, cuando un integrante finalice su tarea, entonces deberá abrir una Pull Request desde su rama `feature/` hacia `develop`.
 
-`master` será utilizada como rama estable del proyecto.
+* [ ] Dado que cada Pull Request debe cumplir con el proceso definido, cuando sea revisada, entonces deberá contener el `spec-[rol].md` correspondiente y deberá verificarse su trazabilidad contra `plan.md`.
 
-`develop` será utilizada para integrar los cambios aprobados provenientes de las ramas `feature/`.
+* [ ] Dado que la actividad exige revisión colaborativa, cuando una Pull Request sea integrada a `develop`, entonces deberá contar previamente con al menos una revisión aprobada.
 
-### Criterios de aceptación
+* [ ] Dado que la actividad requiere el uso de IA durante las revisiones, cuando se realicen los Code Reviews del proyecto, entonces deberán completarse como mínimo cuatro revisiones asistidas con IA y conservar evidencia mediante comentarios en las Pull Requests.
 
-- [x] Existe la rama `master`.
-- [x] Existe la rama `develop`.
-- [x] Las ramas se encuentran disponibles en el repositorio remoto.
+* [ ] Dado que los Code Reviews deben validar los requisitos del proyecto, cuando se detecte un incumplimiento de `plan.md` o del `spec-[rol].md`, entonces deberá realizarse un `Request Changes` sobre las líneas correspondientes antes de aprobar el PR.
 
----
+* [ ] Dado que cada integrante debe demostrar su participación, cuando una Pull Request sea integrada, entonces su número, enlace, autor y resumen del aporte deberán quedar registrados en `changelog.md`.
 
-## DEVOPS-03 — Protección de ramas
+* [ ] Dado que cada tarea debe encontrarse documentada, cuando se cree una Pull Request, entonces deberá existir una Issue asociada que describa la tarea y que pueda cerrarse luego de realizar el merge.
 
-Configurar reglas de protección para `master` y `develop` con el objetivo de evitar modificaciones directas sin revisión.
+* [ ] Dado que la entrega final debe representar los cambios aprobados del equipo, cuando todos los PR individuales hayan sido integrados en `develop`, entonces deberá crearse desde esa rama `release/actividad-obligatoria-1`.
 
-### Criterios de aceptación
+* [ ] Dado que FerroLab debe poder visualizarse públicamente, cuando se prepare la release de la Actividad Obligatoria N°1, entonces GitHub Pages deberá quedar habilitado y el sitio deberá ser accesible mediante una URL pública.
 
-- [x] `master` se encuentra protegida.
-- [x] `develop` se encuentra protegida.
-- [x] Se requiere al menos una revisión antes de integrar cambios.
-- [x] Los push directos a las ramas protegidas están restringidos.
+* [ ] Dado que la entrega final requiere una revisión del profesor, cuando se complete la release, entonces deberá abrirse una Pull Request desde `release/actividad-obligatoria-1` hacia `master` utilizando la plantilla correspondiente.
 
----
-
-## DEVOPS-04 — Estructura inicial del proyecto
-
-Crear la estructura base requerida para la Actividad Obligatoria N.° 1.
-
-La estructura deberá contemplar:
-
-```text
-/
-├── .github/
-│   └── PULL_REQUEST_TEMPLATE/
-├── docs/
-│   ├── 01-mockup/
-│   ├── 02-prompts/
-│   └── 03-specs/
-├── index.html
-├── plan.md
-└── changelog.md
-```
-
-### Criterios de aceptación
-
-- [x] Existe `index.html`.
-- [x] Existe `plan.md`.
-- [x] Existe `changelog.md`.
-- [x] Existe `.github/PULL_REQUEST_TEMPLATE/`.
-- [x] Existe la estructura correspondiente dentro de `docs/`.
-
----
-
-## DEVOPS-05 — Plan maestro
-
-Generar el archivo `plan.md` en la raíz del repositorio utilizando GitHub Copilot en modo Agente.
-
-El archivo deberá contener los requerimientos generales y el alcance definido para el proyecto **Ferretería Web**.
-
-El documento funcionará como referencia principal para los Code Reviews.
-
-### Criterios de aceptación
-
-- [x] `plan.md` existe en la raíz del repositorio.
-- [x] Fue generado con asistencia de GitHub Copilot en modo Agente.
-- [x] Contiene los requerimientos funcionales del proyecto.
-- [x] Contiene los requerimientos no funcionales definidos para el proyecto.
-- [x] Los requerimientos están estructurados y pueden utilizarse durante un Code Review.
-
----
-
-## DEVOPS-06 — Spec del rol
-
-Crear la especificación correspondiente al rol Coordinador / DevOps antes de realizar las tareas especificadas.
-
-Ubicación:
-
-`docs/03-specs/actividad-obligatoria-1/spec-devops.md`
-
-### Criterios de aceptación
-
-- [x] Existe `spec-devops.md`.
-- [x] Se encuentra en la ruta correspondiente.
-- [x] Fue creado antes de implementar las tareas especificadas.
-- [x] Contiene responsabilidades concretas del rol.
-- [x] Contiene criterios de aceptación verificables.
-
----
-
-## DEVOPS-07 — Rama feature del rol
-
-Los cambios correspondientes al rol deberán realizarse desde una rama `feature/` creada desde `develop`.
-
-Rama propuesta:
-
-`feature/coordinador-setup-repo-and-pages`
-
-### Criterios de aceptación
-
-- [x] Existe una rama `feature/` para el trabajo del rol.
-- [x] La rama fue creada desde `develop`.
-- [x] Los cambios correspondientes fueron realizados en esta rama.
-- [x] Existe al menos un commit relevante del rol.
-
----
-
-## DEVOPS-08 — Plantillas de Pull Request
-
-Configurar las plantillas necesarias para estandarizar los Pull Requests del proyecto.
-
-Se deberán crear:
-
-```text
-.github/
-└── PULL_REQUEST_TEMPLATE/
-    ├── feature-template.md
-    └── release-template.md
-```
-
-### Criterios de aceptación
-
-- [x] Existe `feature-template.md`.
-- [x] Existe `release-template.md`.
-- [x] Ambas plantillas se encuentran dentro de `.github/PULL_REQUEST_TEMPLATE/`.
-- [x] Las plantillas contienen los campos necesarios para documentar los cambios.
-- [x] Las Pull Requests de tipo feature pueden utilizar `feature-template.md`.
-- [x] La Pull Request de release puede utilizar `release-template.md`.
-
----
-
-## DEVOPS-09 — Rama de release
-
-Después de integrar en `develop` los cambios aprobados correspondientes a la actividad, crear la rama:
-
-`release/actividad-obligatoria-1`
-
-### Criterios de aceptación
-
-- [ ] Existe `release/actividad-obligatoria-1`.
-- [ ] La rama fue creada desde `develop`.
-- [ ] Fue creada después de integrar los cambios aprobados.
-- [ ] La rama existe en el repositorio remoto.
-
----
-
-## DEVOPS-10 — GitHub Pages
-
-Configurar GitHub Pages para publicar la versión correspondiente a la Actividad Obligatoria N.° 1.
-
-### Criterios de aceptación
-
-- [ ] GitHub Pages está habilitado.
-- [ ] La publicación utiliza la versión correspondiente a `release/actividad-obligatoria-1`.
-- [ ] El sitio es accesible públicamente.
-- [ ] `index.html` puede visualizarse correctamente desde GitHub Pages.
-
----
-
-# PARTE 2 — COORDINADOR
-
-## 4. Responsabilidades del Coordinador
-
-El Coordinador será responsable de organizar y controlar el flujo de trabajo colaborativo, administrar los Pull Requests y verificar que las implementaciones cumplan con `plan.md` y con las especificaciones individuales correspondientes.
-
----
-
-## COORD-01 — Gestión de colaboradores
-
-Gestionar el acceso de los participantes del proyecto al repositorio.
-
-### Criterios de aceptación
-
-- [x] Todos los integrantes tienen acceso al repositorio.
-- [x] El profesor `MVelasquez98` fue agregado como colaborador.
-
----
-
-## COORD-02 — Organización del trabajo mediante ramas
-
-Verificar que cada integrante realice su trabajo mediante una rama `feature/` creada desde `develop`.
-
-### Criterios de aceptación
-
-- [ ] Cada integrante utiliza una rama `feature/`.
-- [ ] Las ramas de trabajo parten de `develop`.
-- [x] No se realizan implementaciones directamente sobre `master`.
-- [x] No se realizan implementaciones directamente sobre `develop`.
-
----
-
-## COORD-03 — Control de specs
-
-Verificar que cada integrante haya creado su especificación técnica antes de comenzar la implementación correspondiente.
-
-Los specs deberán encontrarse en:
-
-`docs/03-specs/actividad-obligatoria-1/`
-
-### Criterios de aceptación
-
-- [ ] Cada tarea tiene un spec asociado.
-- [ ] Los specs fueron creados antes de las implementaciones correspondientes.
-- [ ] Cada spec contiene criterios de aceptación.
-- [ ] Los specs pueden relacionarse con los requerimientos de `plan.md`.
-
----
-
-## COORD-04 — Administración de Pull Requests
-
-Controlar los Pull Requests realizados por los integrantes hacia `develop`.
-
-### Criterios de aceptación
-
-- [ ] Los cambios se integran mediante Pull Requests.
-- [ ] Las PR tienen como destino `develop`.
-- [ ] Cada PR utiliza la plantilla correspondiente.
-- [ ] Cada PR contiene una descripción de los cambios.
-- [ ] Cada PR está vinculada con su Issue.
-- [ ] Ninguna PR se integra sin la revisión correspondiente.
-
----
-
-## COORD-05 — Code Reviews
-
-Revisar los Pull Requests comparando:
-
-```text
-plan.md
-+
-spec del rol
-+
-implementación realizada
-```
-
-La revisión deberá comprobar tanto la calidad de la implementación como el cumplimiento de los requerimientos definidos.
-
-### Criterios de aceptación
-
-- [ ] Cada PR tiene al menos una revisión.
-- [ ] La revisión contempla `plan.md`.
-- [ ] La revisión contempla el spec correspondiente.
-- [ ] Se verifican los criterios de aceptación definidos.
-- [ ] Se comprueba que los cambios estén dentro del alcance del proyecto.
-
----
-
-## COORD-06 — Code Reviews asistidos con IA
-
-Realizar como mínimo **4 Code Reviews asistidos con IA** durante el proyecto.
-
-Las recomendaciones generadas por IA deberán ser evaluadas antes de incorporarlas como comentarios de revisión.
-
-### Criterios de aceptación
-
-- [ ] Se realizaron como mínimo 4 revisiones asistidas con IA.
-- [ ] Existe evidencia de las revisiones en los Pull Requests.
-- [ ] Las revisiones comprueban requerimientos de `plan.md`.
-- [ ] Las revisiones comprueban los specs individuales.
-- [ ] Se determinó cuáles observaciones generadas por IA eran pertinentes.
-- [ ] No se aceptaron automáticamente todas las recomendaciones realizadas por la IA.
-
----
-
-## COORD-07 — Request Changes
-
-Cuando un Pull Request no cumpla con los requerimientos establecidos, realizar `Request Changes`.
-
-### Criterios de aceptación
-
-- [ ] Se utiliza `Request Changes` cuando corresponde.
-- [ ] El comentario identifica claramente el problema encontrado.
-- [ ] Se identifica el requerimiento o criterio de aceptación incumplido.
-- [ ] Los comentarios se realizan sobre las líneas correspondientes cuando sea aplicable.
-- [ ] Las correcciones son verificadas antes de aprobar la PR.
-
----
-
-## COORD-08 — Control de Issues
-
-Verificar que las tareas realizadas durante la actividad estén asociadas con Issues.
-
-### Criterios de aceptación
-
-- [ ] Cada tarea tiene una Issue.
-- [ ] Cada Issue está vinculada con su Pull Request.
-- [ ] Las Issues se cierran cuando la tarea fue completada e integrada.
-
----
-
-## COORD-09 — Control de changelog
-
-Verificar que los Pull Requests integrados estén registrados en `changelog.md`.
-
-### Criterios de aceptación
-
-- [ ] Cada PR mergeada está registrada.
-- [ ] Se indica el número de PR.
-- [ ] Se incluye el enlace al PR.
-- [ ] Se identifica al autor.
-- [ ] Se incluye un resumen del aporte realizado.
-
----
-
-## COORD-10 — Pull Request final
-
-Crear la Pull Request correspondiente a la entrega desde:
-
-`release/actividad-obligatoria-1`
-
-hacia:
-
-`master`
-
-### Criterios de aceptación
-
-- [ ] Existe la PR de release.
-- [ ] El origen es `release/actividad-obligatoria-1`.
-- [ ] El destino es `master`.
-- [ ] Se utiliza `release-template.md`.
-- [ ] La PR contiene la información correspondiente a la entrega.
-- [ ] La PR permanece sin mergear hasta recibir la aprobación correspondiente.
-
----
-
-## COORD-11 — Publicación de la entrega
-
-Publicar la PR final en Slack y preparar los enlaces solicitados para el Campus Virtual.
-
-### Criterios de aceptación
-
-- [ ] La PR final fue publicada en Slack.
-- [ ] Se mencionó al profesor según lo solicitado.
-- [ ] Se dispone del enlace de la PR final.
-- [ ] Se dispone del enlace público de GitHub Pages.
-- [ ] Los enlaces requeridos fueron preparados para el Campus Virtual.
-
----
-
-# 5. Definición de terminado
-
-## DevOps
-
-El trabajo técnico de DevOps estará terminado cuando:
-
-- [ ] El repositorio esté configurado.
-- [ ] `master` y `develop` existan y estén protegidas.
-- [ ] La estructura inicial esté creada.
-- [ ] `plan.md` esté disponible.
-- [ ] `spec-devops.md` esté disponible.
-- [ ] Las plantillas de Pull Request estén configuradas.
-- [ ] La rama `feature/` correspondiente haya sido utilizada.
-- [ ] `release/actividad-obligatoria-1` esté creada.
-- [ ] GitHub Pages esté configurado y funcionando.
-
-## Coordinador
-
-El trabajo de coordinación estará terminado cuando:
-
-- [ ] Los colaboradores estén correctamente configurados.
-- [ ] Los integrantes hayan utilizado ramas `feature/`.
-- [ ] Los specs individuales hayan sido controlados.
-- [ ] Los Pull Requests hayan recibido las revisiones correspondientes.
-- [ ] Se hayan realizado como mínimo 4 Code Reviews asistidos con IA.
-- [ ] Los `Request Changes` necesarios hayan sido gestionados.
-- [ ] Las Issues estén correctamente vinculadas.
-- [ ] `changelog.md` registre los PR integrados.
-- [ ] La PR final de release esté creada.
-- [ ] La entrega haya sido publicada en Slack.
-- [ ] Los enlaces correspondientes estén preparados para el Campus Virtual.
+* [ ] Dado que la actividad requiere evidencia de entrega, cuando se publique la versión final, entonces el enlace de la Pull Request de release deberá compartirse en Slack y los enlaces solicitados deberán entregarse en el campus virtual.
