@@ -41,24 +41,7 @@ Como esta entrega no requiere CSS ni JavaScript funcional (según consigna, punt
 
 ## Template de spec-[rol].md
 
-Se define el siguiente template, disponible en `docs/03-specs/actividad-obligatoria-1/spec-[rol].md`, que cada rol copia y completa como `spec-<su-rol>.md`:
-
-```markdown
-# Spec: [nombre de la tarea]
-**Rol:** [rol]
-**Se traza contra:** plan.md — RF/RNF [números]
-
-## Qué se va a hacer
-[descripción]
-
-## Por qué
-[qué requerimiento de plan.md cubre y por qué es necesario]
-
-## Criterios de aceptación
-- [ ] Dado [contexto], cuando [acción], entonces [resultado esperado]
-```
-
-Formato elegido: **Given/When/Then** (tomado de Behavior-Driven Development), porque da criterios de aceptación concretos y verificables, sin necesidad de enumerar todos los casos posibles — alcanza con cubrir el camino crítico de cada RF.
+Se define el template disponible en `docs/03-specs/actividad-obligatoria-1/spec-[rol].md`, que cada rol copia y completa como `spec-<su-rol>.md`. El formato elegido para los criterios de aceptación es **Given/When/Then** (tomado de Behavior-Driven Development), porque da resultados concretos y verificables sin necesidad de enumerar todos los casos posibles — alcanza con cubrir el camino crítico de cada RF.
 
 ## Verificación de herramientas
 
