@@ -26,7 +26,9 @@ la futura incorporación de estilos CSS e interactividad JavaScript.
 
 ## 📁 Documentación
 - [Mockup](https://www.figma.com/design/jX7NrMUtt6Tg7oiYqock6s/Sin-t%C3%ADtulo?node-id=0-1&t=ooNbHAfYrMmAh8i2-1)
+- [Índice de Prompts](/ProyectoFerreteria_GRP05/docs/02-prompts/prompts.md)
 - [Changelog](changelog.md)
+
 
 
 ## 👥 Integrantes del Grupo
