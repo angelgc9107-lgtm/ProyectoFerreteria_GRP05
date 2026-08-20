@@ -64,6 +64,7 @@ para la página.
 - Texto de bienvenida: "¡Bienvenidos a FerroLAB!" + párrafo de presentación de la marca.
 - Redes sociales: íconos de Instagram, WhatsApp y TikTok.
 - Footer: dos columnas — "Contacto" (email, teléfono, horario de atención) y "Ubicación" (mapa embebido).
+- Seccion de catalogo que aparece una lista con diferentes tipos,herramientas manuales,herramientas electricas,electricidad y jardineria
 
 ### Catálogo
 - Header y nav: mismos que en Inicio (buscador, carrito, login, menú CATÁLOGO, nav INICIO/OFERTAS/DONDE ESTAMOS) — mantiene consistencia de navegación en todo el sitio.

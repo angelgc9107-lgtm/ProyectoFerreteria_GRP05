@@ -1,4 +1,4 @@
-# 🌐 Ferretería Online — [Nombre de la ferretería]
+# 🌐 Ferretería Online — Ferrolab
 
 ## 🎓 Datos Académicos
 
