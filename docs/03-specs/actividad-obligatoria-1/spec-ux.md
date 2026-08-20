@@ -69,7 +69,7 @@ para la página.
 ### Catálogo
 - Header y nav: mismos que en Inicio (buscador, carrito, login, menú CATÁLOGO, nav INICIO/OFERTAS/DONDE ESTAMOS) — mantiene consistencia de navegación en todo el sitio.
 - Sidebar de filtros (izquierda):
-Filtro por categoría: Accesorios, Herramientas manuales, Herramientas eléctricas, Bulonería, Cerrajería, Jardinería (RF5 del plan.md).
+Filtro por categoría: Accesorios, Herramientas manuales, Herramientas eléctricas,Electricidad y Jardinería (RF5 del plan.md).
 Filtro por precio (rango).
 - Grid de productos (derecha): tarjetas con imagen, nombre del producto, precio (con precio tachado + descuento cuando aplica), y botón "COMPRAR" (RF1, RF2, RF3).
 - Footer: igual al de Inicio — Contacto (email, teléfono, horario) y Ubicación (mapa).
