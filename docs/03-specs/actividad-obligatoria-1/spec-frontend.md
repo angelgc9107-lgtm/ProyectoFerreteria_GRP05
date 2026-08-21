@@ -1,7 +1,7 @@
 # Spec: Desarrollador Frontend
 
 **Rol:** Desarrollador Frontend
-**Se traza contra:** plan.md — RF1-RF8; RNF1-RNF12
+**Se traza contra:** plan.md — RF1-RF8; RNF1-RNF4; RNF6-RNF10; RNF12-RNF13
 **Entrega:** Actividad Obligatoria N°1 — FerroLab
 
 ## Qué se va a hacer
@@ -34,7 +34,7 @@ Pendiente de completar luego de revisar y adaptar la estructura HTML generada.
 
 `plan.md` establece que FerroLab debe permitir visualizar un catálogo, consultar la información de sus productos, reconocer sus categorías, navegar por el sitio y acceder a la información comercial y al formulario de contacto (RF1-RF8). Esta tarea construye la base HTML que representa esos contenidos y deja preparada la estructura para que búsqueda y filtrado puedan incorporar lógica en una entrega posterior, de acuerdo con el alcance definido para la Actividad Obligatoria N°1.
 
-El uso de HTML5 semántico, metadatos básicos, textos alternativos y una organización clara responde a RNF1-RNF8, especialmente a los requisitos de estructura semántica, accesibilidad, SEO, facilidad de navegación, mantenibilidad y legibilidad. Mantener separadas la estructura, la presentación y la interactividad responde a RNF9. La base organizada y específica de FerroLab permite extender el catálogo y sus funcionalidades en futuras entregas, en línea con RNF10-RNF12, sin implementar todavía carrito, pago, validaciones ni confirmación de pedidos.
+El uso de HTML5 responde a RNF1. La utilización de etiquetas semánticas responde a RNF2, mientras que los textos alternativos y la organización comprensible del contenido responden a RNF3. Los metadatos y la estructura HTML prevista para los contenidos responden a RNF4. Los enlaces hacia las principales secciones facilitan la navegación, de acuerdo con RNF6. La organización y documentación del código favorecen su mantenimiento, en línea con RNF7, y la estructura ordenada, la indentación consistente y los nombres comprensibles favorecen la legibilidad prevista en RNF8. Mantener separadas la estructura HTML, la presentación CSS y la interactividad JavaScript responde a RNF9. La base organizada y específica de FerroLab permite ampliar la estructura con nuevos productos, categorías y funcionalidades en futuras entregas, de acuerdo con RNF10. La organización de los archivos y recursos del proyecto responde a RNF12. La utilización de HTML5 y la estructura prevista para el sitio apuntan a la compatibilidad con navegadores web modernos, de acuerdo con RNF13, sin implementar todavía carrito, pago, validaciones ni confirmación de pedidos.
 
 ## Criterios de aceptación
 
