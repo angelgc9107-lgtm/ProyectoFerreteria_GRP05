@@ -12,6 +12,8 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 - [feature/ia-setup-sdd-specs] Se investiga la metodología SDD. Se documentan las decisiones tomadas, se diseña el template de spec que van a usar los 4 roles. PR: [#4](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/4) — @Piastrellini (Especialista en IA y Prompt Engineering)
 
+- [feature/frontend-add-html-structure] Se crea la especificación del rol Frontend, trazada contra plan.md, con las tareas y criterios de aceptación para la estructura HTML5 PR: [#14](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/14) — @luchobarrionuevo13 (Desarrollador Frontend)
+
 ### Changed
 
 ### Fixed
