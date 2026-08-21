@@ -24,6 +24,24 @@ la futura incorporación de estilos CSS e interactividad JavaScript.
 - CSS (a incorporar en próximas entregas)
 - JavaScript (a incorporar en próximas entregas)
 
+## ✅ Funcionalidades previstas
+ 
+- Visualización del catálogo de productos por categoría
+- Búsqueda y filtrado de productos
+- Carrito de compras con cantidad editable y cálculo de subtotales
+- Selección de método de pago 
+- Resumen y confirmación de pedido
+
+## 🎨 Maqueta de diseño web
+ 
+El producto final visual es una tienda online con identidad de marca
+propia (FerroLAB), organizada en 4 pantallas principales: Inicio (con
+carrusel de destacados, ofertas y bloques de confianza), Catálogo (con
+búsqueda, filtros por categoría y precio, y grid de productos), Carrito
+de compras (panel lateral deslizable con resumen de costos) y una
+sección de Contacto/Ubicación integrada en el footer. El diseño completo
+puede verse en el mockup de Figma enlazado abajo.
+
 ## 📁 Documentación
 - [Mockup](https://www.figma.com/design/jX7NrMUtt6Tg7oiYqock6s/Sin-t%C3%ADtulo?node-id=0-1&t=ooNbHAfYrMmAh8i2-1)
 - [Índice de Prompts](docs/02-prompts/prompts.md)
