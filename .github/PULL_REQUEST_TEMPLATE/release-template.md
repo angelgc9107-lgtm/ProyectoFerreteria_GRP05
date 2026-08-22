@@ -1,10 +1,3 @@
-pull_request_template_release.md
-
-Página
-1
-/
-1
-100 %
 # 📦 [GRUPO N°X][Actividad Obligatoria N°1] Entrega Final – Release a master
 
 > ⚠️ GitHub permite usar diferentes plantillas de Pull Request según la rama.
@@ -78,4 +71,3 @@ Usaremos los siguientes emojis durante la revisión:
 - Esta PR **no debe mergearse automáticamente**.  
 - El merge hacia `master` **solo se realiza con aprobación oficial (LGTM)** por parte del docente en GitHub.  
 - Lo mergeado en `master` se considera **versión final** y debe reutilizarse para la **Actividad Obligatoria N°2**.
-Mostrando pull_request_template_release.md.

@@ -1,10 +1,3 @@
-pull_request_template.md
-
-Página
-1
-/
-1
-100 %
 # 🟣 PULL REQUEST – Actividad Obligatoria N.º 1 – Programación Web I
 
 ---
@@ -71,4 +64,3 @@ _(Opcional – Aclaraciones, dificultades encontradas, sugerencias, etc.)_
 
 🚫 Sin esta Pull Request **no se justifica participación individual**.  
 ✅ Recordá que el `changelog.md` debe reflejar los cambios aprobados.
-Mostrando pull_request_template.md.
