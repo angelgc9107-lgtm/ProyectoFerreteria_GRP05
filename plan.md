@@ -176,23 +176,30 @@ La información relacionada con precios, intereses, cuotas y totales deberá pre
 
 # Alcance del proyecto
 
-El proyecto contempla el desarrollo de un **sitio web para una ferretería destinado a exhibir y comercializar productos por Internet**.
+El proyecto contempla el desarrollo de un sitio web para una ferretería destinado a exhibir y comercializar productos por Internet.
 
-En una primera etapa se desarrollará la estructura del sitio utilizando **HTML5**, incluyendo catálogo de productos, categorías, imágenes, descripciones, precios por unidad, información comercial, enlaces, formularios, listas y tablas. Se utilizarán etiquetas semánticas y se tendrán en cuenta aspectos básicos de **accesibilidad y SEO**.
+Para la Actividad Obligatoria N.° 1, el alcance se limita a la construcción de la estructura inicial del sitio utilizando HTML5. En esta etapa se implementarán estructuralmente las funcionalidades correspondientes a la visualización del catálogo de productos, información de los productos, categorización, navegación del sitio, información comercial y formulario de contacto, correspondientes a RF1-RF3 y RF6-RF8.
 
-El proyecto quedará preparado para incorporar posteriormente **CSS y JavaScript**, permitiendo evolucionar hacia una plataforma de venta con funcionalidades como:
+La estructura incluirá catálogo de productos, categorías, imágenes, descripciones, precios por unidad, información comercial, enlaces, formularios, listas y tablas. Se utilizarán etiquetas semánticas y se tendrán en cuenta aspectos básicos de accesibilidad y SEO.
 
-* Búsqueda y filtrado de productos.
-* Carrito de compras.
-* Selección y modificación de cantidades.
-* Cálculo de subtotales y total de la compra.
-* Diferentes métodos de pago.
-* Compra en cuotas.
-* Cálculo de intereses, total financiado y valor de cada cuota.
-* Validación de formularios.
-* Resumen y confirmación de pedidos.
+Los requisitos RF4, RF5 y RF9-RF24 forman parte del alcance general del proyecto, pero no serán implementados funcionalmente durante la Actividad Obligatoria N.° 1. Estas funcionalidades quedan previstas para etapas posteriores, cuando se incorporen CSS y JavaScript. La estructura HTML inicial deberá quedar preparada para su futura implementación mediante comentarios y marcadores específicos.
 
-El proceso de compra será una **simulación**, por lo que no se contempla inicialmente el procesamiento real de pagos, integración con entidades financieras, facturación electrónica, gestión administrativa de stock, registro e inicio de sesión de clientes ni integración con sistemas logísticos externos.
+Las funcionalidades previstas para estas etapas posteriores incluyen:
 
+- Búsqueda y filtrado de productos.
+- Carrito de compras.
+- Visualización y gestión de los productos del carrito.
+- Selección y modificación de cantidades.
+- Cálculo de subtotales y total de la compra.
+- Selección entre diferentes métodos de pago.
+- Compra en cuotas.
+- Cálculo de intereses o recargos.
+- Cálculo del total financiado y del valor de cada cuota.
+- Actualización automática de los cálculos.
+- Validación de formularios.
+- Resumen y confirmación de pedidos.
+- Confirmación de la operación.
+
+El proceso de compra será una simulación, por lo que no se contempla inicialmente el procesamiento real de pagos, integración con entidades financieras, facturación electrónica, gestión administrativa de stock, registro e inicio de sesión de clientes ni integración con sistemas logísticos externos.
 
 
