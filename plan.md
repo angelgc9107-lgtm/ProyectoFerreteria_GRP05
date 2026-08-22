@@ -172,4 +172,27 @@ Los cálculos de cantidades, subtotales, totales, intereses, financiación y cuo
 
 La información relacionada con precios, intereses, cuotas y totales deberá presentarse de forma clara para que el usuario pueda comprender las condiciones de la compra antes de confirmarla.
 
+---
+
+# Alcance del proyecto
+
+El proyecto contempla el desarrollo de un **sitio web para una ferretería destinado a exhibir y comercializar productos por Internet**.
+
+En una primera etapa se desarrollará la estructura del sitio utilizando **HTML5**, incluyendo catálogo de productos, categorías, imágenes, descripciones, precios por unidad, información comercial, enlaces, formularios, listas y tablas. Se utilizarán etiquetas semánticas y se tendrán en cuenta aspectos básicos de **accesibilidad y SEO**.
+
+El proyecto quedará preparado para incorporar posteriormente **CSS y JavaScript**, permitiendo evolucionar hacia una plataforma de venta con funcionalidades como:
+
+* Búsqueda y filtrado de productos.
+* Carrito de compras.
+* Selección y modificación de cantidades.
+* Cálculo de subtotales y total de la compra.
+* Diferentes métodos de pago.
+* Compra en cuotas.
+* Cálculo de intereses, total financiado y valor de cada cuota.
+* Validación de formularios.
+* Resumen y confirmación de pedidos.
+
+El proceso de compra será una **simulación**, por lo que no se contempla inicialmente el procesamiento real de pagos, integración con entidades financieras, facturación electrónica, gestión administrativa de stock, registro e inicio de sesión de clientes ni integración con sistemas logísticos externos.
+
+
 
