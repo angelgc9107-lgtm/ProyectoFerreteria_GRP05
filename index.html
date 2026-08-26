@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FerroLab: herramientas, accesorios y productos de ferreteria para tus proyectos.">
+    <title>FerroLab | Ferreteria</title>
+</head>
+<body>
+    <!-- CSS futuro: organizar la cabecera en una barra superior oscura con logo, buscador, carrito y acceso a la cuenta, respetando la jerarquia visual del mockup. -->
+    <header id="inicio">
+        <a href="#inicio" aria-label="Ir al inicio de FerroLab">
+            <img src="img/Logo.png" alt="Logo de FerroLab">
+        </a>
+
+        <!-- JavaScript futuro: buscar productos del catalogo al enviar este formulario y mostrar los resultados correspondientes. -->
+        <form action="#catalogo" method="get" role="search">
+            <label for="busqueda">Buscar productos</label>
+            <input type="search" id="busqueda" name="busqueda" placeholder="Que estas buscando?">
+            <button type="submit">Buscar</button>
+        </form>
+
+        <!-- JavaScript futuro: abrir y cerrar el panel lateral del carrito al activar este enlace. -->
+        <a href="#carrito" aria-label="Ver carrito de compras">Carrito (0)</a>
+        <a href="#contacto">Iniciar sesion</a>
+
+        <nav aria-label="Navegacion principal">
+            <a href="#catalogo">Catalogo</a>
+            <a href="#inicio">Inicio</a>
+            <a href="#ofertas">Ofertas</a>
+            <a href="#ubicacion">Donde estamos</a>
+
+            <!-- Frame 13: el control de categorias mostrara esta lista al activarse. CSS y JavaScript futuros gestionaran la apertura y el cierre del menu. -->
+            <details>
+                <summary>Categorias</summary>
+                <ul>
+                    <li><a href="#catalogo">Accesorios</a></li>
+                    <li><a href="#catalogo">Herramientas manuales</a></li>
+                    <li><a href="#catalogo">Herramientas electricas</a></li>
+                    <li><a href="#catalogo">Electricidad</a></li>
+                    <li><a href="#catalogo">Jardineria</a></li>
+                </ul>
+            </details>
+        </nav>
+    </header>
+
+    <main>
+        <section id="ofertas" aria-labelledby="titulo-ofertas">
+            <h1 id="titulo-ofertas">Ofertas</h1>
+            <div>
+                <!-- CSS futuro: convertir estas tarjetas en una grilla o carrusel responsive y aplicar la presentacion visual de imagen, nombre, precios y boton. -->
+                <article>
+                    <img src="img/Amoladora.png" alt="Amoladora angular inalambrica DeWalt Flexvolt DCG416B">
+                    <h2>Amoladora angular inalambrica DeWalt Flexvolt DCG416B</h2>
+                    <p><del>$65.000</del> <strong>$50.000</strong> por unidad</p>
+                    <!-- JavaScript futuro: agregar este producto al carrito y actualizar su contador. -->
+                    <button type="button">Comprar</button>
+                </article>
+                <article>
+                    <img src="img/Kit Juego Tapones.png" alt="Kit de juego de tapones para cano de termofusion">
+                    <h2>Kit juego tapones para cano de termofusion</h2>
+                    <p><del>$99.000</del> <strong>$55.000</strong> por unidad</p>
+                    <button type="button">Comprar</button>
+                </article>
+                <article>
+                    <img src="img/Martillo Galponero.png" alt="Martillo galponero con mango de fibra y acero forjado Black Jack">
+                    <h2>Martillo galponero mango de fibra acero forjado Black Jack</h2>
+                    <p><del>$25.000</del> <strong>$16.000</strong> por unidad</p>
+                    <button type="button">Comprar</button>
+                </article>
+            </div>
+        </section>
+
+        <section aria-label="Servicios de FerroLab">
+            <h2>Servicios para tus proyectos</h2>
+            <ul>
+                <li>Pago con tarjeta de credito.</li>
+                <li>Realizamos envios a todo el pais.</li>
+                <li>Asesoramiento para elegir tus herramientas.</li>
+            </ul>
+        </section>
+
+        <section aria-labelledby="bienvenida">
+            <img src="img/Bienvenido1.png" alt="Interior de FerroLab con herramientas y maquinas en exhibicion">
+            <img src="img/Bienvenido2.png" alt="Pasillo interior de FerroLab con productos de ferreteria">
+            <h2 id="bienvenida">Bienvenidos a FerroLab</h2>
+            <p>Somos la nueva opcion en ferreteria: un espacio pensado para dar soluciones rapidas y eficientes a tus proyectos. Aunque recien empezamos, nos mueve la pasion por el oficio, la calidad en cada herramienta y el compromiso de acompanarte paso a paso. Encontra asesoramiento cercano y todo lo que buscas para construir, arreglar y crear.</p>
+        </section>
+
+        <section id="catalogo" aria-labelledby="titulo-catalogo">
+            <h2 id="titulo-catalogo">Catalogo de productos</h2>
+            <!-- JavaScript futuro: aplicar el orden seleccionado, filtrar por categoria y limitar los precios entre los valores Desde y Hasta. -->
+            <aside aria-label="Filtros del catalogo">
+                <h3>Ordenar por</h3>
+                <label for="orden">Orden de productos</label>
+                <select id="orden" name="orden">
+                    <option>Precio: menor a mayor</option>
+                    <option>Precio: mayor a menor</option>
+                </select>
+                <h3>Categorias</h3>
+                <ul>
+                    <li><a href="#catalogo">Accesorios</a></li>
+                    <li><a href="#catalogo">Herramientas manuales</a></li>
+                    <li><a href="#catalogo">Herramientas electricas</a></li>
+                    <li><a href="#catalogo">Electricidad</a></li>
+                    <li><a href="#catalogo">Jardineria</a></li>
+                </ul>
+                <h3>Precio</h3>
+                <label for="precio-desde">Desde</label>
+                <input type="number" id="precio-desde" name="precio-desde" min="0">
+                <label for="precio-hasta">Hasta</label>
+                <input type="number" id="precio-hasta" name="precio-hasta" min="0">
+            </aside>
+
+            <!-- CSS futuro: maquetar las tarjetas del catalogo en una grilla responsive, con una jerarquia clara para imagen, categoria, nombre, descripcion, precio y boton. -->
+            <div>
+                <article>
+                    <img src="img/Guantes Moteados.png" alt="Guantes moteados multiuso de maxima calidad">
+                    <p>Herramientas manuales</p>
+                    <h3>Guantes moteados multiuso maxima calidad</h3>
+                    <p>Proteccion multiuso para trabajos de ferreteria y mantenimiento.</p>
+                    <p><strong>$4.401</strong> por unidad</p>
+                    <button type="button">Comprar</button>
+                </article>
+                <article>
+                    <img src="img/Destornillador Punta Plana.png" alt="Destornillador de punta plana Black Jack de 8 por 200 milimetros">
+                    <p>Herramientas manuales</p>
+                    <h3>Destornillador punta plana Black Jack 8 x 200 mm</h3>
+                    <p>Destornillador con punta plana para tareas de ajuste y reparacion.</p>
+                    <p><strong>$6.026</strong> por unidad</p>
+                    <button type="button">Comprar</button>
+                </article>
+                <article>
+                    <img src="img/Pinza Punta Curva.png" alt="Pinza de punta curva mini de 5 pulgadas para electronica">
+                    <p>Herramientas manuales</p>
+                    <h3>Pinza punta curva mini 5 pulgadas ideal electronica</h3>
+                    <p>Pinza compacta para trabajos de precision en electronica.</p>
+                    <p><strong>$6.426</strong> por unidad</p>
+                    <button type="button">Comprar</button>
+                </article>
+                <article>
+                    <img src="img/Enchufe Adaptador.png" alt="Enchufe adaptador cubo de 5 tomas y 3 patas de 10 amperes">
+                    <p>Electricidad</p>
+                    <h3>Enchufe adaptador cubo 5 tomas 3 patas 10 amp</h3>
+                    <p>Adaptador electrico con cinco tomas para conectar herramientas y equipos.</p>
+                    <p><strong>$10.282</strong> por unidad</p>
+                    <button type="button">Comprar</button>
+                </article>
+                <article>
+                    <img src="img/Martillo Galponero.png" alt="Martillo galponero con mango de fibra y acero forjado Black Jack">
+                    <p>Herramientas manuales</p>
+                    <h3>Martillo galponero mango de fibra acero forjado Black Jack</h3>
+                    <p>Martillo robusto para tareas de obra, reparacion y mantenimiento.</p>
+                    <p><strong>$16.000</strong> por unidad</p>
+                    <button type="button">Comprar</button>
+                </article>
+                <article>
+                    <img src="img/Pala de Punta.png" alt="Pala de punta de chapa de acero estampada con cabo metalico">
+                    <p>Jardineria</p>
+                    <h3>Pala de punta chapa acero estampada cabo metalico</h3>
+                    <p>Herramienta de punta para tareas de jardineria y movimiento de tierra.</p>
+                    <p><strong>$21.329</strong> por unidad</p>
+                    <button type="button">Comprar</button>
+                </article>
+                <article>
+                    <img src="img/Amoladora.png" alt="Amoladora angular inalambrica DeWalt Flexvolt DCG416B">
+                    <p>Herramientas electricas</p>
+                    <h3>Amoladora angular inalambrica DeWalt Flexvolt DCG416B</h3>
+                    <p>Amoladora inalambrica para cortar, desbastar y trabajar distintos materiales.</p>
+                    <p><del>$65.000</del> <strong>$50.000</strong> por unidad</p>
+                    <button type="button">Comprar</button>
+                </article>
+                <article>
+                    <img src="img/Kit Juego Tapones.png" alt="Kit de juego de tapones para cano de termofusion y obturador de agua">
+                    <p>Accesorios</p>
+                    <h3>Kit juego tapones para cano de termofusion</h3>
+                    <p>Juego de tapones y obturadores para instalaciones de agua.</p>
+                    <p><del>$99.000</del> <strong>$55.000</strong> por unidad</p>
+                    <button type="button">Comprar</button>
+                </article>
+                <article>
+                    <img src="img/Atornillador.png" alt="Taladro atornillador inalambrico de 10 milimetros y 20 voltios">
+                    <p>Herramientas electricas</p>
+                    <h3>Taladro atornillador inalambrico 10 mm 20 V</h3>
+                    <p>Atornillador inalambrico para perforar y ajustar en distintos proyectos.</p>
+                    <p><strong>$79.999</strong> por unidad</p>
+                    <button type="button">Comprar</button>
+                </article>
+            </div>
+        </section>
+
+        <section aria-labelledby="tabla-productos">
+            <h2 id="tabla-productos">Precios destacados</h2>
+            <table>
+                <caption>Productos de FerroLab y precios por unidad</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Producto</th>
+                        <th scope="col">Categoria</th>
+                        <th scope="col">Precio por unidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Guantes moteados multiuso</td><td>Herramientas manuales</td><td>$4.401</td></tr>
+                    <tr><td>Destornillador punta plana Black Jack</td><td>Herramientas manuales</td><td>$6.026</td></tr>
+                    <tr><td>Enchufe adaptador cubo 5 tomas</td><td>Electricidad</td><td>$10.282</td></tr>
+                    <tr><td>Taladro atornillador inalambrico</td><td>Herramientas electricas</td><td>$79.999</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Frame 12: este aside representa el panel lateral abierto del carrito sobre el sitio. No hay calculos ni operaciones funcionales en esta entrega. -->
+        <aside id="carrito" aria-labelledby="titulo-carrito" data-estado="abierto">
+            <h2 id="titulo-carrito">Carrito de compras</h2>
+            <!-- JavaScript futuro: abrir y cerrar este panel desde el acceso del encabezado. -->
+            <!-- JavaScript futuro: agregar productos, eliminar productos y modificar cantidades desde cada articulo del carrito. -->
+            <!-- JavaScript futuro: recalcular subtotales y total cuando cambien productos o cantidades. -->
+            <article>
+                <h3>Amoladora angular inalambrica DeWalt Flexvolt DCG416B</h3>
+                <p>Precio unitario: $50.000</p>
+                <label for="cantidad-amoladora">Cantidad</label>
+                <input type="number" id="cantidad-amoladora" value="1" min="1">
+                <p>Subtotal representativo: $50.000</p>
+                <button type="button">Eliminar</button>
+            </article>
+            <article>
+                <h3>Martillo galponero mango de fibra Black Jack</h3>
+                <p>Precio unitario: $16.000</p>
+                <label for="cantidad-martillo">Cantidad</label>
+                <input type="number" id="cantidad-martillo" value="1" min="1">
+                <p>Subtotal representativo: $16.000</p>
+                <button type="button">Eliminar</button>
+            </article>
+            <p>Total representativo: $66.000</p>
+            <!-- JavaScript futuro: habilitar el inicio de compra y conectar el resumen con los metodos de pago en una etapa posterior. -->
+            <button type="button">Iniciar compra</button>
+        </aside>
+
+        <section id="contacto" aria-labelledby="titulo-contacto">
+            <h2 id="titulo-contacto">Contactanos</h2>
+            <!-- JavaScript futuro: validar los datos y procesar el envio del formulario en una entrega posterior. -->
+            <form action="#contacto" method="post">
+                <p>
+                    <label for="nombre">Nombre</label>
+                    <input type="text" id="nombre" name="nombre">
+                </p>
+                <p>
+                    <label for="correo">Correo electronico</label>
+                    <input type="email" id="correo" name="correo">
+                </p>
+                <p>
+                    <label for="motivo">Motivo de la consulta</label>
+                    <input type="text" id="motivo" name="motivo">
+                </p>
+                <p>
+                    <label for="mensaje">Mensaje</label>
+                    <textarea id="mensaje" name="mensaje" rows="5"></textarea>
+                </p>
+                <button type="submit">Enviar consulta</button>
+            </form>
+        </section>
+    </main>
+
+    <!-- CSS futuro: distribuir redes, contacto y mapa en bandas del pie, usando el contraste observado en el mockup y una composicion adaptable. -->
+    <footer id="ubicacion">
+        <section aria-labelledby="redes-sociales">
+            <h2 id="redes-sociales">Redes sociales</h2>
+            <a href="https://www.instagram.com/" target="_blank" rel="noopener">Instagram de FerroLab</a>
+            <a href="https://wa.me/54912345678" target="_blank" rel="noopener">WhatsApp de FerroLab</a>
+            <a href="https://www.tiktok.com/" target="_blank" rel="noopener">TikTok de FerroLab</a>
+        </section>
+        <section aria-labelledby="datos-contacto">
+            <h2 id="datos-contacto">Contacto</h2>
+            <p>Email: contacto@ferrelab.com</p>
+            <p>Celular: +54 9 1234-5678</p>
+            <p>Horario: lunes a sabado de 8 a 22 hs</p>
+        </section>
+        <section aria-labelledby="direccion">
+            <h2 id="direccion">Ubicacion</h2>
+            <img src="img/Ubicacion.png" alt="Mapa con la ubicacion de FerroLab">
+        </section>
+    </footer>
+</body>
+</html>

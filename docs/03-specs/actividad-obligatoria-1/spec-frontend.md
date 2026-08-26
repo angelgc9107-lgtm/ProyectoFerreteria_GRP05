@@ -1,7 +1,7 @@
 # Spec: Desarrollador Frontend
 
 **Rol:** Desarrollador Frontend
-**Se traza contra:** plan.md — RF1-RF8; RNF1-RNF4; RNF6-RNF10; RNF12-RNF13
+**Se traza contra:** plan.md — RF1-RF3 y RF6-RF8; RF4-RF5 previstos estructuralmente para implementación posterior; RF1-RF8; RNF1-RNF4; RNF6-RNF10; RNF12-RNF13
 **Entrega:** Actividad Obligatoria N°1 — FerroLab
 
 ## Qué se va a hacer
@@ -16,19 +16,43 @@ No se implementarán CSS ni JavaScript. Dentro del futuro `index.html` se dejar�
 
 ## Evidencia del proceso con Figma MCP
 
-La evidencia del uso del mockup, Figma MCP y GitHub Copilot en modo Agente se documentará después de realizar el proceso. Esta sección deberá registrar el prompt utilizado, el resultado obtenido y los ajustes manuales realizados sobre la estructura generada; mientras el proceso no se haya ejecutado, esos datos permanecerán pendientes y no se inventarán.
+Para generar la estructura HTML inicial de FerroLab se utilizó GitHub Copilot en modo Agente junto con el servidor MCP de Figma. Se tomó como referencia el mockup realizado por el Documentador / Diseñador UX y se analizaron los Frames 1, 10, 12 y 13 para identificar las principales secciones, productos y estados previstos del sitio.
 
 ### Prompt utilizado
 
-Pendiente de completar luego de utilizar el servidor MCP de Figma junto con GitHub Copilot en modo Agente.
+Se solicitó a GitHub Copilot en modo Agente que analizara `plan.md`, `spec-frontend.md` y el mockup de Figma mediante el servidor MCP antes de modificar `index.html`.
+
+El prompt indicó utilizar específicamente los Frames 1, 10, 12 y 13 como referencia, respetar el alcance de la Actividad Obligatoria N.º 1 y desarrollar únicamente la estructura HTML5, sin implementar CSS ni JavaScript funcional.
+
+También se indicó utilizar únicamente los productos y elementos presentes en el mockup y asociar las etiquetas `<img>` con las imágenes reales exportadas desde Figma y almacenadas en la carpeta `img/`.
 
 ### Resultado obtenido
 
-Pendiente de completar luego de generar la estructura HTML inicial a partir del mockup.
+Se generó y adaptó `index.html` con una estructura HTML5 semántica basada en el mockup de FerroLab.
+
+Se incorporaron:
+
+- encabezado y navegación principal;
+- buscador de productos;
+- sección de ofertas;
+- productos con nombre, descripción, imagen y precio;
+- categorías y estructura prevista para filtros;
+- información comercial;
+- lista relacionada con los servicios;
+- tabla de productos y precios;
+- formulario de contacto;
+- estructura representativa del carrito;
+- pie de página con información de contacto y ubicación.
+
+Los estados interactivos observados en los Frames 12 y 13 quedaron representados estructuralmente y acompañados por comentarios para su futura implementación mediante CSS y JavaScript.
 
 ### Ajustes manuales realizados
 
-Pendiente de completar luego de revisar y adaptar la estructura HTML generada.
+Luego de revisar la estructura generada se detectó que algunas rutas de imágenes creadas inicialmente no correspondían a archivos existentes en el proyecto.
+
+Las imágenes utilizadas en el mockup fueron exportadas desde Figma y almacenadas en la carpeta `img/`. Posteriormente se corrigieron las rutas `src` de las etiquetas `<img>` para utilizar los archivos reales.
+
+También se revisaron los productos generados para mantener únicamente aquellos correspondientes al mockup utilizado como referencia y evitar incorporar productos no representados en los Frames 1, 10, 12 y 13.
 
 ## Por qué
 
@@ -52,5 +76,5 @@ El uso de HTML5 responde a RNF1. La utilización de etiquetas semánticas respon
 - [ ] Dado que se prepara una futura entrega visual, cuando se revisan los comentarios de `index.html`, entonces identifican los sectores que necesitarán estilos, el tipo de estilos previsto y dónde se aplicarán, sin limitarse a indicar genéricamente “agregar CSS”.
 - [ ] Dado que se prepara una futura entrega interactiva, cuando se revisan los comentarios de `index.html`, entonces identifican las funcionalidades previstas, los sectores donde se incorporarán y los elementos candidatos a recibir comportamiento mediante JavaScript, sin implementar todavía esa lógica.
 - [ ] Dado que se compara la estructura con el mockup del Documentador / Diseñador UX, cuando se revisa el resultado HTML inicial, entonces la distribución y las secciones previstas toman ese mockup como referencia.
-- [ ] Dado que se revisa el proceso de generación de la estructura inicial, cuando se consulta la evidencia pendiente, entonces se encuentran apartados identificados para documentar el prompt utilizado, el resultado obtenido y los ajustes manuales realizados después de utilizar el servidor MCP de Figma junto con GitHub Copilot en modo Agente.
+- [ ] Dado que el proceso con Figma MCP fue realizado, cuando se revisa la evidencia documentada, entonces se identifica el uso de los Frames 1, 10, 12 y 13 como referencia para la estructura HTML y los ajustes realizados posteriormente sobre el resultado generado.
 - [ ] Dado que el proceso con Figma MCP todavía no fue realizado, cuando se consulta la evidencia, entonces no se presentan prompts, resultados ni ajustes inventados y los apartados permanecen pendientes de completar.
