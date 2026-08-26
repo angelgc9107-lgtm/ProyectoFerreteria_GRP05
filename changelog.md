@@ -13,6 +13,8 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 - [feature/doc-ux-add-readme-and-mockup] Creacion de mockup y README.md PR: [#9](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/9) — @alandox1 (Documentador Y Disenador UX)
 - [feature/frontend-add-html-structure] Se crea la especificación del rol Frontend, trazada contra plan.md, con las tareas y criterios de aceptación para la estructura HTML5 PR: [#14](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/14) — @luchobarrionuevo13 (Desarrollador Frontend)
 
+- [feature/frontend-add-html-structure] Desarrollo de la estructura HTML5 inicial de FerroLab utilizando Figma MCP y GitHub Copilot en modo Agente, incorporando catálogo, imágenes, navegación, información comercial, tabla, formulario y estructura prevista para futuras funcionalidades. PR: [#15](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/15) — @luchobarrionuevo13 (Desarrollador Frontend)
+
 ### Changed
 
 ### Fixed
