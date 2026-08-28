@@ -37,4 +37,5 @@ ChatGPT devolvió un listado estructurado de 18 Requisitos Funcionales (RF1 a RF
 
 ## Aplicación en el proyecto
 
-`plan.md` — sección de Requisitos Funcionales (RF14 a RF20).
+`plan.md` — sección de Requisitos Funcionales (RF1 a RF18) y Requisitos No Funcionales (RNF1 a RNF15).  
+Estos requisitos formaron la base inicial del plan.md, distinguiendo lo que se implementa en la Actividad Obligatoria N°1 de lo que queda para entregas futuras.

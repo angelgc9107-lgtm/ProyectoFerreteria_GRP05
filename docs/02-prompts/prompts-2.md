@@ -258,6 +258,7 @@ Generar el archivo `spec-frontend.md` con la misma estructura y estilo que `spec
 El agente completó `spec-frontend.md` trazado contra `plan.md` (RF1-RF8 y RNF1-RNF12), manteniendo la estructura de `spec-ia.md`. Incluyó las responsabilidades del rol Frontend, los requisitos de HTML5 semántico, accesibilidad, catálogo, tabla, lista, enlaces y formulario, con el alcance limitado a esta entrega (sin carrito ni pagos funcionales). Dejó comentarios previstos para CSS y JavaScript futuros, una sección específica para documentar después el proceso con Figma MCP y GitHub Copilot, y los apartados de prompt/resultado/ajustes manuales pendientes sin inventar evidencia. Validó que `index.html` no fue modificado y confirmó que no se realizaron commits ni push.
 
 **Captura de pantalla del resultado obtenido:**
+
 ![Validación y resumen final del agente](./images/prompt-2-DesarrolladorFrontend-2.png)
 
 ## Correcciones manuales realizadas
