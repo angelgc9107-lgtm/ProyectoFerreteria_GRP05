@@ -77,4 +77,4 @@ El uso de HTML5 responde a RNF1. La utilización de etiquetas semánticas respon
 - [ ] Dado que se prepara una futura entrega interactiva, cuando se revisan los comentarios de `index.html`, entonces identifican las funcionalidades previstas, los sectores donde se incorporarán y los elementos candidatos a recibir comportamiento mediante JavaScript, sin implementar todavía esa lógica.
 - [ ] Dado que se compara la estructura con el mockup del Documentador / Diseñador UX, cuando se revisa el resultado HTML inicial, entonces la distribución y las secciones previstas toman ese mockup como referencia.
 - [ ] Dado que el proceso con Figma MCP fue realizado, cuando se revisa la evidencia documentada, entonces se identifica el uso de los Frames 1, 10, 12 y 13 como referencia para la estructura HTML y los ajustes realizados posteriormente sobre el resultado generado.
-- [ ] Dado que el proceso con Figma MCP todavía no fue realizado, cuando se consulta la evidencia, entonces no se presentan prompts, resultados ni ajustes inventados y los apartados permanecen pendientes de completar.
+
