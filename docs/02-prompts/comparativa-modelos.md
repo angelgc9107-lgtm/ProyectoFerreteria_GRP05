@@ -16,14 +16,14 @@ Ambos casos involucran mantener consistencia con las convenciones ya establecida
 
 ## Modelo B: Claude (Anthropic)
 
-**Prompt usado:** Zero-shot — pedidos cortos y directos ("decime la estructura de como deberían quedar las carpetas...", "revisá que esté todo ok" con un link de GitHub), sin necesidad de repetir instrucciones de formato en cada pedido.
+**Prompt usado:** Self-consistency — se le pidió generar 3 versiones distintas de la estructura de carpetas del Especialista en IA, analizarlas y elegir la mejor justificando la decisión, identificando además qué archivos correspondían a la PR inicial y a la PR final.
 
-**Resultado:** Mantuvo consistencia con las convenciones del proyecto (nombres de archivos, rutas, formato de specs) a lo largo de una conversación larga, sin que hiciera falta repetir el contexto completo en cada mensaje nuevo.
+**Resultado:** Generó tres estructuras alternativas (mínima, con carpeta de imágenes y separada por etapas), comparó las tres y seleccionó la Versión B (con carpeta `images/`) como la más alineada con la sección 4.1 de la consigna, explicando claramente por qué las otras dos eran inferiores.
 
-**Fortalezas:** Retuvo el contexto acumulado de toda la conversación (decisiones previas, nombre del proyecto, estructura ya acordada), permitiendo prompts mucho más cortos para lograr resultados igual de consistentes.
+**Fortalezas:** Demostró capacidad de generar múltiples alternativas, evaluarlas críticamente y justificar la elección final de forma clara y alineada con los requisitos del PDF. Mantuvo las rutas exactas que exige la actividad.
 
-**Debilidades:** Al depender del contexto conversacional acumulado, un prompt aislado sin ese historial (como el que usó Copilot) necesitaría mucha más instrucción explícita para lograr el mismo nivel de detalle.
+**Debilidades:** Al generar varias versiones, el resultado es más largo y requiere que el usuario revise y confirme la elección. En tareas muy simples puede resultar excesivo.
 
 ## Conclusión
 
-GitHub Copilot Chat resultó más adecuado para una tarea puntual y aislada donde se necesita control fino y explícito sobre el resultado en un solo intercambio (ideal para generar un archivo específico con reglas estrictas). Claude resultó más útil en un flujo de trabajo conversacional y extendido, donde mantener contexto entre múltiples pedidos reduce la necesidad de repetir instrucciones. Para tareas de documentación aisladas y muy específicas, recomendaríamos Copilot con prompts detallados; para trabajo iterativo de varias etapas sobre el mismo proyecto, Claude aprovecha mejor el contexto acumulado.
+GitHub Copilot Chat resultó más adecuado para una tarea puntual y aislada donde se necesita control fino y explícito sobre el resultado en un solo intercambio (ideal para generar un archivo específico con reglas estrictas). Claude, usando Self-consistency, resultó más útil cuando se necesita explorar alternativas y tomar una decisión fundamentada. Para tareas de documentación aisladas y muy específicas, recomendaríamos Copilot con Role prompting detallado; para decisiones de estructura o diseño donde conviene comparar opciones, Claude con Self-consistency aporta mayor solidez en la justificación.
