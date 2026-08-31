@@ -4,7 +4,7 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 ---
 
-# [Unreleased]
+# [Released] 2026-08-31
 
 ### Added
 - [feature/coordinador-setup-repo-and-pages] Archivo plan.md y changelog.md PR: [#3](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/3) — @angelgc9107-lgtm (Coordinador / DevOps)
