@@ -36,26 +36,26 @@ La configuración de ramas, Pull Requests y revisiones permite además mantener 
 
 * [X] Dado que el proyecto utiliza Spec-Driven Development, cuando el Coordinador/DevOps comience las tareas correspondientes a su rol, entonces `spec-devops.md` deberá haber sido creado y commiteado previamente.
 
-* [ ] Dado que cada integrante deberá trabajar de forma independiente, cuando realice una tarea del proyecto, entonces deberá utilizar una rama con el formato `feature/<rol>-<descripción>` creada desde `develop`.
+* [X] Dado que cada integrante deberá trabajar de forma independiente, cuando realice una tarea del proyecto, entonces deberá utilizar una rama con el formato `feature/<rol>-<descripción>` creada desde `develop`.
 
-* [ ] Dado que los cambios deben ser controlados antes de integrarse, cuando un integrante finalice su tarea, entonces deberá abrir una Pull Request desde su rama `feature/` hacia `develop`.
+* [X] Dado que los cambios deben ser controlados antes de integrarse, cuando un integrante finalice su tarea, entonces deberá abrir una Pull Request desde su rama `feature/` hacia `develop`.
 
-* [ ] Dado que cada Pull Request debe cumplir con el proceso definido, cuando sea revisada, entonces deberá contener el `spec-[rol].md` correspondiente y deberá verificarse su trazabilidad contra `plan.md`.
+* [X] Dado que cada Pull Request debe cumplir con el proceso definido, cuando sea revisada, entonces deberá contener el `spec-[rol].md` correspondiente y deberá verificarse su trazabilidad contra `plan.md`.
 
-* [ ] Dado que la actividad exige revisión colaborativa, cuando una Pull Request sea integrada a `develop`, entonces deberá contar previamente con al menos una revisión aprobada.
+* [X] Dado que la actividad exige revisión colaborativa, cuando una Pull Request sea integrada a `develop`, entonces deberá contar previamente con al menos una revisión aprobada.
 
-* [ ] Dado que la actividad requiere el uso de IA durante las revisiones, cuando se realicen los Code Reviews del proyecto, entonces deberán completarse como mínimo cuatro revisiones asistidas con IA y conservar evidencia mediante comentarios en las Pull Requests.
+* [X] Dado que la actividad requiere el uso de IA durante las revisiones, cuando se realicen los Code Reviews del proyecto, entonces deberán completarse como mínimo cuatro revisiones asistidas con IA y conservar evidencia mediante comentarios en las Pull Requests.
 
-* [ ] Dado que los Code Reviews deben validar los requisitos del proyecto, cuando se detecte un incumplimiento de `plan.md` o del `spec-[rol].md`, entonces deberá realizarse un `Request Changes` sobre las líneas correspondientes antes de aprobar el PR.
+* [X] Dado que los Code Reviews deben validar los requisitos del proyecto, cuando se detecte un incumplimiento de `plan.md` o del `spec-[rol].md`, entonces deberá realizarse un `Request Changes` sobre las líneas correspondientes antes de aprobar el PR.
 
-* [ ] Dado que cada integrante debe demostrar su participación, cuando una Pull Request sea integrada, entonces su número, enlace, autor y resumen del aporte deberán quedar registrados en `changelog.md`.
+* [X] Dado que cada integrante debe demostrar su participación, cuando una Pull Request sea integrada, entonces su número, enlace, autor y resumen del aporte deberán quedar registrados en `changelog.md`.
 
-* [ ] Dado que cada tarea debe encontrarse documentada, cuando se cree una Pull Request, entonces deberá existir una Issue asociada que describa la tarea y que pueda cerrarse luego de realizar el merge.
+* [X] Dado que cada tarea debe encontrarse documentada, cuando se cree una Pull Request, entonces deberá existir una Issue asociada que describa la tarea y que pueda cerrarse luego de realizar el merge.
 
-* [ ] Dado que la entrega final debe representar los cambios aprobados del equipo, cuando todos los PR individuales hayan sido integrados en `develop`, entonces deberá crearse desde esa rama `release/actividad-obligatoria-1`.
+* [X] Dado que la entrega final debe representar los cambios aprobados del equipo, cuando todos los PR individuales hayan sido integrados en `develop`, entonces deberá crearse desde esa rama `release/actividad-obligatoria-1`.
 
-* [ ] Dado que FerroLab debe poder visualizarse públicamente, cuando se prepare la release de la Actividad Obligatoria N°1, entonces GitHub Pages deberá quedar habilitado y el sitio deberá ser accesible mediante una URL pública.
+* [X] Dado que FerroLab debe poder visualizarse públicamente, cuando se prepare la release de la Actividad Obligatoria N°1, entonces GitHub Pages deberá quedar habilitado y el sitio deberá ser accesible mediante una URL pública.
 
-* [ ] Dado que la entrega final requiere una revisión del profesor, cuando se complete la release, entonces deberá abrirse una Pull Request desde `release/actividad-obligatoria-1` hacia `master` utilizando la plantilla correspondiente.
+* [X] Dado que la entrega final requiere una revisión del profesor, cuando se complete la release, entonces deberá abrirse una Pull Request desde `release/actividad-obligatoria-1` hacia `master` utilizando la plantilla correspondiente.
 
-* [ ] Dado que la actividad requiere evidencia de entrega, cuando se publique la versión final, entonces el enlace de la Pull Request de release deberá compartirse en Slack y los enlaces solicitados deberán entregarse en el campus virtual.
+* [X] Dado que la actividad requiere evidencia de entrega, cuando se publique la versión final, entonces el enlace de la Pull Request de release deberá compartirse en Slack y los enlaces solicitados deberán entregarse en el campus virtual.
