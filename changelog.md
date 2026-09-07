@@ -22,3 +22,4 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 - [fix/spec-ux-historial] Actualización check list spec-ux - changelog PR: [#21](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/21) — @angelgc9107-lgtm (Coordinador / DevOps)
 - [fix/spec-ux-documentado] Actualización del spec-ux - changelog PR: [#23](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/23) — @angelgc9107-lgtm (Coordinador / DevOps)
 - [fix/spec-ia-prompt] Corrección en los archivos prompt.md / comparativa-modelos.md / spec-ia.md - changelog PR: [#25](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/25) — @angelgc9107-lgtm (Coordinador / DevOps)
+- [fix/spec-frontend.md] Checklist spec-frontend.md - changelog PR: [#27](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/27) — @angelgc9107-lgtm (Coordinador / DevOps)
