@@ -92,13 +92,13 @@ MCP de Figma.
 
 ## Criterios de aceptación
 
-- [ ] `README.md` generado con Copilot en modo Agente, revisado y
+- [x] `README.md` generado con Copilot en modo Agente, revisado y
       completado manualmente, con toda la información pedida en la
       consigna (título, objetivos, tecnologías, funcionalidades
       previstas, carátula del grupo, enlaces a mockup y prompts).
-- [ ] Mockup en Figma exportado a `docs/01-mockup/diseño-inicial.png`,
+- [x] Mockup en Figma exportado a `docs/01-mockup/diseño-inicial.png`,
       mostrando estructura visual clara: secciones, jerarquía de
       contenido y navegación identificables.
-- [ ] Enlace al archivo de Figma incluido en `README.md`.
-- [ ] Este archivo (`spec-ux.md`) commiteado antes de iniciar el
+- [x] Enlace al archivo de Figma incluido en `README.md`.
+- [x] Este archivo (`spec-ux.md`) commiteado antes de iniciar el
       desarrollo del README y el mockup.
