@@ -90,6 +90,36 @@ Diseñado en Figma, exportado como imagen a
 en `README.md` para que el Desarrollador Frontend lo use con el servidor
 MCP de Figma.
 
+## Revisión del README
+
+El `README.md` se generó inicialmente con GitHub Copilot en modo Agente. El
+contexto utilizado fue `plan.md`, esta especificación y la consigna de la
+Actividad Obligatoria N°1. La solicitud al agente pidió incluir el objetivo,
+las tecnologías, las funcionalidades previstas, la carátula del grupo y los
+enlaces a la documentación y al mockup.
+
+Luego, el resultado fue revisado y completado manualmente por el responsable
+del rol Documentador / Diseñador UX. La revisión se realizó contrastando el
+contenido con `plan.md` y con la estructura definida en esta especificación.
+
+### Checklist de trazabilidad
+
+- [x] Se utilizó GitHub Copilot en modo Agente para generar el primer borrador
+  del `README.md`.
+- [x] Se utilizó `plan.md` como contexto para el contenido del README.
+- [x] Se verificaron manualmente el título, la descripción y el objetivo del
+  proyecto.
+- [x] Se verificaron manualmente las tecnologías y funcionalidades previstas.
+- [x] Se verificó la carátula con los integrantes, matrículas, usuarios y
+  roles.
+- [x] Se verificaron los enlaces al mockup, al índice de prompts y al
+  changelog.
+- [x] Se contrastó la descripción de las pantallas del README con la
+  estructura definida en esta spec.
+- [x] Se incorporaron manualmente los ajustes necesarios antes de dar por
+  finalizado el README.
+
+
 ## Criterios de aceptación
 
 - [x] `README.md` generado con Copilot en modo Agente, revisado y
