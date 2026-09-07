@@ -19,3 +19,4 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 ### Changed
 
 ### Fixed
+- [fix/spec-ux-historial] Actualización check list spec-ux - changelog PR: [#21](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/21) — @angelgc9107-lgtm (Coordinador / DevOps)
