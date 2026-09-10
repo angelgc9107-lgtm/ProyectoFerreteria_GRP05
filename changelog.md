@@ -25,4 +25,4 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 - [fix/changelog-nombres] Correccion de nombres del changelog para evitar excesivo tamaño de textos PR: [#30](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/30) — @alandox1 (Coordinador / DevOps)
 - [fix/correccion-carpeta-img-y-nombres] Fix-Carpetas y nombres de las imagenes- #32
  PR: [#32](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/32) — @alandox1 (Coordinador / DevOps)
-- [fix/documentar-changelog-30-y-32] Completar en Fixed las entradas de #30 y #32, e incluirse a sí misma PR: [#33](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/33) — @alandox1 (Coordinador / DevOps)
+- [fix/documentar-changelog-30-y-32] Completar en Fixed las entradas de #30 y #32, e incluirse a sí misma PR: [#34](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/34) — @alandox1 (Coordinador / DevOps)
