@@ -26,11 +26,11 @@ Este rol se desarrolla en dos etapas, con una Pull Request para cada una:
 ## Criterios de aceptación
 
 **Etapa 1:**
-- [ ] Dado que el equipo va a empezar a desarrollar, cuando revisan `docs/02-prompts/sdd-decisions.md`, entonces encuentran qué es SDD, por qué se usa en este proyecto y cómo se aplica.
-- [ ] Dado que un integrante necesita escribir su spec de rol, cuando abre `docs/03-specs/actividad-obligatoria-1/spec-[rol].md`, entonces encuentra un template claro para completar.
-- [ ] Dado que se revisa el equipo, cuando se consulta la instalación de herramientas, entonces está confirmado que los 4 integrantes tienen Copilot (modo Agente) y GitHub Pull Requests instalados.
+- [X] Dado que el equipo va a empezar a desarrollar, cuando revisan `docs/02-prompts/sdd-decisions.md`, entonces encuentran qué es SDD, por qué se usa en este proyecto y cómo se aplica.
+- [X] Dado que un integrante necesita escribir su spec de rol, cuando abre `docs/03-specs/actividad-obligatoria-1/spec-[rol].md`, entonces encuentra un template claro para completar.
+- [X] Dado que se revisa el equipo, cuando se consulta la instalación de herramientas, entonces está confirmado que los 4 integrantes tienen Copilot (modo Agente) y GitHub Pull Requests instalados.
 
 **Etapa 2:**
-- [ ] Dado que se revisa `docs/02-prompts/`, cuando se cuentan los archivos `prompts-x.md`, entonces hay exactamente 5, cada uno con modelo y método distintos.
-- [ ] Dado que se abre `comparativa-modelos.md`, cuando se lee el contenido, entonces hay una conclusión fundada sobre qué modelo fue más útil y por qué.
-- [ ] Dado que se abre `prompts.md`, cuando se hace click en cada enlace, entonces lleva al archivo de prompt correspondiente.
+- [X] Dado que se revisa `docs/02-prompts/`, cuando se cuentan los archivos `prompts-x.md`, entonces hay exactamente 5, cada uno con modelo y método distintos.
+- [X] Dado que se abre `comparativa-modelos.md`, cuando se lee el contenido, entonces hay una conclusión fundada sobre qué modelo fue más útil y por qué.
+- [X] Dado que se abre `prompts.md`, cuando se hace click en cada enlace, entonces lleva al archivo de prompt correspondiente.
