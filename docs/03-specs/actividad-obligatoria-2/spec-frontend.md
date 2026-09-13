@@ -21,7 +21,7 @@ El spec se documenta antes de crear los archivos CSS para establecer el alcance,
 ## Criterios de aceptación
 
 - [ ] Dado el repositorio con la estructura HTML de FerroLab, cuando se consulte el mockup actualizado mediante Figma MCP, entonces se identifican y registran las variables, tipografías, colores, espaciados y componentes necesarios para la implementación.
-- [ ] Dado el spec preparado, cuando se cree el primer commit de la actividad, entonces este archivo queda commiteado antes que cualquier archivo CSS.
+- [X] Dado el spec preparado, cuando se cree el primer commit de la actividad, entonces este archivo queda commiteado antes que cualquier archivo CSS.
 - [ ] Dado el diseño extraído del mockup, cuando se genere `css/styles.css`, entonces incluye variables CSS en `:root`, reset, tipografías, colores, layout base y reglas responsive sin duplicar innecesariamente valores globales.
 - [ ] Dado el layout base, cuando se definan tamaños y separaciones, entonces `padding`, `margin`, `border`, `box-sizing` y dimensiones relevantes quedan controlados explícitamente según el box model.
 - [ ] Dado el conjunto de componentes de la interfaz, cuando se genere `css/components.css`, entonces existen estilos reutilizables para botones, cards, navegación, formularios y estados `hover` y `focus`.
