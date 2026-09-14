@@ -2,8 +2,7 @@
 
 Este archivo se actualiza con cada Pull Request para registrar avances y correcciones
 
-# [Actividad obligatoria N°2] 2026-09-14
-## Unreleased
+# [Actividad obligatoria N°2] Unreleased
 ### Added
 - [feature/coord-devops-update-figma-and-readme] Actualizacion del mockup,readme y creacion de spec PR: [#36](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/36) — @alandox1(Coordinador / DevOps)
 
