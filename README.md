@@ -43,7 +43,7 @@ sección de Contacto/Ubicación integrada en el footer. El diseño completo
 puede verse en el mockup de Figma enlazado abajo.
 
 ## 📁 Documentación
-- [Mockup](https://www.figma.com/design/jX7NrMUtt6Tg7oiYqock6s/Sin-t%C3%ADtulo?node-id=0-1&t=ooNbHAfYrMmAh8i2-1)
+- [Mockup](https://www.figma.com/design/jX7NrMUtt6Tg7oiYqock6s/Sin-t%C3%ADtulo?node-id=0-1&t=WQbUPZNRHeUilp9W-1)
 - [Índice de Prompts](docs/02-prompts/prompts.md)
 - [Changelog](changelog.md)
 
@@ -53,7 +53,7 @@ puede verse en el mockup de Figma enlazado abajo.
 
 | Nombre y Apellido | Matrícula | Usuario de GitHub | Rol |
 |-----| ----- | ------ | ------ |
-| Luciano Barrionuevo | 156398 | @LuchoBarrionuevo13| Desarrollador FRONTED |
-| Alan Diaz | 152841 | @alandox1| Documentador Y Disenador UX |
-| Angel Cuarteron | 159438 | @angelgc9107-lgtm | Coordinador Y DEVOPS |
-| Thiago Piastrellini | 158097 | @Piastrellini |  Especialista en IA y Prompt Engineering |
+| Luciano Barrionuevo | 156398 | @LuchoBarrionuevo13| Especialista en Reponsive Desing|
+| Alan Diaz | 152841 | @alandox1| Coordinador y DevOps |
+| Angel Cuarteron | 159438 | @angelgc9107-lgtm | Desarrolador Frontend y CSS |
+| Thiago Piastrellini | 158097 | @Piastrellini |  Doumentador y QA tester |
