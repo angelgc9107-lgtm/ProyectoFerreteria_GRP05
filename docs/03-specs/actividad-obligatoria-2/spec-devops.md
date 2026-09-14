@@ -25,7 +25,7 @@ al diseño acordado por el equipo.
       `changelog.md` bajo `[Fixed]`.
 - [ ] Backport de `release/actividad-obligatoria-1` a `develop` realizado una
       vez aprobada la release por el docente.
-- [ ] Mockup en Figma actualizado con paleta de colores, tipografías (H1-H3,
+- [ ] Mockup en Figma actualizado con paleta de colores, tipografías (H1-H6,
       body, labels), espaciados y estados de interacción.
 - [ ] Imagen exportada en
       `docs/01-mockup/actividad-obligatoria-2/diseño-con-estilos.png`.
@@ -62,8 +62,16 @@ los frames del proyecto.
 | H1 | 32px | Bold | Títulos principales de página |
 | H2 | 24px | Bold | Títulos de sección (ej. "OFERTAS", bienvenida) |
 | H3 | 20px | Semibold | Subtítulos (ej. columnas del footer) |
+| H4 | 18px | Semibold | Subtítulos secundarios (ej. nombre de producto en card destacada) |
+| H5 | 17px | Medium | Etiquetas de agrupación (ej. encabezado de filtro) |
+| H6 | 16px | Medium | Texto de apoyo con jerarquía mínima (ej. aclaraciones bajo un título) |
 | Body | 16px | Regular | Texto de contenido, nombres de producto, párrafos |
 | Labels | 14px | Semibold | Botones, precios, ítems de menú/filtros |
+ 
+*Nota: el diseño actual de FerroLAB utiliza activamente H1-H3, Body y Labels.
+H4-H6 se documentan para completar la jerarquía semántica pedida por la
+consigna, y quedan disponibles para futuras secciones que requieran más
+niveles de profundidad visual.*
  
 Aplicadas mediante estilos locales de texto en Figma, reutilizables en todos
 los frames.

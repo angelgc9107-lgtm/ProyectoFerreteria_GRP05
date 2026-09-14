@@ -3,7 +3,6 @@
 Este archivo se actualiza con cada Pull Request para registrar avances y correcciones
 
 ---
-
 # [Released] 2026-08-31
 
 ### Added
