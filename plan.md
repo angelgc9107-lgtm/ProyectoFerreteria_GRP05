@@ -229,7 +229,7 @@ construida en la Actividad Obligatoria N°1.
    `docs/01-mockup/actividad-obligatoria-2/diseño-con-estilos.png`.
 ### Criterios de aceptación
  
-- [ ] Request Changes de la Actividad 1 resueltos y aprobados por el docente.
+- [x] Request Changes de la Actividad 1 resueltos y aprobados por el docente.
 - [ ] `css/styles.css`, `css/components.css` y `css/responsive.css`
       implementados y coherentes con el mockup actualizado.
 - [ ] Sitio responsive sin overflow horizontal en mobile, tablet y desktop.

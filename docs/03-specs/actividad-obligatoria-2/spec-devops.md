@@ -20,17 +20,17 @@ al diseño acordado por el equipo.
  
 ## Criterios de aceptación
  
-- [ ] Cada Request Change de la Actividad 1 resuelto en su propia rama `fix/`,
+- [x] Cada Request Change de la Actividad 1 resuelto en su propia rama `fix/`,
       con PR contra `release/actividad-obligatoria-1` y entrada en
       `changelog.md` bajo `[Fixed]`.
-- [ ] Backport de `release/actividad-obligatoria-1` a `develop` realizado una
+- [x] Backport de `release/actividad-obligatoria-1` a `develop` realizado una
       vez aprobada la release por el docente.
-- [ ] Mockup en Figma actualizado con paleta de colores, tipografías (H1-H6,
+- [x] Mockup en Figma actualizado con paleta de colores, tipografías (H1-H6,
       body, labels), espaciados y estados de interacción.
-- [ ] Imagen exportada en
+- [x] Imagen exportada en
       `docs/01-mockup/actividad-obligatoria-2/diseño-con-estilos.png`.
-- [ ] Enlace al archivo de Figma actualizado en `README.md`.
-- [ ] `plan.md` actualizado con los requerimientos de esta entrega.
+- [x] Enlace al archivo de Figma actualizado en `README.md`.
+- [x] `plan.md` actualizado con los requerimientos de esta entrega.
 - [ ] Mínimo 4 code reviews asistidos con IA sobre las PRs de los demás
       integrantes, antes del merge a `develop`.
 ## Proceso — actualización del mockup
