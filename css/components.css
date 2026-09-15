@@ -397,7 +397,7 @@ th {
     height: auto;
     min-height: 48rem;
     overflow: visible;
-    margin: var(--space-7) 0 0 auto;
+    margin: 0 0 0 auto;
     padding: 0 0 var(--space-6);
     color: var(--color-white);
     background: var(--color-cart-body);
@@ -435,27 +435,29 @@ th {
 }
 
 #carrito article {
+    position: relative;
     display: grid;
-    grid-template-columns: 3.75rem minmax(0, 1fr) auto;
-    gap: var(--space-2) var(--space-3);
+    grid-template-columns: 2.5rem minmax(0, 1fr) min-content;
+    grid-template-rows: repeat(4, auto);
+    gap: 0;
     min-width: 0;
     width: calc(100% - (var(--space-4) * 2));
     max-width: 32rem;
-    margin: 0 auto var(--space-2);
-    padding: var(--space-2);
+    margin: 0 auto;
+    padding: 0 var(--space-1);
     overflow: hidden;
     color: var(--color-ink);
     background: var(--color-white);
     border: var(--border-width) solid var(--color-gray-300);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-card);
+    border-radius: 0;
+    box-shadow: none;
 }
 
 #carrito article::before {
     content: "";
     grid-column: 1;
-    grid-row: 1 / span 5;
-    min-height: 4.5rem;
+    grid-row: 1 / -1;
+    min-height: 2.25rem;
     background: center / contain no-repeat;
 }
 
@@ -468,63 +470,114 @@ th {
 }
 
 #carrito article h3 {
-    grid-column: 2 / -1;
+    grid-column: 2;
+    grid-row: 1;
+    width: 100%;
+    max-width: none;
+    padding-right: var(--space-3);
     margin: 0;
-    font-size: var(--font-size-xs);
-    line-height: var(--line-height-tight);
+    color: var(--color-ink);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.1;
+    white-space: normal;
+    overflow-wrap: normal;
+    word-break: normal;
 }
 
 #carrito article p {
-    grid-column: 2 / -1;
+    grid-column: 2;
+    grid-row: 2;
     margin: 0;
+    color: var(--color-ink);
+    font-family: var(--font-family-base);
     font-size: var(--font-size-xs);
-    line-height: var(--line-height-tight);
+    line-height: 1.1;
+}
+
+#carrito article p:first-of-type {
+    grid-column: 3;
+    justify-self: end;
+    margin-left: auto;
+    font-weight: var(--font-weight-semibold);
+    text-align: right;
+}
+
+#carrito article p:last-of-type {
+    grid-column: 3;
+    grid-row: 4;
+    justify-self: end;
+    margin-left: auto;
+    font-weight: var(--font-weight-semibold);
+    text-align: right;
 }
 
 #carrito article label {
     grid-column: 2;
+    grid-row: 3;
     align-self: center;
     margin: 0;
+    color: var(--color-ink);
+    font-family: var(--font-family-base);
     font-size: var(--font-size-xs);
+    line-height: 1.1;
 }
 
 #carrito article input {
-    grid-column: 3;
+    grid-column: 2;
+    grid-row: 4;
     align-self: center;
-    width: 3.5rem;
+    justify-self: start;
+    width: 2.5rem;
     min-width: 0;
-    padding: var(--space-1);
+    min-height: 1rem;
+    padding: 0 var(--space-1);
     color: var(--color-ink);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-xs);
 }
 
 #carrito article button {
-    grid-column: 3;
-    align-self: center;
-    width: auto;
-    min-height: 2rem;
+    position: absolute;
+    top: var(--space-1);
+    right: var(--space-1);
+    z-index: 1;
+    width: 1.25rem;
+    min-height: 1.25rem;
     margin: 0;
-    padding: var(--space-1) var(--space-2);
-    color: var(--color-white);
-    background: var(--color-red);
+    padding: 0;
+    color: var(--color-red-dark);
+    background: transparent;
+    border: 0;
+    border-radius: 0;
     font-size: 0;
 }
 
 #carrito article button::before {
     content: "×";
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
     line-height: 1;
 }
 
 #carrito article button:hover {
-    background: var(--color-red-dark);
+    color: var(--color-red);
+    background: rgb(199 55 43 / 12%);
 }
 
 #carrito > p {
-    margin-bottom: var(--space-3);
+    margin-top: var(--space-2);
+    margin-bottom: var(--space-2);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
 }
 
 #carrito > button:last-child {
     width: calc(100% - (var(--space-4) * 2));
+    min-height: 2.25rem;
+    margin-top: var(--space-2);
+    padding: var(--space-2) var(--space-3);
     color: var(--color-ink);
     border: var(--border-width) solid var(--color-gray-500);
     background: var(--color-white);
@@ -537,24 +590,75 @@ th {
 
 footer {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--space-5);
-    padding: var(--space-5) max(var(--space-5), calc((100vw - var(--content-width)) / 2));
+    grid-template-columns: minmax(18rem, 1fr) minmax(22rem, 1fr);
+    gap: 0;
+    padding: 0;
     color: var(--color-white);
-    background: var(--color-ink);
+    background: var(--color-red-dark);
+}
+
+footer section {
+    min-width: 0;
+    padding: var(--space-4) var(--space-5);
+}
+
+footer section:first-child {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(3, auto);
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-5);
+    padding: var(--space-3) var(--space-5);
+    text-align: center;
+    background: var(--color-red);
+}
+
+footer section:first-child h2 {
+    grid-column: 1 / -1;
+    margin-bottom: 0;
+}
+
+footer section:first-child p {
+    margin: 0;
+}
+
+footer section:nth-child(2) {
+    grid-column: 1;
+    justify-self: start;
+    min-width: 18rem;
+    text-align: left;
+}
+
+footer section:nth-child(3) {
+    grid-column: 2;
+    justify-self: end;
+    width: 22rem;
+    max-width: 100%;
+    text-align: left;
+}
+
+footer section:nth-child(2) p {
+    word-break: normal;
+    overflow-wrap: normal;
+    white-space: nowrap;
 }
 
 footer h2 {
-    margin-bottom: var(--space-2);
-    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-1);
+    font-size: var(--font-size-md);
+    line-height: var(--line-height-tight);
 }
 
 footer p {
-    margin-bottom: var(--space-1);
-    font-size: var(--font-size-sm);
+    margin-bottom: 0;
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-tight);
 }
 
 footer img {
-    width: 12rem;
+    display: block;
+    width: 22rem;
+    max-width: 100%;
     height: auto;
 }
