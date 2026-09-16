@@ -193,14 +193,15 @@ Todos los estados de foco deben ser visibles y accesibles para navegación media
 
 ## Ajustes manuales realizados
 
-- css/styles.css: se ajustó el layout general para mejorar la alineación y proporción de los elementos respecto del mockup.
-- css/components.css: se corrigieron los colores del carrito, diferenciando el encabezado del cuerpo.
-- css/components.css: se ajustaron espaciados, padding y márgenes del carrito para separar correctamente el título del contenido.
-- css/components.css: se modificaron las dimensiones y distribución de las tarjetas de productos dentro del carrito.
-- css/components.css: se ajustó el panel de filtros del catálogo para coincidir con el mockup en color, ancho, tipografía, select, categorías y campos de precio.
-- css/components.css: se corrigieron tamaños, alineaciones y box model de botones, inputs y componentes.
-- css/components.css: se revisaron los estados hover, focus y disabled para mantener coherencia visual con el mockup.
-- css/styles.css y css/components.css: se corrigieron diferencias de colores, tipografías, espaciados, dimensiones y especificidad detectadas durante la comparación visual.
+- css/styles.css: se ajustó el layout general para mejorar la alineación, distribución y proporción de las distintas secciones respecto del mockup.
+- css/styles.css: se corrigió la estructura visual del footer, ajustando la distribución de contacto, redes sociales, ubicación y mapa.
+- css/components.css: se corrigieron los colores y la estructura visual del carrito, diferenciando correctamente el encabezado, las tarjetas de productos y el cuerpo del panel.
+- css/components.css: se ajustaron padding, márgenes, gap y dimensiones del carrito para obtener una distribución más compacta y similar al mockup.
+- css/components.css: se reorganizaron las tarjetas del carrito, mejorando la posición y tamaño de imágenes, descripción, cantidad, precios, subtotales y controles.
+- css/components.css: se ajustó el panel de filtros del catálogo para aproximar su color, ancho, tipografía, categorías, selector y campos de precio al diseño de referencia.
+- css/components.css: se corrigieron tamaños, alineaciones, bordes y box model de botones, inputs y demás componentes visuales.
+- css/components.css: se revisaron los estados hover, focus y disabled para mantener una apariencia coherente con los estados definidos en el mockup.
+- css/styles.css y css/components.css: se realizaron correcciones finales de colores, tipografías, espaciados, dimensiones, alineaciones, box model y especificidad detectadas durante la comparación visual con el mockup.
 
 ## Evidencia de cierre
 
