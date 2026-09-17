@@ -6,6 +6,8 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 ### Added
 - [feature/coord-devops-update-figma-and-readme] Actualizacion del mockup,readme y creacion de spec PR: [#36](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/36) — @alandox1(Coordinador / DevOps)
 
+- [feature/responsive-design-add-responsive-styles] Creacion de spec-responsive.md y de responsive.css PR: [#40](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/40) — @luchobarrionuevo13 (Responsive Design)
+
 
 
 
