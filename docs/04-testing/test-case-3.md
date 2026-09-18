@@ -1,54 +1,37 @@
-# Test Case 3 — Performance y carga
-
-**Herramienta:** Playwright MCP con evaluación de la Performance API del navegador
-**Métricas obligatorias:** DOMContentLoaded, Load completo, DOM Interactive, listado de recursos con tamaño y tiempo de descarga
-
 ## Momento 1 — Testing pre-merge (ramas `feature/`)
 
-**Prompt utilizado en Copilot Agent + Playwright MCP:**
-```
-_Pendiente_
-```
+**Prompt utilizado en Claude Code + Playwright MCP:**
+[el mismo prompt de TC-3 que usamos]
 
 **Resultados:**
 
 | Métrica | Valor |
 |---------|-------|
-| DOMContentLoaded | Pendiente |
-| Load completo | Pendiente |
-| DOM Interactive | Pendiente |
+| DOM Interactive | 49 ms |
+| DOMContentLoaded | 50 ms |
+| Load completo | 158 ms |
 
-**Recursos cargados (tamaño / tiempo de descarga):**
+**Recursos cargados (ordenados por tamaño, top 5):**
 
-| Recurso | Tamaño | Tiempo |
-|---------|--------|--------|
-| Pendiente | — | — |
+| Recurso | Tipo | Tamaño (KB) | Descarga (ms) |
+|---------|------|-------------|----------------|
+| assets/images/Bienvenido1.png | img | 394.9 | 99 |
+| assets/images/Bienvenido2.png | img | 356.7 | 115 |
+| assets/images/ubicacion.png | img | 49.7 | 129 |
+| css/components.css | css | 14.9 | 26 |
+| css/responsive.css | css | 5.9 | 30 |
 
-**Capturas:** `capturas/tc-3/momento-1/`
+**Capturas:** `capturas/tc-3/momento-1/performance-screenshot.png`
 
-**Issues generados:** —
+**Análisis:**
+- Tiempos de carga excelentes en localhost (DOMContentLoaded 50ms, Load 158ms), pero no
+  representativos de producción sin latencia de red real.
+- Hallazgo de performance (no bloqueante): `Bienvenido1.png` (395 KB) y `Bienvenido2.png`
+  (357 KB) representan juntas más de la mitad del peso total de imágenes del sitio (~752 KB
+  de ~950 KB), pese a ser contenido decorativo/institucional, no productos. Se recomienda
+  comprimir/convertir a WebP antes de desplegar a producción, ya que en redes móviles
+  (3G/4G) su peso combinado sí tendría impacto notable en la carga percibida.
+- No se encontraron fuentes web (usa fuentes del sistema).
 
-## Momento 2 — Testing post-merge a develop
-
-**Prompt utilizado en Copilot Agent + Playwright MCP:**
-```
-_Pendiente_
-```
-
-**Resultados:**
-
-| Métrica | Valor |
-|---------|-------|
-| DOMContentLoaded | Pendiente |
-| Load completo | Pendiente |
-| DOM Interactive | Pendiente |
-
-**Recursos cargados (tamaño / tiempo de descarga):**
-
-| Recurso | Tamaño | Tiempo |
-|---------|--------|--------|
-| Pendiente | — | — |
-
-**Capturas:** `capturas/tc-3/momento-2/`
-
-**Issues generados:** —
+**Issues generados:** Ninguno (hallazgo de optimización, no un defecto funcional o visual).
+Se documenta como recomendación para antes del despliegue a producción.
