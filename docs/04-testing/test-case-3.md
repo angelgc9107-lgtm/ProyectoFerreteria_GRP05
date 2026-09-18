@@ -1,7 +1,18 @@
 ## Momento 1 — Testing pre-merge (ramas `feature/`)
 
 **Prompt utilizado en Claude Code + Playwright MCP:**
-[el mismo prompt de TC-3 que usamos]
+```
+Usá Playwright MCP para abrir http://127.0.0.1:3000/index.html y evaluar la Performance API
+  del navegador. Dame estas métricas en milisegundos: DOMContentLoaded, Load completo, y
+  DOM Interactive. También dame un listado de los recursos cargados (imágenes, CSS, fuentes)
+  con su tamaño en KB y tiempo de descarga en ms, ordenados de mayor a menor tamaño.
+
+  Sacá una captura de pantalla de la vista completa y guardala en
+  docs/04-testing/capturas/tc-3/momento-1/performance-screenshot.png
+
+  Al final decime si hay algún recurso que se destaque por ser pesado o lento, y si los tiempos
+  de carga te parecen razonables para un sitio de este tipo.
+  ``` 
 
 **Resultados:**
 
