@@ -2,28 +2,96 @@
 
 ## Tarea comparada
 
-Ambos casos involucran mantener consistencia con las convenciones ya establecidas del proyecto: generar o organizar contenido siguiendo un formato y una estructura previamente definidos por el equipo, en vez de partir de cero.
+Se comparó la misma tarea documentada en `prompts-1.md`: extraer y
+estructurar los requisitos funcionales y no funcionales del proyecto de
+ferretería a partir de un alcance textual, distinguir los requisitos de la
+Actividad Obligatoria N°1 de las funcionalidades futuras y señalar qué queda
+fuera de alcance.
 
-## Modelo A: GitHub Copilot Chat (modo Agente)
+Para mantener las condiciones comparables, ambos modelos recibieron el mismo
+prompt base, sin agregar instrucciones específicas para favorecer a uno de
+ellos.
 
-**Prompt usado:** Role prompting — se le pidió actuar como Desarrollador Frontend y generar `spec-frontend.md` tomando `spec-ia.md` como modelo de formato y estilo, trazando el contenido contra `plan.md`.
+## Modelo A: ChatGPT (OpenAI)
 
-**Resultado:** Generó el archivo completo con la estructura correcta (Rol, Se traza contra, Qué se va a hacer, Por qué, Criterios de aceptación en Given/When/Then), citando RF1-RF8 y RNF1-RNF12 pertinentes, sin modificar `index.html` ni inventar evidencia de Figma MCP que todavía no existía.
+**Prompt usado:** En base al alcance del proyecto de ferretería necesito que extraigas y estructures los requisitos funcionales y no funcionales para este proyecto, dejo el alcance del proyecto:
 
-**Fortalezas:** Siguió al pie de la letra las restricciones explícitas del prompt (qué no hacer todavía), y ejecutó una validación automática del archivo generado antes de dar por terminada la tarea.
+El proyecto contempla el desarrollo de un sitio web para una ferretería destinado a exhibir y comercializar sus productos por Internet. En la primera etapa se desarrollará principalmente la estructura utilizando HTML5, presentando el catálogo de productos, categorías, información comercial, imágenes, precios, enlaces, formularios, listas y tablas.
+La estructura utilizará etiquetas semánticas y tendrá en cuenta aspectos básicos de accesibilidad y SEO. Además, el código incluirá comentarios y marcadores que identifiquen las funcionalidades que serán incorporadas posteriormente mediante CSS y JavaScript.
+El proyecto quedará preparado para evolucionar hacia una plataforma de venta más completa, incorporando posteriormente funcionalidades como carrito de compras, búsqueda y filtrado de productos, cálculo de totales, validación de formularios y confirmación de pedidos.
 
-**Debilidades:** Necesitó un prompt muy largo y detallado (con instrucciones punto por punto) para lograr ese nivel de consistencia — sin ese nivel de detalle, es menos previsible que replique el formato exacto del equipo.
+**Resultado:** ChatGPT produjo 18 requisitos funcionales y 15 requisitos no
+funcionales. Identificó RF1-RF8 como parte de la primera etapa y RF9-RF18
+como funcionalidades futuras. También agregó una sección de funcionalidades
+fuera de alcance con gestión de stock, registro de clientes, login, pagos
+electrónicos reales, facturación electrónica e integración logística.
 
-## Modelo B: Claude (Anthropic)
+**Fortalezas:** Entregó una enumeración amplia, separó el alcance inicial de
+la evolución futura y agregó explícitamente aspectos que no debían
+implementarse en la primera etapa.
 
-**Prompt usado:** Self-consistency — se le pidió generar 3 versiones distintas de la estructura de carpetas del Especialista en IA, analizarlas y elegir la mejor justificando la decisión, identificando además qué archivos correspondían a la PR inicial y a la PR final.
+**Debilidades:** Algunos requisitos quedaron formulados de manera amplia y
+podían interpretarse de más de una forma, especialmente los relacionados con
+la compra y los pagos. La respuesta también necesitaba una revisión humana
+para separar mejor las funcionalidades obligatorias de las futuras y evitar
+solapamientos entre requisitos relacionados.
 
-**Resultado:** Generó tres estructuras alternativas (mínima, con carpeta de imágenes y separada por etapas), comparó las tres y seleccionó la Versión B (con carpeta `images/`) como la más alineada con la sección 4.1 de la consigna, explicando claramente por qué las otras dos eran inferiores.
+## Modelo B: GitHub Copilot Chat (modo Agente)
 
-**Fortalezas:** Demostró capacidad de generar múltiples alternativas, evaluarlas críticamente y justificar la elección final de forma clara y alineada con los requisitos del PDF. Mantuvo las rutas exactas que exige la actividad.
+**Prompt usado:** El mismo texto del prompt utilizado para ChatGPT, sin agregar contexto ni restricciones adicionales.
 
-**Debilidades:** Al generar varias versiones, el resultado es más largo y requiere que el usuario revise y confirme la elección. En tareas muy simples puede resultar excesivo.
+El proyecto contempla el desarrollo de un sitio web para una ferretería destinado a exhibir y comercializar sus productos por Internet. En la primera etapa se desarrollará principalmente la estructura utilizando HTML5, presentando el catálogo de productos, categorías, información comercial, imágenes, precios, enlaces, formularios, listas y tablas.
+La estructura utilizará etiquetas semánticas y tendrá en cuenta aspectos básicos de accesibilidad y SEO. Además, el código incluirá comentarios y marcadores que identifiquen las funcionalidades que serán incorporadas posteriormente mediante CSS y JavaScript.
+El proyecto quedará preparado para evolucionar hacia una plataforma de venta más completa, incorporando posteriormente funcionalidades como carrito de compras, búsqueda y filtrado de productos, cálculo de totales, validación de formularios y confirmación de pedidos.
+
+**Resultado:** La extracción produjo 24 requisitos funcionales y 15
+requisitos no funcionales a partir del alcance proporcionado. Para la
+Actividad Obligatoria N°1 identificó RF1-RF3 y RF6-RF8: catálogo, información
+de productos, categorías, navegación, información comercial y formulario de
+contacto. Dejó RF4-RF5 y RF9-RF24 como funcionalidades previstas para etapas
+posteriores con CSS y JavaScript. También mantuvo fuera de alcance el
+procesamiento real de pagos, la facturación electrónica, la gestión
+administrativa de stock, el registro e inicio de sesión y la integración con
+sistemas logísticos externos.
+
+**Fortalezas:** Conservó la separación entre requisitos estructurales y
+funcionales, distinguió las funcionalidades de la primera etapa de las
+funcionalidades futuras y explicitó los límites de la solución.
+
+**Debilidades:** La respuesta fue más detallada de lo necesario para una
+primera definición del alcance y convirtió algunas ideas generales en
+requisitos muy específicos. También podía incorporar supuestos no expresados
+de forma literal, por lo que fue necesario revisar cada requisito y confirmar
+que conservara una única responsabilidad y que no ampliara el alcance sin
+justificación.
+
+## Comparación de resultados
+
+| Criterio | ChatGPT | GitHub Copilot Chat |
+|---|---|---|
+| Requisitos funcionales | 18 | 24 en la extracción del alcance proporcionado |
+| Requisitos no funcionales | 15 | 15 |
+| Primera entrega | RF1-RF8 | RF1-RF3 y RF6-RF8 |
+| Funcionalidades futuras | RF9-RF18 | RF4-RF5 y RF9-RF24 |
+| Fuera de alcance explícito | Sí | Sí |
+| Correspondencia con el alcance del prompt | Alta | Alta |
+
+## Checklist de validación
+
+- [x] Se ejecutó la misma tarea con ChatGPT y GitHub Copilot Chat.
+- [x] Se mantuvieron el mismo objetivo, contexto y restricciones en ambos
+	prompts.
+- [x] Se documentaron los resultados de ambas ejecuciones.
+- [x] Se compararon ambos resultados con los mismos criterios: cantidad,
+	alcance inicial, funcionalidades futuras, fuera de alcance y correspondencia
+	con el alcance del prompt.
+- [x] Se redactó una conclusión basada en los resultados de ambos modelos.
 
 ## Conclusión
 
-GitHub Copilot Chat resultó más adecuado para una tarea puntual y aislada donde se necesita control fino y explícito sobre el resultado en un solo intercambio (ideal para generar un archivo específico con reglas estrictas). Claude, usando Self-consistency, resultó más útil cuando se necesita explorar alternativas y tomar una decisión fundamentada. Para tareas de documentación aisladas y muy específicas, recomendaríamos Copilot con Role prompting detallado; para decisiones de estructura o diseño donde conviene comparar opciones, Claude con Self-consistency aporta mayor solidez en la justificación.
+ChatGPT produjo una primera clasificación clara y útil del alcance, con una
+buena separación entre la entrega inicial y las etapas futuras. GitHub Copilot
+Chat resultó más adecuado cuando se necesitó mayor nivel de detalle y una
+separación más precisa de las funcionalidades. Para esta tarea, la respuesta
+de Copilot es la más útil como base de documentación, mientras que la respuesta
+de ChatGPT fue una buena síntesis inicial del alcance.
