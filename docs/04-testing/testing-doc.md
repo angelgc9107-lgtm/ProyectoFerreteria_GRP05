@@ -1,6 +1,6 @@
 # Testing Doc — Actividad Obligatoria N°2
 
-Índice central de test cases ejecutados con **Playwright MCP** y resumen de issues creados con **GitHub MCP** en cada momento de testing.
+Índice central de test cases ejecutados con **Playwright MCP** (vía Claude Code — ver nota en spec-qa.md sobre el cambio de herramienta) y resumen de issues creados con **GitHub MCP** en cada momento de testing.
 
 ## Índice de Test Cases
 
@@ -14,19 +14,23 @@
 
 ## Resumen de Issues — Momento 1 (Testing pre-merge)
 
-Ejecutado contra las ramas `feature/` del Desarrollador Frontend y del Especialista en Responsive, antes del merge a `develop`.
+Ejecutado contra la rama `feature/responsive-design-add-responsive-styles` (incluye CSS de
+Frontend + estilos responsive aplicados), antes del merge a `develop`. Frontend y Responsive
+fueron notificados de los issues encontrados.
 
 | Test Case | Resultado | Issues creados | Responsable notificado |
 |-----------|-----------|-----------------|--------------------------|
-| TC-1 | Pendiente | — | — |
-| TC-2 | Pendiente | — | — |
-| TC-3 | Pendiente | — | — |
-| TC-4 | Pendiente | — | — |
-| TC-5 | Pendiente | — | — |
+| TC-1 — Compatibilidad desktop | OK con hallazgo menor | [#42](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/42) — bajo contraste en select "Ordenar por" en WebKit/Safari | Angel (Frontend) |
+| TC-2 — Responsive móvil | OK con hallazgo (iPad Air) | [#43](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/43) — overflow horizontal por mapa sin responsive | Especialista en Responsive |
+| TC-3 — Performance | OK (sin issues, recomendación de optimización) | Ninguno | — |
+| TC-4 — Accesibilidad | Con hallazgos (6 violaciones serious) | [#44](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/44) — contraste insuficiente en precios tachados y selector de orden | Angel (Frontend) |
+| TC-5 — Estructura HTML y CSS | OK (sin issues, observación menor) | Ninguno | — |
 
 ## Resumen de Issues — Momento 2 (Testing post-merge a develop)
 
-Ejecutado contra `develop` una vez integradas todas las ramas `feature/`, como revisión final antes de la creación de la release.
+Pendiente — se ejecuta una vez que el Coordinador confirme que las ramas
+`feature/dev-frontend-css-add-styles` y `feature/responsive-design-add-responsive-styles`
+fueron mergeadas a `develop`.
 
 | Test Case | Resultado | Issues creados | Notificado al Coordinador |
 |-----------|-----------|-----------------|------------------------------|
@@ -36,12 +40,20 @@ Ejecutado contra `develop` una vez integradas todas las ramas `feature/`, como r
 | TC-4 | Pendiente | — | — |
 | TC-5 | Pendiente | — | — |
 
-## Totales
+## Totales (Momento 1)
 
-- Tests pasados: —
-- Tests fallidos: —
-- Issues bugs totales creados: —
+- Tests ejecutados: 5/5
+- Tests con hallazgos: 3 (TC-1, TC-2, TC-4)
+- Tests limpios: 2 (TC-3, TC-5)
+- Issues bugs creados: 3 (#42, #43, #44)
 
 ## Notas
 
-Este archivo se completa a medida que se ejecutan los test cases en cada momento. Cada fila de "Issues creados" debe llevar el link directo al issue de GitHub (ej. `#12`, `#15`). El campo "Resultado" se actualiza a **OK** o **FAIL** después de correr el test con Playwright MCP.
+- Nota metodológica general: se utilizó **Claude Code** en lugar de GitHub Copilot Agent Mode
+  debido a límite de créditos alcanzado durante la ejecución de esta actividad, con los mismos
+  servidores MCP (Playwright y GitHub). Ver detalle en `spec-qa.md`.
+- TC-1 se ejecutó usando motores reales de navegador (Chromium, Firefox, WebKit) vía el paquete
+  `playwright` en lugar del tool nativo de Playwright MCP, ya que este último no permite
+  seleccionar motor. Ver nota metodológica específica en `test-case-1.md`.
+- El hallazgo de TC-4 (contraste #777777) explica también el problema visual visto en TC-1
+  sobre WebKit/Safari — ambos apuntan a la misma causa raíz en el CSS.
