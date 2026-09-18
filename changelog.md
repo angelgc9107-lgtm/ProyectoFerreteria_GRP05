@@ -15,6 +15,7 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 - [feature/ia-add-prompts-1-to-5] Se documentan los 5 prompts utilizados por el equipo (uno por integrante más uno adicional), cada uno con modelo y método de prompting distintos, y se compara el desempeño de GitHub Copilot Chat vs. Claude en tareas de consistencia con las convenciones del proyecto. PR: [#10](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/10)  — @Piastrellini (Especialista en IA y Prompt Engineering)
 - [feature/frontend-add-html-structure] Desarrollo de la estructura HTML5 inicial de FerroLab utilizando Figma MCP y GitHub Copilot en modo Agente, incorporando catálogo, imágenes, navegación, información comercial, tabla, formulario y estructura prevista para futuras funcionalidades. PR: [#15](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/15) — @luchobarrionuevo13 (Desarrollador Frontend)
 - [feature/coordinador] Actualización check list final - changelog PR: [#](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/) — @angelgc9107-lgtm (Coordinador / DevOps)
+- [feature/doc-qa-tester-add-test-cases] Se documentan y ejecutan 5 test cases de QA (compatibilidad desktop, responsive móvil, performance, accesibilidad WCAG 2.1 y estructura HTML/validación W3C) usando Playwright MCP y GitHub MCP, Momento 1 (pre-merge). Se crean 3 issues de bug a partir de los hallazgos. PR: [#45](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/45) — @Piastrellini (Documentador / QA Tester)
 
 ### Changed
 
