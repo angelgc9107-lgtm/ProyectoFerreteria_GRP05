@@ -1,6 +1,25 @@
 ## Momento 1 — Testing pre-merge (ramas `feature/`)
 
 **Prompt utilizado en Claude Code + Playwright MCP:**
+```
+Usá Playwright MCP para testear compatibilidad visual del sitio en http://127.0.0.1:3000/index.html
+en estos 4 navegadores/viewports, usando motores reales de cada uno:
+
+1. Chromium, 1920x1080
+2. Firefox, 1440x900
+3. WebKit (equivalente a Safari), 1280x800
+4. Chromium con user agent de Edge, 1280x800
+
+Para cada uno:
+- Navegá a la URL
+- Sacá una captura de pantalla de la vista completa
+- Guardala en docs/04-testing/capturas/tc-1/momento-1/ con nombre según el navegador
+  (chrome-desktop.png, firefox-desktop.png, safari-desktop.png, edge-desktop.png)
+- Contame si encontrás algún problema visual: elementos rotos, texto cortado,
+  imágenes que no cargan, o diferencias notables entre navegadores
+
+Al final dame un resumen en formato tabla: Navegador | Resolución | Resultado (OK/FAIL) | Observaciones
+``` 
 
 Nota metodológica: el servidor Playwright MCP disponible controla una única instancia
 de navegador ya abierta, sin parámetro para elegir motor (Chromium/Firefox/WebKit) ni
