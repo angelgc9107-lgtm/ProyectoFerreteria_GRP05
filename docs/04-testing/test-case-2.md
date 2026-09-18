@@ -1,7 +1,25 @@
 ## Momento 1 — Testing pre-merge (ramas `feature/`)
 
 **Prompt utilizado en Claude Code + Playwright MCP:**
-[el mismo prompt de TC-2 que usamos]
+```
+Usá Playwright MCP para emular estos 3 dispositivos en http://127.0.0.1:3000/index.html:
+
+1. iPhone 14 Pro (390x844)
+2. Samsung Galaxy S23 (412x915)
+3. iPad Air (820x1180)
+
+Para cada uno:
+- Navegá a la URL con ese viewport
+- Verificá si hay overflow horizontal (comparando document.documentElement.scrollWidth
+  contra clientWidth)
+- Sacá una captura de pantalla de la vista completa
+- Guardala en docs/04-testing/capturas/tc-2/momento-1/ con nombre según dispositivo
+  (iphone14pro.png, galaxys23.png, ipadair.png)
+- Contame si el menú de navegación, las cards de producto, el panel de filtros del catálogo,
+  o cualquier otro elemento se ve roto, cortado o mal posicionado
+
+Al final dame un resumen en tabla: Dispositivo | Resolución | Overflow horizontal | Resultado | Observaciones
+``` 
 
 **Resultados:**
 
