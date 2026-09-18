@@ -1,6 +1,6 @@
 ## Momento 1 — Testing pre-merge (ramas `feature/`)
 
-**Prompt utilizado en Copilot Agent + Playwright MCP:**
+**Prompt utilizado en Claude Code + Playwright MCP:**
 
 Nota metodológica: el servidor Playwright MCP disponible controla una única instancia
 de navegador ya abierta, sin parámetro para elegir motor (Chromium/Firefox/WebKit) ni
