@@ -17,8 +17,8 @@ Se van a ejecutar 5 test cases automatizados con Playwright MCP contra `http://l
 
 ## Herramientas a utilizar
 
-- **Playwright MCP (`@playwright/mcp`):** servidor MCP oficial de Microsoft que le da a Copilot Agent Mode control de un navegador real. Se elige porque permite ejecutar los 5 test cases (incluyendo viewport emulation y evaluación de APIs del browser) directamente desde prompts en el chat, sin escribir scripts de test a mano.
-- **GitHub MCP (`@modelcontextprotocol/server-github`):** permite crear issues de tipo bug directamente desde Copilot Agent Mode por cada hallazgo, evitando el paso manual de ir a GitHub y agilizando la trazabilidad entre hallazgo → issue → PR que lo resuelve.
+- **Playwright MCP (`@playwright/mcp`):** servidor MCP oficial de Microsoft que le da a Claude Code control de un navegador real. Se elige porque permite ejecutar los 5 test cases (incluyendo viewport emulation y evaluación de APIs del browser) directamente desde prompts en el chat, sin escribir scripts de test a mano.
+- **GitHub MCP (`@modelcontextprotocol/server-github`):** permite crear issues de tipo bug directamente desde Claude Code por cada hallazgo, evitando el paso manual de ir a GitHub y agilizando la trazabilidad entre hallazgo → issue → PR que lo resuelve.
 
 ## Criterios de aceptación
 
@@ -45,3 +45,6 @@ _Pendiente — se completa por cada test case a medida que se ejecutan._
 ### Decisiones sobre qué hallazgos se registraron como bugs y cuáles no
 
 _Pendiente — justificar acá los casos donde se decidió NO abrir un issue (ej. hallazgo menor, ya reportado, comportamiento esperado)._
+
+### Nota: 
+Se utilizó Claude Code en lugar de GitHub Copilot debido a límite de créditos alcanzado durante la ejecución de esta actividad, con los mismos servidores MCP (Playwright y GitHub).'
