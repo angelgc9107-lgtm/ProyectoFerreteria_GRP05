@@ -1,7 +1,7 @@
 ## Momento 1 — Testing pre-merge (ramas `feature/`)
 
 **Prompt utilizado en Claude Code + Playwright MCP:**
-
+```
 Usá Playwright MCP para abrir http://127.0.0.1:3000/index.html y sacar un snapshot de
 accesibilidad. Decime si la jerarquía de headings es correcta (h1 único, sin saltos de
 nivel), si existen los landmarks section/article/nav/main/footer, y si los inputs de
@@ -21,6 +21,7 @@ Ahora validá cada archivo CSS por separado contra el CSS Validator del W3C
 3. css/responsive.css
 Para cada uno, decime cuántos errores y warnings encontró el validador, y si hay
 alguno, el detalle (línea y mensaje).
+```
 
 **Estructura semántica (snapshot de accesibilidad):**
 
