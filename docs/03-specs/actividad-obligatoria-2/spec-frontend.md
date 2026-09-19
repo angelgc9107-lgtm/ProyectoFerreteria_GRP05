@@ -229,7 +229,7 @@ Todos los estados de foco deben ser visibles y accesibles para navegación media
 - **2° Commit b266d408a9d5d9be5f544e6f7769a0d45c2a36b2 [Commit - Agregar Components.css y Styles.css](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/39/changes/b266d408a9d5d9be5f544e6f7769a0d45c2a36b2)
 
 - Enlace al archivo Figma utilizado para extraer el components.css & styles.css: [Mockup](https://www.figma.com/design/jX7NrMUtt6Tg7oiYqock6s/Sin-t%C3%ADtulo?node-id=0-1&t=ooNbHAfYrMmAh8i2-1).
-![Capturas de la prueba local 1](../../assets/images/desarrollador_frontend_actividad_N2_prueba_local_1.png)
-![Capturas de la prueba local_2](../../assets/images/desarrollador_frontend_actividad_N°2_prueba_local_2.png)
-![Capturas de la prueba local_3](../../assets/images/desarrollador_frontend_actividad_N°2_prueba_local_3.png)
+![Capturas de la prueba local 1](../../../assets/images/desarrollador_frontend_actividad_N2_prueba_local_1.png)
+![Capturas de la prueba local_2](../../../assets/images/desarrollador_frontend_actividad_N2_prueba_local_2.png)
+![Capturas de la prueba local_3](../../../assets/images/desarrollador_frontend_actividad_N2_prueba_local_3.png)
 - Prueba en GitHub Pages: `[]`.
