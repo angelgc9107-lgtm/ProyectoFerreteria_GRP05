@@ -238,13 +238,13 @@ button[aria-disabled="true"] {
     text-transform: uppercase;
 }
 
-#catalogo > aside h3:first-child {
+#catalogo > aside h3:has(+ label[for="orden"]) {
     margin-top: 0;
+    grid-row: 1;
 }
 
-#catalogo > aside h3:nth-of-type(1) { grid-row: 1; }
-#catalogo > aside h3:nth-of-type(2) { grid-row: 4; }
-#catalogo > aside h3:nth-of-type(3) { grid-row: 6; }
+#catalogo > aside h3:has(+ ul) { grid-row: 4; }
+#catalogo > aside h3:has(+ label[for="precio-desde"]) { grid-row: 6; }
 
 #catalogo > aside label {
     display: block;
@@ -459,11 +459,11 @@ th {
     background: center / contain no-repeat;
 }
 
-#carrito article:nth-of-type(1)::before {
+#carrito article:has(> input#cantidad-amoladora)::before {
     background-image: url("../assets/images/amoladora.png");
 }
 
-#carrito article:nth-of-type(2)::before {
+#carrito article:has(> input#cantidad-martillo)::before {
     background-image: url("../assets/images/martillo-galponero.png");
 }
 
