@@ -292,10 +292,12 @@ button[aria-disabled="true"] {
     width: 100%;
     min-height: 1.75rem;
     padding: var(--space-1);
+    -webkit-appearance: none;
+    appearance: none;
     color: var(--color-white);
     border: var(--border-width) solid var(--color-gray-700);
     border-radius: var(--radius-sm);
-    background: var(--color-gray-700);
+    background-color: var(--color-gray-700);
     font-size: var(--font-size-xs);
 }
 

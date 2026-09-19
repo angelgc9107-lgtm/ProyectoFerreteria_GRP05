@@ -203,10 +203,35 @@ Todos los estados de foco deben ser visibles y accesibles para navegación media
 - css/components.css: se revisaron los estados hover, focus y disabled para mantener una apariencia coherente con los estados definidos en el mockup.
 - css/styles.css y css/components.css: se realizaron correcciones finales de colores, tipografías, espaciados, dimensiones, alineaciones, box model y especificidad detectadas durante la comparación visual con el mockup.
 
+## Correcciones solicitadas por QA
+
+### QA-TC1 – [Bajo contraste en select "Ordenar por" en WebKit/Safari](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/42)
+
+- **Problema detectado:** En WebKit (Safari), el select "Ordenar por" se visualiza con fondo gris claro y texto gris claro, dificultando su lectura y dando la apariencia de estar deshabilitado.
+
+- **Corrección realizada:** Se definieron explícitamente los estilos `color` y `background-color` del select, evitando depender del estilo nativo del navegador.
+
+- **Archivo(s) modificado(s):** `css/components.css`
+
+- **Estado:** Corregido.
+
+- **Revalidación QA:** Pendiente.
+
+- **Referencia QA:** Test Case 1 (Compatibilidad desktop) — Momento 1.
+
+- **Rama testeada:** `feature/dev-frontend-css-add-styles`
+
+- **Evidencia:** `docs/04-testing/capturas/tc-1/momento-1/safari-desktop.png`
+
 ## Evidencia de cierre
 
-- Commit del spec anterior a los commits de `css/styles.css` y `css/components.css`: `[]`.
-- Enlace al archivo Figma actualizado: `[]`.
+- **1° Commit 95ee7134e5d1374bf3a1d9c3f669e732a1b7066d [Commit - Comiteando el spec del rol desarrollador frontend](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/39/changes/95ee7134e5d1374bf3a1d9c3f669e732a1b7066d)
+- **2° Commit b266d408a9d5d9be5f544e6f7769a0d45c2a36b2 [Commit - Agregar Components.css y Styles.css](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/39/changes/b266d408a9d5d9be5f544e6f7769a0d45c2a36b2)
+
+- Enlace al archivo Figma utilizado para extraer el components.css & styles.css: [Mockup](https://www.figma.com/design/jX7NrMUtt6Tg7oiYqock6s/Sin-t%C3%ADtulo?node-id=0-1&t=ooNbHAfYrMmAh8i2-1).
+- ![Capturas de la prueba local_1](assets\images\desarrollador_frontend_actividad_N°2_prueba_local_1.png)
+- ![Capturas de la prueba local_2](assets\images\desarrollador_frontend_actividad_N°2_prueba_local_2.png)
+- ![Capturas de la prueba local_3](assets\images\desarrollador_frontend_actividad_N°2_prueba_local_3.png)
 - Prompt exacto utilizado con Figma MCP: documentado en la sección anterior.
 - Resultado obtenido: documentado en la sección anterior.
 - Ajustes manuales: documentados en la sección anterior.
