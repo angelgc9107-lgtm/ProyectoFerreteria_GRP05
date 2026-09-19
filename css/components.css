@@ -121,10 +121,6 @@ nav details {
     order: 0;
 }
 
-nav details > summary {
-    display: none;
-}
-
 nav details ul {
     position: absolute;
     z-index: 2;

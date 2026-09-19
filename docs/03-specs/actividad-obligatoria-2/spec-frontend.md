@@ -232,7 +232,4 @@ Todos los estados de foco deben ser visibles y accesibles para navegación media
 - ![Capturas de la prueba local_1](assets\images\desarrollador_frontend_actividad_N°2_prueba_local_1.png)
 - ![Capturas de la prueba local_2](assets\images\desarrollador_frontend_actividad_N°2_prueba_local_2.png)
 - ![Capturas de la prueba local_3](assets\images\desarrollador_frontend_actividad_N°2_prueba_local_3.png)
-- Prompt exacto utilizado con Figma MCP: documentado en la sección anterior.
-- Resultado obtenido: documentado en la sección anterior.
-- Ajustes manuales: documentados en la sección anterior.
 - Prueba en GitHub Pages: `[]`.

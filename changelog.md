@@ -2,8 +2,20 @@
 
 Este archivo se actualiza con cada Pull Request para registrar avances y correcciones
 
----
+# [Actividad obligatoria N°2] Unreleased
+### Added
+- [feature/coord-devops-update-figma-and-readme] Actualizacion del mockup,readme y creacion de spec PR: [#36](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/36) — @alandox1(Coordinador / DevOps)
+- [feature/dev-frontend-css-add-styles] Archivos del desarrollador Frontend - changelog PR: [#39](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/39) — @angelgc9107-lgtm (Desarrollador Frontend)
 
+### Changed
+- [feature/coord-devops-update-figma-and-readme] Cambio de Foto de mockup(viejo) por el actual PR: [#37](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/37) — @alandox1(Coordinador / DevOps)
+
+
+
+
+
+
+---
 # [Released] 2026-08-31
 
 ### Added
