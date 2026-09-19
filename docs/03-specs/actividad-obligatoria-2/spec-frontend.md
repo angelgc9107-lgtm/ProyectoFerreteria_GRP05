@@ -26,21 +26,21 @@ La interactividad, JavaScript, cálculos del carrito, validación funcional, pro
 
 ## Criterios de aceptación
 
-- [ ] Dado el mockup actualizado, cuando se consulte mediante Figma MCP, entonces se identifican las variables, tipografías, colores, espaciados, dimensiones y componentes necesarios.
+- [X] Dado el mockup actualizado, cuando se consulte mediante Figma MCP, entonces se identifican las variables, tipografías, colores, espaciados, dimensiones y componentes necesarios.
 
 - [X] Dado el spec preparado, cuando se cree el primer commit de la actividad, entonces este archivo queda commiteado antes que cualquier archivo CSS.
 
-- [ ] Dado el diseño extraído, cuando se genere `css/styles.css`, entonces incluye variables CSS en `:root`, reset, tipografías, colores, box model y layout base.
+- [X] Dado el diseño extraído, cuando se genere `css/styles.css`, entonces incluye variables CSS en `:root`, reset, tipografías, colores, box model y layout base.
 
-- [ ] Dado el layout base, cuando se definan tamaños y separaciones, entonces `padding`, `margin`, `border`, `box-sizing` y dimensiones relevantes quedan controlados según el box model.
+- [X] Dado el layout base, cuando se definan tamaños y separaciones, entonces `padding`, `margin`, `border`, `box-sizing` y dimensiones relevantes quedan controlados según el box model.
 
-- [ ] Dado el conjunto de componentes, cuando se genere `css/components.css`, entonces existen estilos reutilizables para botones, cards, navegación, formularios y estados `hover` y `focus`.
+- [X] Dado el conjunto de componentes, cuando se genere `css/components.css`, entonces existen estilos reutilizables para botones, cards, navegación, formularios y estados `hover` y `focus`.
 
-- [ ] Dado el HTML existente, cuando se apliquen los estilos, entonces los selectores, herencia y especificidad producen el resultado esperado sin utilizar reglas frágiles o `!important` innecesarios.
+- [X] Dado el HTML existente, cuando se apliquen los estilos, entonces los selectores, herencia y especificidad producen el resultado esperado sin utilizar reglas frágiles o `!important` innecesarios.
 
-- [ ] Dado el contenido de la página, cuando se renderice, entonces los elementos de bloque y en línea se diferencian correctamente y el contenido permanece legible y sin solapamientos.
+- [x] Dado el contenido de la página, cuando se renderice, entonces los elementos de bloque y en línea se diferencian correctamente y el contenido permanece legible y sin solapamientos.
 
-- [ ] Dado el código CSS, cuando se revise, entonces mantiene una organización clara y contiene comentarios breves para decisiones de estilo no evidentes.
+- [x] Dado el código CSS, cuando se revise, entonces mantiene una organización clara y contiene comentarios breves para decisiones de estilo no evidentes.
 
 - [ ] Dado el sitio ejecutado en localhost y GitHub Pages, cuando se realice la comprobación visual, entonces los estilos mantienen las proporciones, colores, tipografías y espaciados definidos en el mockup.
 
@@ -188,8 +188,8 @@ Todos los estados de foco deben ser visibles y accesibles para navegación media
 
 ## Resultado obtenido prompt para Figma MCP
 
-- components.css
-- styles.css
+- [components.css](css\components.css)
+- [styles.css](css\styles.css)
 
 ## Ajustes manuales realizados
 
@@ -229,7 +229,7 @@ Todos los estados de foco deben ser visibles y accesibles para navegación media
 - **2° Commit b266d408a9d5d9be5f544e6f7769a0d45c2a36b2 [Commit - Agregar Components.css y Styles.css](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/39/changes/b266d408a9d5d9be5f544e6f7769a0d45c2a36b2)
 
 - Enlace al archivo Figma utilizado para extraer el components.css & styles.css: [Mockup](https://www.figma.com/design/jX7NrMUtt6Tg7oiYqock6s/Sin-t%C3%ADtulo?node-id=0-1&t=ooNbHAfYrMmAh8i2-1).
-- ![Capturas de la prueba local_1](assets\images\desarrollador_frontend_actividad_N°2_prueba_local_1.png)
-- ![Capturas de la prueba local_2](assets\images\desarrollador_frontend_actividad_N°2_prueba_local_2.png)
-- ![Capturas de la prueba local_3](assets\images\desarrollador_frontend_actividad_N°2_prueba_local_3.png)
+![Capturas de la prueba local 1](../../assets/images/desarrollador_frontend_actividad_N2_prueba_local_1.png)
+![Capturas de la prueba local_2](../../assets/images/desarrollador_frontend_actividad_N°2_prueba_local_2.png)
+![Capturas de la prueba local_3](../../assets/images/desarrollador_frontend_actividad_N°2_prueba_local_3.png)
 - Prueba en GitHub Pages: `[]`.
