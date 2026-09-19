@@ -202,6 +202,9 @@ Todos los estados de foco deben ser visibles y accesibles para navegación media
 - css/components.css: se corrigieron tamaños, alineaciones, bordes y box model de botones, inputs y demás componentes visuales.
 - css/components.css: se revisaron los estados hover, focus y disabled para mantener una apariencia coherente con los estados definidos en el mockup.
 - css/styles.css y css/components.css: se realizaron correcciones finales de colores, tipografías, espaciados, dimensiones, alineaciones, box model y especificidad detectadas durante la comparación visual con el mockup.
+- css/components.css: se corrigió la visualización del selector “Ordenar por”, definiendo explícitamente sus colores para mejorar el contraste y mantener su legibilidad entre navegadores.
+- css/components.css: se corrigió el tratamiento del elemento <summary> de la navegación, manteniéndolo como control interactivo y evitando técnicas de ocultación que afecten su accesibilidad.
+- css/components.css: se revisaron los selectores basados en posiciones numéricas (nth-of-type) para reemplazarlos, cuando la estructura existente lo permite, por selectores semánticos o estables que no dependan del orden de los elementos.
 
 ## Correcciones solicitadas por QA
 
