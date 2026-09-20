@@ -212,7 +212,7 @@ Todos los estados de foco deben ser visibles y accesibles para navegación media
 
 - **Problema detectado:** En WebKit (Safari), el select "Ordenar por" se visualiza con fondo gris claro y texto gris claro, dificultando su lectura y dando la apariencia de estar deshabilitado.
 
-- **Corrección realizada:** Se definieron explícitamente los estilos `color` y `background-color` del select, evitando depender del estilo nativo del navegador.
+- **Corrección realizada:** Se definieron explícitamente los estilos color y background-color del select, evitando depender del estilo nativo del navegador. Posteriormente, se oscureció el color de fondo a #6b6b6b para mejorar el contraste con el texto blanco y alcanzar el mínimo requerido por WCAG 2.1 AA.
 
 - **Archivo(s) modificado(s):** `css/components.css`
 
