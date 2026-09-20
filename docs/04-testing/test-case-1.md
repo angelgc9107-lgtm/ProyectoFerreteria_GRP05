@@ -44,3 +44,8 @@ no es un bug — simula el panel lateral abierto, presente igual en los 4 navega
 **Capturas:** `capturas/tc-1/momento-1/` (chrome-desktop.png, firefox-desktop.png, safari-desktop.png, edge-desktop.png)
 
 **Issues generados:** [#42](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/42) — bajo contraste en select "Ordenar por" en WebKit/Safari
+
+**Seguimiento del hallazgo (issue #42):** El desarrollador Frontend / CSS aplicó una primera corrección, verificada
+el [fecha] — el contraste mejoró pero todavía no alcanza 4.5:1 (queda ~0.02 por debajo).
+Se sugirió oscurecer el fondo a #707070 o #6b6b6b. Issue permanece abierto, pendiente
+de segunda corrección.
