@@ -35,3 +35,8 @@ todas de la misma regla (color-contrast).
 **Capturas:** `capturas/tc-4/momento-1/accesibilidad-screenshot.png`
 
 **Issues generados:** [#44](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/44) — contraste insuficiente en precios tachados y selector de orden
+
+**Seguimiento del hallazgo (issue #44):** Re-verificado con axe-core tras la primera ronda
+de correcciones del desarrollador Frontend / CSS. De las 6 violaciones serious originales, 1 fue corregida (el select
+`#orden`, ahora 5.33:1) y 5 siguen pendientes (los `<del>` de precio tachado, en 4.47:1).
+Issue #44 permanece abierto.
