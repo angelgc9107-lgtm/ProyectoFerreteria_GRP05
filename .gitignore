@@ -1,2 +1,3 @@
 node_modules/
 .playwright-mcp/
+docs/04-testing/capturas/**/results.json
