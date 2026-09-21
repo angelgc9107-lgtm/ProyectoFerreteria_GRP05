@@ -4,13 +4,13 @@
 
 ## Índice de Test Cases
 
-| # | Test Case | Descripción | Herramienta |
-|---|-----------|-------------|-------------|
-| 1 | [test-case-1.md](test-case-1.md) | Compatibilidad en navegadores desktop (Chrome, Firefox, Safari, Edge) | Playwright MCP |
-| 2 | [test-case-2.md](test-case-2.md) | Responsive en dispositivos móviles (iPhone 14 Pro, Galaxy S23, iPad Air) | Playwright MCP (viewport emulation) |
-| 3 | [test-case-3.md](test-case-3.md) | Performance y carga (Performance API) | Playwright MCP |
-| 4 | [test-case-4.md](test-case-4.md) | Accesibilidad web (WCAG 2.1) | Playwright MCP + axe-core |
-| 5 | [test-case-5.md](test-case-5.md) | Estructura HTML semántica y validación W3C (HTML/CSS) | Playwright MCP + validadores W3C |
+| Test Case | Resultado | Issues creados | Responsable notificado |
+|-----------|-----------|-----------------|--------------------------|
+| TC-1 — Compatibilidad desktop | OK con hallazgo menor | [#42](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/42) — bajo contraste en select "Ordenar por" en WebKit/Safari (cerrado) | Desarrollador Frontend / CSS |
+| TC-2 — Responsive móvil | OK con hallazgo (iPad Air) | [#43](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/43) — overflow horizontal por mapa sin responsive | Especialista en Responsive Design |
+| TC-3 — Performance | OK (sin issues, recomendación de optimización) | Ninguno | — |
+| TC-4 — Accesibilidad | Con hallazgos (6 violaciones serious) | [#44](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/44) — contraste insuficiente en precios tachados y selector de orden (cerrado) | Desarrollador Frontend / CSS |
+| TC-5 — Estructura HTML y CSS | OK (sin issues, observación menor) | Ninguno | — |
 
 ## Resumen de Issues — Momento 1 (Testing pre-merge)
 
