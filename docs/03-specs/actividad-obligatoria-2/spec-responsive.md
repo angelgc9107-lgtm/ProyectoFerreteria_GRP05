@@ -108,8 +108,57 @@ De forma general, se planifica el siguiente comportamiento entre breakpoints:
 - **Tipografías y espaciados:** se ajustarán tamaños de fuente y márgenes/
   paddings de forma progresiva entre breakpoints, priorizando legibilidad
   en mobile.
-- **Footer:** bloques apilados en mobile, distribuidos en fila en tablet y
-  desktop.
+- **Footer:** bloques apilados en mobile y tablet; en desktop se mantienen
+  las dos columnas del diseño original.
+
+### Correcciones de code review para tablet
+
+Después de la revisión del Pull Request se corrigieron dos hallazgos en
+`css/responsive.css`, sin modificar `index.html`, `styles.css` ni
+`components.css`.
+
+#### Hallazgo #1 — Footer entre 768px y 1023.98px
+
+El footer heredaba de `components.css` las columnas
+`minmax(24rem, 1fr) minmax(28rem, 1fr)`, además del espacio entre columnas y
+las posiciones laterales de sus secciones. En tablets angostas, esa
+configuración podía exigir más ancho que el disponible y provocar overflow
+horizontal.
+
+Se agregó una media query específica para
+`@media (min-width: 768px) and (max-width: 1023.98px)` que:
+
+- convierte el footer en una sola columna;
+- elimina el `column-gap` de escritorio;
+- hace que las tres secciones ocupen la columna disponible;
+- establece `min-width: 0`, `width: 100%` y `max-width: 100%` en las
+  secciones internas;
+- reemplaza la distribución interna rígida de la primera sección por tres
+  columnas flexibles.
+
+De esta forma, el footer conserva la adaptación apilada de mobile y recupera
+las dos columnas originales a partir de `1024px`.
+
+#### Hallazgo #2 — Header entre 768px y 1023.98px
+
+El header mantenía en tablet las posiciones absolutas y dimensiones del
+layout de escritorio. Esto podía provocar superposiciones entre el logo, el
+buscador, el carrito, la sesión y la navegación.
+
+En el mismo rango exclusivo de tablet se reorganizó el header mediante CSS
+Grid:
+
+- la primera fila contiene el logo, el buscador, el carrito y la sesión;
+- la navegación ocupa la segunda fila completa;
+- el logo, el carrito y la sesión pasan a posición estática dentro de la
+  grilla;
+- el buscador usa una columna flexible con un ancho máximo de `20rem`;
+- la navegación puede envolver sus enlaces mediante `flex-wrap`.
+
+Esta distribución mantiene visibles los elementos existentes y evita que
+dependan de coordenadas absolutas en tablets angostas. El layout mobile sigue
+encapsulado en `max-width: 767.98px` y el diseño original de desktop se
+restaura desde `1024px`.
 
 Estas decisiones son de planificación; la implementación concreta se
 realizará en `responsive.css` en una etapa posterior.
@@ -135,10 +184,10 @@ dar por finalizada la implementación.
 - [x] Breakpoints definidos y documentados para mobile, tablet y desktop.
 - [x] Layout mobile-first implementado (con el ajuste documentado en
       "Decisiones finales de breakpoints y justificación").
-- [x] Todas las secciones del mockup se adaptan correctamente en los tres breakpoints.
+- [ ] Todas las secciones del mockup se adaptan correctamente en los tres breakpoints (requiere verificación visual posterior a las correcciones de tablet).
 - [x] Flexbox y/o CSS Grid utilizados según las necesidades de las secciones.
-- [x] No existe overflow horizontal en ningún dispositivo o breakpoint (verificado visualmente en las pruebas manuales realizadas).
-- [x] Se mantiene coherencia visual con el mockup actualizado.
+- [ ] No existe overflow horizontal en ningún dispositivo o breakpoint (pendiente de verificación manual en los rangos finales).
+- [ ] Se mantiene coherencia visual con el mockup actualizado (pendiente de verificación visual).
 - [x] Se respetan y reutilizan los estilos existentes de styles.css y components.css siempre que sea posible.
 - [ ] Pruebas de integración realizadas con el Desarrollador Frontend en localhost y GitHub Pages.
 
@@ -147,7 +196,301 @@ dar por finalizada la implementación.
 ### Prompt exacto utilizado en Copilot Agent
 
 ```
-Pendiente de insertar el prompt exacto utilizado durante la implementación.
+Estoy trabajando en la Actividad Obligatoria N.º 2 de Programación Web I
+del proyecto FerroLab.
+
+Mi rol es Especialista en Responsive Design.
+
+La etapa de planificación ya fue realizada y el archivo:
+
+docs/03-specs/actividad-obligatoria-2/spec-responsive.md
+
+ya fue creado y commiteado previamente.
+
+Ahora debo realizar la implementación responsive del proyecto.
+
+
+==================================================
+CONTEXTO
+==================================================
+
+Antes de escribir código, analiza:
+
+- docs/03-specs/actividad-obligatoria-2/spec-responsive.md
+- index.html
+- css/styles.css
+- css/components.css
+- PNG actualizado del mockup de la Actividad Obligatoria N.º 2
+
+Toma spec-responsive.md como referencia principal para respetar las
+decisiones que ya fueron planificadas.
+
+Analiza index.html para trabajar únicamente con las secciones, clases,
+IDs y componentes que realmente existen.
+
+Analiza styles.css y components.css para complementar los estilos
+existentes sin duplicarlos ni reemplazarlos innecesariamente.
+
+Utiliza el PNG actualizado como referencia visual del diseño.
+
+
+==================================================
+OBJETIVO
+==================================================
+
+Crear únicamente:
+
+css/responsive.css
+
+Este archivo debe implementar el diseño responsive de FerroLab siguiendo
+lo establecido previamente en spec-responsive.md.
+
+La implementación debe seguir una estrategia MOBILE-FIRST y contemplar:
+
+- mobile
+- tablet
+- desktop
+
+Utiliza los breakpoints definidos y justificados previamente en
+spec-responsive.md.
+
+
+==================================================
+ESTRATEGIA RESPONSIVE
+==================================================
+
+responsive.css debe complementar los estilos existentes de:
+
+- css/styles.css
+- css/components.css
+
+No debes reemplazar ni modificar innecesariamente esos estilos.
+
+Utiliza según lo documentado en spec-responsive.md:
+
+- Flexbox
+- CSS Grid
+- Media Queries
+
+La implementación debe ser mobile-first.
+
+Los estilos para pantallas pequeñas deben ser la base y posteriormente
+deben utilizarse Media Queries para adaptar el diseño a tablet y desktop.
+
+Evita Media Queries o reglas innecesarias.
+
+
+==================================================
+ADAPTACIÓN DE LAS SECCIONES
+==================================================
+
+Analiza todas las secciones REALES existentes en index.html y adapta
+aquellas que lo necesiten.
+
+Según corresponda al proyecto actual, revisa especialmente:
+
+- header
+- navegación
+- buscador
+- ofertas
+- servicios
+- catálogo de productos
+- cards
+- filtros
+- carrito
+- formulario
+- footer
+
+Para cada tamaño de pantalla revisa cuando corresponda:
+
+- distribución de elementos
+- cantidad de columnas
+- ancho de componentes
+- comportamiento y tamaño de imágenes
+- navegación
+- formularios e inputs
+- espaciados
+- alineaciones
+- tipografías
+- comportamiento de Flexbox
+- comportamiento de CSS Grid
+
+
+==================================================
+OVERFLOW HORIZONTAL
+==================================================
+
+Uno de los criterios obligatorios es que NO exista overflow horizontal
+en ningún dispositivo o breakpoint.
+
+Revisa especialmente:
+
+- imágenes
+- contenedores
+- grids
+- elementos Flexbox
+- cards
+- formularios
+- inputs
+- navegación
+- carrito
+- elementos con anchos o espaciados fijos
+
+Si detectas overflow, corrige la causa real.
+
+No utilices simplemente:
+
+overflow-x: hidden;
+
+sobre body o elementos globales para ocultar problemas reales de layout.
+
+
+==================================================
+FIDELIDAD AL MOCKUP
+==================================================
+
+Mantén la mayor fidelidad posible respecto del PNG actualizado.
+
+Respeta los estilos ya definidos por el Desarrollador Frontend/CSS,
+incluyendo cuando corresponda:
+
+- colores
+- tipografías
+- jerarquía visual
+- componentes
+- espaciados
+- distribución general
+
+No rediseñes FerroLab.
+
+El objetivo es hacer responsive el diseño existente, no crear un diseño
+nuevo.
+
+
+==================================================
+RESTRICCIONES
+==================================================
+
+En esta tarea debes crear:
+
+css/responsive.css
+
+NO debes modificar:
+
+- css/styles.css
+- css/components.css
+- plan.md
+- spec-devops.md
+- spec-frontend.md
+- spec-responsive.md
+- el PNG del mockup
+- archivos pertenecientes a otros integrantes
+
+No agregues:
+
+- funcionalidades JavaScript
+- secciones nuevas
+- contenido nuevo
+- clases o IDs innecesarios
+- componentes inexistentes
+
+
+==================================================
+INDEX.HTML
+==================================================
+
+Analiza index.html y verifica si actualmente ya carga:
+
+css/responsive.css
+
+Si ya existe el enlace, no hagas ningún cambio.
+
+Si NO existe el enlace a responsive.css, NO modifiques index.html
+automáticamente.
+
+Solamente indícame al finalizar que responsive.css todavía necesita ser
+enlazado en index.html para coordinar esa modificación con el
+Desarrollador Frontend/CSS.
+
+
+==================================================
+PRUEBAS
+==================================================
+
+Una vez generado responsive.css, revisa el código y determina qué debe
+probarse manualmente en:
+
+- mobile
+- tablet
+- desktop
+
+Verifica mediante análisis del código:
+
+- adaptación de todas las secciones existentes
+- ausencia de posibles causas de overflow horizontal
+- funcionamiento de Grid y Flexbox
+- comportamiento de imágenes
+- formularios e inputs
+- catálogo y cards
+- header y navegación
+- footer
+
+No afirmes que una prueba visual fue realizada si realmente no pudiste
+ejecutarla o verificarla.
+
+
+==================================================
+SPEC-RESPONSIVE.MD
+==================================================
+
+IMPORTANTE:
+
+NO completes todavía la evidencia de spec-responsive.md.
+
+NO modifiques spec-responsive.md en esta ejecución.
+
+Primero vamos a revisar y probar manualmente el responsive generado.
+
+Después de las pruebas se completará el mismo spec con la evidencia REAL:
+
+- prompt exacto utilizado
+- archivos utilizados como contexto
+- resultado obtenido
+- fidelidad respecto del mockup
+- ajustes manuales realizados
+- decisiones finales de breakpoints y su justificación
+
+
+==================================================
+REVISIÓN FINAL
+==================================================
+
+Antes de finalizar:
+
+1. Verifica que responsive.css respete spec-responsive.md.
+2. Verifica que la implementación sea mobile-first.
+3. Verifica que se respeten los breakpoints documentados.
+4. Verifica que Flexbox y Grid se utilicen según lo planificado.
+5. Verifica que no existan reglas innecesariamente duplicadas.
+6. Verifica posibles causas de overflow horizontal.
+7. Verifica que no hayas modificado styles.css ni components.css.
+8. Verifica que no hayas inventado elementos inexistentes.
+9. Verifica que se mantenga fidelidad con el mockup.
+10. Verifica que spec-responsive.md no haya sido modificado.
+
+Al finalizar indícame:
+
+- qué archivo creaste;
+- qué breakpoints implementaste;
+- qué secciones adaptaste;
+- qué cambios realizaste para mobile, tablet y desktop;
+- dónde utilizaste Flexbox y dónde CSS Grid;
+- qué posibles problemas de overflow detectaste y cómo los resolviste;
+- si index.html ya carga responsive.css;
+- si tuviste que desviarte de alguna decisión de spec-responsive.md;
+- qué aspectos debemos probar manualmente en el navegador.
+
+No completes todavía la evidencia del spec.
 ```
 
 ### Archivos utilizados como contexto
@@ -204,7 +547,8 @@ el archivo final:
   sombra; en desktop se restauran el ancho (`var(--cart-width)`) y la
   sombra (`::before`) originales definidos en `components.css`.
 - **Footer:** en mobile y tablet, las secciones del footer se apilan en 1
-  columna; en desktop se restaura el layout original de 2 columnas
+  columna y se eliminan los anchos mínimos incompatibles con tablets
+  angostas; en desktop se restaura el layout original de 2 columnas
   (`minmax(24rem, 1fr) minmax(28rem, 1fr)`) definido en `components.css`.
 
 ### Fidelidad respecto del mockup
@@ -223,38 +567,25 @@ correspondiera con lo esperado en mobile, tablet y desktop.
 
 ### Ajustes manuales realizados
 
-Durante las pruebas visuales se detectó un problema concreto: al cargar
-`responsive.css`, el header cambiaba incorrectamente de posición respecto
-del diseño original definido por el Desarrollador Frontend/CSS en
-`styles.css` y `components.css`.
+Se revisaron las reglas reales del header y del footer en `components.css` y
+se compararon con la estructura de `index.html`. A partir de esa revisión se
+agregó en `responsive.css` un bloque exclusivo para tablet que resuelve los
+dos hallazgos del code review descritos anteriormente.
 
-Al revisar el código, se identificó que las reglas de adaptación para
-mobile (relacionadas con `header`, sus hijos y `nav`) se habían escrito
-inicialmente como reglas base, sin encapsularlas en una media query. Esto
-provocaba que propiedades como `display: flex`, `padding` y `gap` del
-header quedaran activas también en tablet y desktop, alterando el punto de
-referencia de los elementos posicionados de forma absoluta (`top`, `left`,
-`right`) definidos originalmente en `components.css`.
-
-Para corregirlo:
-
-- Se compararon en detalle las reglas originales del header, sus hijos y
-  `nav` en `components.css` con las reglas agregadas en `responsive.css`.
-- Se encapsularon todas las reglas específicas de mobile relacionadas con
-  el header y la navegación dentro de `@media (max-width: 767.98px)`.
-- Se eliminó cualquier regla de header en los bloques de tablet y
-  desktop, de forma que en esos rangos el header conserve exactamente el
-  diseño original.
-- La corrección se realizó únicamente en `css/responsive.css`.
-  `css/styles.css` y `css/components.css` se mantuvieron sin
-  modificaciones en todo el proceso.
+La corrección se realizó únicamente en `css/responsive.css`. El bloque mobile
+continúa encapsulado en `@media (max-width: 767.98px)` y el bloque desktop
+continúa usando `@media (min-width: 1024px)`, por lo que la validación visual
+de esas transiciones queda pendiente.
 
 ### Decisiones finales de breakpoints y justificación
 
 Breakpoints finales implementados en `responsive.css`:
 
 - **Mobile:** `@media (max-width: 767.98px)`.
-- **Tablet:** `@media (min-width: 768px)`.
+- **Tablet general:** `@media (min-width: 768px)` para las grillas de dos
+  columnas y el ancho intermedio del carrito.
+- **Tablet específica:** `@media (min-width: 768px) and (max-width: 1023.98px)`
+  para la reorganización del header y el footer.
 - **Desktop:** `@media (min-width: 1024px)`.
 
 Cada rango cumple la siguiente función:
@@ -264,8 +595,9 @@ Cada rango cumple la siguiente función:
   (ofertas, servicios, bienvenida, catálogo, footer), además del scroll
   controlado de la tabla y el ancho completo del carrito.
 - **Tablet** restaura progresivamente distribuciones de 2 columnas
-  (ofertas, servicios, bienvenida, catálogo) y ajusta el ancho del
-  carrito a un valor intermedio.
+  (ofertas, servicios, bienvenida, catálogo), ajusta el ancho del carrito a
+  un valor intermedio y usa una distribución específica del header y footer
+  entre `768px` y `1023.98px`.
 - **Desktop** restaura por completo el diseño original de escritorio
   definido por el Frontend/CSS: 3 columnas en ofertas/servicios/catálogo,
   ancho y sombra originales del carrito, y el layout de 2 columnas del
@@ -294,25 +626,23 @@ en cuanto a objetivo y cobertura de breakpoints, ajustada técnicamente para
 convivir con un sistema de estilos base pensado originalmente para
 desktop.
 
-### Pruebas realizadas
+### Pruebas realizadas y pendientes
 
-Se realizaron pruebas manuales redimensionando la ventana del navegador,
-verificando aproximadamente los siguientes anchos:
+La validación estática del archivo `css/responsive.css` y la comprobación de
+formato del diff fueron realizadas sin errores. Esto no sustituye la
+verificación visual del sitio.
 
-- **Mobile:** alrededor de 375px.
-- **Tablet:** alrededor de 768px.
-- **Desktop:** 1024px y tamaños superiores.
+Quedan pendientes las siguientes pruebas manuales en el navegador:
 
-En cada rango se revisó visualmente:
+- **Mobile:** alrededor de `375px`, verificando el header apilado y el resto
+  de las adaptaciones existentes.
+- **Tablet:** `768px`, un ancho intermedio, y `1023px`, verificando que el
+  header no superponga sus elementos, que la navegación sea visible y que el
+  footer esté en una sola columna sin overflow.
+- **Desktop:** `1024px` y tamaños superiores, verificando la restauración del
+  header y del footer originales.
+- Transiciones entre los tres rangos, incluyendo la ausencia de overflow
+  horizontal y la coherencia visual con el mockup.
 
-- La distribución general de las secciones (ofertas, servicios,
-  bienvenida, catálogo, tabla, carrito, footer).
-- El comportamiento del header y la navegación.
-- La cantidad de columnas del catálogo y las cards de productos.
-- El panel del carrito (ancho y visibilidad de la sombra lateral).
-- La distribución del footer.
-- La ausencia de desbordamientos horizontales visibles en el viewport.
-
-No se utilizaron herramientas de testing automatizado ni pruebas
-automatizadas de regresión visual; las verificaciones fueron manuales,
-mediante inspección visual en el navegador.
+También queda pendiente la prueba de integración con el Desarrollador
+Frontend en localhost y la publicación/verificación en GitHub Pages.

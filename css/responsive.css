@@ -165,6 +165,87 @@
 }
 
 /* ==========================================================
+   TABLET — desde 768px hasta 1023px
+   Ajustes específicos para evitar superposiciones y overflow
+   heredados del layout de escritorio.
+   ========================================================== */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+
+    /* --- Header: primera fila de controles y navegación debajo --- */
+    header {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto auto;
+        grid-template-rows: auto auto;
+        align-items: center;
+        gap: var(--space-2) var(--space-3);
+        padding: var(--space-3) var(--space-4);
+    }
+
+    header > a:first-child {
+        position: static;
+        grid-column: 1;
+        grid-row: 1;
+        width: 3rem;
+        height: 3rem;
+    }
+
+    header > form {
+        grid-column: 2;
+        grid-row: 1;
+        width: 100%;
+        max-width: 20rem;
+        margin: 0;
+    }
+
+    header > a[aria-label="Ver carrito de compras"],
+    header > span {
+        position: static;
+        grid-row: 1;
+        white-space: nowrap;
+    }
+
+    header > a[aria-label="Ver carrito de compras"] {
+        grid-column: 3;
+        font-size: var(--font-size-sm);
+    }
+
+    header > span {
+        grid-column: 4;
+    }
+
+    nav {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        flex-wrap: wrap;
+        min-height: auto;
+        padding: var(--space-2) var(--space-4);
+    }
+
+    /* --- Footer: una columna sin los mínimos del layout desktop --- */
+    footer {
+        grid-template-columns: 1fr;
+        column-gap: 0;
+    }
+
+    footer section:first-child {
+        grid-column: 1;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: var(--space-4);
+        padding: var(--space-3) var(--space-4);
+    }
+
+    footer section:nth-child(2),
+    footer section:nth-child(3) {
+        grid-column: 1;
+        justify-self: stretch;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        padding: var(--space-4) var(--space-5);
+    }
+}
+
+/* ==========================================================
    DESKTOP — min-width: 1024px
    (Header, catálogo, carrito y footer vuelven a su diseño
    original tal como lo definió el Frontend/CSS)
