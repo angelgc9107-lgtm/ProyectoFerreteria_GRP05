@@ -226,6 +226,24 @@ Todos los estados de foco deben ser visibles y accesibles para navegación media
 
 - **Evidencia:** `docs/04-testing/capturas/tc-1/momento-1/safari-desktop.png`
 
+### QA-TC4 – Bajo contraste en precios tachados del catálogo/ofertas
+
+- **Problema detectado:** axe-core detectó 5 elementos de precio tachado (`<del>`) con texto `#777777` sobre fondo blanco, obteniendo un contraste de 4.47:1, inferior al mínimo de 4.5:1 requerido por WCAG 2.1 AA para texto normal.
+
+- **Corrección realizada:** Se creó la variable `--color-text-secondary` con el valor `#6b6b6b` y se aplicó específicamente a los elementos `article del`, reemplazando el uso de `--color-gray-700`. De esta forma, se oscureció únicamente el texto de los precios tachados sin modificar globalmente `--color-gray-700` ni afectar otros componentes.
+
+- **Archivo(s) modificado(s):** `css/styles.css`, `css/components.css`
+
+- **Estado:** Corregido.
+
+- **Revalidación QA:** Pendiente.
+
+- **Referencia QA:** Test Case 4 (Accesibilidad) — Momento 1.
+
+- **Rama testeada:** `feature/responsive-design-add-responsive-styles`
+
+- **Evidencia:** `docs/04-testing/capturas/tc-4/momento-1/accesibilidad-screenshot.png`
+
 ## Evidencia de cierre
 
 - **1° Commit 95ee7134e5d1374bf3a1d9c3f669e732a1b7066d [Commit - Comiteando el spec del rol desarrollador frontend](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/39/changes/95ee7134e5d1374bf3a1d9c3f669e732a1b7066d)

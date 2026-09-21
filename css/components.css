@@ -177,7 +177,7 @@ nav details li + li {
 }
 
 article del {
-    color: var(--color-gray-700);
+    color: var(--color-text-secondary);
     font-weight: var(--font-weight-regular);
 }
 
