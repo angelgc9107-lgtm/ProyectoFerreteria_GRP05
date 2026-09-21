@@ -36,7 +36,13 @@ todas de la misma regla (color-contrast).
 
 **Issues generados:** [#44](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/44) — contraste insuficiente en precios tachados y selector de orden
 
-**Seguimiento del hallazgo (issue #44):** Re-verificado con axe-core tras la primera ronda
-de correcciones del desarrollador Frontend / CSS. De las 6 violaciones serious originales, 1 fue corregida (el select
-`#orden`, ahora 5.33:1) y 5 siguen pendientes (los `<del>` de precio tachado, en 4.47:1).
-Issue #44 permanece abierto.
+**Seguimiento del hallazgo (issue #44):** Angel aplicó dos rondas de corrección.
+En la primera re-verificación, 1 de las 6 violaciones quedó corregida (el select `#orden`,
+5.33:1) y 5 seguían pendientes (los `<del>` de precio tachado, 4.47:1). Tras la segunda
+corrección, los 5 `<del>` pasaron a #6b6b6b (5.33:1). Resultado final: 0 violaciones
+serious de color-contrast. Issue #44 cerrado.
+
+Observación no bloqueante: el botón "Buscar" aparece como "incomplete" en axe porque su texto
+es transparente y el ícono se muestra vía `::after` (patrón de botón-ícono válido).
+
+**Evidencia de verificación:** `capturas/tc-4/momento-1/verificacion-issue-44.png`
