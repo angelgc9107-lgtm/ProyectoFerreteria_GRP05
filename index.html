@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="FerroLab: herramientas, accesorios y productos de ferreteria para tus proyectos.">
     <title>FerroLab | Ferreteria</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/components.css">
 </head>
 <body>
     <!-- CSS futuro: organizar la cabecera en una barra superior oscura con logo, buscador, carrito y acceso a la cuenta, respetando la jerarquia visual del mockup. -->
@@ -94,13 +96,13 @@
             <h2 id="titulo-catalogo">Catalogo de productos</h2>
             <!-- JavaScript futuro: aplicar el orden seleccionado, filtrar por categoria y limitar los precios entre los valores Desde y Hasta. -->
             <aside aria-label="Filtros del catalogo">
-                <h3>Ordenar por</h3>
+                <h3 class="filter-heading--sort">Ordenar por</h3>
                 <label for="orden">Orden de productos</label>
                 <select id="orden" name="orden">
                     <option>Precio: menor a mayor</option>
                     <option>Precio: mayor a menor</option>
                 </select>
-                <h3>Categorias</h3>
+                <h3 class="filter-heading--category">Categorias</h3>
                 <ul>
                     <li><a href="#catalogo">Accesorios</a></li>
                     <li><a href="#catalogo">Herramientas manuales</a></li>
@@ -108,7 +110,7 @@
                     <li><a href="#catalogo">Electricidad</a></li>
                     <li><a href="#catalogo">Jardineria</a></li>
                 </ul>
-                <h3>Precio</h3>
+                <h3 class="filter-heading--price">Precio</h3>
                 <label for="precio-desde">Desde</label>
                 <input type="number" id="precio-desde" name="precio-desde" min="0">
                 <label for="precio-hasta">Hasta</label>
@@ -218,7 +220,7 @@
             <!-- JavaScript futuro: abrir y cerrar este panel desde el acceso del encabezado. -->
             <!-- JavaScript futuro: agregar productos, eliminar productos y modificar cantidades desde cada articulo del carrito. -->
             <!-- JavaScript futuro: recalcular subtotales y total cuando cambien productos o cantidades. -->
-            <article>
+            <article class="cart-item--grinder">
                 <h3>Amoladora angular inalambrica DeWalt Flexvolt DCG416B</h3>
                 <p>Precio unitario: $50.000</p>
                 <label for="cantidad-amoladora">Cantidad</label>
@@ -226,7 +228,7 @@
                 <p>Subtotal representativo: $50.000</p>
                 <button type="button">Eliminar</button>
             </article>
-            <article>
+            <article class="cart-item--hammer">
                 <h3>Martillo galponero mango de fibra Black Jack</h3>
                 <p>Precio unitario: $16.000</p>
                 <label for="cantidad-martillo">Cantidad</label>
@@ -280,7 +282,7 @@
         </section>
         <section aria-labelledby="direccion">
             <h2 id="direccion">Ubicacion</h2>
-            <img src="img/Ubicacion.png" alt="Mapa con la ubicacion de FerroLab">
+            <img src="assets/images/ubicacion.png" alt="Mapa con la ubicacion de FerroLab">
         </section>
     </footer>
 </body>
