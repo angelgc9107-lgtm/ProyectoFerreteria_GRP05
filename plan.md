@@ -203,3 +203,44 @@ Las funcionalidades previstas para estas etapas posteriores incluyen:
 El proceso de compra será una simulación, por lo que no se contempla inicialmente el procesamiento real de pagos, integración con entidades financieras, facturación electrónica, gestión administrativa de stock, registro e inicio de sesión de clientes ni integración con sistemas logísticos externos.
 
 
+## Actividad Obligatoria N°2 — Requisitos
+ 
+Esta entrega incorpora estilos visuales mediante CSS, diseño responsive y un
+proceso de QA asistido por herramientas de automatización, sobre la base
+construida en la Actividad Obligatoria N°1.
+ 
+### Alcance de esta entrega
+ 
+1. **Resolución de Request Changes de la Actividad N°1**, mediante ramas
+   `fix/` contra `release/actividad-obligatoria-1`, con backport posterior
+   hacia `develop`.
+2. **Maquetación CSS**: hojas de estilo organizadas en `css/styles.css`
+   (variables, layout base), `css/components.css` (componentes reutilizables)
+   y `css/responsive.css` (diseño responsive).
+3. **Diseño responsive**: layouts con Flexbox y/o CSS Grid, adaptados a
+   mobile, tablet y desktop mediante media queries, sin overflow horizontal.
+4. **QA automatizado**: 5 test cases ejecutados con Playwright MCP
+   (compatibilidad desktop, responsive móvil, performance, accesibilidad y
+   estructura HTML semántica), con hallazgos registrados como issues de
+   GitHub.
+5. **Mockup actualizado**: paleta de colores definitiva, tipografías por
+   jerarquía (H1-H6, body, labels), espaciados y estados de interacción
+   (hover, focus, disabled), documentado en
+   `docs/01-mockup/actividad-obligatoria-2/diseño-con-estilos.png`.
+### Criterios de aceptación
+ 
+- [x] Request Changes de la Actividad 1 resueltos y aprobados por el docente.
+- [ ] `css/styles.css`, `css/components.css` y `css/responsive.css`
+      implementados y coherentes con el mockup actualizado.
+- [ ] Sitio responsive sin overflow horizontal en mobile, tablet y desktop.
+- [ ] 5 test cases documentados en `docs/04-testing/` con hallazgos
+      registrados como issues.
+- [ ] Mockup actualizado con paleta, tipografías completas (H1-H6), y
+      estados de interacción.
+- [ ] Mínimo 4 code reviews asistidos con IA documentados con evidencia.
+### Vinculación con specs individuales
+ 
+Cada rol documenta el proceso detallado de su tarea en su propio
+`docs/03-specs/actividad-obligatoria-2/spec-<rol>.md`, trazado contra los
+requisitos de esta sección.
+ 
