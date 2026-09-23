@@ -26,21 +26,21 @@ La interactividad, JavaScript, cálculos del carrito, validación funcional, pro
 
 ## Criterios de aceptación
 
-- [ ] Dado el mockup actualizado, cuando se consulte mediante Figma MCP, entonces se identifican las variables, tipografías, colores, espaciados, dimensiones y componentes necesarios.
+- [X] Dado el mockup actualizado, cuando se consulte mediante Figma MCP, entonces se identifican las variables, tipografías, colores, espaciados, dimensiones y componentes necesarios.
 
 - [X] Dado el spec preparado, cuando se cree el primer commit de la actividad, entonces este archivo queda commiteado antes que cualquier archivo CSS.
 
-- [ ] Dado el diseño extraído, cuando se genere `css/styles.css`, entonces incluye variables CSS en `:root`, reset, tipografías, colores, box model y layout base.
+- [X] Dado el diseño extraído, cuando se genere `css/styles.css`, entonces incluye variables CSS en `:root`, reset, tipografías, colores, box model y layout base.
 
-- [ ] Dado el layout base, cuando se definan tamaños y separaciones, entonces `padding`, `margin`, `border`, `box-sizing` y dimensiones relevantes quedan controlados según el box model.
+- [X] Dado el layout base, cuando se definan tamaños y separaciones, entonces `padding`, `margin`, `border`, `box-sizing` y dimensiones relevantes quedan controlados según el box model.
 
-- [ ] Dado el conjunto de componentes, cuando se genere `css/components.css`, entonces existen estilos reutilizables para botones, cards, navegación, formularios y estados `hover` y `focus`.
+- [X] Dado el conjunto de componentes, cuando se genere `css/components.css`, entonces existen estilos reutilizables para botones, cards, navegación, formularios y estados `hover` y `focus`.
 
-- [ ] Dado el HTML existente, cuando se apliquen los estilos, entonces los selectores, herencia y especificidad producen el resultado esperado sin utilizar reglas frágiles o `!important` innecesarios.
+- [X] Dado el HTML existente, cuando se apliquen los estilos, entonces los selectores, herencia y especificidad producen el resultado esperado sin utilizar reglas frágiles o `!important` innecesarios.
 
-- [ ] Dado el contenido de la página, cuando se renderice, entonces los elementos de bloque y en línea se diferencian correctamente y el contenido permanece legible y sin solapamientos.
+- [x] Dado el contenido de la página, cuando se renderice, entonces los elementos de bloque y en línea se diferencian correctamente y el contenido permanece legible y sin solapamientos.
 
-- [ ] Dado el código CSS, cuando se revise, entonces mantiene una organización clara y contiene comentarios breves para decisiones de estilo no evidentes.
+- [x] Dado el código CSS, cuando se revise, entonces mantiene una organización clara y contiene comentarios breves para decisiones de estilo no evidentes.
 
 - [ ] Dado el sitio ejecutado en localhost y GitHub Pages, cuando se realice la comprobación visual, entonces los estilos mantienen las proporciones, colores, tipografías y espaciados definidos en el mockup.
 
@@ -188,8 +188,8 @@ Todos los estados de foco deben ser visibles y accesibles para navegación media
 
 ## Resultado obtenido prompt para Figma MCP
 
-- components.css
-- styles.css
+- [components.css](css\components.css)
+- [styles.css](css\styles.css)
 
 ## Ajustes manuales realizados
 
@@ -202,12 +202,55 @@ Todos los estados de foco deben ser visibles y accesibles para navegación media
 - css/components.css: se corrigieron tamaños, alineaciones, bordes y box model de botones, inputs y demás componentes visuales.
 - css/components.css: se revisaron los estados hover, focus y disabled para mantener una apariencia coherente con los estados definidos en el mockup.
 - css/styles.css y css/components.css: se realizaron correcciones finales de colores, tipografías, espaciados, dimensiones, alineaciones, box model y especificidad detectadas durante la comparación visual con el mockup.
+- css/components.css: se corrigió la visualización del selector “Ordenar por”, definiendo explícitamente sus colores para mejorar el contraste y mantener su legibilidad entre navegadores.
+- css/components.css: se corrigió el tratamiento del elemento <summary> de la navegación, manteniéndolo como control interactivo y evitando técnicas de ocultación que afecten su accesibilidad.
+- css/components.css: se revisaron los selectores basados en posiciones numéricas (nth-of-type) para reemplazarlos, cuando la estructura existente lo permite, por selectores semánticos o estables que no dependan del orden de los elementos.
+
+## Correcciones solicitadas por QA
+
+### QA-TC1 – [Bajo contraste en select "Ordenar por" en WebKit/Safari](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/42)
+
+- **Problema detectado:** En WebKit (Safari), el select "Ordenar por" se visualiza con fondo gris claro y texto gris claro, dificultando su lectura y dando la apariencia de estar deshabilitado.
+
+- **Corrección realizada:** Se definieron explícitamente los estilos color y background-color del select, evitando depender del estilo nativo del navegador. Posteriormente, se oscureció el color de fondo a #6b6b6b para mejorar el contraste con el texto blanco y alcanzar el mínimo requerido por WCAG 2.1 AA.
+
+- **Archivo(s) modificado(s):** `css/components.css`
+
+- **Estado:** Corregido.
+
+- **Revalidación QA:** Pendiente.
+
+- **Referencia QA:** Test Case 1 (Compatibilidad desktop) — Momento 1.
+
+- **Rama testeada:** `feature/dev-frontend-css-add-styles`
+
+- **Evidencia:** `docs/04-testing/capturas/tc-1/momento-1/safari-desktop.png`
+
+### QA-TC4 – Bajo contraste en precios tachados del catálogo/ofertas
+
+- **Problema detectado:** axe-core detectó 5 elementos de precio tachado (`<del>`) con texto `#777777` sobre fondo blanco, obteniendo un contraste de 4.47:1, inferior al mínimo de 4.5:1 requerido por WCAG 2.1 AA para texto normal.
+
+- **Corrección realizada:** Se creó la variable `--color-text-secondary` con el valor `#6b6b6b` y se aplicó específicamente a los elementos `article del`, reemplazando el uso de `--color-gray-700`. De esta forma, se oscureció únicamente el texto de los precios tachados sin modificar globalmente `--color-gray-700` ni afectar otros componentes.
+
+- **Archivo(s) modificado(s):** `css/styles.css`, `css/components.css`
+
+- **Estado:** Corregido.
+
+- **Revalidación QA:** Pendiente.
+
+- **Referencia QA:** Test Case 4 (Accesibilidad) — Momento 1.
+
+- **Rama testeada:** `feature/responsive-design-add-responsive-styles`
+
+- **Evidencia:** `docs/04-testing/capturas/tc-4/momento-1/accesibilidad-screenshot.png`
 
 ## Evidencia de cierre
 
-- Commit del spec anterior a los commits de `css/styles.css` y `css/components.css`: `[]`.
-- Enlace al archivo Figma actualizado: `[]`.
-- Prompt exacto utilizado con Figma MCP: documentado en la sección anterior.
-- Resultado obtenido: documentado en la sección anterior.
-- Ajustes manuales: documentados en la sección anterior.
+- **1° Commit 95ee7134e5d1374bf3a1d9c3f669e732a1b7066d [Commit - Comiteando el spec del rol desarrollador frontend](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/39/changes/95ee7134e5d1374bf3a1d9c3f669e732a1b7066d)
+- **2° Commit b266d408a9d5d9be5f544e6f7769a0d45c2a36b2 [Commit - Agregar Components.css y Styles.css](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/39/changes/b266d408a9d5d9be5f544e6f7769a0d45c2a36b2)
+
+- Enlace al archivo Figma utilizado para extraer el components.css & styles.css: [Mockup](https://www.figma.com/design/jX7NrMUtt6Tg7oiYqock6s/Sin-t%C3%ADtulo?node-id=0-1&t=ooNbHAfYrMmAh8i2-1).
+![Capturas de la prueba local 1](../../../assets/images/desarrollador_frontend_actividad_N2_prueba_local_1.png)
+![Capturas de la prueba local_2](../../../assets/images/desarrollador_frontend_actividad_N2_prueba_local_2.png)
+![Capturas de la prueba local_3](../../../assets/images/desarrollador_frontend_actividad_N2_prueba_local_3.png)
 - Prueba en GitHub Pages: `[]`.

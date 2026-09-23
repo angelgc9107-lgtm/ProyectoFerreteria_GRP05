@@ -121,10 +121,6 @@ nav details {
     order: 0;
 }
 
-nav details > summary {
-    display: none;
-}
-
 nav details ul {
     position: absolute;
     z-index: 2;
@@ -181,7 +177,7 @@ nav details li + li {
 }
 
 article del {
-    color: var(--color-gray-700);
+    color: var(--color-text-secondary);
     font-weight: var(--font-weight-regular);
 }
 
@@ -242,13 +238,13 @@ button[aria-disabled="true"] {
     text-transform: uppercase;
 }
 
-#catalogo > aside h3:first-child {
+.filter-heading--sort {
     margin-top: 0;
+    grid-row: 1;
 }
 
-#catalogo > aside h3:nth-of-type(1) { grid-row: 1; }
-#catalogo > aside h3:nth-of-type(2) { grid-row: 4; }
-#catalogo > aside h3:nth-of-type(3) { grid-row: 6; }
+.filter-heading--category { grid-row: 4; }
+.filter-heading--price { grid-row: 6; }
 
 #catalogo > aside label {
     display: block;
@@ -292,10 +288,12 @@ button[aria-disabled="true"] {
     width: 100%;
     min-height: 1.75rem;
     padding: var(--space-1);
+    -webkit-appearance: none;
+    appearance: none;
     color: var(--color-white);
     border: var(--border-width) solid var(--color-gray-700);
     border-radius: var(--radius-sm);
-    background: var(--color-gray-700);
+    background-color: #6b6b6b;
     font-size: var(--font-size-xs);
 }
 
@@ -461,11 +459,11 @@ th {
     background: center / contain no-repeat;
 }
 
-#carrito article:nth-of-type(1)::before {
+.cart-item--grinder::before {
     background-image: url("../assets/images/amoladora.png");
 }
 
-#carrito article:nth-of-type(2)::before {
+.cart-item--hammer::before {
     background-image: url("../assets/images/martillo-galponero.png");
 }
 
