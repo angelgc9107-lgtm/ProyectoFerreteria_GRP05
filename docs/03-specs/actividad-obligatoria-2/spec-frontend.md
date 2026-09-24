@@ -38,13 +38,13 @@ La interactividad, JavaScript, cálculos del carrito, validación funcional, pro
 
 - [X] Dado el HTML existente, cuando se apliquen los estilos, entonces los selectores, herencia y especificidad producen el resultado esperado sin utilizar reglas frágiles o `!important` innecesarios.
 
-- [x] Dado el contenido de la página, cuando se renderice, entonces los elementos de bloque y en línea se diferencian correctamente y el contenido permanece legible y sin solapamientos.
+- [X] Dado el contenido de la página, cuando se renderice, entonces los elementos de bloque y en línea se diferencian correctamente y el contenido permanece legible y sin solapamientos.
 
-- [x] Dado el código CSS, cuando se revise, entonces mantiene una organización clara y contiene comentarios breves para decisiones de estilo no evidentes.
+- [X] Dado el código CSS, cuando se revise, entonces mantiene una organización clara y contiene comentarios breves para decisiones de estilo no evidentes.
 
-- [ ] Dado el sitio ejecutado en localhost y GitHub Pages, cuando se realice la comprobación visual, entonces los estilos mantienen las proporciones, colores, tipografías y espaciados definidos en el mockup.
+- [X] Dado el sitio ejecutado en localhost y GitHub Pages, cuando se realice la comprobación visual, entonces los estilos mantienen las proporciones, colores, tipografías y espaciados definidos en el mockup.
 
-- [ ] Dado el cierre de la actividad, cuando se revise este documento, entonces incluye el prompt utilizado, el resultado obtenido y los ajustes manuales realizados.
+- [X] Dado el cierre de la actividad, cuando se revise este documento, entonces incluye el prompt utilizado, el resultado obtenido y los ajustes manuales realizados.
 
 ## Prompt utilizado para con Copilot para extraer todos los estilos
 ```
@@ -270,8 +270,6 @@ Se realizaron pruebas de integración para validar el correcto funcionamiento de
 
 * **Rama testeada:** `develop`
 
-
-
 ## Evidencia de cierre
 
 - **1° Commit 95ee7134e5d1374bf3a1d9c3f669e732a1b7066d [Commit - Comiteando el spec del rol desarrollador frontend](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/39/changes/95ee7134e5d1374bf3a1d9c3f669e732a1b7066d)
@@ -281,4 +279,3 @@ Se realizaron pruebas de integración para validar el correcto funcionamiento de
 ![Capturas de la prueba local 1](../../../assets/images/desarrollador_frontend_actividad_N2_prueba_local_1.png)
 ![Capturas de la prueba local_2](../../../assets/images/desarrollador_frontend_actividad_N2_prueba_local_2.png)
 ![Capturas de la prueba local_3](../../../assets/images/desarrollador_frontend_actividad_N2_prueba_local_3.png)
-- Prueba en GitHub Pages: `[]`.
