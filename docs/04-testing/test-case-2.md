@@ -1,15 +1,3 @@
-# Test Case 2 — Responsive en dispositivos móviles
-
-**Objetivo:** verificar que el sitio se adapte correctamente a distintos tamaños de pantalla
-(móvil y tablet), sin overflow horizontal ni elementos rotos, cortados o mal posicionados.
-
-**Herramienta:** Playwright MCP (viewport emulation) vía Claude Code.
-
-**Dispositivos testeados:** iPhone 14 Pro (390×844), Samsung Galaxy S23 (412×915),
-iPad Air (820×1180).
-
----
-
 ## Momento 1 — Testing pre-merge (ramas `feature/`)
 
 Ejecutado contra la rama `feature/responsive-design-add-responsive-styles`, que incluye
