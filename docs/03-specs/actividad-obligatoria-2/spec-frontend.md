@@ -206,7 +206,11 @@ Todos los estados de foco deben ser visibles y accesibles para navegación media
 - css/components.css: se corrigió el tratamiento del elemento <summary> de la navegación, manteniéndolo como control interactivo y evitando técnicas de ocultación que afecten su accesibilidad.
 - css/components.css: se revisaron los selectores basados en posiciones numéricas (nth-of-type) para reemplazarlos, cuando la estructura existente lo permite, por selectores semánticos o estables que no dependan del orden de los elementos.
 
-## Correcciones solicitadas por QA
+## Pruebas integradas con Responsive Design & QA Tester
+
+Se realizaron pruebas de integración entre los estilos desarrollados por el Desarrollador Frontend y los estilos implementados por el Especialista en Responsive Design, para validar el funcionamiento en conjunto de ambos desarrollos
+
+## Correcciones solicitadas por QA por el resultado de las pruebas integradas
 
 ### QA-TC1 – [Bajo contraste en select "Ordenar por" en WebKit/Safari](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/42)
 
@@ -243,6 +247,30 @@ Todos los estados de foco deben ser visibles y accesibles para navegación media
 - **Rama testeada:** `feature/responsive-design-add-responsive-styles`
 
 - **Evidencia:** `docs/04-testing/capturas/tc-4/momento-1/accesibilidad-screenshot.png`
+
+
+## Pruebas con QA Tester para validar en Github Page
+Se realizaron pruebas de integración para validar el correcto funcionamiento del desarrollo en conjunto, utilizando la rama develop y GitHub Pages como entorno de prueba.
+
+## Correcciones solicitadas por QA por el resultado de las pruebas en develop
+
+### QA-TC3 – Imágenes no visibles por diferencia entre mayúsculas y minúsculas
+
+* **Problema detectado:** El archivo `index.html` referencia las imágenes `Bienvenido1.png` y `Bienvenido2.png` con mayúscula inicial, mientras que los archivos versionados en el repositorio se encuentran como `bienvenido1.png` y `bienvenido2.png`. En Windows las imágenes se visualizan correctamente, pero al publicar el sitio en GitHub Pages no se encuentran los archivos debido a la diferencia entre mayúsculas y minúsculas.
+
+* **Corrección realizada:** Pendiente. Se deberá unificar el nombre utilizado en el HTML con el nombre de los archivos del repositorio, utilizando minúsculas para ambas referencias.
+
+* **Archivo(s) modificado(s):** `index.html`
+
+* **Estado:** Pendiente.
+
+* **Revalidación QA:** Pendiente.
+
+* **Referencia QA:** Test Case 3 (Performance) — Momento 2.
+
+* **Rama testeada:** `develop`
+
+
 
 ## Evidencia de cierre
 
