@@ -13,6 +13,8 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 ### Changed
 - [feature/coord-devops-update-figma-and-readme] Cambio de Foto de mockup(viejo) por el actual PR: [#37](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/37) — @alandox1(Coordinador / DevOps)
 
+- [feature/css-correcciones] Correcciones finales del Index - changelog PR: [#47](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/47) — @angelgc9107-lgtm (Desarrollador Frontend)
+
 
 ---
 # [Released] 2026-08-31

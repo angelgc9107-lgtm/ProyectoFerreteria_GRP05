@@ -38,13 +38,13 @@ La interactividad, JavaScript, cálculos del carrito, validación funcional, pro
 
 - [X] Dado el HTML existente, cuando se apliquen los estilos, entonces los selectores, herencia y especificidad producen el resultado esperado sin utilizar reglas frágiles o `!important` innecesarios.
 
-- [x] Dado el contenido de la página, cuando se renderice, entonces los elementos de bloque y en línea se diferencian correctamente y el contenido permanece legible y sin solapamientos.
+- [X] Dado el contenido de la página, cuando se renderice, entonces los elementos de bloque y en línea se diferencian correctamente y el contenido permanece legible y sin solapamientos.
 
-- [x] Dado el código CSS, cuando se revise, entonces mantiene una organización clara y contiene comentarios breves para decisiones de estilo no evidentes.
+- [X] Dado el código CSS, cuando se revise, entonces mantiene una organización clara y contiene comentarios breves para decisiones de estilo no evidentes.
 
-- [ ] Dado el sitio ejecutado en localhost y GitHub Pages, cuando se realice la comprobación visual, entonces los estilos mantienen las proporciones, colores, tipografías y espaciados definidos en el mockup.
+- [X] Dado el sitio ejecutado en localhost y GitHub Pages, cuando se realice la comprobación visual, entonces los estilos mantienen las proporciones, colores, tipografías y espaciados definidos en el mockup.
 
-- [ ] Dado el cierre de la actividad, cuando se revise este documento, entonces incluye el prompt utilizado, el resultado obtenido y los ajustes manuales realizados.
+- [X] Dado el cierre de la actividad, cuando se revise este documento, entonces incluye el prompt utilizado, el resultado obtenido y los ajustes manuales realizados.
 
 ## Prompt utilizado para con Copilot para extraer todos los estilos
 ```
@@ -206,7 +206,11 @@ Todos los estados de foco deben ser visibles y accesibles para navegación media
 - css/components.css: se corrigió el tratamiento del elemento <summary> de la navegación, manteniéndolo como control interactivo y evitando técnicas de ocultación que afecten su accesibilidad.
 - css/components.css: se revisaron los selectores basados en posiciones numéricas (nth-of-type) para reemplazarlos, cuando la estructura existente lo permite, por selectores semánticos o estables que no dependan del orden de los elementos.
 
-## Correcciones solicitadas por QA
+## Pruebas integradas con Responsive Design & QA Tester
+
+Se realizaron pruebas de integración entre los estilos desarrollados por el Desarrollador Frontend y los estilos implementados por el Especialista en Responsive Design, para validar el funcionamiento en conjunto de ambos desarrollos
+
+## Correcciones solicitadas por QA por el resultado de las pruebas integradas
 
 ### QA-TC1 – [Bajo contraste en select "Ordenar por" en WebKit/Safari](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/42)
 
@@ -244,6 +248,28 @@ Todos los estados de foco deben ser visibles y accesibles para navegación media
 
 - **Evidencia:** `docs/04-testing/capturas/tc-4/momento-1/accesibilidad-screenshot.png`
 
+
+## Pruebas con QA Tester para validar en Github Page
+Se realizaron pruebas de integración para validar el correcto funcionamiento del desarrollo en conjunto, utilizando la rama develop y GitHub Pages como entorno de prueba.
+
+## Correcciones solicitadas por QA por el resultado de las pruebas en develop
+
+### QA-TC3 – Imágenes no visibles por diferencia entre mayúsculas y minúsculas
+
+* **Problema detectado:** El archivo `index.html` referencia las imágenes `Bienvenido1.png` y `Bienvenido2.png` con mayúscula inicial, mientras que los archivos versionados en el repositorio se encuentran como `bienvenido1.png` y `bienvenido2.png`. En Windows las imágenes se visualizan correctamente, pero al publicar el sitio en GitHub Pages no se encuentran los archivos debido a la diferencia entre mayúsculas y minúsculas.
+
+* **Corrección realizada:** Pendiente. Se deberá unificar el nombre utilizado en el HTML con el nombre de los archivos del repositorio, utilizando minúsculas para ambas referencias.
+
+* **Archivo(s) modificado(s):** `index.html`
+
+* **Estado:** Pendiente.
+
+* **Revalidación QA:** Pendiente.
+
+* **Referencia QA:** Test Case 3 (Performance) — Momento 2.
+
+* **Rama testeada:** `develop`
+
 ## Evidencia de cierre
 
 - **1° Commit 95ee7134e5d1374bf3a1d9c3f669e732a1b7066d [Commit - Comiteando el spec del rol desarrollador frontend](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/39/changes/95ee7134e5d1374bf3a1d9c3f669e732a1b7066d)
@@ -253,4 +279,3 @@ Todos los estados de foco deben ser visibles y accesibles para navegación media
 ![Capturas de la prueba local 1](../../../assets/images/desarrollador_frontend_actividad_N2_prueba_local_1.png)
 ![Capturas de la prueba local_2](../../../assets/images/desarrollador_frontend_actividad_N2_prueba_local_2.png)
 ![Capturas de la prueba local_3](../../../assets/images/desarrollador_frontend_actividad_N2_prueba_local_3.png)
-- Prueba en GitHub Pages: `[]`.
