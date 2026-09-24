@@ -24,24 +24,69 @@ Se van a ejecutar 5 test cases automatizados con Playwright MCP contra `http://l
 
 ### Momento 1 — Testing pre-merge
 
-✅ **COMPLETADO**
+**COMPLETADO**
+
+Ejecutado contra la rama `feature/responsive-design-add-responsive-styles`, que integra el CSS
+de Frontend con los estilos responsive.
 
 - [x] 5 test cases ejecutados: TC-1 (compatibilidad desktop), TC-2 (responsive móvil), TC-3 (performance), TC-4 (accesibilidad WCAG 2.1), TC-5 (estructura HTML + validación W3C)
-- [x] 3 issues de bug creados: #42 (contraste en WebKit), #43 (overflow iPad Air), #44 (contraste WCAG)
-- [x] Responsables notificados: Angel (Frontend) y Lucho (Responsive)
+- [x] 3 issues de bug creados: #42 (contraste en select en WebKit), #43 (overflow en iPad Air por mapa sin responsive), #44 (contraste insuficiente en precios tachados y selector)
+- [x] Responsables notificados: Desarrollador Frontend / CSS (#42, #44) y Especialista en Responsive Design (#43)
+- [x] Correcciones verificadas y los 3 issues cerrados antes del merge
 - [x] Documentación actualizada: spec-qa.md, 5 test-case-*.md, testing-doc.md, changelog.md
-- [x] Herramienta utilizada: Claude Code + Playwright MCP (en lugar de Copilot Agent por límite de créditos)
 
-**Resultados resumidos:**
-- TC-1: OK con hallazgo menor (contraste)
-- TC-2: OK con hallazgo de overflow en iPad Air
-- TC-3: OK sin issues
-- TC-4: 6 violaciones serious de contraste
-- TC-5: OK sin issues
+**Resultados:**
+
+| Test Case | Resultado | Issues |
+|-----------|-----------|--------|
+| TC-1 — Compatibilidad desktop | OK con hallazgo menor de contraste en WebKit | #42 (cerrado) |
+| TC-2 — Responsive móvil | Overflow horizontal en iPad Air | #43 (cerrado) |
+| TC-3 — Performance | OK, sin issues (recomendación de optimizar imágenes) | — |
+| TC-4 — Accesibilidad | 6 violaciones serious de color-contrast | #44 (cerrado) |
+| TC-5 — Estructura HTML y CSS | OK, sin issues | — |
+
+**Decisiones de clasificación:** se reportaron como issue únicamente los hallazgos que constituyen
+defectos verificables (overflow de layout y violaciones WCAG medidas con axe-core). Las
+recomendaciones de optimización y los ajustes de diseño se documentaron como observaciones no
+bloqueantes en cada test case, sin abrir issue.
 
 ### Momento 2 — Testing post-merge
 
-⏳ **PENDIENTE** — Se ejecuta una vez que el Coordinador confirme que ambas ramas de feature/ fueron mergeadas a `develop`. Los 5 test cases se repetirán contra la versión integrada para detectar problemas de interacción entre CSS y responsive.
+**COMPLETADO**
 
-### Nota: 
-Se utilizó Claude Code en lugar de GitHub Copilot debido a límite de créditos alcanzado durante la ejecución de esta actividad, con los mismos servidores MCP (Playwright y GitHub).'
+Ejecutado contra `develop`, tras el merge de las ramas de Frontend y Responsive. El objetivo fue
+verificar que las correcciones de Momento 1 sobrevivieran a la integración y detectar problemas
+que solo aparecen al combinar el trabajo de ambos roles.
+
+- [x] 5 test cases repetidos contra `develop`
+- [x] Verificado que los 3 issues de Momento 1 siguen corregidos tras el merge (sin regresiones)
+- [x] 1 issue de bug creado: #46 (diferencia de mayúsculas en nombres de imágenes)
+- [x] Responsable notificado: Desarrollador Frontend / CSS
+- [x] Documentación actualizada: 5 test-case-*.md y testing-doc.md con resultados de ambos momentos
+
+**Resultados:**
+
+| Test Case | Resultado | Issues |
+|-----------|-----------|--------|
+| TC-1 — Compatibilidad desktop | OK en los 4 navegadores | — |
+| TC-2 — Responsive móvil | OK, sin overflow en los 3 dispositivos | — |
+| TC-3 — Performance | Hallazgo: nombres de imágenes con mayúsculas romperán el sitio en GitHub Pages | #46 (abierto) |
+| TC-4 — Accesibilidad | OK, 0 violaciones WCAG 2.1 A+AA | — |
+| TC-5 — Estructura HTML y CSS | OK, HTML con 0 errores y 0 warnings | — |
+
+**Verificación de correcciones de Momento 1:** #42 sigue en 5,32:1, #43 sin overflow (805px =
+805px) y #44 en 5,33:1. Ninguna corrección se perdió durante la integración.
+
+**Pendiente antes de la release:** el issue #46 sigue abierto. Es el único hallazgo con impacto en
+producción, ya que el sitio funciona correctamente en desarrollo local (Windows) pero las imágenes
+de la sección "Bienvenidos a FerroLab" devolverán 404 al publicarse en GitHub Pages, que corre
+sobre Linux.
+
+### Nota metodológica
+
+Se utilizó Claude Code en lugar de GitHub Copilot Agent Mode debido a límite de créditos alcanzado
+durante la ejecución de esta actividad, con los mismos servidores MCP (Playwright y GitHub).
+
+En TC-1, el servidor Playwright MCP controla una única instancia de navegador sin permitir
+seleccionar el motor, por lo que para probar Chromium, Firefox y WebKit reales se utilizó el
+paquete `playwright` instalado como dependencia de desarrollo. Detalle en `test-case-1.md`.
