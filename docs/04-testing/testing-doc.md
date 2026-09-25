@@ -99,3 +99,10 @@ Hallazgos documentados en los test cases que no constituyen defectos funcionales
 - En TC-2 (Momento 2) se descartó un falso positivo mediante medición con Playwright: una supuesta
   superposición entre el botón "×" del carrito y el texto "Precio unitario" que resultó no existir.
   El hallazgo derivado sobre área táctil se evaluó en TC-4 y tampoco constituye violación.
+
+## Requisitos para QA
+
+- Configurar el token de GitHub en `.vscode/mcp.json` (variable `GITHUB_PERSONAL_ACCESS_TOKEN`)
+- Iniciar Playwright MCP desde el entorno local
+- Ejecutar la validación de los test cases mediante Playwright MCP (no vía `npm test`)
+- Revisar los resultados y capturas bajo `docs/04-testing/`

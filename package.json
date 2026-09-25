@@ -7,7 +7,7 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "test:qa": "echo \"Ejecutar validaciones manuales con Playwright MCP y revisar docs/04-testing\""
   },
   "repository": {
     "type": "git",
