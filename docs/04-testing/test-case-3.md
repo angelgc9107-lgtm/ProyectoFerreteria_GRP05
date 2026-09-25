@@ -1,3 +1,54 @@
+## Momento 1 — Testing pre-merge (ramas `feature/`)
+
+**Prompt utilizado en Claude Code + Playwright MCP:**
+```
+Usá Playwright MCP para abrir http://127.0.0.1:3000/index.html y evaluar la Performance API
+  del navegador. Dame estas métricas en milisegundos: DOMContentLoaded, Load completo, y
+  DOM Interactive. También dame un listado de los recursos cargados (imágenes, CSS, fuentes)
+  con su tamaño en KB y tiempo de descarga en ms, ordenados de mayor a menor tamaño.
+
+  Sacá una captura de pantalla de la vista completa y guardala en
+  docs/04-testing/capturas/tc-3/momento-1/performance-screenshot.png
+
+  Al final decime si hay algún recurso que se destaque por ser pesado o lento, y si los tiempos
+  de carga te parecen razonables para un sitio de este tipo.
+  ``` 
+
+**Resultados:**
+
+| Métrica | Valor |
+|---------|-------|
+| DOM Interactive | 49 ms |
+| DOMContentLoaded | 50 ms |
+| Load completo | 158 ms |
+
+**Recursos cargados (ordenados por tamaño, top 5):**
+
+| Recurso | Tipo | Tamaño (KB) | Descarga (ms) |
+|---------|------|-------------|----------------|
+| assets/images/Bienvenido1.png | img | 394.9 | 99 |
+| assets/images/Bienvenido2.png | img | 356.7 | 115 |
+| assets/images/ubicacion.png | img | 49.7 | 129 |
+| css/components.css | css | 14.9 | 26 |
+| css/responsive.css | css | 5.9 | 30 |
+
+**Capturas:** `capturas/tc-3/momento-1/performance-screenshot.png`
+
+**Análisis:**
+- Tiempos de carga excelentes en localhost (DOMContentLoaded 50ms, Load 158ms), pero no
+  representativos de producción sin latencia de red real.
+- Hallazgo de performance (no bloqueante): `Bienvenido1.png` (395 KB) y `Bienvenido2.png`
+  (357 KB) representan juntas más de la mitad del peso total de imágenes del sitio (~752 KB
+  de ~950 KB), pese a ser contenido decorativo/institucional, no productos. Se recomienda
+  comprimir/convertir a WebP antes de desplegar a producción, ya que en redes móviles
+  (3G/4G) su peso combinado sí tendría impacto notable en la carga percibida.
+- No se encontraron fuentes web (usa fuentes del sistema).
+
+**Issues generados:** Ninguno (hallazgo de optimización, no un defecto funcional o visual).
+Se documenta como recomendación para antes del despliegue a producción.
+
+---
+ 
 ## Momento 2 — Testing post-merge (rama `develop`)
  
 Ejecutado contra `develop`, tras el merge de las ramas de Frontend y Responsive.
@@ -58,12 +109,12 @@ pero **no representan una mejora del sitio**: se midió con caché desactivada y
 distinto al de Momento 1, así que las condiciones no son equivalentes. Lo comparable es el peso de
 los recursos, que se mantuvo igual.
  
-**Hallazgo nuevo de Momento 2 (issue #46):** el HTML referencia las imágenes con mayúscula inicial
-(`Bienvenido1.png`, `Bienvenido2.png` en index.html:90-91) mientras que los archivos versionados
-en el repositorio están en minúscula (`bienvenido1.png`, `bienvenido2.png`). En Windows el sitio
-funciona porque el sistema de archivos no distingue mayúsculas, pero GitHub Pages corre sobre Linux,
-que sí las distingue: al publicar, ambas imágenes van a devolver 404. Es un defecto que no se
-manifiesta en desarrollo local, solo en producción.
+**Hallazgo nuevo de Momento 2 (issue #46):** el HTML referenciaba las imágenes con mayúscula
+inicial (`Bienvenido1.png`, `Bienvenido2.png` en index.html:90-91) mientras que los archivos
+versionados en el repositorio estaban en minúscula (`bienvenido1.png`, `bienvenido2.png`). En
+Windows el sitio funciona porque el sistema de archivos no distingue mayúsculas, pero GitHub Pages
+corre sobre Linux, que sí las distingue: al publicar, ambas imágenes habrían devuelto 404. Es un
+defecto que no se manifiesta en desarrollo local, solo en producción.
  
 **Análisis:**
 - Los tiempos en localhost no son representativos de un usuario real. Con los mismos ~1 MB en una
@@ -77,4 +128,17 @@ impacto en la carga) y hay imágenes sin usar en `assets/images/`.
  
 **Capturas:** `capturas/tc-3/momento-2/performance-screenshot.png`
  
-**Issues generados:** [#46](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/46) — diferencia de mayúsculas en nombres de imágenes causará 404 en GitHub Pages
+**Issues generados:** [#46](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/46) — diferencia de mayúsculas en nombres de imágenes causará 404 en GitHub Pages (cerrado)
+ 
+**Seguimiento del hallazgo (issue #46):** El Desarrollador Frontend / CSS unificó los nombres a
+minúscula. Verificado en `develop` comparando `git ls-files assets/images/` contra los `src` del
+HTML con `LC_ALL=C` (comparación sensible a mayúsculas, hecha contra el índice de git y no contra
+el sistema de archivos local, ya que el clon tiene `core.ignorecase = true` y una comparación contra
+disco daría un falso positivo en Windows). Las 16 referencias coinciden exactamente y no quedan
+versiones con mayúscula inicial en el árbol del commit. La release desde la que se publica el sitio
+se genera a partir de `develop`, por lo que el arreglo está en la rama que corresponde.
+Issue #46 cerrado.
+ 
+**Observación adicional:** hay 3 archivos en `assets/images/` que no están referenciados por ninguna
+etiqueta `<img>` del HTML (capturas de evidencia del rol Frontend). Sin impacto funcional.
+ 
