@@ -62,6 +62,7 @@ que solo aparecen al combinar el trabajo de ambos roles.
 - [x] Verificado que los 3 issues de Momento 1 siguen corregidos tras el merge (sin regresiones)
 - [x] 1 issue de bug creado: #46 (diferencia de mayúsculas en nombres de imágenes)
 - [x] Responsable notificado: Desarrollador Frontend / CSS
+- [x] Corrección verificada y el issue #46 cerrado
 - [x] Documentación actualizada: 5 test-case-*.md y testing-doc.md con resultados de ambos momentos
 
 **Resultados:**
@@ -70,17 +71,21 @@ que solo aparecen al combinar el trabajo de ambos roles.
 |-----------|-----------|--------|
 | TC-1 — Compatibilidad desktop | OK en los 4 navegadores | — |
 | TC-2 — Responsive móvil | OK, sin overflow en los 3 dispositivos | — |
-| TC-3 — Performance | Hallazgo: nombres de imágenes con mayúsculas romperán el sitio en GitHub Pages | #46 (abierto) |
+| TC-3 — Performance | Hallazgo: nombres de imágenes con mayúsculas romperían el sitio en GitHub Pages | #46 (cerrado) |
 | TC-4 — Accesibilidad | OK, 0 violaciones WCAG 2.1 A+AA | — |
 | TC-5 — Estructura HTML y CSS | OK, HTML con 0 errores y 0 warnings | — |
 
 **Verificación de correcciones de Momento 1:** #42 sigue en 5,32:1, #43 sin overflow (805px =
 805px) y #44 en 5,33:1. Ninguna corrección se perdió durante la integración.
 
-**Pendiente antes de la release:** el issue #46 sigue abierto. Es el único hallazgo con impacto en
-producción, ya que el sitio funciona correctamente en desarrollo local (Windows) pero las imágenes
-de la sección "Bienvenidos a FerroLab" devolverán 404 al publicarse en GitHub Pages, que corre
-sobre Linux.
+**Verificación del hallazgo de Momento 2:** el issue #46 fue corregido por el Desarrollador
+Frontend / CSS y verificado en `develop` mediante una comparación sensible a mayúsculas entre los
+archivos versionados en git y las referencias del HTML: las 16 coinciden exactamente. Como la
+release desde la que se publica el sitio se genera a partir de `develop`, el arreglo está en la
+rama que corresponde. Issue #46 cerrado.
+
+**Los 4 issues de ambos momentos quedaron resueltos y verificados** (#42, #43, #44 y #46). No hay
+hallazgos pendientes de QA.
 
 ### Nota metodológica
 

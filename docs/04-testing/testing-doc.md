@@ -36,7 +36,7 @@ problemas que solo aparecen al combinar el trabajo de ambos roles.
 |-----------|-----------|-----------------|--------------------------|
 | TC-1 — Compatibilidad desktop | OK en los 4 navegadores | Ninguno | — |
 | TC-2 — Responsive móvil | OK sin overflow en los 3 dispositivos | Ninguno | — |
-| TC-3 — Performance | Con hallazgo | [#46](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/46) — diferencia de mayúsculas en nombres de imágenes causará 404 en GitHub Pages (abierto) | Desarrollador Frontend / CSS |
+| TC-3 — Performance | Con hallazgo | [#46](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/46) — diferencia de mayúsculas en nombres de imágenes causaba 404 en GitHub Pages (cerrado) | Desarrollador Frontend / CSS |
 | TC-4 — Accesibilidad | OK — 0 violaciones WCAG 2.1 A+AA | Ninguno | — |
 | TC-5 — Estructura HTML y CSS | OK — HTML con 0 errores y 0 warnings | Ninguno | — |
 
@@ -50,6 +50,16 @@ problemas que solo aparecen al combinar el trabajo de ambos roles.
 
 Ninguna corrección se perdió ni fue revertida durante la integración.
 
+### Verificación del hallazgo de Momento 2
+
+El issue #46 fue corregido por el Desarrollador Frontend / CSS y verificado en `develop` mediante
+una comparación sensible a mayúsculas entre los archivos versionados en git y las referencias del
+HTML: las 16 coinciden exactamente. Como la release desde la que se publica el sitio se genera a
+partir de `develop`, el arreglo está en la rama que corresponde. Issue #46 cerrado.
+
+**Los 4 issues de ambos momentos quedaron resueltos y verificados** (#42, #43, #44 y #46). No hay
+hallazgos pendientes de QA.
+
 ## Totales
 
 | | Momento 1 | Momento 2 |
@@ -58,7 +68,7 @@ Ninguna corrección se perdió ni fue revertida durante la integración.
 | Tests con hallazgos | 3 (TC-1, TC-2, TC-4) | 1 (TC-3) |
 | Tests limpios | 2 (TC-3, TC-5) | 4 (TC-1, TC-2, TC-4, TC-5) |
 | Issues creados | 3 (#42, #43, #44) | 1 (#46) |
-| Issues cerrados | 3 | 0 |
+| Issues cerrados | 3 | 1 |
 
 ## Observaciones no bloqueantes (sin issue)
 
