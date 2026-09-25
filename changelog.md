@@ -5,14 +5,17 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 # [Actividad obligatoria N°2] Unreleased
 ### Added
 - [feature/coord-devops-update-figma-and-readme] Actualizacion del mockup,readme y creacion de spec PR: [#36](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/36) — @alandox1(Coordinador / DevOps)
+
 - [feature/doc-qa-tester-add-test-cases] Se documentan y ejecutan 5 test cases de QA (compatibilidad desktop, responsive móvil, performance, accesibilidad WCAG 2.1 y estructura HTML/validación W3C) usando Playwright MCP y GitHub MCP. Momento 1 incluye 3 issues de bug a partir de los hallazgos. PR: [#45](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/45) — @Piastrellini (Documentador / QA Tester)
+
+- [feature/dev-frontend-css-add-styles] Archivos del desarrollador Frontend - changelog PR: [#39](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/39) — @angelgc9107-lgtm (Desarrollador Frontend)
+
+- [feature/responsive-design-add-responsive-styles] Creacion de spec-responsive.md y de responsive.css PR: [#40](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/40) — @luchobarrionuevo13 (Responsive Design)
+
 ### Changed
 - [feature/coord-devops-update-figma-and-readme] Cambio de Foto de mockup(viejo) por el actual PR: [#37](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/37) — @alandox1(Coordinador / DevOps)
 
-
-
-    
-
+- [feature/css-correcciones] Correcciones finales del Index - changelog PR: [#47](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/47) — @angelgc9107-lgtm (Desarrollador Frontend)
 
 
 ---
