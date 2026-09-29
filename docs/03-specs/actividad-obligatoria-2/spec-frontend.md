@@ -222,7 +222,7 @@ Se realizaron pruebas de integración entre los estilos desarrollados por el Des
 
 - **Estado:** Corregido.
 
-- **Revalidación QA:** Pendiente.
+- **Revalidación QA:** Corregido y verificado.
 
 - **Referencia QA:** Test Case 1 (Compatibilidad desktop) — Momento 1.
 
