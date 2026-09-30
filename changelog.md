@@ -18,6 +18,9 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 - [feature/css-correcciones] Feature/css correcciones PR: [#47](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/47) — @angelgc9107-lgtm (Desarrollador Frontend)
 
 ### Fixed
+
+- [fix/spec-devops.md] Se documento el uso de IA y el prompt utilizado para las revisiones PR: [#52](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/52) — @Piastrellini (Coordinador / DevOps)
+
 - [fix/spec-frontend.md] Se corrigio la revalidación QA de pendiente a corregido y verificado PR: [#54](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/54) — @Piastrellini (Coordinador / DevOps)
 
 - [fix/changelog-titulos-prs] Corrección de títulos del changelog según los títulos reales de las PR PR: [#56](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/56) — @Piastrellini (Coordinador / DevOps)
