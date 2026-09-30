@@ -19,6 +19,7 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 ### Fixed
 - [fix/spec-frontend.md] Se corrigio la revalidación QA de pendiente a corregido y verificado PR: [#54](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/54) — @Piastrellini (Coordinador / DevOps)
+
 - [fix/changelog-titulos-prs] Corrección de títulos del changelog según los títulos reales de las PR PR: [#56](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/56) — @Piastrellini (Coordinador / DevOps)
 
 
