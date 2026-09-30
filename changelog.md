@@ -27,6 +27,11 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 - [fix/readme-actividad-2] Actualización del README con el objetivo y la documentación de la Actividad Obligatoria N°2 PR: [#58](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/58) — @Piastrellini (Coordinador / DevOps)
 
+- [fix/rc8-header-sesion-carrito] Centrado de sesión y carrito en el header y distribución mobile (RC8) PR: [#62](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/62) — @Piastrellini (Coordinador / DevOps)
+
+- [fix/rc9-nav-categorias-mobile] Menú Categorías sin ancho completo en mobile (RC9) PR: [#64](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/64) — @Piastrellini (Coordinador / DevOps)
+
+- [fix/rc10-imagenes-pixeladas] Imágenes de productos sin ampliación que degrade la calidad (RC10) PR: [#66](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/66) — @Piastrellini (Coordinador / DevOps)
 
 ---
 # [Released] 2026-08-31
