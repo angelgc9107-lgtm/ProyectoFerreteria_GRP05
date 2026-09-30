@@ -188,8 +188,8 @@ Todos los estados de foco deben ser visibles y accesibles para navegación media
 
 ## Resultado obtenido prompt para Figma MCP
 
-- [components.css](css\components.css)
-- [styles.css](css\styles.css)
+- [components.css](../../../css/components.css)
+- [styles.css](../../../css/styles.css)
 
 ## Ajustes manuales realizados
 
@@ -222,7 +222,7 @@ Se realizaron pruebas de integración entre los estilos desarrollados por el Des
 
 - **Estado:** Corregido.
 
-- **Revalidación QA:** Corregido y verificado.
+- **Revalidación QA:** Corregido y verificado en Momento 2 (testing sobre `develop`): contraste 5,32:1. Issue [#42](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/42) cerrado. Evidencia: `docs/04-testing/capturas/tc-1/momento-2/safari-desktop.png`.
 
 - **Referencia QA:** Test Case 1 (Compatibilidad desktop) — Momento 1.
 
@@ -240,7 +240,7 @@ Se realizaron pruebas de integración entre los estilos desarrollados por el Des
 
 - **Estado:** Corregido.
 
-- **Revalidación QA:** Pendiente.
+- **Revalidación QA:** Corregido y verificado en Momento 2 (testing sobre `develop`): contraste 5,33:1. Issue [#44](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/44) cerrado. Evidencia: `docs/04-testing/capturas/tc-4/momento-2/accesibilidad-screenshot.png`.
 
 - **Referencia QA:** Test Case 4 (Accesibilidad) — Momento 1.
 
@@ -258,13 +258,13 @@ Se realizaron pruebas de integración para validar el correcto funcionamiento de
 
 * **Problema detectado:** El archivo `index.html` referencia las imágenes `Bienvenido1.png` y `Bienvenido2.png` con mayúscula inicial, mientras que los archivos versionados en el repositorio se encuentran como `bienvenido1.png` y `bienvenido2.png`. En Windows las imágenes se visualizan correctamente, pero al publicar el sitio en GitHub Pages no se encuentran los archivos debido a la diferencia entre mayúsculas y minúsculas.
 
-* **Corrección realizada:** Pendiente. Se deberá unificar el nombre utilizado en el HTML con el nombre de los archivos del repositorio, utilizando minúsculas para ambas referencias.
+* **Corrección realizada:** Se unificaron las referencias del HTML con los nombres de los archivos del repositorio: `index.html` ahora referencia `bienvenido1.png` y `bienvenido2.png` en minúsculas.
 
 * **Archivo(s) modificado(s):** `index.html`
 
-* **Estado:** Pendiente.
+* **Estado:** Corregido.
 
-* **Revalidación QA:** Pendiente.
+* **Revalidación QA:** Corregido y verificado en `develop`: las 16 referencias de imágenes del HTML coinciden exactamente (incluidas mayúsculas y minúsculas) con los archivos versionados. Issue [#46](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/46) cerrado. Evidencia: `docs/04-testing/testing-doc.md` (sección "Verificación del hallazgo de Momento 2").
 
 * **Referencia QA:** Test Case 3 (Performance) — Momento 2.
 
@@ -272,8 +272,8 @@ Se realizaron pruebas de integración para validar el correcto funcionamiento de
 
 ## Evidencia de cierre
 
-- **1° Commit 95ee7134e5d1374bf3a1d9c3f669e732a1b7066d [Commit - Comiteando el spec del rol desarrollador frontend](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/39/changes/95ee7134e5d1374bf3a1d9c3f669e732a1b7066d)
-- **2° Commit b266d408a9d5d9be5f544e6f7769a0d45c2a36b2 [Commit - Agregar Components.css y Styles.css](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/39/changes/b266d408a9d5d9be5f544e6f7769a0d45c2a36b2)
+- **1° Commit:** `95ee7134e5d1374bf3a1d9c3f669e732a1b7066d` — [Commit - Comiteando el spec del rol desarrollador frontend](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/39/changes/95ee7134e5d1374bf3a1d9c3f669e732a1b7066d)
+- **2° Commit:** `b266d408a9d5d9be5f544e6f7769a0d45c2a36b2` — [Commit - Agregar Components.css y Styles.css](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/39/changes/b266d408a9d5d9be5f544e6f7769a0d45c2a36b2)
 
 - Enlace al archivo Figma utilizado para extraer el components.css & styles.css: [Mockup](https://www.figma.com/design/jX7NrMUtt6Tg7oiYqock6s/Sin-t%C3%ADtulo?node-id=0-1&t=ooNbHAfYrMmAh8i2-1).
 ![Capturas de la prueba local 1](../../../assets/images/desarrollador_frontend_actividad_N2_prueba_local_1.png)
