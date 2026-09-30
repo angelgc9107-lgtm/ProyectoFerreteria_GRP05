@@ -38,8 +38,10 @@ header > form label {
 }
 
 header > form input {
+    flex: 1 1 auto;
+    min-width: 0;
     width: 100%;
-    min-height: 2rem;
+    height: 2.5rem;
     padding: var(--space-2) var(--space-3);
     color: var(--color-white);
     border: var(--border-width) solid var(--color-ink);
@@ -55,12 +57,24 @@ header > form input:focus {
     border-color: var(--color-red);
 }
 
+/* Botón de búsqueda: cuadrado de la misma altura que el input, sin
+   encogerse y con el ícono centrado. Se anulan el padding, el
+   min-height y el radio heredados del estilo global de button. */
 header > form button {
+    display: flex;
+    flex: 0 0 2.5rem;
+    align-items: center;
+    justify-content: center;
     width: 2.5rem;
+    height: 2.5rem;
+    min-height: 0;
+    padding: 0;
     overflow: hidden;
     color: transparent;
     border: 0;
+    border-radius: 0;
     background: var(--color-ink);
+    font-size: 0;
     cursor: pointer;
 }
 
@@ -69,6 +83,7 @@ header > form button::after {
     display: block;
     color: var(--color-white);
     font-size: 1.5rem;
+    line-height: 1;
 }
 
 header > a[aria-label="Ver carrito de compras"],
