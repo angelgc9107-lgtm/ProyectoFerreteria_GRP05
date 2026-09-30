@@ -33,6 +33,8 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 - [fix/rc10-imagenes-pixeladas] Imágenes de productos sin ampliación que degrade la calidad (RC10) PR: [#66](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/66) — @Piastrellini (Coordinador / DevOps)
 
+- [fix/rc7-boton-buscar] Proporción del botón Buscar respecto del input de búsqueda (RC7) PR: [#68](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/68) — @Piastrellini (Coordinador / DevOps)
+
 ---
 # [Released] 2026-08-31
 
