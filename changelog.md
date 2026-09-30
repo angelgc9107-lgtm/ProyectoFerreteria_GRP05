@@ -6,16 +6,20 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 ### Added
 - [feature/coord-devops-update-figma-and-readme] Actualizacion del mockup,readme y creacion de spec PR: [#36](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/36) — @alandox1(Coordinador / DevOps)
 
-- [feature/doc-qa-tester-add-test-cases] Se documentan y ejecutan 5 test cases de QA (compatibilidad desktop, responsive móvil, performance, accesibilidad WCAG 2.1 y estructura HTML/validación W3C) usando Playwright MCP y GitHub MCP. Momento 1 incluye 3 issues de bug a partir de los hallazgos. PR: [#45](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/45) — @Piastrellini (Documentador / QA Tester)
+- [feature/doc-qa-tester-add-test-cases] [QA/Docs] Test cases Momento 1 y 2 - Compatibilidad, Responsive, Performance, Accesibilidad y Estructura HTML PR: [#45](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/45) — @Piastrellini (Documentador / QA Tester)
 
-- [feature/dev-frontend-css-add-styles] Archivos del desarrollador Frontend - changelog PR: [#39](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/39) — @angelgc9107-lgtm (Desarrollador Frontend)
+- [feature/dev-frontend-css-add-styles] Feature/dev frontend css add styles PR: [#39](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/39) — @angelgc9107-lgtm (Desarrollador Frontend)
 
-- [feature/responsive-design-add-responsive-styles] Creacion de spec-responsive.md y de responsive.css PR: [#40](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/40) — @luchobarrionuevo13 (Responsive Design)
+- [feature/responsive-design-add-responsive-styles] Responsive Design / Crear tamaños de pantalla - Spec responsive PR: [#40](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/40) — @luchobarrionuevo13 (Responsive Design)
 
 ### Changed
 - [feature/coord-devops-update-figma-and-readme] Cambio de Foto de mockup(viejo) por el actual PR: [#37](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/37) — @alandox1(Coordinador / DevOps)
 
-- [feature/css-correcciones] Correcciones finales del Index - changelog PR: [#47](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/47) — @angelgc9107-lgtm (Desarrollador Frontend)
+- [feature/css-correcciones] Feature/css correcciones PR: [#47](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/47) — @angelgc9107-lgtm (Desarrollador Frontend)
+
+### Fixed
+- [fix/spec-frontend.md] Se corrigio la revalidación QA de pendiente a corregido y verificado PR: [#54](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/54) — @Piastrellini (Coordinador / DevOps)
+- [fix/changelog-titulos-prs] Corrección de títulos del changelog según los títulos reales de las PR PR: [#NN](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/NN) — @Piastrellini (Coordinador / DevOps)
 
 
 ---
@@ -27,17 +31,16 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
  PR: [#4](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/4) — @Piastrellini (Especialista en IA y Prompt Engineering)
 - [feature/coordinador-setup-repo-and-pages] Feature/coordinador setup repo and pages - archivo Spec-devops - plantilla para PR PR: [#7](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/7) — @angelgc9107-lgtm (Coordinador / DevOps)
 - [feature/doc-ux-add-readme-and-mockup] Documentador Y Disenador UX - Creacion de mockup PR: [#9](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/9) — @alandox1 (Documentador Y Disenador UX)
-- [feature/frontend-add-html-structure] Especificacion del trabajo a realizar. PR: [#14](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/14) — @luchobarrionuevo13 (Desarrollador Frontend)
+- [feature/frontend-add-html-structure] Especificacion del trabajo a realizar PR: [#14](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/14) — @luchobarrionuevo13 (Desarrollador Frontend)
 - [feature/ia-add-prompts-1-to-5] IA : Prompts del equipo y comparativa de modelos PR: [#10](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/10)  — @Piastrellini (Especialista en IA y Prompt Engineering)
 - [feature/frontend-add-html-structure] agregar estructura HTML inicial de FerroLab -- Desarrollador Frontend PR: [#15](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/15) — @luchobarrionuevo13 (Desarrollador Frontend)
 - [feature/coordinador] Actualización check list final - changelog PR: [#18](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/18) — @angelgc9107-lgtm (Coordinador / DevOps)
 
 ### Fixed
-- [fix/spec-ux-historial] Actualización check list spec-ux - changelog PR: [#21](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/21) — @angelgc9107-lgtm (Coordinador / DevOps)
+- [fix/spec-ux-historial] Commit - Historial y check-list del spec-ux PR: [#21](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/21) — @angelgc9107-lgtm (Coordinador / DevOps)
 - [fix/spec-ux-documentado] Commit - trazabilidad de la generación del archivo Readme.md PR: [#23](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/23) — @angelgc9107-lgtm (Coordinador / DevOps)
-- [fix/spec-ia-prompt] Corrección en los archivos prompt.md / comparativa-modelos.md / spec-ia.md - changelog PR: [#25](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/25) — @angelgc9107-lgtm (Coordinador / DevOps)
-- [fix/spec-frontend.md] Checklist spec-frontend.md - changelog PR: [#27](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/27) — @angelgc9107-lgtm (Coordinador / DevOps)
+- [fix/spec-ia-prompt] Commit - corrección a los archivos - spec-ia / prompt-md / comparativ… PR: [#25](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/25) — @angelgc9107-lgtm (Coordinador / DevOps)
+- [fix/spec-frontend.md] Commit - corrección spec-frontend.md PR: [#27](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/27) — @angelgc9107-lgtm (Coordinador / DevOps)
 - [fix/changelog-nombres] Correccion de nombres del changelog para evitar excesivo tamaño de textos PR: [#30](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/30) — @alandox1 (Coordinador / DevOps)
-- [fix/correccion-carpeta-img-y-nombres] Fix-Carpetas y nombres de las imagenes- #32
- PR: [#32](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/32) — @alandox1 (Coordinador / DevOps)
+- [fix/correccion-carpeta-img-y-nombres] Fix-Carpetas y nombres de las imagenes PR: [#32](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/32) — @alandox1 (Coordinador / DevOps)
 - [fix/documentar-changelog-30-y-32] Completar en Fixed las entradas de #30 y #32, e incluirse a sí misma PR: [#34](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/34) — @alandox1 (Coordinador / DevOps)
