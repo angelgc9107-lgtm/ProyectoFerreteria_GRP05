@@ -142,11 +142,11 @@
 
     /* Catálogo: filtros al costado, productos en 2 columnas */
     #catalogo {
-        grid-template-columns: 140px minmax(0, 1fr);
+        grid-template-columns: var(--filters-width) minmax(0, 1fr);
     }
 
     #catalogo > aside {
-        width: 140px;
+        width: var(--filters-width);
     }
 
     #catalogo > div {
