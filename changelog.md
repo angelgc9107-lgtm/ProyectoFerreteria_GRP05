@@ -25,6 +25,8 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 - [fix/changelog-titulos-prs] Corrección de títulos del changelog según los títulos reales de las PR PR: [#56](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/56) — @Piastrellini (Coordinador / DevOps)
 
+- [fix/readme-actividad-2] Actualización del README con el objetivo y la documentación de la Actividad Obligatoria N°2 PR: [#58](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/58) — @Piastrellini (Coordinador / DevOps)
+
 
 ---
 # [Released] 2026-08-31
