@@ -17,8 +17,7 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 - [feature/css-correcciones] Correcciones finales del Index - changelog PR: [#47](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/47) — @angelgc9107-lgtm (Desarrollador Frontend)
 
-### Fixed
-- [fix/spec-frontend.md] Se corrigio la revalidación QA de pendiente a corregido y verificado PR: [#54](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/54) — @Piastrellini (Coordinador / DevOps)
+
 ---
 # [Released] 2026-08-31
 
