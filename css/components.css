@@ -71,10 +71,15 @@ header > form button::after {
     font-size: 1.5rem;
 }
 
+/* Carrito y sesión: misma caja de 2.5rem de alto con centrado vertical,
+   alineados con el centro del buscador. */
 header > a[aria-label="Ver carrito de compras"],
 header > span {
     position: absolute;
-    top: var(--space-4);
+    top: var(--space-2);
+    display: flex;
+    align-items: center;
+    height: 2.5rem;
     font-size: var(--font-size-sm);
 }
 
@@ -87,6 +92,7 @@ header > a[aria-label="Ver carrito de compras"] {
 header > a[aria-label="Ver carrito de compras"]::before {
     content: "🛒";
     font-size: 1.75rem;
+    line-height: 1;
 }
 
 header > span {
