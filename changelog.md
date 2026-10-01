@@ -47,6 +47,8 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 - [fix/rc22-servicios-alineacion-mobile] Alineación de la lista de servicios en mobile (RC22) PR: [#80](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/80) — @Piastrellini (Coordinador / DevOps)
 
+- [fix/rc23-titulo-servicios-mobile] Título de servicios sin palabra aislada en mobile (RC23) PR: [#82](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/82) — @Piastrellini (Coordinador / DevOps)
+
 ---
 # [Released] 2026-08-31
 
