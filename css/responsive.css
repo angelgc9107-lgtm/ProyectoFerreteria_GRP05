@@ -62,10 +62,6 @@
         padding: var(--space-2);
     }
 
-     nav details {
-        width: 100%;
-    }
-
     /* --- Ofertas y servicios: 1 columna en mobile --- */
     #ofertas > div,
     section[aria-label="Servicios de FerroLab"] > ul {
