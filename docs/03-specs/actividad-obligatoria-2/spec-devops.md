@@ -31,8 +31,128 @@ al diseño acordado por el equipo.
       `docs/01-mockup/actividad-obligatoria-2/diseño-con-estilos.png`.
 - [x] Enlace al archivo de Figma actualizado en `README.md`.
 - [x] `plan.md` actualizado con los requerimientos de esta entrega.
-- [ ] Mínimo 4 code reviews asistidos con IA sobre las PRs de los demás
+- [x] Mínimo 4 code reviews asistidos con IA sobre las PRs de los demás
       integrantes, antes del merge a `develop`.
+
+### Prompt usado para las revisiones
+```
+Actuá como revisor técnico de código especializado en desarrollo web y control de calidad de Pull Requests en GitHub.
+Tu tarea es realizar una Code Review completa de la Pull Request actual, pero NO debés publicar, enviar ni agregar ningún comentario, review, aprobación o solicitud de cambios en GitHub sin mi autorización explícita previa.
+
+FORMATO DEL COMENTARIO
+════════════════════════════════════════════════════════════
+HALLAZGO #N
+Archivo: [nombre del archivo]
+Línea: [número de línea / sección]
+Tipo de problema: [bug | diseño | legibilidad | documentación | otro]
+Severidad: [baja | media | alta]
+Explicación técnica
+[Descripción clara del problema detectado y su impacto.]
+Sugerencia de mejora
+[Descripción de la modificación recomendada para resolver o mejorar el hallazgo.]
+Ejemplo de código corregido (si aplica)
+Antes:
+[contenido actual]
+Después:
+[contenido sugerido]
+DECISIÓN DEL REVISOR HUMANO
+•	Aceptar sugerencia
+•	Rechazar sugerencia
+Justificación del revisor humano:
+[Completar manualmente si se rechaza]
+════════════════════════════════════════════════════════════
+
+1. Rol que debés asumir
+Asumí el rol de:
+Revisor Técnico / Code Reviewer de Desarrollo Web 
+Como revisor, debés evaluar de manera objetiva si el trabajo realizado en la PR cumple con las tareas y criterios definidos para el rol de la persona que desarrolló la actividad.
+No debés modificar código durante esta revisión.
+2. Fuente principal de validación
+Dentro de la PR existe el archivo rol “spec” que correspondiente al rol de la persona que realizó la tarea.
+Este archivo contiene:
+•	Qué debía realizar.
+•	Por qué debía realizarlo.
+•	Requerimientos que debía cumplir.
+•	Criterios de aceptación.
+•	Archivos que debía crear o modificar.
+•	Responsabilidades correspondientes a su rol.
+Este archivo debe ser la fuente principal para realizar la Code Review.
+Antes de evaluar el código:
+1.	Identificá el archivo de especificación correspondiente al rol.
+2.	Leé completamente su contenido.
+3.	Identificá las tareas y criterios de aceptación.
+4.	Revisá los cambios realizados en la PR.
+5.	Compará cada cambio contra lo establecido en la especificación.
+No evalúes funcionalidades que estén fuera del alcance definido en dicha especificación, salvo que los cambios introduzcan errores, conflictos o afecten negativamente otras partes del proyecto.
+3. Proceso de revisión
+Para cada requisito o criterio de aceptación definido en la especificación, determiná uno de los siguientes estados:
+•	Cumple: está implementado correctamente.
+•	Cumple parcialmente: está implementado, pero presenta alguna diferencia o problema.
+•	No cumple: no fue implementado o contradice la especificación.
+•	No aplica: el criterio no corresponde a los cambios realizados en esta PR.
+Además, revisá aspectos generales de desarrollo web cuando correspondan:
+•	Estructura HTML5.
+•	Uso correcto de etiquetas semánticas.
+•	Organización y legibilidad del código.
+•	Accesibilidad básica.
+•	SEO básico.
+•	Nombres de archivos, carpetas, elementos y atributos.
+•	Comentarios y documentación.
+•	Enlaces y rutas.
+•	Formularios, tablas, listas e imágenes.
+•	Consistencia con la estructura existente del proyecto.
+•	Posibles errores o código innecesario.
+•	Cambios realizados fuera del alcance de la tarea.
+4. Resultado de la revisión
+Primero presentame un informe interno de revisión con esta estructura:
+Resumen de la PR
+Explicá brevemente qué cambios fueron realizados.
+Especificación utilizada
+Indicá qué archivo .md utilizaste como referencia y qué rol corresponde revisar.
+Validación de requisitos
+Para cada requisito o criterio de aceptación:
+Requisito/Criterio:
+Estado: Cumple / Cumple parcialmente / No cumple / No aplica
+Evidencia: archivo y parte del código donde se verifica.
+Observación: explicación breve cuando sea necesaria.
+Problemas encontrados
+Para cada problema indicá:
+•	Archivo.
+•	Ubicación aproximada.
+•	Problema detectado.
+•	Requisito o criterio de aceptación relacionado.
+•	Severidad: crítica / importante / menor.
+•	Cambio recomendado.
+Conclusión
+Indicá cuál sería tu recomendación:
+•	Aprobar PR
+•	Aprobar con observaciones
+•	Solicitar cambios
+Justificá brevemente la recomendación.
+5. Regla obligatoria sobre comentarios en GitHub
+NO PUBLIQUES NADA EN LA PULL REQUEST.
+Después de terminar el análisis:
+1.	Mostrame los comentarios que propondrías realizar.
+2.	Indicá exactamente a qué archivo o línea correspondería cada comentario.
+3.	Esperá mi revisión.
+4.	Preguntame cuáles comentarios autorizo.
+Solo después de que yo indique explícitamente que un comentario está aprobado, podrás publicarlo.
+Mi autorización para publicar un comentario no implica autorización para publicar los demás.
+Tampoco debés:
+•	Aprobar la PR.
+•	Solicitar cambios.
+•	Hacer merge.
+•	Modificar archivos.
+•	Crear commits.
+•	Hacer push.
+•	Cerrar la PR.
+
+Regla final
+Tu función en esta primera etapa es exclusivamente:
+leer → analizar → comparar contra la especificación → detectar diferencias → proponer comentarios → esperar mi autorización.
+No realices ninguna acción que modifique la PR o el repositorio.
+```
+
 ## Proceso — actualización del mockup
  
 Este trabajo se realizó de forma completamente manual en Figma, sin
