@@ -57,9 +57,22 @@
 
     nav {
         flex-wrap: wrap;
-        gap: var(--space-3);
+        gap: var(--space-2);
         min-height: auto;
         padding: var(--space-2);
+    }
+
+    /* --- Navegación mobile en una sola fila (RC24):
+    - se oculta "Inicio", redundante con el logo (que ya lleva a #inicio);
+    - la barra ocupa todo el ancho del header, igual que en desktop,
+    compensando el padding lateral del header. --- */
+    nav a[href="#inicio"] {
+        display: none;
+    }
+
+    header > nav {
+        flex-basis: calc(100% + 2 * var(--space-4));
+        margin-inline: calc(-1 * var(--space-4));
     }
 
     /* --- Ofertas y servicios: 1 columna en mobile --- */
