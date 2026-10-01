@@ -230,14 +230,22 @@ construida en la Actividad Obligatoria N°1.
 ### Criterios de aceptación
  
 - [x] Request Changes de la Actividad 1 resueltos y aprobados por el docente.
-- [ ] `css/styles.css`, `css/components.css` y `css/responsive.css`
-      implementados y coherentes con el mockup actualizado.
-- [ ] Sitio responsive sin overflow horizontal en mobile, tablet y desktop.
-- [ ] 5 test cases documentados en `docs/04-testing/` con hallazgos
-      registrados como issues.
-- [ ] Mockup actualizado con paleta, tipografías completas (H1-H6), y
-      estados de interacción.
-- [ ] Mínimo 4 code reviews asistidos con IA documentados con evidencia.
+- [x] `css/styles.css`, `css/components.css` y `css/responsive.css`
+      implementados y coherentes con el mockup actualizado
+      (incluye las correcciones de la auditoría RC7 a RC11: #68, #62, #64, #72, #66 y #70).
+- [x] Sitio responsive sin overflow horizontal en mobile, tablet y desktop
+      (QA Momento 2 y verificación en GitHub Pages en 8 anchos; ver
+      [spec-responsive.md](docs/03-specs/actividad-obligatoria-2/spec-responsive.md)).
+- [x] 5 test cases documentados en `docs/04-testing/` con hallazgos
+      registrados como issues (#42, #43, #44 y #46; ver
+      [testing-doc.md](docs/04-testing/testing-doc.md)).
+- [x] Mockup actualizado con paleta, tipografías completas (H1-H6), y
+      estados de interacción
+      ([diseño-con-estilos.png](docs/01-mockup/actividad-obligatoria-2/dise%C3%B1o-con-estilos.png)).
+- [x] Mínimo 4 code reviews asistidos con IA documentados con evidencia
+      (reviews estructuradas en #39, #40, #45 y #47; prompt y proceso en
+      [spec-devops.md](docs/03-specs/actividad-obligatoria-2/spec-devops.md), PR #52).
+
 ### Vinculación con specs individuales
  
 Cada rol documenta el proceso detallado de su tarea en su propio
