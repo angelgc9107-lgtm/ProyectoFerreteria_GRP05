@@ -39,6 +39,8 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 - [fix/rc9-nav-categorias-mobile] Menú Categorías sin ancho completo en mobile (RC9) — corrección post-merge PR: [#72](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/72) — @Piastrellini (Coordinador / DevOps)
 
+- [fix/rc5-spec-responsive-criterios] Criterios de spec-responsive sincronizados con los resultados de QA (RC5) PR: [#74](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/74) — @Piastrellini (Coordinador / DevOps)
+
 ---
 # [Released] 2026-08-31
 
