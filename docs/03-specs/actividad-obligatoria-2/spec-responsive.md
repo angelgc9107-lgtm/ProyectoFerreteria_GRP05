@@ -160,8 +160,7 @@ dependan de coordenadas absolutas en tablets angostas. El layout mobile sigue
 encapsulado en `max-width: 767.98px` y el diseño original de desktop se
 restaura desde `1024px`.
 
-Estas decisiones son de planificación; la implementación concreta se
-realizará en `responsive.css` en una etapa posterior.
+Estas correcciones fueron implementadas en `css/responsive.css` y verificadas según lo documentado en "Evidencia de verificación final".
 
 ## Overflow horizontal
 
@@ -182,14 +181,13 @@ dar por finalizada la implementación.
 ## Criterios de aceptación
 
 - [x] Breakpoints definidos y documentados para mobile, tablet y desktop.
-- [x] Layout mobile-first implementado (con el ajuste documentado en
-      "Decisiones finales de breakpoints y justificación").
-- [ ] Todas las secciones del mockup se adaptan correctamente en los tres breakpoints (requiere verificación visual posterior a las correcciones de tablet).
+- [x] Layout mobile-first implementado (con el ajuste documentado en "Decisiones finales de breakpoints y justificación").
+- [x] Todas las secciones del mockup se adaptan correctamente en los tres breakpoints. Verificado en GitHub Pages tras las correcciones de RC8, RC9 y RC11 (ver "Evidencia de verificación final").
 - [x] Flexbox y/o CSS Grid utilizados según las necesidades de las secciones.
-- [ ] No existe overflow horizontal en ningún dispositivo o breakpoint (pendiente de verificación manual en los rangos finales).
-- [ ] Se mantiene coherencia visual con el mockup actualizado (pendiente de verificación visual).
+- [x] No existe overflow horizontal en ningún dispositivo o breakpoint. Verificado por QA en Momento 2 (TC-2) sobre iPhone 14 Pro (390×844), Galaxy S23 (412×915) e iPad Air (820×1180). El overflow del mapa en iPad Air (issue #43) quedó corregido. Reconfirmado en GitHub Pages en 8 anchos, incluidos los bordes de breakpoint (ver "Evidencia de verificación final").
+- [x] Se mantiene coherencia visual con el mockup actualizado. Verificado en GitHub Pages tras las correcciones de RC7, RC8, RC9, RC10 y RC11.
 - [x] Se respetan y reutilizan los estilos existentes de styles.css y components.css siempre que sea posible.
-- [ ] Pruebas de integración realizadas con el Desarrollador Frontend en localhost y GitHub Pages.
+- [x] Pruebas de integración realizadas en localhost (Desarrollador Frontend y Especialista en Responsive) y verificación en GitHub Pages (Coordinador / DevOps). Ver "Evidencia de verificación final".
 
 ## Evidencia de implementación
 
@@ -574,8 +572,7 @@ dos hallazgos del code review descritos anteriormente.
 
 La corrección se realizó únicamente en `css/responsive.css`. El bloque mobile
 continúa encapsulado en `@media (max-width: 767.98px)` y el bloque desktop
-continúa usando `@media (min-width: 1024px)`, por lo que la validación visual
-de esas transiciones queda pendiente.
+por lo que la validación visual de esas transiciones se realizó posteriormente (ver "Pruebas realizadas").
 
 ### Decisiones finales de breakpoints y justificación
 
@@ -626,23 +623,23 @@ en cuanto a objetivo y cobertura de breakpoints, ajustada técnicamente para
 convivir con un sistema de estilos base pensado originalmente para
 desktop.
 
-### Pruebas realizadas y pendientes
+### Pruebas realizadas
 
-La validación estática del archivo `css/responsive.css` y la comprobación de
-formato del diff fueron realizadas sin errores. Esto no sustituye la
-verificación visual del sitio.
+- **Validación estática:** `css/responsive.css` sin errores de sintaxis ni de formato del diff.
+- **Integración en localhost:** realizada por el Desarrollador Frontend (capturas `assets/images/desarrollador_frontend_actividad_N2_prueba_local_1.png` a `_3.png`).
+- **QA Momento 2 (TC-2) sobre `develop`:** iPhone 14 Pro (390×844), Galaxy S23 (412×915) e iPad Air (820×1180) sin overflow horizontal. Ver [testing-doc.md](../../04-testing/testing-doc.md).
+- **Verificación en GitHub Pages (30/09/2026):** 390, 412, 820 y 1280px, más los bordes de breakpoint 375, 768, 1023 y 1024px. Sin overflow horizontal, los tres CSS cargados y 0 imágenes rotas. Se verificó además que el CSS publicado coincide con el de `release/actividad-obligatoria-2`. Capturas en `evidencia-github-pages/`.
+- **Coherencia con el mockup:** revisión visual de las capturas contra `diseño-con-estilos.png` tras las correcciones de RC7 a RC11.
 
-Quedan pendientes las siguientes pruebas manuales en el navegador:
+No quedan pruebas pendientes.
 
-- **Mobile:** alrededor de `375px`, verificando el header apilado y el resto
-  de las adaptaciones existentes.
-- **Tablet:** `768px`, un ancho intermedio, y `1023px`, verificando que el
-  header no superponga sus elementos, que la navegación sea visible y que el
-  footer esté en una sola columna sin overflow.
-- **Desktop:** `1024px` y tamaños superiores, verificando la restauración del
-  header y del footer originales.
-- Transiciones entre los tres rangos, incluyendo la ausencia de overflow
-  horizontal y la coherencia visual con el mockup.
+## Evidencia de verificación final
 
-También queda pendiente la prueba de integración con el Desarrollador
-Frontend en localhost y la publicación/verificación en GitHub Pages.
+| Criterio | Evidencia |
+|----------|-----------|
+| Sin overflow horizontal | [testing-doc.md — Momento 2](../../04-testing/testing-doc.md) · [test-case-2.md](../../04-testing/test-case-2.md) · capturas en `docs/04-testing/capturas/tc-2/momento-2/` (`iphone14pro.png`, `galaxys23.png`, `ipadair.png`) |
+| Overflow del mapa en iPad Air | [Issue #43](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/43) (cerrado), verificado en Momento 2: 805px = 805px |
+| Integración en localhost | `assets/images/desarrollador_frontend_actividad_N2_prueba_local_1.png`, `_2.png`, `_3.png` |
+| Integración en GitHub Pages | Sitio publicado: [angelgc9107-lgtm.github.io/ProyectoFerreteria_GRP05](https://angelgc9107-lgtm.github.io/ProyectoFerreteria_GRP05/) (rama `release/actividad-obligatoria-2`). Verificado el 29/09/2026 con Playwright (Chromium) en 390×844, 412×915, 820×1180 y 1280×800: sin overflow horizontal (`scrollWidth` = ancho del viewport en los 4 casos), `styles.css`, `components.css` y `responsive.css` cargados, 0 de 16 imágenes rotas. Capturas: [mobile 390](evidencia-github-pages/github-pages-mobile-390.png) · [mobile 412](evidencia-github-pages/github-pages-mobile-412.png) · [tablet 820](evidencia-github-pages/github-pages-tablet-820.png) · [desktop 1280](evidencia-github-pages/github-pages-desktop-1280.png) |
+| Integración en GitHub Pages | Sitio publicado: [angelgc9107-lgtm.github.io/ProyectoFerreteria_GRP05](https://angelgc9107-lgtm.github.io/ProyectoFerreteria_GRP05/) (rama `release/actividad-obligatoria-2`). Verificado el 30/09/2026 con Playwright (Chromium) en 375, 390, 412, 768, 820, 1023, 1024 y 1280px: sin overflow horizontal, `styles.css`, `components.css` y `responsive.css` cargados, 0 imágenes rotas y CSS publicado idéntico al del repositorio. Capturas: [mobile 390](evidencia-github-pages/github-pages-mobile-390.png) · [mobile 412](evidencia-github-pages/github-pages-mobile-412.png) · [tablet 820](evidencia-github-pages/github-pages-tablet-820.png) · [desktop 1280](evidencia-github-pages/github-pages-desktop-1280.png) · [borde 375](evidencia-github-pages/github-pages-borde-375.png) · [borde 768](evidencia-github-pages/github-pages-borde-768.png) · [borde 1023](evidencia-github-pages/github-pages-borde-1023.png) · [borde 1024](evidencia-github-pages/github-pages-borde-1024.png) |
+| Adaptación y coherencia con el mockup | Correcciones de la auditoría: RC7 [#68](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/68) · RC8 [#62](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/62) · RC9 [#64](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/64) y [#72](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/72) (corrección post-merge) · RC10 [#66](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/66) · RC11 [#70](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/70) |
