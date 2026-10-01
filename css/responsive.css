@@ -92,6 +92,14 @@
         grid-template-columns: 1fr;
     }
 
+        /* --- Títulos de sección: tamaño menor en mobile y líneas
+       balanceadas, para evitar palabras aisladas (RC23) --- */
+    main > section > h1,
+    main > section > h2 {
+        font-size: var(--font-size-lg);
+        text-wrap: balance;
+    }
+
     /* --- Catálogo: filtros arriba, productos abajo, 1 columna --- */
     #catalogo {
         grid-template-columns: 1fr;
