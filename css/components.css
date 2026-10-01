@@ -158,7 +158,9 @@ nav details li + li {
     width: 100%;
     height: 7.5rem;
     margin-bottom: var(--space-2);
-    object-fit: contain;
+    /* scale-down: achica la imagen si es grande, pero nunca la agranda
+       por encima de su resolución original (evita el pixelado). */
+    object-fit: scale-down;
     background: var(--color-white);
 }
 
