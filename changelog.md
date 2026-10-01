@@ -41,6 +41,8 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 - [fix/rc5-spec-responsive-criterios] Criterios de spec-responsive sincronizados con los resultados de QA (RC5) PR: [#74](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/74) — @Piastrellini (Coordinador / DevOps)
 
+- [fix/rc1-plan-criterios-aceptacion] Criterios de aceptación de AO2 actualizados en plan.md (RC1) PR: [#76](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/76) — @Piastrellini (Coordinador / DevOps)
+
 ---
 # [Released] 2026-08-31
 
