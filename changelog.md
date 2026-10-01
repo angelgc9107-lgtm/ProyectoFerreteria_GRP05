@@ -45,6 +45,8 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 - [fix/rc24-nav-mobile-una-fila] Navegación mobile en una sola fila (RC24) PR: [#78](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/78) — @Piastrellini (Coordinador / DevOps)
 
+- [fix/rc22-servicios-alineacion-mobile] Alineación de la lista de servicios en mobile (RC22) PR: [#80](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/80) — @Piastrellini (Coordinador / DevOps)
+
 ---
 # [Released] 2026-08-31
 
