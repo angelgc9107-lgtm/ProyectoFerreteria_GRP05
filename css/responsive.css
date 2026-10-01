@@ -80,6 +80,12 @@
     section[aria-label="Servicios de FerroLab"] > ul {
         grid-template-columns: 1fr;
     }
+    
+    /* --- Servicios: se quita el padding-left global de ul para que
+       la grilla quede alineada con el contenedor (RC22) --- */
+    section[aria-label="Servicios de FerroLab"] > ul {
+        padding-left: 0;
+    }
 
     /* --- Bienvenida: imágenes y texto apilados --- */
     section[aria-labelledby="bienvenida"] {
