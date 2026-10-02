@@ -38,8 +38,10 @@ header > form label {
 }
 
 header > form input {
+    flex: 1 1 auto;
+    min-width: 0;
     width: 100%;
-    min-height: 2rem;
+    height: 2.5rem;
     padding: var(--space-2) var(--space-3);
     color: var(--color-white);
     border: var(--border-width) solid var(--color-ink);
@@ -55,12 +57,24 @@ header > form input:focus {
     border-color: var(--color-red);
 }
 
+/* Botón de búsqueda: cuadrado de la misma altura que el input, sin
+   encogerse y con el ícono centrado. Se anulan el padding, el
+   min-height y el radio heredados del estilo global de button. */
 header > form button {
+    display: flex;
+    flex: 0 0 2.5rem;
+    align-items: center;
+    justify-content: center;
     width: 2.5rem;
+    height: 2.5rem;
+    min-height: 0;
+    padding: 0;
     overflow: hidden;
     color: transparent;
     border: 0;
+    border-radius: 0;
     background: var(--color-ink);
+    font-size: 0;
     cursor: pointer;
 }
 
@@ -69,12 +83,18 @@ header > form button::after {
     display: block;
     color: var(--color-white);
     font-size: 1.5rem;
+    line-height: 1;
 }
 
+/* Carrito y sesión: misma caja de 2.5rem de alto con centrado vertical,
+   alineados con el centro del buscador. */
 header > a[aria-label="Ver carrito de compras"],
 header > span {
     position: absolute;
-    top: var(--space-4);
+    top: var(--space-2);
+    display: flex;
+    align-items: center;
+    height: 2.5rem;
     font-size: var(--font-size-sm);
 }
 
@@ -87,6 +107,7 @@ header > a[aria-label="Ver carrito de compras"] {
 header > a[aria-label="Ver carrito de compras"]::before {
     content: "🛒";
     font-size: 1.75rem;
+    line-height: 1;
 }
 
 header > span {
@@ -152,7 +173,9 @@ nav details li + li {
     width: 100%;
     height: 7.5rem;
     margin-bottom: var(--space-2);
-    object-fit: contain;
+    /* scale-down: achica la imagen si es grande, pero nunca la agranda
+       por encima de su resolución original (evita el pixelado). */
+    object-fit: scale-down;
     background: var(--color-white);
 }
 
@@ -218,7 +241,7 @@ button[aria-disabled="true"] {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-rows: repeat(8, auto);
-    width: 140px;
+    width: var(--filters-width);
     gap: var(--space-1) var(--space-2);
     padding: var(--space-2);
     color: var(--color-white);

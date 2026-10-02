@@ -16,14 +16,14 @@
    ========================================================== */
 @media (max-width: 767.98px) {
 
-    /* --- Header: logo, buscador, carrito y sesión pasan de posición
-       absoluta (pensada para desktop) a un flujo vertical simple.
-       Todo queda encapsulado aquí para no afectar tablet/desktop. --- */
+     /* --- Header mobile: primera fila con logo, carrito y sesión
+       centrados entre sí; el buscador y la navegación ocupan cada
+       uno una fila completa debajo. --- */
     header {
         display: flex;
-        flex-direction: column;
-        align-items: stretch;
-        gap: var(--space-2);
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--space-2) var(--space-3);
         padding: var(--space-3) var(--space-4);
     }
 
@@ -31,31 +31,48 @@
         position: static;
         width: 2.75rem;
         height: 2.75rem;
-        align-self: flex-start;
     }
 
     header > form {
+        order: 1;
+        flex: 1 1 100%;
         width: 100%;
         max-width: 100%;
         margin: 0;
-        order: 0;
     }
 
     header > a[aria-label="Ver carrito de compras"],
     header > span {
         position: static;
-        align-self: flex-start;
+    }
+
+    header > a[aria-label="Ver carrito de compras"] {
+        margin-left: auto;
+    }
+
+    header > nav {
+        order: 1;
+        flex: 1 1 100%;
     }
 
     nav {
         flex-wrap: wrap;
-        gap: var(--space-3);
+        gap: var(--space-2);
         min-height: auto;
         padding: var(--space-2);
     }
 
-    nav details {
-        width: 100%;
+    /* --- Navegación mobile en una sola fila (RC24):
+    - se oculta "Inicio", redundante con el logo (que ya lleva a #inicio);
+    - la barra ocupa todo el ancho del header, igual que en desktop,
+    compensando el padding lateral del header. --- */
+    nav a[href="#inicio"] {
+        display: none;
+    }
+
+    header > nav {
+        flex-basis: calc(100% + 2 * var(--space-4));
+        margin-inline: calc(-1 * var(--space-4));
     }
 
     /* --- Ofertas y servicios: 1 columna en mobile --- */
@@ -63,10 +80,24 @@
     section[aria-label="Servicios de FerroLab"] > ul {
         grid-template-columns: 1fr;
     }
+    
+    /* --- Servicios: se quita el padding-left global de ul para que
+       la grilla quede alineada con el contenedor (RC22) --- */
+    section[aria-label="Servicios de FerroLab"] > ul {
+        padding-left: 0;
+    }
 
     /* --- Bienvenida: imágenes y texto apilados --- */
     section[aria-labelledby="bienvenida"] {
         grid-template-columns: 1fr;
+    }
+
+        /* --- Títulos de sección: tamaño menor en mobile y líneas
+       balanceadas, para evitar palabras aisladas (RC23) --- */
+    main > section > h1,
+    main > section > h2 {
+        font-size: var(--font-size-lg);
+        text-wrap: balance;
     }
 
     /* --- Catálogo: filtros arriba, productos abajo, 1 columna --- */
@@ -142,11 +173,11 @@
 
     /* Catálogo: filtros al costado, productos en 2 columnas */
     #catalogo {
-        grid-template-columns: 140px minmax(0, 1fr);
+        grid-template-columns: var(--filters-width) minmax(0, 1fr);
     }
 
     #catalogo > aside {
-        width: 140px;
+        width: var(--filters-width);
     }
 
     #catalogo > div {
