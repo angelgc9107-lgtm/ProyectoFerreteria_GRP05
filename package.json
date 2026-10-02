@@ -1,0 +1,28 @@
+{
+  "name": "proyectoferreteria_grp05",
+  "version": "1.0.0",
+  "description": "- **Carrera:** Tecnicatura Universitaria en Programación de Sistemas\r - **Materia:** Programación Web I",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+  "test:qa": "echo \"Ejecutar validaciones manuales con Playwright MCP y revisar docs/04-testing\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues"
+  },
+  "homepage": "https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05#readme",
+  "devDependencies": {
+    "axe-core": "^4.13.0",
+    "playwright": "^1.63.0"
+  }
+}

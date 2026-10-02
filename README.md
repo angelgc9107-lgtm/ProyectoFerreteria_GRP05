@@ -14,14 +14,20 @@ carrito de compras, elegir un método de pago y confirmar su pedido.
 
 ## 🎯 Objetivo del entregable
 
-Construir la estructura base en HTML5 de la página web, con sus secciones
-principales (Inicio, Catálogo, Carrito y Contacto), dejando marcadores para
-la futura incorporación de estilos CSS e interactividad JavaScript.
+**Actividad Obligatoria N°1:** construir la estructura base en HTML5 de la
+página web, con sus secciones principales (Inicio, Catálogo, Carrito y
+Contacto).
+
+**Actividad Obligatoria N°2:** incorporar los estilos visuales mediante CSS
+a partir del mockup actualizado en Figma (paleta de colores, tipografías,
+espaciados y estados de interacción), implementar el diseño responsive para
+mobile, tablet y desktop con Flexbox, CSS Grid y media queries, y validar el
+sitio con un proceso de QA asistido por Playwright MCP y GitHub MCP.
 
 ## 🛠️ Tecnologías utilizadas
 
 - HTML5
-- CSS (a incorporar en próximas entregas)
+- CSS3 (`css/styles.css`, `css/components.css` y `css/responsive.css`)
 - JavaScript (a incorporar en próximas entregas)
 
 ## ✅ Funcionalidades previstas
@@ -43,7 +49,9 @@ sección de Contacto/Ubicación integrada en el footer. El diseño completo
 puede verse en el mockup de Figma enlazado abajo.
 
 ## 📁 Documentación
-- [Mockup](https://www.figma.com/design/jX7NrMUtt6Tg7oiYqock6s/Sin-t%C3%ADtulo?node-id=0-1&t=ooNbHAfYrMmAh8i2-1)
+- [Mockup en Figma (actualizado en la Actividad Obligatoria N°2)](https://www.figma.com/design/jX7NrMUtt6Tg7oiYqock6s/Sin-t%C3%ADtulo?node-id=0-1&t=WQbUPZNRHeUilp9W-1)
+- [Mockup con estilos exportado (Actividad Obligatoria N°2)](docs/01-mockup/actividad-obligatoria-2/dise%C3%B1o-con-estilos.png)
+- [Índice de test cases (Actividad Obligatoria N°2)](docs/04-testing/testing-doc.md)
 - [Índice de Prompts](docs/02-prompts/prompts.md)
 - [Changelog](changelog.md)
 
@@ -53,7 +61,7 @@ puede verse en el mockup de Figma enlazado abajo.
 
 | Nombre y Apellido | Matrícula | Usuario de GitHub | Rol |
 |-----| ----- | ------ | ------ |
-| Luciano Barrionuevo | 156398 | @LuchoBarrionuevo13| Desarrollador FRONTED |
-| Alan Diaz | 152841 | @alandox1| Documentador Y Disenador UX |
-| Angel Cuarteron | 159438 | @angelgc9107-lgtm | Coordinador Y DEVOPS |
-| Thiago Piastrellini | 158097 | @Piastrellini |  Especialista en IA y Prompt Engineering |
+| Luciano Barrionuevo | 156398 | @LuchoBarrionuevo13| Especialista en Responsive Design|
+| Alan Diaz | 152841 | @alandox1| Coordinador y DevOps |
+| Angel Cuarteron | 159438 | @angelgc9107-lgtm | Desarrollador Frontend y CSS |
+| Thiago Piastrellini | 158097 | @Piastrellini |  Documentador y QA tester |
