@@ -24,10 +24,17 @@ espaciados y estados de interacción), implementar el diseño responsive para
 mobile, tablet y desktop con Flexbox, CSS Grid y media queries, y validar el
 sitio con un proceso de QA asistido por Playwright MCP y GitHub MCP.
 
+**Primer Parcial:** migrar el sitio a Bootstrap 5 (sistema de 12 columnas y
+utilidades responsive) a partir del mockup actualizado en Figma, incorporar
+al menos dos componentes avanzados de Bootstrap y dos componentes avanzados
+de HTML, y validarlos con test cases automatizados con Playwright MCP y
+GitHub MCP.
+
 ## 🛠️ Tecnologías utilizadas
 
 - HTML5
 - CSS3 (`css/styles.css`, `css/components.css` y `css/responsive.css`)
+- Bootstrap 5
 - JavaScript (a incorporar en próximas entregas)
 
 ## ✅ Funcionalidades previstas
@@ -48,20 +55,25 @@ de compras (panel lateral deslizable con resumen de costos) y una
 sección de Contacto/Ubicación integrada en el footer. El diseño completo
 puede verse en el mockup de Figma enlazado abajo.
 
+En el Primer Parcial el mockup se adaptó a la grilla de Bootstrap 5: desktop
+de 1280 px con container de 1140 px y 12 columnas, mobile de 390 px con las
+columnas apiladas (`col-12`) y la navbar colapsada, y los componentes
+señalados en cada pantalla (Navbar, Carousel, Offcanvas, Dropdown e iframe
+de Google Maps con `.ratio-16x9`).
+
 ## 📁 Documentación
-- [Mockup en Figma (actualizado en la Actividad Obligatoria N°2)](https://www.figma.com/design/jX7NrMUtt6Tg7oiYqock6s/Sin-t%C3%ADtulo?node-id=0-1&t=WQbUPZNRHeUilp9W-1)
+- [Mockup en Figma (actualizado en el Primer Parcial con Bootstrap)](https://www.figma.com/design/jX7NrMUtt6Tg7oiYqock6s/Sin-t%C3%ADtulo?node-id=191-963&t=ouTMvmvpb279r7wJ-1)
+- [Mockup Bootstrap exportado (Primer Parcial)](docs/01-mockup/disenio-bootstrap.png)
 - [Mockup con estilos exportado (Actividad Obligatoria N°2)](docs/01-mockup/actividad-obligatoria-2/dise%C3%B1o-con-estilos.png)
-- [Índice de test cases (Actividad Obligatoria N°2)](docs/04-testing/testing-doc.md)
+- [Specs del Primer Parcial](docs/03-specs/primer-parcial/)
+- [Tablero Kanban del Primer Parcial](https://github.com/users/angelgc9107-lgtm/projects/1)
+- [Índice de test cases](docs/04-testing/testing-doc.md)
 - [Índice de Prompts](docs/02-prompts/prompts.md)
 - [Changelog](changelog.md)
 
-
-
-## 👥 Integrantes del Grupo
-
 | Nombre y Apellido | Matrícula | Usuario de GitHub | Rol |
 |-----| ----- | ------ | ------ |
-| Luciano Barrionuevo | 156398 | @LuchoBarrionuevo13| Especialista en Responsive Design|
-| Alan Diaz | 152841 | @alandox1| Coordinador y DevOps |
-| Angel Cuarteron | 159438 | @angelgc9107-lgtm | Desarrollador Frontend y CSS |
-| Thiago Piastrellini | 158097 | @Piastrellini |  Documentador y QA tester |
+| Luciano Barrionuevo | 156398 | @LuchoBarrionuevo13 | Desarrollador Frontend/Bootstrap |
+| Alan Diaz | 152841 | @alandox1 | Desarrollador de Componentes HTML Avanzados |
+| Angel Cuarteron | 159438 | @angelgc9107-lgtm | Especialista en Componentes Bootstrap |
+| Thiago Piastrellini | 158097 | @Piastrellini | Coordinador y DevOps |
