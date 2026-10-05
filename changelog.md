@@ -1,8 +1,18 @@
 # Changelog
 
 Este archivo se actualiza con cada Pull Request para registrar avances y correcciones
+# [Primer Parcial] Unreleased
 
-# [Actividad obligatoria N°2] Unreleased
+### Added
+- [feature/coord-devops-update-figma-and-readme] Coordinador/DevOps - Spec, mockup Bootstrap y README del Primer Parcial PR: [#88](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/88) — @Piastrellini (Coordinador / DevOps)
+
+### Changed
+- [backport/release-actividad-obligatoria-2] Backport de release/actividad-obligatoria-2 hacia develop PR: [#84](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/84) — @Piastrellini (Coordinador / DevOps)
+
+### Fixed 
+
+---
+# [Released] 2026-10-01
 ### Added
 - [feature/coord-devops-update-figma-and-readme] Actualizacion del mockup,readme y creacion de spec PR: [#36](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/36) — @alandox1(Coordinador / DevOps)
 
