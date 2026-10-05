@@ -71,6 +71,8 @@ de Google Maps con `.ratio-16x9`).
 - [Índice de Prompts](docs/02-prompts/prompts.md)
 - [Changelog](changelog.md)
 
+## 👥 Integrantes del Grupo
+
 | Nombre y Apellido | Matrícula | Usuario de GitHub | Rol |
 |-----| ----- | ------ | ------ |
 | Luciano Barrionuevo | 156398 | @LuchoBarrionuevo13 | Desarrollador Frontend/Bootstrap |
