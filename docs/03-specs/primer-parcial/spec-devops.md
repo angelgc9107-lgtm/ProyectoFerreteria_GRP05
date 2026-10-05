@@ -68,13 +68,14 @@ Se trabaja sobre el mismo archivo de Figma enlazado en el README, agregando una 
 
 ### 1.3 Criterios de aceptación
 
-- [ ] `spec-devops.md` commiteado en `docs/03-specs/primer-parcial/` antes que cualquier otro cambio
+- [x] `spec-devops.md` commiteado en `docs/03-specs/primer-parcial/` antes que cualquier otro cambio
 - [x] Backport `release/actividad-obligatoria-2` → `develop` mergeado con aprobación de otro integrante ([#84](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/84))
-- [ ] Mockup de Figma actualizado con la grilla de Bootstrap y los componentes elegidos
-- [ ] Paleta, tipografías y estados de interacción coherentes con Bootstrap
-- [ ] Imagen exportada en `docs/01-mockup/disenio-bootstrap.png`
-- [ ] Enlace al Figma actualizado en `README.md`
-- [ ] Tablero Kanban en GitHub Projects con las issues de todo el equipo
+- [x] Mockup de Figma actualizado con la grilla de Bootstrap y los componentes elegidos (desktop 1280, tablet 768 y mobile 390)
+- [x] Paleta, tipografías y estados de interacción coherentes con Bootstrap
+- [x] Imagen exportada en `docs/01-mockup/disenio-bootstrap.png`
+- [x] Enlace al Figma actualizado en `README.md`
+- [x] Tablero Kanban creado en GitHub Projects ([FerroLab – Primer Parcial](https://github.com/users/angelgc9107-lgtm/projects/1))
+- [ ] Issues de todo el equipo cargadas y actualizadas en el tablero Kanban
 - [ ] Mínimo 4 code reviews asistidos con Copilot Agent Mode, documentados en este spec
 - [ ] Request Changes cargados en las líneas del diff
 - [ ] Todas las PR con al menos 1 revisión aprobada antes del merge
