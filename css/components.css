@@ -124,37 +124,17 @@ nav {
     background-color: rgb(201 54 43);
 }
 
-nav a,
-nav summary {
+nav > a,
+nav > .dropdown > .dropdown-toggle {
     font-size: var(--font-size-xs);
     text-decoration: none;
     text-transform: uppercase;
 }
 
-nav a:hover,
-nav a:focus-visible,
-nav summary:hover {
+nav > a:hover,
+nav > a:focus-visible {
     color: var(--color-white);
     text-decoration: underline;
-}
-
-nav details {
-    order: 0;
-}
-
-nav details ul {
-    position: absolute;
-    z-index: 2;
-    margin: var(--space-2) 0 0;
-    padding: var(--space-3);
-    color: var(--color-ink);
-    background: var(--color-white);
-    box-shadow: var(--shadow-card);
-    list-style: none;
-}
-
-nav details li + li {
-    margin-top: var(--space-2);
 }
 
 #ofertas article,
@@ -241,7 +221,6 @@ button[aria-disabled="true"] {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-rows: repeat(8, auto);
-    width: var(--filters-width);
     gap: var(--space-1) var(--space-2);
     padding: var(--space-2);
     color: var(--color-white);
@@ -610,9 +589,6 @@ th {
 }
 
 footer {
-    display: grid;
-    grid-template-columns: minmax(24rem, 1fr) minmax(28rem, 1fr);
-    column-gap: var(--space-7);
     padding: 0;
     color: var(--color-white);
     background: var(--color-red-dark);
@@ -624,19 +600,12 @@ footer section {
 }
 
 footer section:first-child {
-    display: grid;
-    grid-column: 1 / -1;
-    grid-template-columns: repeat(3, auto);
-    justify-content: center;
-    align-items: center;
-    gap: var(--space-7);
     padding: var(--space-3) var(--space-6);
     text-align: center;
     background: var(--color-red);
 }
 
 footer section:first-child h2 {
-    grid-column: 1 / -1;
     margin-bottom: 0;
 }
 
@@ -645,19 +614,11 @@ footer section:first-child p {
 }
 
 footer section:nth-child(2) {
-    grid-column: 1;
-    justify-self: start;
-    width: 100%;
-    min-width: 0;
     padding: var(--space-5) 0 var(--space-5) var(--space-6);
     text-align: left;
 }
 
 footer section:nth-child(3) {
-    grid-column: 2;
-    justify-self: end;
-    width: 100%;
-    max-width: 32rem;
     padding: var(--space-5) var(--space-6) var(--space-5) 0;
     text-align: left;
 }

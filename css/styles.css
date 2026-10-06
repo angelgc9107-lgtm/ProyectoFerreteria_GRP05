@@ -38,7 +38,6 @@
     --radius-md: 0.25rem;
     --shadow-card: 0 1px 3px rgb(0 0 0 / 16%);
     --focus-ring: 0 0 0 3px rgb(199 55 43 / 35%);
-    --content-width: 72rem;
     --cart-width: 35%;
     --catalog-columns: repeat(3, minmax(0, 1fr));
     --filters-width: 11rem;
@@ -111,21 +110,8 @@ summary:focus-visible {
     box-shadow: var(--focus-ring);
 }
 
-main {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0;
-    width: min(100%, var(--content-width));
-    margin: 0 auto;
-}
-
 main > section {
-    grid-column: 1;
     padding: var(--space-6) var(--space-5);
-}
-
-#carrito {
-    grid-column: 1 / -1;
 }
 
 main > section > h1,
@@ -135,43 +121,8 @@ main > section > h2 {
     line-height: var(--line-height-tight);
 }
 
-#ofertas > div,
-section[aria-label="Servicios de FerroLab"] > ul {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--space-3);
-}
-
 section[aria-label="Servicios de FerroLab"] {
     background: var(--color-gray-100);
-}
-
-section[aria-labelledby="bienvenida"] {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-4);
-}
-
-section[aria-labelledby="bienvenida"] h2,
-section[aria-labelledby="bienvenida"] p {
-    grid-column: 1 / -1;
-}
-
-#catalogo {
-    display: grid;
-    grid-template-columns: var(--filters-width) minmax(0, 1fr);
-    gap: var(--space-4);
-    align-items: start;
-}
-
-#catalogo > h2 {
-    grid-column: 1 / -1;
-}
-
-#catalogo > div {
-    display: grid;
-    grid-template-columns: var(--catalog-columns);
-    gap: var(--space-3);
 }
 
 #contacto {
