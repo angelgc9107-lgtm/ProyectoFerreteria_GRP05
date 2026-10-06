@@ -520,16 +520,16 @@ La corrección se realizó de forma acotada para no modificar las demás seccion
 
 ### Pruebas a realizar
 
-Para verificar la correcta migración responsive a Bootstrap se realizarán pruebas utilizando Playwright MCP sobre la aplicación ejecutada en `http://localhost:3000`.
+Se realizaron pruebas responsive utilizando Playwright MCP sobre la aplicación ejecutada en `http://localhost:3000`.
 
-Se probarán los siguientes dispositivos requeridos:
+Se probaron los siguientes dispositivos:
 
-- iPhone 14 Pro.
-- Samsung Galaxy S23.
-- iPad Air.
-- Vista de escritorio como comprobación adicional.
+- iPhone 14 Pro — 393 × 852 px.
+- Samsung Galaxy S23 — 360 × 780 px.
+- iPad Air — 820 × 1180 px.
+- Escritorio — 1440 × 900 px.
 
-Durante las pruebas se verificará:
+Durante las pruebas se verificó:
 
 - Correcta adaptación responsive de las secciones migradas a Bootstrap.
 - Ausencia de scroll horizontal.
@@ -538,14 +538,22 @@ Durante las pruebas se verificará:
 - Correcta visualización de Bienvenida.
 - Correcta visualización del Catálogo.
 - Correcta visualización del Footer.
-- Correcta visualización del carrito de compras y sus imágenes.
-- Ausencia de textos, imágenes o componentes superpuestos.
+- Correcta visualización del carrito de compras y de las imágenes de sus productos.
 - Ausencia de elementos cortados o fuera de pantalla.
-- Correcto funcionamiento visual de la navegación.
-- Que la incorporación de Bootstrap no haya afectado los estilos existentes del proyecto.
+- Ausencia de superposiciones visuales.
+- Correcta visualización de la navegación.
+- Integración de Bootstrap sin afectar los estilos existentes del proyecto.
 
-Los resultados obtenidos mediante Playwright MCP serán documentados en:
+La prueba obtuvo como resultado general **APROBADA con observaciones menores**.
+
+Durante la verificación se registraron tres observaciones:
+
+- O-1: espacio vacío adicional en el panel del carrito.
+- O-2: error 404 correspondiente a `/favicon.ico`.
+- O-3: el encabezado muestra `Carrito (0)` aunque actualmente se visualizan dos productos.
+
+El detalle completo de las pruebas, mediciones y resultados obtenidos mediante Playwright MCP se encuentra documentado en:
 
 `docs/04-testing/test-case-6.md`
 
-En caso de detectar errores durante las pruebas, se documentarán y se seguirá el flujo de corrección correspondiente mediante Issues y ramas `fix/`.
+Las observaciones detectadas serán evaluadas y, cuando corresponda su corrección, se gestionarán mediante Issues y ramas `fix`.
