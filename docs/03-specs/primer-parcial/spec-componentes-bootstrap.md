@@ -66,7 +66,7 @@ Las pruebas mediante Playwright MCP permitirán comprobar el funcionamiento de c
 
 - [X] Se seleccionaron al menos dos componentes avanzados de Bootstrap y se justificó su utilización.
 
-- [ ] El primer componente Bootstrap fue implementado correctamente.
+- [X] El primer componente Bootstrap fue implementado correctamente.
 
 - [ ] El segundo componente Bootstrap fue implementado correctamente.
 
@@ -76,19 +76,19 @@ Las pruebas mediante Playwright MCP permitirán comprobar el funcionamiento de c
 
 - [ ] La implementación mantiene coherencia visual con los estilos existentes del proyecto.
 
-- [ ] La implementación fue coordinada con los cambios realizados por el Desarrollador Frontend/Bootstrap.
+- [X] La implementación fue coordinada con los cambios realizados por el Desarrollador Frontend/Bootstrap.
 
 - [ ] Cada componente funciona correctamente en los dispositivos requeridos.
 
-- [ ] El componente 1 fue probado mediante Playwright MCP y documentado en `docs/04-testing/test-case-7.md`.
+- [X] El componente 1 fue probado mediante Playwright MCP y documentado en `docs/04-testing/test-case-7.md`.
 
 - [ ] El componente 2 fue probado mediante Playwright MCP y documentado en `docs/04-testing/test-case-8.md`.
 
-- [ ] Las pruebas fueron realizadas en iPhone 14 Pro (iOS Safari).
+- [X] Las pruebas fueron realizadas en iPhone 14 Pro (iOS Safari).
 
-- [ ] Las pruebas fueron realizadas en Samsung Galaxy S23 (Chrome Android).
+- [X] Las pruebas fueron realizadas en Samsung Galaxy S23 (Chrome Android).
 
-- [ ] Las pruebas fueron realizadas en iPad Air (iOS Safari).
+- [X] Las pruebas fueron realizadas en iPad Air (iOS Safari).
 
 - [ ] Por cada hallazgo relevante se creó un issue tipo bug mediante GitHub MCP desde Copilot Agent Mode.
 
