@@ -35,6 +35,52 @@ caption {
     text-align: center;
 }
 
+/* Dropdown de Categorías: conserva el contraste y la superficie del menú previo. */
+nav .dropdown-toggle {
+    --bs-btn-color: var(--color-white);
+    --bs-btn-bg: transparent;
+    --bs-btn-border-color: transparent;
+    --bs-btn-hover-color: var(--color-white);
+    --bs-btn-hover-bg: transparent;
+    --bs-btn-hover-border-color: transparent;
+    --bs-btn-active-color: var(--color-white);
+    --bs-btn-active-bg: transparent;
+    --bs-btn-active-border-color: transparent;
+    --bs-btn-padding-x: 0;
+    --bs-btn-padding-y: 0;
+
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-base);
+    text-transform: uppercase;
+}
+
+nav .dropdown-menu {
+    --bs-dropdown-color: var(--color-ink);
+    --bs-dropdown-bg: var(--color-white);
+    --bs-dropdown-border-color: var(--color-gray-300);
+    --bs-dropdown-border-radius: var(--radius-md);
+    --bs-dropdown-box-shadow: var(--shadow-card);
+    --bs-dropdown-spacer: var(--space-2);
+    --bs-dropdown-padding-x: var(--space-2);
+    --bs-dropdown-padding-y: var(--space-2);
+    --bs-dropdown-link-color: var(--color-ink);
+    --bs-dropdown-link-hover-color: var(--color-white);
+    --bs-dropdown-link-hover-bg: var(--color-red);
+    --bs-dropdown-link-active-color: var(--color-white);
+    --bs-dropdown-link-active-bg: var(--color-red-dark);
+}
+
+nav .dropdown-menu li + li {
+    margin-top: var(--space-2);
+}
+
+nav .dropdown-menu .dropdown-item:hover,
+nav .dropdown-menu .dropdown-item:focus-visible {
+    color: var(--bs-dropdown-link-hover-color);
+    background-color: var(--bs-dropdown-link-hover-bg);
+    text-decoration: none;
+}
+
 /* ==========================================================
    GRILLA — gutters y ancho de la columna central (mockup)
    ========================================================== */

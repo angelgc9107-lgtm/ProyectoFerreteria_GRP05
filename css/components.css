@@ -125,7 +125,7 @@ nav {
 }
 
 nav a,
-nav summary {
+nav .dropdown-toggle {
     font-size: var(--font-size-xs);
     text-decoration: none;
     text-transform: uppercase;
@@ -133,28 +133,10 @@ nav summary {
 
 nav a:hover,
 nav a:focus-visible,
-nav summary:hover {
+nav .dropdown-toggle:hover,
+nav .dropdown-toggle:focus-visible {
     color: var(--color-white);
     text-decoration: underline;
-}
-
-nav details {
-    order: 0;
-}
-
-nav details ul {
-    position: absolute;
-    z-index: 2;
-    margin: var(--space-2) 0 0;
-    padding: var(--space-3);
-    color: var(--color-ink);
-    background: var(--color-white);
-    box-shadow: var(--shadow-card);
-    list-style: none;
-}
-
-nav details li + li {
-    margin-top: var(--space-2);
 }
 
 #ofertas article,
