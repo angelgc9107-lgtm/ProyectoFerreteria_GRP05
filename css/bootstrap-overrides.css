@@ -1,0 +1,82 @@
+/*
+  bootstrap-overrides.css
+  Integración de Bootstrap 5.3 con los estilos de FerroLab (Primer Parcial).
+  Se carga al final para ajustar Reboot y la grilla sin usar !important.
+*/
+
+/* ==========================================================
+   REBOOT — se restaura el aspecto previo a Bootstrap
+   ========================================================== */
+
+/* Reboot fija los títulos en 500; FerroLab los usa en negrita. */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: var(--font-weight-bold);
+}
+
+/* Reboot usa 1rem; el valor original equivalía a 1em. */
+p,
+ul {
+    margin-bottom: 1em;
+}
+
+/* Reboot ubica la leyenda abajo, a la izquierda y en gris. */
+table {
+    caption-side: top;
+}
+
+caption {
+    padding: 0;
+    color: inherit;
+    text-align: center;
+}
+
+/* ==========================================================
+   GRILLA — gutters y ancho de la columna central (mockup)
+   ========================================================== */
+
+/* Ofertas y servicios: separación de unos 20 px entre tarjetas. */
+#ofertas > .row,
+section[aria-label="Servicios de FerroLab"] > .row {
+    --bs-gutter-x: 1.25rem;
+    --bs-gutter-y: 1.25rem;
+}
+
+/* Ofertas, servicios y bienvenida: columna central de 54rem (~864 px en
+   Figma). El margen negativo del row se conserva cuando el ancho es menor. */
+#ofertas > .row,
+section[aria-label="Servicios de FerroLab"] > .row,
+section[aria-labelledby="bienvenida"] > .row {
+    margin-inline: max(
+        calc(var(--bs-gutter-x) * -0.5),
+        calc((100% - 54rem - var(--bs-gutter-x)) / 2)
+    );
+}
+
+/* Catálogo: la propia section es el row; se compensa su margen negativo
+   y el padding de main > section para evitar scroll horizontal. */
+#catalogo,
+#catalogo .row {
+    --bs-gutter-x: var(--space-3);
+    --bs-gutter-y: var(--space-3);
+}
+
+#catalogo {
+    --bs-gutter-y: var(--space-4);
+    margin-top: 0;
+    margin-inline: 0;
+    padding-inline: calc(var(--space-5) - var(--bs-gutter-x) / 2);
+}
+
+#catalogo > h2 {
+    margin-top: 0;
+}
+
+/* El aside tiene padding propio, que anula el gutter de la columna. */
+#catalogo > aside {
+    margin-inline: calc(var(--bs-gutter-x) * 0.5);
+}
