@@ -252,6 +252,7 @@
         <!-- Frame 12: este aside representa el panel lateral abierto del carrito sobre el sitio. No hay calculos ni operaciones funcionales en esta entrega. -->
         <aside id="carrito" aria-labelledby="titulo-carrito" data-estado="abierto">
             <h2 id="titulo-carrito">Carrito de compras</h2>
+            <button type="button" class="cart-close" aria-label="Cerrar carrito">Cerrar</button>
             <!-- JavaScript futuro: abrir y cerrar este panel desde el acceso del encabezado. -->
             <!-- JavaScript futuro: agregar productos, eliminar productos y modificar cantidades desde cada articulo del carrito. -->
             <!-- JavaScript futuro: recalcular subtotales y total cuando cambien productos o cantidades. -->
@@ -271,7 +272,9 @@
                 <p>Subtotal representativo: $16.000</p>
                 <button type="button">Eliminar</button>
             </article>
-            <p>Total representativo: $66.000</p>
+            <p>Subtotal (sin envio): $66.000</p>
+            <p>Subtotal (con envio): $75.000</p>
+            <p>Total: $75.000</p>
             <!-- JavaScript futuro: habilitar el inicio de compra y conectar el resumen con los metodos de pago en una etapa posterior. -->
             <button type="button">Iniciar compra</button>
         </aside>
