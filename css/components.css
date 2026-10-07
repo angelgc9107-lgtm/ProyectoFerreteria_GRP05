@@ -88,7 +88,7 @@ header > form button::after {
 
 /* Carrito y sesión: misma caja de 2.5rem de alto con centrado vertical,
    alineados con el centro del buscador. */
-header > a[aria-label="Ver carrito de compras"],
+header > button[aria-label="Ver carrito de compras"],
 header > span {
     position: absolute;
     top: var(--space-2);
@@ -98,13 +98,21 @@ header > span {
     font-size: var(--font-size-sm);
 }
 
-header > a[aria-label="Ver carrito de compras"] {
+header > button[aria-label="Ver carrito de compras"] {
     right: 12%;
     font-size: 0;
     text-decoration: none;
+    min-height: 0;
+    padding: 0;
+    color: transparent;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    font-weight: var(--font-weight-regular);
+    text-transform: none;
 }
 
-header > a[aria-label="Ver carrito de compras"]::before {
+header > button[aria-label="Ver carrito de compras"]::before {
     content: "🛒";
     font-size: 1.75rem;
     line-height: 1;
@@ -391,78 +399,19 @@ th {
     background: var(--color-ink);
 }
 
-#carrito {
-    position: relative;
-    isolation: isolate;
-    z-index: 0;
-    width: var(--cart-width);
-    max-width: none;
-    height: auto;
-    min-height: 48rem;
-    overflow: visible;
-    margin: 0 0 0 auto;
-    padding: 0 0 var(--space-6);
+#carrito .offcanvas-header > #titulo-carrito {
+    margin: 0;
+    padding: 0;
     color: var(--color-white);
-    background: var(--color-cart-body);
-    border: var(--border-width) solid var(--color-red);
-    border-radius: 0;
-    box-shadow: var(--shadow-card);
-}
-
-#carrito::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 100%;
-    bottom: 0;
-    width: 185.714%;
-    z-index: -1;
-    background: rgb(0 0 0 / 12%);
-    pointer-events: none;
-}
-
-#carrito > #titulo-carrito {
-    margin: 0 0 var(--space-3);
-    padding: var(--space-3);
-    padding-right: var(--space-7);
-    color: var(--color-white);
-    background: var(--color-cart-header);
-    border-bottom: var(--border-width) solid rgb(255 255 255 / 30%);
+    background: transparent;
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-bold);
     text-transform: uppercase;
 }
 
-#carrito > .cart-close {
-    position: absolute;
-    top: var(--space-2);
-    right: var(--space-3);
-    z-index: 1;
-    width: 1.75rem;
-    min-height: 1.75rem;
-    margin: 0;
-    padding: 0;
-    color: var(--color-white);
-    background: transparent;
-    border: 0;
-    border-radius: 0;
-    font-size: 0;
-}
-
-#carrito > .cart-close::before {
-    content: "\00d7";
-    font-size: var(--font-size-xl);
-    font-weight: var(--font-weight-bold);
-    line-height: 1;
-}
-
-#carrito > .cart-close:hover {
-    background: rgb(255 255 255 / 15%);
-}
-
-#carrito > article,
-#carrito > p,
-#carrito > button {
+#carrito .offcanvas-body > article,
+#carrito .offcanvas-body > p,
+#carrito .offcanvas-body > button {
     margin-right: var(--space-4);
     margin-left: var(--space-4);
 }
@@ -596,14 +545,14 @@ th {
     background: rgb(199 55 43 / 12%);
 }
 
-#carrito > p {
+#carrito .offcanvas-body > p {
     margin-top: var(--space-2);
     margin-bottom: var(--space-2);
     font-size: var(--font-size-xs);
     font-weight: var(--font-weight-semibold);
 }
 
-#carrito > button:last-child {
+#carrito .offcanvas-body > button:last-child {
     width: calc(100% - (var(--space-4) * 2));
     min-height: 2.25rem;
     margin-top: var(--space-2);
@@ -613,7 +562,7 @@ th {
     background: var(--color-white);
 }
 
-#carrito > button:last-child:hover {
+#carrito .offcanvas-body > button:last-child:hover {
     color: var(--color-white);
     background: var(--color-gray-700);
 }

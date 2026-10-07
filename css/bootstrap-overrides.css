@@ -81,6 +81,58 @@ nav .dropdown-menu .dropdown-item:focus-visible {
     text-decoration: none;
 }
 
+/* Offcanvas del carrito: conserva la superficie, cabecera y dimensiones de FerroLab. */
+#carrito {
+    --bs-offcanvas-width: var(--cart-width);
+    --bs-offcanvas-padding-x: 0;
+    --bs-offcanvas-padding-y: 0;
+    --bs-offcanvas-color: var(--color-white);
+    --bs-offcanvas-bg: var(--color-cart-body);
+    --bs-offcanvas-border-width: var(--border-width);
+    --bs-offcanvas-border-color: var(--color-red);
+    --bs-offcanvas-box-shadow: var(--shadow-card);
+
+    border: var(--border-width) solid var(--color-red);
+}
+
+#carrito .offcanvas-header {
+    margin-bottom: var(--space-3);
+    padding: var(--space-3);
+    padding-right: var(--space-7);
+    background: var(--color-cart-header);
+    border-bottom: var(--border-width) solid rgb(255 255 255 / 30%);
+}
+
+#carrito .offcanvas-header .btn-close {
+    position: absolute;
+    top: var(--space-2);
+    right: var(--space-3);
+    margin: 0;
+    --bs-btn-close-focus-shadow: var(--focus-ring);
+}
+
+#carrito .offcanvas-body {
+    padding: 0 0 var(--space-6);
+}
+
+@media (max-width: 767.98px) {
+    #carrito {
+        --bs-offcanvas-width: 100%;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1023.98px) {
+    #carrito {
+        --bs-offcanvas-width: 60%;
+    }
+}
+
+@media (min-width: 1024px) {
+    #carrito {
+        --bs-offcanvas-width: var(--cart-width);
+    }
+}
+
 /* ==========================================================
    GRILLA — gutters y ancho de la columna central (mockup)
    ========================================================== */
