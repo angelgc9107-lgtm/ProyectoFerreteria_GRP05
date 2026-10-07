@@ -13,8 +13,9 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 ### Changed
 - [backport/release-actividad-obligatoria-2] Backport de release/actividad-obligatoria-2 hacia develop PR: [#84](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/84) — @Piastrellini (Coordinador / DevOps)
 
-### Fixed
+### Fixed 
 - [fix/carrito-espacio-vacio] Desarrollador FrontEnd / Bootstrap - Favicon con `link rel="icon"` (O-2) y contador del carrito coherente con su contenido (O-3) PR: [#103](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/103) — @Luchobarrionuevo13 (Desarrollador FrontEnd/Bootstrap)
+- [fix/offcanvas-box-shadow] Corregir la sombra efectiva del Offcanvas del carrito (#carrito) para resolver el issue encontrado del componente bootstrap Offcanvas PR: [#104](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/104) — @angelgc9107-lgtm (Especialista en componentes Bootstrap)
 
 ---
 # [Released] 2026-10-01

@@ -215,9 +215,32 @@ Se volvió a probar el Offcanvas con Playwright MCP en los cuatro viewports indi
 ## Issues creados
 | Issue | Viewport | Descripción | Severidad | Estado |
 |-------|----------|-------------|-----------|--------|
-| [#97](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/97)| Desktop, mobile y tablet | `--bs-offcanvas-box-shadow` está definida, pero `box-shadow` efectivo es `none` | Baja | Abierto |
+| [#97](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/97)| Desktop, mobile y tablet | `--bs-offcanvas-box-shadow` está definida, pero `box-shadow` efectivo es `none` | Baja | Corregido |
+
+## Retest del fix — Issue #97 — 2026-10-07
+
+Se repitió la comprobación con Playwright MCP, consultando `getComputedStyle(#carrito)` con el Offcanvas abierto en cada viewport. Antes de abrirlo en desktop, `--bs-offcanvas-box-shadow` computó como `0 1px 3px rgb(0 0 0 / 16%)` y `box-shadow` efectivo como `rgba(0, 0, 0, 0.16) 0px 1px 3px 0px` (el panel todavía estaba oculto). El panel usa las clases `offcanvas offcanvas-end` de Bootstrap.
+
+| Dispositivo / viewport | `--bs-offcanvas-box-shadow` | `box-shadow` computado con panel abierto | ¿Es `none`? | Visible / sin overflow horizontal | Resultado |
+|------------------------|-----------------------------|------------------------------------------|-------------|-----------------------------------|-----------|
+| Desktop — 1280×800 | `0 1px 3px rgb(0 0 0 / 16%)` | `rgba(0, 0, 0, 0.16) 0px 1px 3px 0px` | No | Sí / Sí | PASS |
+| iPhone 14 Pro — 390×844 (viewport emulado) | `0 1px 3px rgb(0 0 0 / 16%)` | `rgba(0, 0, 0, 0.16) 0px 1px 3px 0px` | No | Sí / Sí | PASS |
+| Samsung Galaxy S23 — 360×780 (viewport emulado) | `0 1px 3px rgb(0 0 0 / 16%)` | `rgba(0, 0, 0, 0.16) 0px 1px 3px 0px` | No | Sí / Sí | PASS |
+| iPad Air — 820×1180 (viewport emulado) | `0 1px 3px rgb(0 0 0 / 16%)` | `rgba(0, 0, 0, 0.16) 0px 1px 3px 0px` | No | Sí / Sí | PASS |
+
+En todos los tamaños, el valor efectivo de `box-shadow` coincide con la sombra declarada por `bootstrap-overrides.css`; por lo tanto, la variable no está meramente declarada: se aplica al panel. La inspección visual confirmó el Offcanvas abierto y no se observaron regresiones responsive relacionadas con la sombra. En móvil el panel ocupa todo el ancho, por lo que su sombra perimetral es menos distinguible visualmente; el estilo computado sigue siendo el mismo.
+
+**Solución aplicada:** El retest confirma que el fix está presente y corrige el comportamiento reportado. **Resultado del retest: PASS — Issue #97 corregida.** Esta verificación no actualiza el estado de la Issue en GitHub.
+
+### Capturas del retest
+| Dispositivo / estado | Captura |
+|----------------------|---------|
+| Desktop 1280×800 — Offcanvas abierto | ![](capturas/tc-8/issue-97-desktop-offcanvas-abierto.png) |
+| iPhone 14 Pro 390×844 — Offcanvas abierto | ![](capturas/tc-8/issue-97-iphone14pro-offcanvas-abierto.png) |
+| Samsung Galaxy S23 360×780 — Offcanvas abierto | ![](capturas/tc-8/issue-97-galaxy-s23-offcanvas-abierto.png) |
+| iPad Air 820×1180 — Offcanvas abierto | ![](capturas/tc-8/issue-97-ipad-air-offcanvas-abierto.png) |
 
 ## Conclusión general
-**Resultado final:** APROBADO CON HALLAZGOS
+**Resultado final:** APROBADO — HALLAZGO HISTÓRICO CORREGIDO
 
-El Offcanvas abrió correctamente en los cuatro viewports emulados. El cierre con X y Escape, la gestión del foco, las dimensiones responsive y las transiciones se verificaron; el cierre mediante clic en el backdrop funcionó donde quedó área expuesta (desktop y tablet). Se mantiene un hallazgo de severidad baja: la sombra configurada no se refleja en el `box-shadow` efectivo.
+El Offcanvas abrió correctamente en los cuatro viewports emulados. El cierre con X y Escape, la gestión del foco, las dimensiones responsive y las transiciones se verificaron; el cierre mediante clic en el backdrop funcionó donde quedó área expuesta (desktop y tablet). El hallazgo histórico de severidad baja sobre la sombra se corrigió: el retest del 2026-10-07 verificó que el `box-shadow` efectivo ya no es `none` en ninguno de los cuatro viewports.
