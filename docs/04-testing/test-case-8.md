@@ -8,9 +8,9 @@ test-case-8.md
 
 | Campo | Valor |
 |-------|-------|
-| Responsable | |
-| Fecha de ejecución | |
-| Rama testeada | `feature/esp-componentes-bootstrap-add-components` |
+| Responsable | Copilot Agent Mode |
+| Fecha de ejecución | 2026-10-06 |
+| Rama testeada | `feature/esp-com-bootstrap-add-component` |
 | URL testeada | `http://localhost:3000` |
 
 ## Componente testeado
@@ -83,23 +83,40 @@ Guardá las capturas en docs/04-testing/capturas/tc-8/
 ## Dispositivos testeados
 | Viewport | Componente visible | Interacción funcional | Estilos override | Estado |
 |----------|-------------------|----------------------|------------------|--------|
-| 1280×800 (desktop) | | | | |
-| 390×844 (mobile) | | | | |
-| 768×1024 (tablet) | | | | |
+| 1280×800 (desktop) | Sí | Sí — abre y cierra | Sí — colores y tipografía verificados | Aprobado |
+| 390×844 (mobile) | Sí | Sí — abre y cierra | Sí — colores y tipografía verificados | Aprobado |
+| 768×1024 (tablet) | Sí | Sí — abre y cierra | Sí — colores verificados | Aprobado |
+
+### Resultados observados
+
+- **Componente:** Offcanvas del carrito de compras.
+- **Selector utilizado:** `#carrito`.
+- **Desktop (1280×800):** inicialmente oculto; abrió desde la derecha al activar el botón del carrito. El panel midió 448 px de ancho (35%). Cerró mediante el botón de cierre y también se comprobó Escape en otra interacción.
+- **Mobile (390×844):** inicialmente oculto; abrió a ancho completo (390 px). El contenido quedó dentro del panel y no se observó overflow. Cerró mediante el botón de cierre.
+- **Tablet (768×1024):** inicialmente oculto; abrió desde la derecha con ancho aproximado de 461 px (60%). No se observó overflow horizontal. Cerró mediante Escape y se verificó la devolución del foco al botón de apertura.
+- **Backdrop/overlay:** en los tres viewports Bootstrap creó un único `.offcanvas-backdrop` con opacidad computada `0.5`. Se verificó el cierre al hacer clic en el backdrop en tablet; desaparecieron el panel y el backdrop. También se comprobó que el backdrop desaparece al cerrar mediante botón o Escape.
+- **Animaciones/transiciones:** la transición del panel fue `transform 0.3s ease-in-out`; la del backdrop fue `0.15s`.
+- **Estilos de `bootstrap-overrides.css`:** se computó el fondo del panel en `rgb(201, 54, 43)`, texto blanco, borde rojo `rgb(199, 55, 43)` y cabecera `rgb(166, 45, 35)`. La tipografía del título fue `Inter, Arial, Helvetica, sans-serif`. Se verificaron los anchos responsivos configurados: 35% desktop, 100% mobile y 60% tablet.
+- **Contenido conservado y visible:** dos productos (Amoladora y Martillo), cantidades `1` y `1`, precios unitarios `$50.000` y `$16.000`, subtotales representativos `$50.000` y `$16.000`, resumen de `$66.000` sin envío, `$75.000` con envío y total `$75.000`; también se encontró el botón “Iniciar compra”.
+- **Problemas observados:** no se registraron problemas visuales ni funcionales durante la ejecución. La consola no mostró errores.
 
 ## Capturas de pantalla
 | Viewport / Estado | Captura | Estado |
 |-------------------|---------|--------|
-| Desktop — estado inicial | ![](capturas/tc-8/desktop-inicial.png) | |
-| Desktop — estado activo | ![](capturas/tc-8/desktop-activo.png) | |
-| Mobile — estado inicial | ![](capturas/tc-8/mobile-inicial.png) | |
-| Mobile — estado activo | ![](capturas/tc-8/mobile-activo.png) | |
-| Tablet | ![](capturas/tc-8/tablet.png) | |
+| Desktop — estado inicial | ![](capturas/tc-8/desktop-inicial.png) | Capturada |
+| Desktop — estado abierto | ![](capturas/tc-8/desktop-abierto.png) | Capturada |
+| Desktop — backdrop visible | ![](capturas/tc-8/desktop-overlay.png) | Capturada |
+| Mobile — estado inicial | ![](capturas/tc-8/mobile-inicial.png) | Capturada |
+| Mobile — estado abierto | ![](capturas/tc-8/mobile-abierto.png) | Capturada |
+| Mobile — backdrop visible | ![](capturas/tc-8/mobile-overlay.png) | Capturada |
+| Tablet — estado inicial | ![](capturas/tc-8/tablet-inicial.png) | Capturada |
+| Tablet — estado abierto | ![](capturas/tc-8/tablet-abierto.png) | Capturada |
+| Tablet — backdrop visible | ![](capturas/tc-8/tablet-overlay.png) | Capturada |
 
 ## Hallazgos
 | # | Viewport | Descripción del problema | Comportamiento esperado | Comportamiento observado | Severidad |
 |---|----------|--------------------------|-------------------------|--------------------------|-----------|
-| | | | | | |
+| — | — | No se observaron problemas visuales ni funcionales | El Offcanvas abre/cierra, integra el backdrop y conserva el contenido y los estilos en los viewports probados | Comportamiento verificado en desktop, mobile y tablet | — |
 
 ### Severidad
 - **Alta** — Componente no funciona o no se renderiza
@@ -109,10 +126,10 @@ Guardá las capturas en docs/04-testing/capturas/tc-8/
 ## Issues creados
 | Issue | Viewport | Descripción | Severidad | Estado |
 |-------|----------|-------------|-----------|--------|
-| | | | | |
+| No creado | — | No se detectaron hallazgos que requieran registrar un issue | — | No aplica |
 
 ## Conclusión general
-**Resultado final:** <!-- PASS / FAIL CON OBSERVACIONES / FAIL -->
+**Resultado final:** APROBADO
 
-<!-- Resumí si el componente Bootstrap funciona correctamente en todos los viewports, si los overrides se aplican y qué acciones se requieren -->
+El Offcanvas del carrito funcionó en los tres viewports probados. La apertura desde la derecha, el cierre con botón, Escape y backdrop, el overlay oficial, las transiciones y los estilos verificados se comportaron como se esperaba. No se observaron problemas durante la ejecución ni se registraron issues.
 Mostrando test-case-8.md.
