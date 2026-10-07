@@ -6,7 +6,7 @@
 | Campo | Valor |
 |-------|-------|
 | Responsable | Copilot Agent Mode |
-| Fecha de ejecución | 2026-10-06 |
+| Fecha de ejecución | 2026-10-07 |
 | Rama testeada | `feature/esp-com-bootstrap-add-component` |
 | URL testeada | `http://localhost:3000` |
 
@@ -57,54 +57,96 @@ Ejecutá estos pasos en orden:
    - Tomá captura del componente en estado activo/expandido
    - Verificá que los estilos de bootstrap-overrides.css se aplican
 
-2. Cambiá el viewport a 390x844 (iPhone 14 Pro — mobile)
+2. Cambiá el viewport a 390x844 (iPhone 14 Pro — iOS Safari)
    - Verificá que el componente se adapta correctamente
-   - Repetí la interacción y tomá capturas
+   - Repetí la interacción
+   - Verificá que el menú abre y cierra correctamente
+   - Verificá que no exista overflow horizontal
+   - Verificá los estados de accesibilidad correspondientes
+   - Tomá capturas del estado inicial y abierto
    - Verificá si hay diferencias respecto al desktop
 
-3. Cambiá el viewport a 768x1024 (iPad — tablet)
-   - Verificá comportamiento intermedio
-   - Tomá captura
+3. Cambiá el viewport a 360x780 (Samsung Galaxy S23 — Chrome Android)
+   - Verificá que el componente se adapta correctamente
+   - Repetí la interacción
+   - Verificá que el menú abre y cierra correctamente
+   - Verificá que no exista overflow horizontal
+   - Verificá los estados de accesibilidad correspondientes
+   - Tomá capturas del estado inicial y abierto
+   - Verificá si hay diferencias respecto a los demás dispositivos
 
-4. Reportá para cada viewport:
+4. Cambiá el viewport a 820x1180 (iPad Air — iOS Safari)
+   - Verificá el comportamiento del componente en tablet
+   - Repetí la interacción
+   - Verificá que el menú abre y cierra correctamente
+   - Verificá que no exista overflow horizontal
+   - Verificá los estados de accesibilidad correspondientes
+   - Tomá capturas del estado inicial y abierto
+   - Verificá si hay diferencias respecto a los demás dispositivos
+
+5. Para el Dropdown, verificá específicamente en cada viewport:
+   - Que #categorias-dropdown sea visible
+   - Que al hacer clic se abra el menú
+   - Que aparezcan todas las categorías existentes
+   - Que los enlaces mantengan sus destinos originales
+   - Que aria-expanded cambie correctamente al abrir y cerrar
+   - Que Escape cierre el Dropdown
+   - Que el foco vuelva correctamente al botón después de cerrarlo con Escape
+   - Que no exista overflow horizontal
+   - Que los estilos definidos en bootstrap-overrides.css se apliquen
+
+6. Reportá para cada viewport:
+   - Nombre del dispositivo
+   - Resolución/viewport utilizado
    - Si el componente es visible y funcional
+   - Si abre y cierra correctamente
    - Si las animaciones/transiciones funcionan
-   - Si la identidad visual se mantiene (colores, tipografías de overrides)
-   - Cualquier problema visual o de comportamiento
+   - Si la identidad visual se mantiene (colores, tipografías y overrides)
+   - Si existe overflow o algún problema responsive
+   - Cualquier problema visual, de accesibilidad o de comportamiento
+
+7. No modifiques ningún archivo del proyecto durante las pruebas.
+   Solo realizá las pruebas y reportá los resultados obtenidos.
 
 Guardá las capturas en docs/04-testing/capturas/tc-7/
+utilizando nombres que permitan identificar el dispositivo y el estado probado.
 ```
 
 ---
 
 ## Dispositivos testeados
-| Viewport | Componente visible | Interacción funcional | Estilos override | Estado |
-|----------|-------------------|----------------------|------------------|--------|
-| 1280×800 (desktop) | Sí | Sí — abre y cierra con clic | Sí — tipografía y colores verificados | Aprobado con observación |
-| 390×844 (mobile) | Sí | Sí — abre con clic y cierra con Escape | Sí — tipografía y colores verificados | Aprobado con observación |
-| 768×1024 (tablet) | Sí | Sí — abre con clic y cierra con Escape | Sí — tipografía y colores verificados | Aprobado con observación |
+| Dispositivo / Viewport | Componente visible | Interacción funcional | Estilos override | Estado |
+|------------------------|-------------------|----------------------|------------------|--------|
+| Desktop — 1280×800 | Sí | Sí — abre con clic y cierra con Escape; el foco vuelve al botón | Sí — tipografía, colores, borde y radio verificados | Aprobado con observación |
+| iPhone 14 Pro — 390×844 (viewport emulado) | Sí | Sí — abre con clic y cierra con Escape; el foco vuelve al botón | Sí — tipografía, colores, borde y radio verificados | Aprobado con observación |
+| Samsung Galaxy S23 — 360×780 (viewport emulado) | Sí | Sí — abre con clic y cierra con Escape; el foco vuelve al botón | Sí — tipografía y colores verificados | Aprobado con observación |
+| iPad Air — 820×1180 (viewport emulado) | Sí | Sí — abre con clic y cierra con Escape; el foco vuelve al botón | Sí — tipografía, colores y borde verificados | Aprobado con observación |
 
 ### Resultados observados
 
 - **Selector utilizado:** `#categorias-dropdown`.
-- **Desktop (1280×800):** el botón fue localizado y el menú se abrió con clic. Se mostró la lista de cinco categorías, todas con destino `#catalogo`; un segundo clic lo cerró. El menú abierto midió aproximadamente 223×177 px.
-- **Mobile (390×844):** el botón y las cinco opciones fueron visibles. El menú abrió con clic, quedó dentro del ancho útil del viewport y no produjo overflow horizontal. Escape lo cerró. El navegador reportó 375 px de ancho útil debido a la barra de desplazamiento.
-- **Tablet (768×1024):** el botón fue visible; el menú abrió con clic, mostró las cinco opciones y cerró con Escape. No se observó overflow horizontal. El navegador reportó 753 px de ancho útil debido a la barra de desplazamiento.
-- **Apertura y cierre:** Bootstrap actualizó `aria-expanded` de `false` a `true` al abrir. Escape cerró el menú (`aria-expanded="false"`) y devolvió el foco al botón. En desktop también se verificó el cierre haciendo clic de nuevo.
-- **Animaciones/transiciones:** el menú se muestra/oculta sin transición; en tablet su `transition-duration` computado fue `0s`. No se observó una animación de apertura.
-- **Overrides:** se verificó texto blanco, fondo transparente y tipografía de FerroLab (`Inter, Arial, Helvetica, sans-serif`) en el botón. El menú tuvo fondo blanco, borde `#d9d9d9` y radio de `4px`. Al pasar el cursor sobre “Accesorios”, el fondo cambió a rojo FerroLab (`rgb(199, 55, 43)`) y el texto a blanco.
-- **Observación visual:** aunque `--bs-dropdown-box-shadow` computó con el valor `0 1px 3px rgb(0 0 0 / 16%)`, el `box-shadow` efectivo del menú fue `none`.
-- **Problema ajeno al componente:** la consola mostró un `404` al solicitar `/favicon.ico`; los recursos de Bootstrap 5.3.8 y los estilos del proyecto respondieron correctamente.
+- **Desktop (1280×800):** el botón fue visible y abrió el menú con clic; se mostraron las cinco categorías, todas con destino `#catalogo`. El menú abierto midió aproximadamente 223×177 px. Escape lo cerró, `aria-expanded` volvió a `false` y el foco regresó al botón. No se detectó overflow horizontal.
+- **iPhone 14 Pro — viewport emulado (390×844):** el botón y las cinco categorías fueron visibles. El menú abrió y cerró con Escape, actualizó `aria-expanded` correctamente y devolvió el foco al botón. No se detectó overflow horizontal; el menú abierto midió aproximadamente 223×177 px y permaneció dentro del ancho útil.
+- **Samsung Galaxy S23 — viewport emulado (360×780):** el botón fue visible; el menú abrió con clic, presentó las cinco categorías con destino `#catalogo` y cerró con Escape. `aria-expanded` y el foco se restauraron correctamente. No se detectó overflow horizontal.
+- **iPad Air — viewport emulado (820×1180):** el botón fue visible; el menú abrió con clic y presentó las cinco categorías con destino `#catalogo`. Escape cerró el menú, restableció `aria-expanded` y devolvió el foco al botón. No se detectó overflow horizontal.
+- **Apertura, cierre y accesibilidad:** en los cuatro viewports Bootstrap cambió `aria-expanded` de `false` a `true` al abrir. Escape cerró el menú (`aria-expanded="false"`) y devolvió el foco a `#categorias-dropdown`.
+- **Animaciones/transiciones:** no se observó transición visual durante la apertura ni el cierre. La duración computada fue `0s` en desktop y en el viewport de 390×844.
+- **Overrides:** se verificó texto blanco y tipografía FerroLab (`Inter, Arial, Helvetica, sans-serif`) en el botón. En el menú se comprobaron fondo blanco, texto `#2f2f2f`, borde `#d9d9d9` y radio de `4px`.
+- **Hallazgo visual:** en los cuatro viewports `--bs-dropdown-box-shadow` tuvo el valor `0 1px 3px rgb(0 0 0 / 16%)`, pero el `box-shadow` efectivo del menú fue `none`.
+- **Consola:** no se observaron errores ni warnings relacionados con el Dropdown. Se registró un `404` al solicitar `/favicon.ico`, ajeno al componente.
+- **Alcance de dispositivo:** Playwright probó los viewports indicados; no se verificó en dispositivos físicos ni en Safari para iOS o Chrome para Android.
 
 ## Capturas de pantalla
 | Viewport / Estado | Captura | Estado |
 |-------------------|---------|--------|
-| Desktop — estado inicial | ![](capturas/tc-7/desktop-inicial.png) | Capturada |
-| Desktop — estado abierto | ![](capturas/tc-7/desktop-abierto.png) | Capturada |
-| Mobile — estado inicial | ![](capturas/tc-7/mobile-inicial.png) | Capturada |
-| Mobile — estado abierto | ![](capturas/tc-7/mobile-abierto.png) | Capturada |
-| Tablet — estado inicial | ![](capturas/tc-7/tablet-inicial.png) | Capturada |
-| Tablet — estado abierto | ![](capturas/tc-7/tablet-abierto.png) | Capturada |
+| Desktop 1280×800 — estado inicial | ![](capturas/tc-7/dropdown-desktop-inicial.png) | Capturada |
+| Desktop 1280×800 — estado abierto | ![](capturas/tc-7/dropdown-desktop-abierto.png) | Capturada |
+| iPhone 14 Pro 390×844 — estado inicial | ![](capturas/tc-7/dropdown-iphone14pro-inicial.png) | Capturada |
+| iPhone 14 Pro 390×844 — estado abierto | ![](capturas/tc-7/dropdown-iphone14pro-abierto.png) | Capturada |
+| Samsung Galaxy S23 360×780 — estado inicial | ![](capturas/tc-7/dropdown-galaxy-s23-inicial.png) | Capturada |
+| Samsung Galaxy S23 360×780 — estado abierto | ![](capturas/tc-7/dropdown-galaxy-s23-abierto.png) | Capturada |
+| iPad Air 820×1180 — estado inicial | ![](capturas/tc-7/dropdown-ipad-air-inicial.png) | Capturada |
+| iPad Air 820×1180 — estado abierto | ![](capturas/tc-7/dropdown-ipad-air-abierto.png) | Capturada |
 
 ## Hallazgos
 | # | Viewport | Descripción del problema | Comportamiento esperado | Comportamiento observado | Severidad |
@@ -124,4 +166,4 @@ Guardá las capturas en docs/04-testing/capturas/tc-7/
 ## Conclusión general
 **Resultado final:** APROBADO CON OBSERVACIONES
 
-El Dropdown de Categorías fue visible y funcional en los tres viewports probados. La apertura, el cierre y el foco al cerrar con Escape se comportaron correctamente, y los estilos principales de identidad FerroLab se verificaron. Como observación, el menú no muestra la sombra configurada y no tiene transición de apertura; además, la consola reportó un 404 de `/favicon.ico`, ajeno al componente. Las seis capturas están guardadas en `docs/04-testing/capturas/tc-7/`.
+El Dropdown de Categorías fue visible y funcional en los cuatro viewports probados. La apertura, el cierre con Escape, el estado `aria-expanded` y la devolución del foco se comportaron correctamente; no se detectó overflow horizontal y se verificaron los estilos principales de FerroLab. Como observación, el menú no refleja la sombra configurada y no se observó transición de apertura. La consola registró un `404` de `/favicon.ico`, ajeno al componente. Las ocho capturas están guardadas en `docs/04-testing/capturas/tc-7/`.

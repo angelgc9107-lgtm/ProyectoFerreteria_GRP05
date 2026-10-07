@@ -56,7 +56,6 @@
         <section id="ofertas" aria-labelledby="titulo-ofertas">
             <h1 id="titulo-ofertas">Ofertas</h1>
             <div class="row">
-                <!-- CSS futuro: convertir estas tarjetas en una grilla o carrusel responsive y aplicar la presentacion visual de imagen, nombre, precios y boton. -->
                 <div class="col-12 col-md-6 col-lg-4">
                     <article class="h-100">
                         <img src="assets/images/amoladora.png" alt="Amoladora angular inalambrica DeWalt Flexvolt DCG416B">
@@ -110,10 +109,12 @@
             <p>Somos la nueva opcion en ferreteria: un espacio pensado para dar soluciones rapidas y eficientes a tus proyectos. Aunque recien empezamos, nos mueve la pasion por el oficio, la calidad en cada herramienta y el compromiso de acompanarte paso a paso. Encontra asesoramiento cercano y todo lo que buscas para construir, arreglar y crear.</p>
         </section>
 
-        <section id="catalogo" class="row" aria-labelledby="titulo-catalogo">
-            <h2 id="titulo-catalogo" class="col-12">Catalogo de productos</h2>
+        <section id="catalogo" aria-labelledby="titulo-catalogo">
+            <h2 id="titulo-catalogo">Catalogo de productos</h2>
             <!-- JavaScript futuro: aplicar el orden seleccionado, filtrar por categoria y limitar los precios entre los valores Desde y Hasta. -->
-            <aside class="col-12 col-md-auto align-self-md-start" aria-label="Filtros del catalogo">
+            <div class="row">
+            <div class="col-12 col-md-4 col-lg-3 align-self-md-start">
+            <aside aria-label="Filtros del catalogo">
                 <h3 class="filter-heading--sort">Ordenar por</h3>
                 <label for="orden">Orden de productos</label>
                 <select id="orden" name="orden">
@@ -134,9 +135,9 @@
                 <label for="precio-hasta">Hasta</label>
                 <input type="number" id="precio-hasta" name="precio-hasta" min="0">
             </aside>
+            </div>
 
-            <!-- CSS futuro: maquetar las tarjetas del catalogo en una grilla responsive, con una jerarquia clara para imagen, categoria, nombre, descripcion, precio y boton. -->
-            <div class="col-md">
+            <div class="col-12 col-md-8 col-lg-9">
                 <div class="row">
                     <div class="col-12 col-md-6 col-lg-4">
                         <article class="h-100">
@@ -230,6 +231,7 @@
                     </div>
                 </div>
             </div>
+            </div>
         </section>
 
         <section aria-labelledby="tabla-productos">
@@ -309,7 +311,6 @@
         </section>
     </main>
 
-    <!-- CSS futuro: distribuir redes, contacto y mapa en bandas del pie, usando el contraste observado en el mockup y una composicion adaptable. -->
     <footer id="ubicacion">
         <div class="row g-0">
             <section class="col-12" aria-labelledby="redes-sociales">
@@ -318,13 +319,13 @@
                 <p>WhatsApp: informacion pendiente.</p>
                 <p>TikTok: informacion pendiente.</p>
             </section>
-            <section class="col-12 col-lg-6" aria-labelledby="datos-contacto">
+            <section class="col-12 col-md-6" aria-labelledby="datos-contacto">
                 <h2 id="datos-contacto">Contacto</h2>
                 <p>Email: contacto@ferrelab.com</p>
                 <p>Celular: +54 9 1234-5678</p>
                 <p>Horario: lunes a sabado de 8 a 22 hs</p>
             </section>
-            <section class="col-12 col-lg-6 ms-lg-auto" aria-labelledby="direccion">
+            <section class="col-12 col-md-6 ms-lg-auto" aria-labelledby="direccion">
                 <h2 id="direccion">Ubicacion</h2>
                 <img src="assets/images/ubicacion.png" alt="Mapa con la ubicacion de FerroLab">
             </section>

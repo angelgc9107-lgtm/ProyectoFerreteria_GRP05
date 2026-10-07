@@ -144,37 +144,12 @@ section[aria-label="Servicios de FerroLab"] > .row {
     --bs-gutter-y: 1.25rem;
 }
 
-/* Ofertas, servicios y bienvenida: columna central de 54rem (~864 px en
-   Figma). El margen negativo del row se conserva cuando el ancho es menor. */
-#ofertas > .row,
-section[aria-label="Servicios de FerroLab"] > .row,
-section[aria-labelledby="bienvenida"] > .row {
-    margin-inline: max(
-        calc(var(--bs-gutter-x) * -0.5),
-        calc((100% - 54rem - var(--bs-gutter-x)) / 2)
-    );
-}
-
-/* Catálogo: la propia section es el row; se compensa su margen negativo
-   y el padding de main > section para evitar scroll horizontal. */
-#catalogo,
+/* Catálogo: gutters de la row interna y del contenedor de columnas. */
 #catalogo .row {
     --bs-gutter-x: var(--space-3);
     --bs-gutter-y: var(--space-3);
 }
 
-#catalogo {
+#catalogo > .row {
     --bs-gutter-y: var(--space-4);
-    margin-top: 0;
-    margin-inline: 0;
-    padding-inline: calc(var(--space-5) - var(--bs-gutter-x) / 2);
-}
-
-#catalogo > h2 {
-    margin-top: 0;
-}
-
-/* El aside tiene padding propio, que anula el gutter de la columna. */
-#catalogo > aside {
-    margin-inline: calc(var(--bs-gutter-x) * 0.5);
 }
