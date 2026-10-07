@@ -118,11 +118,11 @@ Nota de tokens: el fondo del `nav` está definido como `rgb(201 54 43)` (`#c9362
 - [x] Imágenes exportadas en `docs/01-mockup/disenio-bootstrap.png` y `docs/01-mockup/estados-bootstrap.png`
 - [x] Enlace al Figma actualizado en `README.md`
 - [x] Tablero Kanban creado en GitHub Projects ([FerroLab – Primer Parcial](https://github.com/users/angelgc9107-lgtm/projects/1))
-- [ ] Issues de todo el equipo cargadas y actualizadas en el tablero Kanban
-- [x] Mínimo 4 code reviews asistidos con IA, documentados en este spec
+- [x] Issues de todo el equipo cargadas y actualizadas en el tablero Kanban
+- [x] Mínimo 4 code reviews asistidos con IA (Claude Code; la especificación indicaba Copilot Agent Mode), documentados en este spec
 - [x] Request Changes cargados en las líneas del diff
 - [ ] Todas las PR con al menos 1 revisión aprobada antes del merge
-- [ ] `changelog.md` con las contribuciones de todo el equipo
+- [x] `changelog.md` con las contribuciones de todo el equipo
 - [ ] `release/primer-parcial` creada desde `develop` y GitHub Pages habilitado
 - [ ] PR de release creada con el template, publicada en Slack y subida al campus
 - [ ] Ramas limpias: solo `master`, `develop` y `release/primer-parcial`
@@ -185,6 +185,7 @@ Publica comentarios directamente en el código si lo consideras necesario.
 | La fix de #104 reemplazaba la entrada de #103 en el changelog en lugar de agregarse debajo, y Git no marcaba conflicto con develop | Se detectó comparando el changelog resultante contra develop; se corrigió en la rama antes del merge y el changelog final conserva las entradas de #88, #90, #96, #99, #103 y #104 |
 | #90 acumuló varias rondas de Request Changes con hallazgos nuevos en cada una, y el autor no lograba converger a tiempo | El coordinador entregó `index.html` y `components.css` corregidos y verificados contra develop para que el autor los incorporara en su rama; antes del merge se comprobó que no hubiera conflictos ni bundle de Bootstrap duplicado |
 | #105 (fix de #91) y la rama de cierre completaban a la vez el índice de `testing-doc.md` con los test cases 6, 7 y 8, lo que generó conflicto | Se resolvió por terminal conservando una sola versión de las filas del índice (la de develop) y la sección de issues del Primer Parcial |
+| Las code reviews se realizaron con Claude Code y no con Copilot Agent Mode, que era lo indicado en la especificación | Se agotaron los créditos de Copilot (límite de tokens). Se documentó el prompt y la herramienta en la sección 2.1 y cada hallazgo se verificó contra el código |
 
 ### 2.4 Evidencia
 
