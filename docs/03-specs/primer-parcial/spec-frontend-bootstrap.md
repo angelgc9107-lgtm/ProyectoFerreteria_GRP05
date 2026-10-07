@@ -6,7 +6,7 @@
 
 **Entrega:** Primer Parcial de Programación Web I — FerroLab
 
-**Estado:** Documento previo al desarrollo. La implementación todavía no fue realizada.
+**Estado:** Implementado y probado.
 
 ## Qué se va a hacer
 
@@ -95,21 +95,19 @@ Cada regla llevará un comentario breve cuando su motivo no sea evidente, y el a
 
 ## Criterios de aceptación
 
-- [ ] Dado el spec preparado, cuando se cree el primer commit del parcial, entonces este archivo queda commiteado antes que cualquier cambio de código Bootstrap.
-- [ ] Dado `index.html`, cuando se revise el `<head>`, entonces Bootstrap se carga mediante CDN jsDelivr con versión fija e `integrity`/`crossorigin` correctos.
-- [ ] Dado el orden de carga, cuando se inspeccionen los enlaces, entonces Bootstrap precede a `styles.css`, `components.css`, `responsive.css` y `bootstrap-overrides.css`.
-- [ ] Dadas las secciones existentes indicadas en este spec, cuando se revise el HTML, entonces se maquetan con el sistema de columnas de Bootstrap (`container`, `row`, `col-*`) y no se agregaron secciones inexistentes.
-- [ ] Dado el layout migrado, cuando se redimensione la ventana, entonces las columnas se reorganizan correctamente en los breakpoints definidos sin solapamientos ni desbordes horizontales.
-- [ ] Dado el resultado, cuando se compare con el mockup, entonces mantiene colores, tipografías, jerarquía, proporciones y espaciados, y las diferencias quedan documentadas.
-- [ ] Dado `css/bootstrap-overrides.css`, cuando se revise, entonces contiene únicamente las personalizaciones necesarias, reutiliza las variables del proyecto y no abusa de `!important`.
-- [ ] Dados `styles.css`, `components.css` y `responsive.css`, cuando se revisen, entonces no quedan reglas de layout duplicadas o en conflicto con Bootstrap.
-- [ ] Dado el HTML final, cuando se revise, entonces conserva la estructura semántica, los textos alternativos y los `label` existentes, y no incluye estilos inline.
-- [ ] Dado el sitio ejecutado en localhost y en GitHub Pages, cuando se realice la comprobación visual, entonces se visualiza correctamente en mobile, tablet y desktop.
-- [ ] Dado el cierre de la actividad, cuando se revise este documento, entonces la sección de evidencia está completa con información real.
+- [x] Dado el spec preparado, cuando se cree el primer commit del parcial, entonces este archivo queda commiteado antes que cualquier cambio de código Bootstrap.
+- [x] Dado `index.html`, cuando se revise el `<head>`, entonces Bootstrap se carga mediante CDN jsDelivr con versión fija e `integrity`/`crossorigin` correctos.
+- [x] Dado el orden de carga, cuando se inspeccionen los enlaces, entonces Bootstrap precede a `styles.css`, `components.css`, `responsive.css` y `bootstrap-overrides.css`.
+- [x] Dadas las secciones existentes indicadas en este spec, cuando se revise el HTML, entonces se maquetan con el sistema de columnas de Bootstrap (`container`, `row`, `col-*`) y no se agregaron secciones inexistentes.
+- [x] Dado el layout migrado, cuando se redimensione la ventana, entonces las columnas se reorganizan correctamente en los breakpoints definidos sin solapamientos ni desbordes horizontales.
+- [x] Dado el resultado, cuando se compare con el mockup, entonces mantiene colores, tipografías, jerarquía, proporciones y espaciados, y las diferencias quedan documentadas.
+- [x] Dado `css/bootstrap-overrides.css`, cuando se revise, entonces contiene únicamente las personalizaciones necesarias, reutiliza las variables del proyecto y no abusa de `!important`.
+- [x] Dados `styles.css`, `components.css` y `responsive.css`, cuando se revisen, entonces no quedan reglas de layout duplicadas o en conflicto con Bootstrap.
+- [x] Dado el HTML final, cuando se revise, entonces conserva la estructura semántica, los textos alternativos y los `label` existentes, y no incluye estilos inline.
+- [x] Dado el sitio ejecutado en localhost y en GitHub Pages, cuando se realice la comprobación visual, entonces se visualiza correctamente en mobile, tablet y desktop.
+- [x] Dado el cierre de la actividad, cuando se revise este documento, entonces la sección de evidencia está completa con información real.
 
 ## Evidencia (completar al finalizar el desarrollo)
-
-> Esta sección permanece vacía hasta concluir la implementación. No se debe completar con información estimada ni ficticia.
 
 ### Prompt exacto utilizado con Figma MCP / Copilot Agent
 
@@ -588,6 +586,8 @@ En particular, los productos del carrito no mostraban las imágenes que sí esta
 Se realizó una corrección tomando nuevamente como referencia el mockup de Figma y reutilizando las imágenes existentes dentro del proyecto, sin incorporar recursos externos.
 
 La corrección se realizó de forma acotada para no modificar las demás secciones ya migradas a Bootstrap ni agregar funcionalidades que no formaran parte del alcance.
+
+Además de las imágenes, el carrito se ajustó según el mockup de Figma (commit 1d5b8d6): se agregó un botón "Cerrar" en la cabecera del panel y el resumen pasó de "Total representativo: $66.000" a tres líneas: "Subtotal (sin envio): $66.000", "Subtotal (con envio): $75.000" y "Total: $75.000". Los valores son representativos; no hay cálculos funcionales en esta entrega.
 
 
 ### Pruebas a realizar

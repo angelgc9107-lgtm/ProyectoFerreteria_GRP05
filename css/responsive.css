@@ -41,12 +41,12 @@
         margin: 0;
     }
 
-    header > a[aria-label="Ver carrito de compras"],
+    header > button[aria-label="Ver carrito de compras"],
     header > span {
         position: static;
     }
 
-    header > a[aria-label="Ver carrito de compras"] {
+    header > button[aria-label="Ver carrito de compras"] {
         margin-left: auto;
     }
 
@@ -89,17 +89,6 @@
         overflow-x: auto;
     }
 
-    /* --- Carrito: ancho completo y sin la sombra decorativa (::before),
-       pensada para el layout de escritorio con contenedor centrado --- */
-    #carrito {
-        width: 100%;
-        margin: 0;
-    }
-
-    #carrito::before {
-        display: none;
-    }
-
     /* --- Footer: bloques apilados, sin anchos mínimos fijos que
        provoquen overflow --- */
     footer section:first-child {
@@ -112,25 +101,6 @@
     footer section:nth-child(3) {
         max-width: 100%;
         padding: var(--space-4) var(--space-5);
-    }
-}
-
-/* ==========================================================
-   TABLET — min-width: 768px
-   (El header NO se toca: conserva exactamente el diseño original
-   de styles.css/components.css, tal como está pensado para
-   tablet/desktop según el mockup)
-   ========================================================== */
-@media (min-width: 768px) {
-
-    /* Carrito: ancho intermedio, sin la sombra lateral calculada
-       para el ancho de escritorio */
-    #carrito {
-        width: 60%;
-    }
-
-    #carrito::before {
-        display: none;
     }
 }
 
@@ -167,16 +137,17 @@
         margin: 0;
     }
 
-    header > a[aria-label="Ver carrito de compras"],
+    header > button[aria-label="Ver carrito de compras"],
     header > span {
         position: static;
         grid-row: 1;
         white-space: nowrap;
     }
 
-    header > a[aria-label="Ver carrito de compras"] {
+    header > button[aria-label="Ver carrito de compras"] {
         grid-column: 3;
         font-size: var(--font-size-sm);
+        color: var(--color-white);
     }
 
     header > span {
@@ -203,22 +174,5 @@
         max-width: 100%;
         min-width: 0;
         padding: var(--space-4) var(--space-5);
-    }
-}
-
-/* ==========================================================
-   DESKTOP — min-width: 1024px
-   (Header, catálogo, carrito y footer vuelven a su diseño
-   original tal como lo definió el Frontend/CSS)
-   ========================================================== */
-@media (min-width: 1024px) {
-
-    /* Carrito: ancho y sombra originales */
-    #carrito {
-        width: var(--cart-width);
-    }
-
-    #carrito::before {
-        display: block;
     }
 }

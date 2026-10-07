@@ -64,7 +64,7 @@ Nota: las imágenes de los productos del carrito (`cart-item--grinder` y `cart-i
 
 ## Problemas encontrados
 
-No se encontraron fallos bloqueantes de responsive. Observaciones menores (sin corregir, sin Issue):
+No se encontraron fallos bloqueantes de responsive. Observaciones menores (pendientes de evaluación; no bloquean la entrega):
 
 | # | Observación | Dispositivo | Sección | Pasos | Obtenido | Esperado |
 |---|-------------|-------------|---------|-------|----------|----------|
