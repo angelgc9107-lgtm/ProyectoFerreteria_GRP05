@@ -642,6 +642,8 @@ Dejé detenido el servidor local usado para la prueba. No modifiqué código ni 
 - bootstrap-overrides.css → agregamos min-height: 0 al Dropdown para corregir la altura de la navegación.
 - bootstrap-overrides.css → eliminamos la media query redundante de #carrito para min-width: 1024px.
 - index.html → eliminamos data-bs-backdrop="true" y data-bs-keyboard="true" porque son valores predeterminados de Bootstrap.
+- Se aplicó correctamente la sombra definida al Offcanvas del carrito, evitando que el box-shadow efectivo quede en none.
+- Se aplicó correctamente la sombra definida al Dropdown de Categorías, evitando que el box-shadow efectivo quede en none.
 
 ## Evidencia de cierre
 
