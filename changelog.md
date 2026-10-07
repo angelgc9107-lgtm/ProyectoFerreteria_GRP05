@@ -2,9 +2,11 @@
 
 Este archivo se actualiza con cada Pull Request para registrar avances y correcciones
 # [Primer Parcial] Unreleased
+
 ### Added
 - [feature/coord-devops-update-figma-and-readme] Coordinador/DevOps - Spec, mockup Bootstrap y README del Primer Parcial PR: [#88](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/88) — @Piastrellini (Coordinador / DevOps)
 - [feature/dev-comp-html-avanzados-add-components] DESARROLLADOR DE COMPONENTES HTML AVANZADOS-Componentes html avanzados add components PR: [#90](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/90) — @alandox1 (Desarrollador de Componentes HTML Avanzados)
+- [feature/dev-frontend-bootstrap-migration] Desarrollador FrontEnd / Bootstrap - Migración responsive de FerroLab a Bootstrap PR: [#96](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/96) — @Luchobarrionuevo13 (Desarrollador FrontEnd/Bootstrap)
 
 ### Changed
 - [backport/release-actividad-obligatoria-2] Backport de release/actividad-obligatoria-2 hacia develop PR: [#84](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/84) — @Piastrellini (Coordinador / DevOps)

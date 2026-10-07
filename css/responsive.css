@@ -100,12 +100,15 @@
         display: none;
     }
 
+    /* --- Footer: bloques apilados, sin anchos mínimos fijos que
+       provoquen overflow --- */
     footer section:first-child {
         padding: var(--space-3) var(--space-4);
     }
 
     footer section:nth-child(2),
     footer section:nth-child(3) {
+        max-width: 100%;
         padding: var(--space-4) var(--space-5);
     }
 
@@ -187,12 +190,17 @@
         padding: var(--space-2) var(--space-4);
     }
 
+    /* --- Footer: padding propio de cada bloque en tablet --- */
     footer section:first-child {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: var(--space-4);
         padding: var(--space-3) var(--space-4);
     }
 
     footer section:nth-child(2),
     footer section:nth-child(3) {
+        max-width: 100%;
+        min-width: 0;
         padding: var(--space-4) var(--space-5);
     }
 
@@ -213,5 +221,4 @@
     #carrito::before {
         display: block;
     }
-
 }

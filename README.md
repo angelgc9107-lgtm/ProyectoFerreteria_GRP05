@@ -30,6 +30,12 @@ al menos dos componentes avanzados de Bootstrap y dos componentes avanzados
 de HTML, y validarlos con test cases automatizados con Playwright MCP y
 GitHub MCP.
 
+**Primer Parcial:** migrar el sitio a Bootstrap 5 (sistema de 12 columnas y
+utilidades responsive) a partir del mockup actualizado en Figma, incorporar
+al menos dos componentes avanzados de Bootstrap y dos componentes avanzados
+de HTML, y validarlos con test cases automatizados con Playwright MCP y
+GitHub MCP.
+
 ## 🛠️ Tecnologías utilizadas
 
 - HTML5

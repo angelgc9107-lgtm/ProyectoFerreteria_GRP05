@@ -1,70 +1,57 @@
 /*
- * Bootstrap Overrides - FerroLab
- * Personalizaciones sobre los estilos de Bootstrap.
- */
+  bootstrap-overrides.css
+  Integración de Bootstrap 5.3 con los estilos de FerroLab (Primer Parcial).
+  Se carga al final para ajustar Reboot y la grilla sin usar !important.
+*/
 
-:root {
-    --bs-primary: #c7372b;
-    --bs-primary-rgb: 199, 55, 43;
-    --bs-secondary: #9f2b22;
-    --bs-secondary-rgb: 159, 43, 34;
-    --bs-body-font-family: var(--font-family-base);
-    --bs-body-font-size: var(--font-size-sm);
-    --bs-body-line-height: var(--line-height-base);
-    --bs-body-color: var(--color-ink);
-    --bs-body-bg: var(--color-white);
-    --bs-link-color: var(--color-red-dark);
-    --bs-link-hover-color: var(--color-red);
-    --bs-border-color: var(--color-gray-300);
-    --bs-border-radius: var(--radius-md);
-    --bs-border-radius-sm: var(--radius-sm);
-    --bs-focus-ring-color: rgb(199 55 43 / 35%);
+/* ==========================================================
+   REBOOT — se restaura el aspecto previo a Bootstrap
+   ========================================================== */
+
+/* Reboot fija los títulos en 500; FerroLab los usa en negrita. */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: var(--font-weight-bold);
 }
 
-nav .ferrolab-category-toggle {
-    --bs-btn-color: var(--color-white);
-    --bs-btn-bg: transparent;
-    --bs-btn-border-color: transparent;
-    --bs-btn-hover-color: var(--color-white);
-    --bs-btn-hover-bg: rgb(255 255 255 / 10%);
-    --bs-btn-hover-border-color: transparent;
-    --bs-btn-active-color: var(--color-white);
-    --bs-btn-active-bg: rgb(255 255 255 / 15%);
-    --bs-btn-active-border-color: transparent;
-    --bs-btn-focus-shadow-rgb: 199, 55, 43;
-    min-height: 2.5rem;
-    padding: var(--space-2) var(--space-3);
-    border-radius: var(--radius-sm);
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-regular);
-    text-transform: uppercase;
+/* Reboot usa 1rem; el valor original equivalía a 1em. */
+p,
+ul {
+    margin-bottom: 1em;
 }
 
-nav .ferrolab-category-menu {
-    --bs-dropdown-spacer: var(--space-2);
-    --bs-dropdown-padding-x: var(--space-2);
-    --bs-dropdown-padding-y: var(--space-2);
-    --bs-dropdown-color: var(--color-ink);
-    --bs-dropdown-bg: var(--color-white);
-    --bs-dropdown-border-color: var(--color-gray-300);
-    --bs-dropdown-border-radius: var(--radius-sm);
-    --bs-dropdown-box-shadow: var(--shadow-card);
-    --bs-dropdown-link-color: var(--color-ink);
-    --bs-dropdown-link-hover-color: var(--color-red-dark);
-    --bs-dropdown-link-hover-bg: var(--color-gray-100);
-    --bs-dropdown-link-active-color: var(--color-white);
-    --bs-dropdown-link-active-bg: var(--color-red-dark);
-    min-width: 13rem;
+/* Reboot ubica la leyenda abajo, a la izquierda y en gris. */
+table {
+    caption-side: top;
 }
 
-nav .ferrolab-category-menu .dropdown-item,
-nav .ferrolab-category-menu .dropdown-item:hover,
-nav .ferrolab-category-menu .dropdown-item:focus-visible {
-    font-size: var(--font-size-xs);
-    text-decoration: none;
-    text-transform: uppercase;
+caption {
+    padding: 0;
+    color: inherit;
+    text-align: center;
 }
 
-nav .ferrolab-category-menu .dropdown-item {
-    padding: var(--space-2) var(--space-3);
+/* ==========================================================
+   GRILLA — gutters y ancho de la columna central (mockup)
+   ========================================================== */
+
+/* Ofertas y servicios: separación de unos 20 px entre tarjetas. */
+#ofertas > .row,
+section[aria-label="Servicios de FerroLab"] > .row {
+    --bs-gutter-x: 1.25rem;
+    --bs-gutter-y: 1.25rem;
+}
+
+/* Catálogo: gutters de la row interna y del contenedor de columnas. */
+#catalogo .row {
+    --bs-gutter-x: var(--space-3);
+    --bs-gutter-y: var(--space-3);
+}
+
+#catalogo > .row {
+    --bs-gutter-y: var(--space-4);
 }
