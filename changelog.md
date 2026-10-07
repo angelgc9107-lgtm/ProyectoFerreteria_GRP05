@@ -13,6 +13,7 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 - [backport/release-actividad-obligatoria-2] Backport de release/actividad-obligatoria-2 hacia develop PR: [#84](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/84) — @Piastrellini (Coordinador / DevOps)
 
 ### Fixed 
+- [fix/offcanvas-box-shadow] Corregir la sombra efectiva del Offcanvas del carrito (#carrito) para resolver la Issue #97 PR: [#99](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/99) — @angelgc9107-lgtm (Especialista en componentes Bootstrap)
 
 ---
 # [Released] 2026-10-01
