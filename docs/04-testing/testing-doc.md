@@ -11,6 +11,9 @@
 | 3 | [test-case-3.md](test-case-3.md) | Performance y carga (Performance API) | Playwright MCP |
 | 4 | [test-case-4.md](test-case-4.md) | Accesibilidad web (WCAG 2.1) | Playwright MCP + axe-core |
 | 5 | [test-case-5.md](test-case-5.md) | Estructura HTML semántica y validación W3C (HTML/CSS) | Playwright MCP + validadores W3C |
+| 9 | [test-case-9.md](test-case-9.md) | Iframe de Google Maps (carga, responsive, ausencia de overflow) | Playwright MCP |
+| 10 | [test-case-10.md](test-case-10.md) | Input range de filtro de precio (interacción, sincronización con output) | Playwright MCP |
+
 
 ## Resumen de Issues — Momento 1 (Testing pre-merge)
 

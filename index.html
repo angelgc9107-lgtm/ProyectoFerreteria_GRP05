@@ -112,7 +112,7 @@
 
         <section id="catalogo" aria-labelledby="titulo-catalogo">
             <h2 id="titulo-catalogo">Catalogo de productos</h2>
-            <!-- JavaScript futuro: aplicar el orden seleccionado, filtrar por categoria y limitar los precios entre los valores Desde y Hasta. -->
+            <!-- JavaScript futuro: aplicar el orden seleccionado, filtrar por categoria y limitar los productos al precio maximo elegido en el control deslizante. -->
             <div class="row">
             <div class="col-12 col-md-4 col-lg-3 align-self-md-start">
             <aside aria-label="Filtros del catalogo">
@@ -131,10 +131,8 @@
                     <li><a href="#catalogo">Jardineria</a></li>
                 </ul>
                 <h3 class="filter-heading--price">Precio</h3>
-                <label for="precio-desde">Desde</label>
-                <input type="number" id="precio-desde" name="precio-desde" min="0">
-                <label for="precio-hasta">Hasta</label>
-                <input type="number" id="precio-hasta" name="precio-hasta" min="0">
+                <label for="precio-hasta">Hasta: <output id="precio-hasta-valor" for="precio-hasta">$80.000</output></label>
+                <input type="range" class="form-range" id="precio-hasta" name="precio-hasta" min="0" max="80000" step="1000" value="80000">
             </aside>
             </div>
 
@@ -328,9 +326,21 @@
             </section>
             <section class="col-12 col-md-6 ms-lg-auto" aria-labelledby="direccion">
                 <h2 id="direccion">Ubicacion</h2>
-                <img src="assets/images/ubicacion.png" alt="Mapa con la ubicacion de FerroLab">
+                <div class="ratio ratio-16x9">
+                    <iframe src="https://www.google.com/maps?q=-34.8211567,-58.3908095&z=17&output=embed"
+                            title="Mapa con la ubicacion de FerroLab"
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"
+                            allowfullscreen></iframe>
+                </div>
             </section>
         </div>
     </footer>
+    <script>
+        document.getElementById('precio-hasta').addEventListener('input', function () {
+            document.getElementById('precio-hasta-valor').textContent =
+                '$' + Number(this.value).toLocaleString('es-AR');
+        });
+    </script>
 </body>
 </html>
