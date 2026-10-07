@@ -1,6 +1,6 @@
-# Testing Doc — Actividad Obligatoria N°2
+# Testing Doc — Actividad Obligatoria N°2 y Primer Parcial
 
-Índice central de test cases ejecutados con **Playwright MCP** (vía Claude Code — ver nota en spec-qa.md sobre el cambio de herramienta) y resumen de issues creados con **GitHub MCP** en cada momento de testing.
+Índice central de test cases ejecutados con **Playwright MCP** (vía Claude Code — ver nota en spec-qa.md sobre el cambio de herramienta) y resumen de issues creados con **GitHub MCP**. Los test cases 1 a 5 corresponden a la Actividad Obligatoria N°2 y los test cases 6 a 10, al Primer Parcial (migración a Bootstrap y componentes avanzados).
 
 ## Índice de Test Cases
 
@@ -16,7 +16,6 @@
 | 8 | [test-case-8.md](test-case-8.md) | Funcionamiento y comportamiento responsive del componente Offcanvas del carrito | Playwright MCP |
 | 9 | [test-case-9.md](test-case-9.md) | Iframe de Google Maps (carga, responsive, ausencia de overflow) | Playwright MCP |
 | 10 | [test-case-10.md](test-case-10.md) | Input range de filtro de precio (interacción, sincronización con output) | Playwright MCP |
-
 
 ## Resumen de Issues — Momento 1 (Testing pre-merge)
 
@@ -64,7 +63,7 @@ HTML: las 16 coinciden exactamente. Como la release desde la que se publica el s
 partir de `develop`, el arreglo está en la rama que corresponde. Issue #46 cerrado.
 
 **Los 4 issues de ambos momentos quedaron resueltos y verificados** (#42, #43, #44 y #46). No hay
-hallazgos pendientes de QA.
+hallazgos pendientes de QA en la Actividad Obligatoria N°2.
 
 ## Totales
 
@@ -75,6 +74,18 @@ hallazgos pendientes de QA.
 | Tests limpios | 2 (TC-3, TC-5) | 4 (TC-1, TC-2, TC-4, TC-5) |
 | Issues creados | 3 (#42, #43, #44) | 1 (#46) |
 | Issues cerrados | 3 | 1 |
+
+## Resumen de Issues — Primer Parcial
+
+Los test cases 6 a 10 se ejecutaron sobre las ramas de cada componente del Primer Parcial. Los totales de arriba corresponden solo a la Actividad Obligatoria N°2.
+
+| Test Case | Resultado | Issues / observaciones | Responsable |
+|-----------|-----------|------------------------|-------------|
+| TC-6 — Responsive de la migración a Bootstrap | OK con observaciones | Sin issues. Las observaciones O-2 (favicon) y O-3 (contador del carrito) se corrigieron en [#103](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/103); O-1 no requirió corrección | Desarrollador Frontend/Bootstrap |
+| TC-7 — Dropdown | OK con hallazgo | [#91](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/91) — `--bs-dropdown-box-shadow` definida pero `box-shadow` efectivo `none` (corregido en [#105](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/105)) | Especialista en Componentes Bootstrap |
+| TC-8 — Offcanvas | OK con hallazgo | [#97](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/97) — `--bs-offcanvas-box-shadow` definida pero `box-shadow` efectivo `none` (corregido en [#104](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/104)) | Especialista en Componentes Bootstrap |
+| TC-9 — Iframe de Google Maps | OK | Ninguno | — |
+| TC-10 — Input range de precio | OK | Ninguno | — |
 
 ## Observaciones no bloqueantes (sin issue)
 

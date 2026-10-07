@@ -4,7 +4,7 @@
 
 - **Integrante:** Thiago Piastrellini ([@Piastrellini](https://github.com/Piastrellini)) — Matrícula 158097
 - **Rol:** Coordinador / DevOps
-- **Rama:** `feature/coord-devops-update-figma-and-readme`
+- **Ramas:** `feature/coord-devops-update-figma-and-readme` ([#88](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/88)) y `feature/coord-devops-close-primer-parcial` (cierre)
 - **Fecha de inicio:** 2026-10-05
 - **Fecha límite de entrega:** 2026-10-07 23:55
 
@@ -118,11 +118,11 @@ Nota de tokens: el fondo del `nav` está definido como `rgb(201 54 43)` (`#c9362
 - [x] Imágenes exportadas en `docs/01-mockup/disenio-bootstrap.png` y `docs/01-mockup/estados-bootstrap.png`
 - [x] Enlace al Figma actualizado en `README.md`
 - [x] Tablero Kanban creado en GitHub Projects ([FerroLab – Primer Parcial](https://github.com/users/angelgc9107-lgtm/projects/1))
-- [ ] Issues de todo el equipo cargadas y actualizadas en el tablero Kanban
-- [ ] Mínimo 4 code reviews asistidos con Copilot Agent Mode, documentados en este spec
-- [ ] Request Changes cargados en las líneas del diff
+- [x] Issues de todo el equipo cargadas y actualizadas en el tablero Kanban
+- [x] Mínimo 4 code reviews asistidos con IA (Claude Code; la especificación indicaba Copilot Agent Mode), documentados en este spec
+- [x] Request Changes cargados en las líneas del diff
 - [ ] Todas las PR con al menos 1 revisión aprobada antes del merge
-- [ ] `changelog.md` con las contribuciones de todo el equipo
+- [x] `changelog.md` con las contribuciones de todo el equipo
 - [ ] `release/primer-parcial` creada desde `develop` y GitHub Pages habilitado
 - [ ] PR de release creada con el template, publicada en Slack y subida al campus
 - [ ] Ramas limpias: solo `master`, `develop` y `release/primer-parcial`
@@ -132,20 +132,35 @@ Nota de tokens: el fondo del `nav` está definido como `rgb(201 54 43)` (`#c9362
 
 ## 2. AL CERRAR la tarea
 
-### 2.1 Prompts de code review utilizados con Copilot Agent Mode
+### 2.1 Prompts de code review utilizados con Claude Code
+
+Las revisiones se realizaron con asistencia de IA (Claude, de Anthropic), sobre el diff completo de cada PR generado desde la terminal (`git diff origin/develop...<rama>`) y capturas de la pestaña Files changed. Cada hallazgo se verificó contra el código antes de publicarlo, y la decisión final de cada review la tomó el revisor humano.
 
 Prompt base utilizado en cada revisión:
 
 ```text
-COMPLETAR con el prompt exacto utilizado
+Actúa como un Senior Software Engineer realizando una code review profesional de esta Pull Request <URL de la PR>
+INSTRUCCIONES IMPORTANTES: Identifica SOLO problemas reales del código. Enumera los hallazgos (1, 2, 3...). Cada hallazgo debe ser independiente. Sé claro, técnico y concreto. No inventes problemas hipotéticos sin evidencia en el código. No incluyas sugerencias de tests.
+PARA CADA HALLAZGO USA EXACTAMENTE ESTA ESTRUCTURA:
+HALLAZGO #<número> / Archivo / Línea / Tipo de problema (bug | performance | seguridad | legibilidad | diseño | otro) / Severidad (baja | media | alta | crítica) / Explicación técnica / Sugerencia de mejora / Ejemplo de código corregido (si aplica) / DECISIÓN DEL REVISOR HUMANO: [ ] Aceptar sugerencia [ ] Rechazar sugerencia / Justificación del revisor humano.
+Al final agrega: RESUMEN GENERAL DE LA PR y DECISIÓN FINAL SUGERIDA POR IA: APPROVE | REQUEST CHANGES | COMMENT ONLY.
+Publica comentarios directamente en el código si lo consideras necesario.
 ```
 
 | # | PR revisada | Integrante | Rol | Hallazgos | Request Changes en el diff |
 |---|-------------|------------|-----|-----------|----------------------------|
-| 1 | #NN | | | | |
-| 2 | #NN | | | | |
-| 3 | #NN | | | | |
-| 4 | #NN | | | | |
+| 1 | [#90](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/90) | @alandox1 | Desarrollador de Componentes HTML Avanzados | 8 — REQUEST CHANGES | Sí, comentarios inline |
+| 2 | [#96](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/96) | @LuchoBarrionuevo13 | Desarrollador Frontend/Bootstrap | 9 (8 aceptados, 1 rechazado: #6) — REQUEST CHANGES | Sí, comentarios inline |
+| 3 | [#99](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/99) | @angelgc9107-lgtm | Especialista en Componentes Bootstrap | 12 (#6 reatribuido a #96 tras verificar el origen) — REQUEST CHANGES | Sí, comentarios inline |
+| 4 | [#90](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/90) (re-review) | @alandox1 | Desarrollador de Componentes HTML Avanzados | 6 verificados como resueltos (#2 a #7), 2 abiertos (#1 y #8) y 4 nuevos (#9 a #12) — REQUEST CHANGES | Sí, comentarios inline |
+| 5 | [#96](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/96) (re-review) | @LuchoBarrionuevo13 | Desarrollador Frontend/Bootstrap | 8 (#7 retirado por el revisor) — APPROVE tras correcciones | Sí, comentarios inline |
+| 6 | [#103](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/103) | @LuchoBarrionuevo13 | Desarrollador Frontend/Bootstrap | 1 (aplicado) — APPROVE | Sí, comentario inline |
+| 7 | [#90](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/90) (re-review 2) | @alandox1 | Desarrollador de Componentes HTML Avanzados | 1 (el commit eliminaba `spec-componentes-bootstrap.md` de #99 y dejaba un spec duplicado) — REQUEST CHANGES | Solo en la conversación |
+| 8 | [#90](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/90) (re-review 3) | @alandox1 | Desarrollador de Componentes HTML Avanzados | 0 — APPROVE | No aplica |
+| 9 | [#104](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/104) | @angelgc9107-lgtm | Especialista en Componentes Bootstrap | 5 — REQUEST CHANGES | Solo en la conversación |
+| 10 | [#104](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/104) (re-review) | @angelgc9107-lgtm | Especialista en Componentes Bootstrap | 2 (changelog: entrada de #103 pisada y enlace a #99 en vez de #104) — REQUEST CHANGES | Sí, comentario inline |
+| 11 | [#104](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/104) (re-review 2) | @angelgc9107-lgtm | Especialista en Componentes Bootstrap | 0 — APPROVE | No aplica |
+| 12 | [#105](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/105) | @angelgc9107-lgtm | Especialista en Componentes Bootstrap | 1 (orden en el CSS, no bloqueante) — APPROVE | Solo en la conversación |
 
 ### 2.2 Decisiones del mockup
 
@@ -160,7 +175,17 @@ COMPLETAR con el prompt exacto utilizado
 
 | Obstáculo | Resolución |
 |-----------|------------|
-| | |
+| Tres PRs (#90, #96, #99) cargaban su propio bundle JS de Bootstrap, lo que duplicaba los handlers de los componentes | Se definió un único dueño del bundle (#99, el único con componentes que usan JS); se quitó de #96 (bfda121) y se pidió quitarlo de #90 |
+| La rama de #99 traía una copia de la migración de #96, lo que generaba conflictos y diffs ajenos | Se fijó el orden de merge #96 → #88 → #99 → #103 → #90 y cada rama se actualizó con develop antes de su merge |
+| Conflictos en changelog.md por varias PRs que agregaban la cabecera del Primer Parcial | Se unificó en una sola cabecera `# [Primer Parcial] Unreleased` con secciones Added, Changed y Fixed |
+| El push del merge de #88 fue rechazado por GitHub con Internal Server Error, aun a una rama nueva | Se descartó el commit de merge local, se subió la corrección del README como commit independiente y se rehízo el merge |
+| En la review de #99 se atribuyó a Angel un cambio en los totales del carrito que venía de #96 | Se verificó el origen en el diff de #96, se corrigió el hallazgo en #99 y se pidió documentarlo en el spec de #96 |
+| Criterio cambiado sobre el bundle de #96: la primera review pidió agregarlo y la re-review, quitarlo | El cambio se debió a la integración: al revisar #99 se detectó que el bundle quedaba duplicado |
+| El autor de #103 no podía resolver los conflictos por horario laboral | Con su OK escrito, el coordinador resolvió los conflictos en la rama y lo dejó documentado en la PR |
+| La fix de #104 reemplazaba la entrada de #103 en el changelog en lugar de agregarse debajo, y Git no marcaba conflicto con develop | Se detectó comparando el changelog resultante contra develop; se corrigió en la rama antes del merge y el changelog final conserva las entradas de #88, #90, #96, #99, #103 y #104 |
+| #90 acumuló varias rondas de Request Changes con hallazgos nuevos en cada una, y el autor no lograba converger a tiempo | El coordinador entregó `index.html` y `components.css` corregidos y verificados contra develop para que el autor los incorporara en su rama; antes del merge se comprobó que no hubiera conflictos ni bundle de Bootstrap duplicado |
+| #105 (fix de #91) y la rama de cierre completaban a la vez el índice de `testing-doc.md` con los test cases 6, 7 y 8, lo que generó conflicto | Se resolvió por terminal conservando una sola versión de las filas del índice (la de develop) y la sección de issues del Primer Parcial |
+| Las code reviews se realizaron con Claude Code y no con Copilot Agent Mode, que era lo indicado en la especificación | Se agotaron los créditos de Copilot (límite de tokens). Se documentó el prompt y la herramienta en la sección 2.1 y cada hallazgo se verificó contra el código |
 
 ### 2.4 Evidencia
 
