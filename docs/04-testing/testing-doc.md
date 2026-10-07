@@ -11,6 +11,7 @@
 | 3 | [test-case-3.md](test-case-3.md) | Performance y carga (Performance API) | Playwright MCP |
 | 4 | [test-case-4.md](test-case-4.md) | Accesibilidad web (WCAG 2.1) | Playwright MCP + axe-core |
 | 5 | [test-case-5.md](test-case-5.md) | Estructura HTML semántica y validación W3C (HTML/CSS) | Playwright MCP + validadores W3C |
+| 6 | [test-case-6.md](test-case-6.md) | Testing responsive de la migración del sitio a Bootstrap 5.3.8 | Playwright MCP |
 | 7 | [test-case-7.md](test-case-7.md) | Funcionamiento y comportamiento responsive del componente Dropdown de Categorías | Playwright MCP |
 | 8 | [test-case-8.md](test-case-8.md) | Funcionamiento y comportamiento responsive del componente Offcanvas del carrito | Playwright MCP |
 | 9 | [test-case-9.md](test-case-9.md) | Iframe de Google Maps (carga, responsive, ausencia de overflow) | Playwright MCP |
