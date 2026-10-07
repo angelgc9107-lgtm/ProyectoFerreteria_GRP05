@@ -95,6 +95,7 @@ nav .dropdown-menu .dropdown-item:focus-visible {
     --bs-offcanvas-box-shadow: var(--shadow-card);
 
     border: var(--border-width) solid var(--color-red);
+    box-shadow: var(--bs-offcanvas-box-shadow);
 }
 
 #carrito .offcanvas-header {

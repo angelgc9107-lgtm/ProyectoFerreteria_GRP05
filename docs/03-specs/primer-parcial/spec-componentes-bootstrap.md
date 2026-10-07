@@ -557,6 +557,7 @@ Revisé el diff completo y git diff --check no reportó problemas. No hice commi
 - Ajustes de comportamiento responsive.
 - sombras en Dropdown y Offcanvas pendiente de corrección mediante Fix.
 - Ajustes menores de accesibilidad e interacción.
+- Corrección del issue [#97](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/97)
 ## Pruebas realizadas con Playwright MCP
 
 - docs\04-testing\test-case-7.md
@@ -625,7 +626,7 @@ Dejé detenido el servidor local usado para la prueba. No modifiqué código ni 
 # Test-case-8
 | Issue | Viewport | Descripción | Severidad | Estado |
 |-------|----------|-------------|-----------|--------|
-| [#97](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/97) | Desktop, mobile y tablet | `--bs-offcanvas-box-shadow` está definida, pero `box-shadow` efectivo es `none` | Baja | Abierto |
+| [#97](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/97) | Desktop, mobile y tablet | `--bs-offcanvas-box-shadow` está definida, pero `box-shadow` efectivo es `none` | Baja | En progreso |
 
 
 ## Correcciones realizadas
