@@ -1,0 +1,57 @@
+/*
+  bootstrap-overrides.css
+  Integración de Bootstrap 5.3 con los estilos de FerroLab (Primer Parcial).
+  Se carga al final para ajustar Reboot y la grilla sin usar !important.
+*/
+
+/* ==========================================================
+   REBOOT — se restaura el aspecto previo a Bootstrap
+   ========================================================== */
+
+/* Reboot fija los títulos en 500; FerroLab los usa en negrita. */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: var(--font-weight-bold);
+}
+
+/* Reboot usa 1rem; el valor original equivalía a 1em. */
+p,
+ul {
+    margin-bottom: 1em;
+}
+
+/* Reboot ubica la leyenda abajo, a la izquierda y en gris. */
+table {
+    caption-side: top;
+}
+
+caption {
+    padding: 0;
+    color: inherit;
+    text-align: center;
+}
+
+/* ==========================================================
+   GRILLA — gutters y ancho de la columna central (mockup)
+   ========================================================== */
+
+/* Ofertas y servicios: separación de unos 20 px entre tarjetas. */
+#ofertas > .row,
+section[aria-label="Servicios de FerroLab"] > .row {
+    --bs-gutter-x: 1.25rem;
+    --bs-gutter-y: 1.25rem;
+}
+
+/* Catálogo: gutters de la row interna y del contenedor de columnas. */
+#catalogo .row {
+    --bs-gutter-x: var(--space-3);
+    --bs-gutter-y: var(--space-3);
+}
+
+#catalogo > .row {
+    --bs-gutter-y: var(--space-4);
+}
