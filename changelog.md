@@ -6,7 +6,7 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 ### Added
 - [feature/coord-devops-update-figma-and-readme] Coordinador/DevOps - Spec, mockup Bootstrap y README del Primer Parcial PR: [#88](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/88) — @Piastrellini (Coordinador / DevOps)
 
-- [feature/esp-com-bootstrap-add-component] Spec rol Especialista Bootstrap, Implementación del Dropdown de Categorías y Offcanvas del carrito con Bootstrap; pruebas Playwright documentadas PR: [#99](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/99)
+- [feature/esp-com-bootstrap-add-component] Spec rol Especialista Bootstrap, Implementación del Dropdown de Categorías y Offcanvas del carrito con Bootstrap; pruebas Playwright documentadas PR: [#99](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/99) — @angelgc9107-lgtm (Especialista en componentes Bootstrap)
 
 ### Changed
 - [backport/release-actividad-obligatoria-2] Backport de release/actividad-obligatoria-2 hacia develop PR: [#84](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/84) — @Piastrellini (Coordinador / DevOps)
