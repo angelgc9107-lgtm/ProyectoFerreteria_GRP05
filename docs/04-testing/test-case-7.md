@@ -95,7 +95,6 @@ Guardá las capturas en docs/04-testing/capturas/tc-7/
 - **Overrides:** se verificó texto blanco, fondo transparente y tipografía de FerroLab (`Inter, Arial, Helvetica, sans-serif`) en el botón. El menú tuvo fondo blanco, borde `#d9d9d9` y radio de `4px`. Al pasar el cursor sobre “Accesorios”, el fondo cambió a rojo FerroLab (`rgb(199, 55, 43)`) y el texto a blanco.
 - **Observación visual:** aunque `--bs-dropdown-box-shadow` computó con el valor `0 1px 3px rgb(0 0 0 / 16%)`, el `box-shadow` efectivo del menú fue `none`.
 - **Problema ajeno al componente:** la consola mostró un `404` al solicitar `/favicon.ico`; los recursos de Bootstrap 5.3.8 y los estilos del proyecto respondieron correctamente.
-- No se registraron issues durante esta ejecución.
 
 ## Capturas de pantalla
 | Viewport / Estado | Captura | Estado |
@@ -126,4 +125,3 @@ Guardá las capturas en docs/04-testing/capturas/tc-7/
 **Resultado final:** APROBADO CON OBSERVACIONES
 
 El Dropdown de Categorías fue visible y funcional en los tres viewports probados. La apertura, el cierre y el foco al cerrar con Escape se comportaron correctamente, y los estilos principales de identidad FerroLab se verificaron. Como observación, el menú no muestra la sombra configurada y no tiene transición de apertura; además, la consola reportó un 404 de `/favicon.ico`, ajeno al componente. Las seis capturas están guardadas en `docs/04-testing/capturas/tc-7/`.
-Mostrando test-case-7.md.

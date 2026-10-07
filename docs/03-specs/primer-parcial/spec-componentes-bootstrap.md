@@ -92,7 +92,7 @@ Las pruebas mediante Playwright MCP permitirán comprobar el funcionamiento de c
 
 - [X] Por cada hallazgo relevante se creó un issue tipo bug mediante GitHub MCP desde Copilot Agent Mode.
 
-- [X] Los issues encontrados fueron corregidos mediante ramas `fix/` contra `develop`.
+- [ ] Los issues encontrados fueron corregidos mediante ramas `fix/` contra `develop`.
 
 - [ ] Las correcciones fueron documentadas en `[Fixed]` dentro de `changelog.md`.
 
@@ -136,7 +136,7 @@ El componente 2 será documentado en:
 ``` 
 Actúa exclusivamente como Especialista en Componentes Bootstrap del proyecto FerroLab.
 
-Debes implementar ÚNICAMENTE el primer componente avanzado definido en el spec-especialista-bootstrap.md:
+Debes implementar ÚNICAMENTE el primer componente avanzado definido en el spec-componentes-bootstrap:
 
 Bootstrap Dropdown
 
@@ -287,7 +287,7 @@ No realices ninguna prueba automatizada en esta etapa.
 Actúa exclusivamente como Especialista en Componentes Bootstrap del proyecto FerroLab.
 
 Debes implementar ÚNICAMENTE el segundo componente avanzado definido en el
-spec-especialista-bootstrap.md:
+spec-componentes-bootstrap:
 
 Bootstrap Offcanvas
 
@@ -555,7 +555,7 @@ Revisé el diff completo y git diff --check no reportó problemas. No hice commi
 ## Ajustes manuales realizados
 - Adaptación de estilos para mantener la identidad visual de FerroLab.
 - Ajustes de comportamiento responsive.
-- Corrección de sombras en Dropdown y Offcanvas.
+- sombras en Dropdown y Offcanvas pendiente de corrección mediante Fix.
 - Ajustes menores de accesibilidad e interacción.
 ## Pruebas realizadas con Playwright MCP
 

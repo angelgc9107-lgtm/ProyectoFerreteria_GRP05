@@ -1,7 +1,4 @@
 
-test-case-8.md
-
-100 %
 # Test Case 8 — Componente Bootstrap 2
 
 ## Metadata
@@ -98,7 +95,7 @@ Guardá las capturas en docs/04-testing/capturas/tc-8/
 - **Animaciones/transiciones:** la transición del panel fue `transform 0.3s ease-in-out`; la del backdrop fue `0.15s`.
 - **Estilos de `bootstrap-overrides.css`:** se computó el fondo del panel en `rgb(201, 54, 43)`, texto blanco, borde rojo `rgb(199, 55, 43)` y cabecera `rgb(166, 45, 35)`. La tipografía del título fue `Inter, Arial, Helvetica, sans-serif`. Se verificaron los anchos responsivos configurados: 35% desktop, 100% mobile y 60% tablet.
 - **Contenido conservado y visible:** dos productos (Amoladora y Martillo), cantidades `1` y `1`, precios unitarios `$50.000` y `$16.000`, subtotales representativos `$50.000` y `$16.000`, resumen de `$66.000` sin envío, `$75.000` con envío y total `$75.000`; también se encontró el botón “Iniciar compra”.
-- **Problemas observados:** no se registraron problemas visuales ni funcionales durante la ejecución. La consola no mostró errores.
+- **Problemas observados:** en la ejecución inicial no se detectaron problemas visuales ni funcionales. Posteriormente, una segunda revisión independiente identificó el hallazgo relacionado con la aplicación de box-shadow, documentado más adelante.
 
 ### Segunda revisión independiente — 2026-10-06
 
@@ -121,41 +118,29 @@ Se repitieron las interacciones y comprobaciones de layout y estilos con Playwri
 | Desktop — backdrop visible | ![](capturas/tc-8/desktop-overlay.png) | Capturada |
 | Mobile — estado inicial | ![](capturas/tc-8/mobile-inicial.png) | Capturada |
 | Mobile — estado abierto | ![](capturas/tc-8/mobile-abierto.png) | Capturada |
-| Mobile — backdrop visible | ![](capturas/tc-8/mobile-overlay.png) | Capturada |
 | Tablet — estado inicial | ![](capturas/tc-8/tablet-inicial.png) | Capturada |
 | Tablet — estado abierto | ![](capturas/tc-8/tablet-abierto.png) | Capturada |
 | Tablet — backdrop visible | ![](capturas/tc-8/tablet-overlay.png) | Capturada |
 
 ## Hallazgos
-
 | # | Viewport | Descripción del problema | Comportamiento esperado | Comportamiento observado | Severidad |
 |---|----------|--------------------------|-------------------------|--------------------------|-----------|
-| 1 | Desktop, mobile y tablet | La sombra configurada no se aplica al panel | El valor de `--bs-offcanvas-box-shadow` debe reflejarse en el `box-shadow` efectivo | La variable computada es `0 1px 3px rgb(0 0 0 / 16%)`, pero `box-shadow` computa como `none` en los tres viewports | Baja |
-
-### Observaciones
-
-- En mobile (390×844), el Offcanvas ocupa el 100% del ancho del viewport (390 px), por lo que el backdrop queda completamente cubierto por el panel y no existe un área exterior disponible para cerrarlo mediante clic. Este comportamiento es consistente con la configuración responsive actual y no se considera un problema funcional. El componente puede cerrarse correctamente mediante el botón de cierre y la tecla Escape.
+| 1 | Mobile (390×844) | No es posible cerrar el Offcanvas haciendo clic físicamente sobre el backdrop cuando el panel ocupa el 100% del ancho | Un clic fuera del panel sobre el backdrop debe cerrar el Offcanvas | El panel ocupa los 390 px del viewport; en el punto probado `elementFromPoint` encontró `.offcanvas-body`, y el clic dejó el panel abierto con un backdrop | Baja |
+| 2 | Desktop, mobile y tablet | La sombra configurada no se aplica al panel | El valor de `--bs-offcanvas-box-shadow` debe reflejarse en el `box-shadow` efectivo | La variable computada es `0 1px 3px rgb(0 0 0 / 16%)`, pero `box-shadow` computa como `none` en los tres viewports | Baja |
 
 ### Severidad
-
 - **Alta** — Componente no funciona o no se renderiza
 - **Media** — Problema visual o de interacción significativo
 - **Baja** — Detalle estético menor
 
 ## Issues creados
-
 | Issue | Viewport | Descripción | Severidad | Estado |
 |-------|----------|-------------|-----------|--------|
-| [#97](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/97) | Desktop, mobile y tablet | `--bs-offcanvas-box-shadow` está definida, pero `box-shadow` efectivo es `none` | Baja | Abierto |
+| No creado | Mobile | El backdrop queda cubierto por el panel de ancho completo y no recibe clic físico | Baja | Pendiente |
+| No creado | Desktop, mobile y tablet | `--bs-offcanvas-box-shadow` está definida, pero `box-shadow` efectivo es `none` | Baja | Pendiente |
 
 ## Conclusión general
+**Resultado final:** APROBADO CON HALLAZGOS
 
-**Resultado final:** APROBADO CON OBSERVACIONES
-
-El Offcanvas abrió correctamente en los tres viewports. El cierre mediante el botón X y Escape, la gestión del foco, el backdrop y el comportamiento responsive funcionaron correctamente durante las pruebas.
-
-La segunda revisión detectó un hallazgo visual de severidad baja: la variable `--bs-offcanvas-box-shadow` está configurada, pero su valor no se refleja en el `box-shadow` efectivo del panel.
-
-En mobile, el Offcanvas ocupa el 100% del ancho del viewport, por lo que el backdrop queda completamente cubierto y no puede recibir un clic físico. Este comportamiento corresponde a la configuración responsive actual y se registra como observación, no como problema funcional.
-
-No se modificó código ni se crearon issues durante esta revisión.
+El Offcanvas abrió correctamente en los tres viewports; el cierre con X y Escape, la gestión del foco y el backdrop funcionaron en general. La segunda revisión detectó dos hallazgos de severidad baja: en mobile el panel a ancho completo cubre el backdrop y no permite cerrarlo mediante clic físico en él, y la variable de sombra configurada no se refleja en el `box-shadow` efectivo. No se modificó código ni se crearon issues durante esta revisión.
+Mostrando test-case-8.md.
