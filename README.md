@@ -64,6 +64,7 @@ de Google Maps con `.ratio-16x9`).
 ## 📁 Documentación
 - [Mockup en Figma (actualizado en el Primer Parcial con Bootstrap)](https://www.figma.com/design/jX7NrMUtt6Tg7oiYqock6s/Sin-t%C3%ADtulo?node-id=191-963&t=ouTMvmvpb279r7wJ-1)
 - [Mockup Bootstrap exportado (Primer Parcial)](docs/01-mockup/disenio-bootstrap.png)
+- [Estados de interacción Bootstrap (Primer Parcial)](docs/01-mockup/estados-bootstrap.png)
 - [Mockup con estilos exportado (Actividad Obligatoria N°2)](docs/01-mockup/actividad-obligatoria-2/dise%C3%B1o-con-estilos.png)
 - [Specs del Primer Parcial](docs/03-specs/primer-parcial/)
 - [Tablero Kanban del Primer Parcial](https://github.com/users/angelgc9107-lgtm/projects/1)
