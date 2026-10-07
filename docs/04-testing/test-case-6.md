@@ -73,5 +73,4 @@ No se encontraron fallos bloqueantes de responsive. Observaciones menores (sin c
 | O-3 | Texto "Carrito (0)" en el encabezado con 2 productos en el carrito | iPad Air (820 px) | Header | Cargar la página a 820 px y observar el header. | Muestra "Carrito (0)" mientras el carrito contiene 2 artículos. | Contador coherente con el contenido (es HTML estático; relevante para la futura lógica JS). |
 
 ## Estado final de la prueba
-
-**APROBADA con observaciones menores (O-1, O-2, O-3).** Los 12 criterios solicitados se cumplieron en iPhone 14 Pro, Galaxy S23, iPad Air y escritorio según las mediciones y capturas obtenidas con Playwright MCP. No se creó ningún Issue ni rama de corrección; queda pendiente decidir si las observaciones se reportan.
+**APROBADA con observaciones menores (O-1, O-2, O-3).** Las observaciones se reportan como issues bug con GitHub MCP y se resuelven mediante ramas fix/ contra develop, documentadas en [Fixed] del changelog.md.

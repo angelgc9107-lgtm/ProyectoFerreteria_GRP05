@@ -50,10 +50,9 @@
     </header>
 
     <main>
-        <section id="ofertas" aria-labelledby="titulo-ofertas">
+        <section id="ofertas" class="container" aria-labelledby="titulo-ofertas">
             <h1 id="titulo-ofertas">Ofertas</h1>
             <div class="row">
-                <!-- CSS futuro: convertir estas tarjetas en una grilla o carrusel responsive y aplicar la presentacion visual de imagen, nombre, precios y boton. -->
                 <div class="col-12 col-md-6 col-lg-4">
                     <article class="h-100">
                         <img src="assets/images/amoladora.png" alt="Amoladora angular inalambrica DeWalt Flexvolt DCG416B">
@@ -85,7 +84,7 @@
             </div>
         </section>
 
-        <section aria-label="Servicios de FerroLab">
+        <section class="container" aria-label="Servicios de FerroLab">
             <h2>Servicios para tus proyectos</h2>
             <ul class="row list-unstyled">
                 <li class="col-12 col-md-6 col-lg-4"><div class="h-100">Pago con tarjeta de credito.</div></li>
@@ -94,7 +93,7 @@
             </ul>
         </section>
 
-        <section aria-labelledby="bienvenida">
+        <section class="container" aria-labelledby="bienvenida">
             <div class="row g-0">
                 <div class="col-12 col-md-6">
                     <img src="assets/images/bienvenido1.png" alt="Interior de FerroLab con herramientas y maquinas en exhibicion">
@@ -110,7 +109,7 @@
         <section id="catalogo" class="row" aria-labelledby="titulo-catalogo">
             <h2 id="titulo-catalogo" class="col-12">Catalogo de productos</h2>
             <!-- JavaScript futuro: aplicar el orden seleccionado, filtrar por categoria y limitar los precios entre los valores Desde y Hasta. -->
-            <aside class="col-12 col-md-auto align-self-md-start" aria-label="Filtros del catalogo">
+            <aside class="col-12 col-md-4 col-lg-3 align-self-md-start" aria-label="Filtros del catalogo">
                 <h3 class="filter-heading--sort">Ordenar por</h3>
                 <label for="orden">Orden de productos</label>
                 <select id="orden" name="orden">
@@ -132,8 +131,7 @@
                 <input type="number" id="precio-hasta" name="precio-hasta" min="0">
             </aside>
 
-            <!-- CSS futuro: maquetar las tarjetas del catalogo en una grilla responsive, con una jerarquia clara para imagen, categoria, nombre, descripcion, precio y boton. -->
-            <div class="col-md">
+            <div class="col-12 col-md-8 col-lg-9">
                 <div class="row">
                     <div class="col-12 col-md-6 col-lg-4">
                         <article class="h-100">
@@ -304,7 +302,6 @@
         </section>
     </main>
 
-    <!-- CSS futuro: distribuir redes, contacto y mapa en bandas del pie, usando el contraste observado en el mockup y una composicion adaptable. -->
     <footer id="ubicacion">
         <div class="row g-0">
             <section class="col-12" aria-labelledby="redes-sociales">
@@ -313,17 +310,18 @@
                 <p>WhatsApp: informacion pendiente.</p>
                 <p>TikTok: informacion pendiente.</p>
             </section>
-            <section class="col-12 col-lg-6" aria-labelledby="datos-contacto">
+            <section class="col-12 col-md-6" aria-labelledby="datos-contacto">
                 <h2 id="datos-contacto">Contacto</h2>
                 <p>Email: contacto@ferrelab.com</p>
                 <p>Celular: +54 9 1234-5678</p>
                 <p>Horario: lunes a sabado de 8 a 22 hs</p>
             </section>
-            <section class="col-12 col-lg-6 ms-lg-auto" aria-labelledby="direccion">
+            <section class="col-12 col-md-6 ms-lg-auto" aria-labelledby="direccion">
                 <h2 id="direccion">Ubicacion</h2>
                 <img src="assets/images/ubicacion.png" alt="Mapa con la ubicacion de FerroLab">
             </section>
         </div>
     </footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 </body>
 </html>

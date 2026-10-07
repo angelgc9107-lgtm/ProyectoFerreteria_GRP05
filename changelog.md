@@ -6,7 +6,7 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 ### Added
 
-- [feature/dev-frontend-bootstrap-migration] Desarrollador FrontEnd / Bootstrap - Migración responsive a Bootstrap, integración con Figma MCP y testing con Playwright MCP PR: [#96](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/96) — @Luchobarrionuevo13 (Desarrollador FrontEnd/Bootstrap)
+- [feature/dev-frontend-bootstrap-migration] Desarrollador FrontEnd / Bootstrap - Migración responsive de FerroLab a Bootstrap PR: [#96](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/96) — @Luchobarrionuevo13 (Desarrollador FrontEnd/Bootstrap)
 
 # [Actividad obligatoria N°2] Unreleased
 ### Added

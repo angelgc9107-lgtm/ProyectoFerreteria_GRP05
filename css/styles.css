@@ -41,7 +41,6 @@
     --content-width: 72rem;
     --cart-width: 35%;
     --catalog-columns: repeat(3, minmax(0, 1fr));
-    --filters-width: 11rem;
 }
 
 *,
