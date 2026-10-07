@@ -83,11 +83,6 @@
         text-wrap: balance;
     }
 
-    /* --- Catálogo: el ancho de los filtros descuenta el gutter de Bootstrap --- */
-    #catalogo > aside {
-        width: calc(100% - var(--bs-gutter-x));
-    }
-
     /* --- Tabla de precios: scroll horizontal controlado en vez de
        desbordar el viewport --- */
     main > section:has(table) {
