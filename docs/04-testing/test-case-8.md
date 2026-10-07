@@ -46,33 +46,90 @@ Ejecutá estos pasos en orden:
 
 1. Navegá a http://localhost:3000 con viewport 1280x800 (desktop)
    - Localizá el elemento [#carrito] en la página
+   - Localizá el botón que abre el carrito
    - Tomá captura del componente en su estado inicial
-   - Interactuá con el componente según su tipo:
-     · Si es un modal: hacé click en el botón que lo abre y verificá que se abre correctamente
-     · Si es un navbar/collapse: hacé click en el toggler y verificá que se despliega
-     · Si es un carrusel: avanzá y retrocedé slides, verificá transiciones
-     · Si es un accordion: abrí y cerrá secciones, verificá que solo una esté activa
-     · Si es un dropdown: hacé click y verificá que el menú aparece correctamente
-     · Si es un offcanvas: activá y cerrá, verificá overlay
-   - Tomá captura del componente en estado activo/expandido
+   - Hacé clic en el botón que abre el carrito
+   - Verificá que el Offcanvas se abra correctamente desde la derecha
+   - Verificá que aparezca el backdrop/overlay oficial de Bootstrap
+   - Tomá captura del componente en estado abierto
    - Verificá que los estilos de bootstrap-overrides.css se aplican
+   - Verificá el cierre mediante el botón oficial
+   - Volvé a abrirlo y verificá el cierre mediante Escape
+   - Verificá que el foco vuelva correctamente al botón que abrió el carrito
+   - Volvé a abrirlo y verificá el cierre haciendo clic sobre el backdrop
 
-2. Cambiá el viewport a 390x844 (iPhone 14 Pro — mobile)
-   - Verificá que el componente se adapta correctamente
-   - Repetí la interacción y tomá capturas
+2. Cambiá el viewport a 390x844 (iPhone 14 Pro — iOS Safari)
+   - Verificá que el Offcanvas se adapta correctamente
+   - Abrí el carrito mediante su botón
+   - Verificá que el panel se muestre correctamente
+   - Verificá que el contenido permanezca dentro del panel
+   - Verificá que no exista overflow horizontal
+   - Verificá que aparezca un único backdrop de Bootstrap
+   - Verificá el cierre mediante el botón oficial y Escape
+   - Verificá que el foco vuelva correctamente al botón de apertura
+   - Tomá capturas del estado inicial y abierto
    - Verificá si hay diferencias respecto al desktop
 
-3. Cambiá el viewport a 768x1024 (iPad — tablet)
-   - Verificá comportamiento intermedio
-   - Tomá captura
+3. Cambiá el viewport a 360x780 (Samsung Galaxy S23 — Chrome Android)
+   - Verificá que el Offcanvas se adapta correctamente
+   - Abrí el carrito mediante su botón
+   - Verificá que el panel se muestre correctamente
+   - Verificá que el contenido permanezca dentro del panel
+   - Verificá que no exista overflow horizontal
+   - Verificá que aparezca un único backdrop de Bootstrap
+   - Verificá el cierre mediante el botón oficial y Escape
+   - Verificá que el foco vuelva correctamente al botón de apertura
+   - Tomá capturas del estado inicial y abierto
+   - Verificá si hay diferencias respecto a los demás dispositivos
 
-4. Reportá para cada viewport:
+4. Cambiá el viewport a 820x1180 (iPad Air — iOS Safari)
+   - Verificá el comportamiento del Offcanvas en tablet
+   - Abrí el carrito mediante su botón
+   - Verificá que el panel se muestre correctamente desde la derecha
+   - Verificá que el contenido permanezca dentro del panel
+   - Verificá que no exista overflow horizontal
+   - Verificá que aparezca un único backdrop de Bootstrap
+   - Verificá el cierre mediante el botón oficial y Escape
+   - Verificá que el foco vuelva correctamente al botón de apertura
+   - Tomá capturas del estado inicial y abierto
+   - Verificá si hay diferencias respecto a los demás dispositivos
+
+5. Para el Offcanvas, verificá específicamente en cada viewport:
+   - Que el botón del carrito sea visible y funcional
+   - Que #carrito se abra correctamente
+   - Que el panel se abra desde la derecha
+   - Que el contenido existente del carrito permanezca visible
+   - Que los productos, cantidades, precios, subtotales y total se visualicen correctamente
+   - Que exista un único backdrop/overlay oficial de Bootstrap
+   - Que el botón oficial de cierre funcione
+   - Que Escape cierre el Offcanvas
+   - Que el foco vuelva correctamente al botón de apertura después de cerrarlo con Escape
+   - Que el panel pueda cerrarse haciendo clic sobre el backdrop
+   - Que no exista overflow horizontal
+   - Que los atributos ARIA y estados de accesibilidad correspondientes sean correctos
+   - Que los estilos definidos en bootstrap-overrides.css se apliquen
+   - Que las dimensiones responsive del Offcanvas se correspondan con las definidas por el proyecto
+   - Que la transición de apertura y cierre funcione correctamente
+
+6. Reportá para cada viewport:
+   - Nombre del dispositivo
+   - Resolución/viewport utilizado
    - Si el componente es visible y funcional
+   - Ancho efectivo del Offcanvas cuando está abierto
+   - Si abre y cierra correctamente
+   - Si funciona el cierre mediante botón, Escape y backdrop
+   - Si el foco vuelve correctamente al control de apertura
+   - Si existe un único backdrop
    - Si las animaciones/transiciones funcionan
-   - Si la identidad visual se mantiene (colores, tipografías de overrides)
-   - Cualquier problema visual o de comportamiento
+   - Si la identidad visual se mantiene (colores, tipografías y overrides)
+   - Si existe overflow o algún problema responsive
+   - Cualquier problema visual, de accesibilidad o de comportamiento
+
+7. No modifiques ningún archivo del proyecto durante las pruebas.
+   Solo realizá las pruebas y reportá los resultados obtenidos.
 
 Guardá las capturas en docs/04-testing/capturas/tc-8/
+utilizando nombres que permitan identificar el dispositivo y el estado probado.
 ```
 
 ---
@@ -80,9 +137,10 @@ Guardá las capturas en docs/04-testing/capturas/tc-8/
 ## Dispositivos testeados
 | Viewport | Componente visible | Interacción funcional | Estilos override | Estado |
 |----------|-------------------|----------------------|------------------|--------|
-| 1280×800 (desktop) | Sí | Sí — abre y cierra | Sí — colores y tipografía verificados | Aprobado |
-| 390×844 (mobile) | Sí | Sí — abre y cierra | Sí — colores y tipografía verificados | Aprobado |
-| 768×1024 (tablet) | Sí | Sí — abre y cierra | Sí — colores verificados | Aprobado |
+| 1280×800 (desktop) | Sí | Sí — abre y cierra | Sí — colores y tipografía verificados | Aprobado con hallazgos |
+| 390×844 (iPhone 14 Pro, viewport emulado) | Sí | Sí — abre y cierra con X y Escape; el panel cubre el backdrop | Sí — colores y tipografía verificados | Aprobado con hallazgos |
+| 360×780 (Samsung Galaxy S23, viewport emulado) | Sí | Sí — abre y cierra con X y Escape; el panel ocupa todo el viewport | Sí — colores verificados | Aprobado con hallazgos |
+| 820×1180 (iPad Air, viewport emulado) | Sí | Sí — abre y cierra | Sí — colores verificados | Aprobado con hallazgos |
 
 ### Resultados observados
 
@@ -110,23 +168,44 @@ Se repitieron las interacciones y comprobaciones de layout y estilos con Playwri
 - **Transición:** el panel computó `transform 0.3s ease-in-out`.
 - **Conflictos y consola:** no se detectaron backdrops duplicados, elementos del carrito fuera de los límites del panel ni overflow horizontal. No hubo errores o warnings de consola relacionados con el componente. La consola sí registró un 404 de `/favicon.ico`, ajeno al Offcanvas.
 
+### Tercera revisión independiente — 2026-10-07
+
+Se volvió a probar el Offcanvas con Playwright MCP en los cuatro viewports indicados. Los tamaños se emularon en el navegador; no se probaron dispositivos físicos ni Safari para iOS o Chrome para Android. No se modificaron archivos del proyecto durante las pruebas; las únicas salidas generadas fueron las capturas indicadas abajo.
+
+- **Desktop (1280×800):** el botón fue visible y funcional. El panel abrió desde la derecha con ancho efectivo de 448 px (35%), cerró con el botón X, Escape y clic en el backdrop. En cada cierre desapareció el único backdrop y el foco volvió al botón de apertura. No se detectó overflow horizontal.
+- **iPhone 14 Pro — viewport emulado (390×844):** el panel abrió desde la derecha y ocupó 390 px (100%). Cerró con X y Escape; en ambos casos desaparecieron panel y backdrop y el foco volvió al botón. Había un solo backdrop, pero el panel cubrió toda su superficie. El intento de clic en el backdrop no pudo alcanzar el overlay: Playwright registró que `.offcanvas-body` interceptaba el evento. No se detectó overflow horizontal ni contenido fuera del panel.
+- **Samsung Galaxy S23 — viewport emulado (360×780):** el panel abrió desde la derecha y ocupó 360 px (100%). Cerró con X y Escape, eliminó el único backdrop y devolvió el foco al botón. Al ocupar el panel todo el viewport no quedó área de backdrop expuesta para hacer clic; no se comprobó un cierre físico por backdrop en este tamaño. No se detectó overflow horizontal ni contenido fuera del panel.
+- **iPad Air — viewport emulado (820×1180):** el panel abrió desde la derecha con ancho efectivo de 492 px (60%). Cerró con X, Escape y clic en el área expuesta del backdrop; cada cierre eliminó el backdrop y devolvió el foco al botón. No se detectó overflow horizontal ni contenido fuera del panel.
+- **Backdrop y accesibilidad:** en los cuatro tamaños se encontró exactamente un `.offcanvas-backdrop` mientras el panel estaba abierto y ninguno después de cerrarlo. Al abrir, Bootstrap aplicó `role="dialog"` y `aria-modal="true"` al panel; `aria-labelledby="titulo-carrito"` identificó el encabezado y el botón disparador conservó `aria-controls="carrito"`. El foco entró al panel; se comprobó que permanece dentro al tabular en tablet. Al cerrarse, Bootstrap retiró `role` y `aria-modal` y devolvió el foco al botón.
+- **Contenido y controles:** se verificaron los dos productos (Amoladora y Martillo), cantidades `1` y `1`, precios unitarios de `$50.000` y `$16.000`, subtotales representativos de `$50.000` y `$16.000`, subtotal de `$66.000` sin envío, subtotal de `$75.000` con envío y total de `$75.000`. Inputs y botones estaban visibles; no se detectaron elementos del carrito fuera del panel.
+- **Overflow vertical:** el cuerpo del panel admite desplazamiento vertical (`overflow-y: auto`). Los elementos inspeccionados quedaron dentro del panel; no se detectó overflow horizontal en ninguno de los viewports.
+- **Estilos computados:** los valores responsive de `--bs-offcanvas-width` (35%, 100%, 100% y 60%, respectivamente) coincidieron con anchos efectivos de 448, 390, 360 y 492 px. El fondo `#c9362b`, el color blanco y el borde `1px solid #c7372b` se reflejaron en los estilos computados. La tipografía observada fue `Inter, Arial, Helvetica, sans-serif`.
+- **Sombra:** en los cuatro viewports `--bs-offcanvas-box-shadow` computó como `0 1px 3px rgb(0 0 0 / 16%)`, mientras que el `box-shadow` efectivo permaneció en `none`.
+- **Transiciones:** se observaron eventos `transitionrun`, `transitionstart` y `transitionend` en desktop y en los dos viewports mobile probados; la duración computada fue `0.3s` para `transform`. En tablet se verificó la duración computada `0.3s ease-in-out`.
+- **Consola:** no se registraron errores ni warnings relacionados con el Offcanvas. Se observó un `404` de `/favicon.ico`, ajeno al componente.
+
 ## Capturas de pantalla
 | Viewport / Estado | Captura | Estado |
 |-------------------|---------|--------|
 | Desktop — estado inicial | ![](capturas/tc-8/desktop-inicial.png) | Capturada |
 | Desktop — estado abierto | ![](capturas/tc-8/desktop-abierto.png) | Capturada |
 | Desktop — backdrop visible | ![](capturas/tc-8/desktop-overlay.png) | Capturada |
-| Mobile — estado inicial | ![](capturas/tc-8/mobile-inicial.png) | Capturada |
-| Mobile — estado abierto | ![](capturas/tc-8/mobile-abierto.png) | Capturada |
 | Tablet — estado inicial | ![](capturas/tc-8/tablet-inicial.png) | Capturada |
 | Tablet — estado abierto | ![](capturas/tc-8/tablet-abierto.png) | Capturada |
 | Tablet — backdrop visible | ![](capturas/tc-8/tablet-overlay.png) | Capturada |
+| Revisión 2026-10-07 — Desktop 1280×800 — estado inicial | ![](capturas/tc-8/revision-desktop-1280x800-inicial.png) | Capturada |
+| Revisión 2026-10-07 — Desktop 1280×800 — estado abierto | ![](capturas/tc-8/revision-desktop-1280x800-abierto.png) | Capturada |
+| Revisión 2026-10-07 — iPhone 14 Pro 390×844 — estado inicial | ![](capturas/tc-8/revision-iphone14pro-390x844-inicial.png) | Capturada |
+| Revisión 2026-10-07 — iPhone 14 Pro 390×844 — estado abierto | ![](capturas/tc-8/revision-iphone14pro-390x844-abierto.png) | Capturada |
+| Revisión 2026-10-07 — Galaxy S23 360×780 — estado inicial | ![](capturas/tc-8/revision-galaxy-s23-360x780-inicial.png) | Capturada |
+| Revisión 2026-10-07 — Galaxy S23 360×780 — estado abierto | ![](capturas/tc-8/revision-galaxy-s23-360x780-abierto.png) | Capturada |
+| Revisión 2026-10-07 — iPad Air 820×1180 — estado inicial | ![](capturas/tc-8/revision-ipad-air-820x1180-inicial.png) | Capturada |
+| Revisión 2026-10-07 — iPad Air 820×1180 — estado abierto | ![](capturas/tc-8/revision-ipad-air-820x1180-abierto.png) | Capturada |
 
 ## Hallazgos
 | # | Viewport | Descripción del problema | Comportamiento esperado | Comportamiento observado | Severidad |
 |---|----------|--------------------------|-------------------------|--------------------------|-----------|
-| 1 | Mobile (390×844) | No es posible cerrar el Offcanvas haciendo clic físicamente sobre el backdrop cuando el panel ocupa el 100% del ancho | Un clic fuera del panel sobre el backdrop debe cerrar el Offcanvas | El panel ocupa los 390 px del viewport; en el punto probado `elementFromPoint` encontró `.offcanvas-body`, y el clic dejó el panel abierto con un backdrop | Baja |
-| 2 | Desktop, mobile y tablet | La sombra configurada no se aplica al panel | El valor de `--bs-offcanvas-box-shadow` debe reflejarse en el `box-shadow` efectivo | La variable computada es `0 1px 3px rgb(0 0 0 / 16%)`, pero `box-shadow` computa como `none` en los tres viewports | Baja |
+| 1 | Desktop, mobile y tablet (1280×800, 390×844, 360×780 y 820×1180) | La sombra configurada no se aplica al panel | El valor de `--bs-offcanvas-box-shadow` debe reflejarse en el `box-shadow` efectivo | La variable computada es `0 1px 3px rgb(0 0 0 / 16%)`, pero `box-shadow` computa como `none` en los cuatro viewports | Baja |
 
 ### Severidad
 - **Alta** — Componente no funciona o no se renderiza
@@ -136,11 +215,9 @@ Se repitieron las interacciones y comprobaciones de layout y estilos con Playwri
 ## Issues creados
 | Issue | Viewport | Descripción | Severidad | Estado |
 |-------|----------|-------------|-----------|--------|
-| No creado | Mobile | El backdrop queda cubierto por el panel de ancho completo y no recibe clic físico | Baja | Pendiente |
-| No creado | Desktop, mobile y tablet | `--bs-offcanvas-box-shadow` está definida, pero `box-shadow` efectivo es `none` | Baja | Pendiente |
+| [#97](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/97)| Desktop, mobile y tablet | `--bs-offcanvas-box-shadow` está definida, pero `box-shadow` efectivo es `none` | Baja | Abierto |
 
 ## Conclusión general
 **Resultado final:** APROBADO CON HALLAZGOS
 
-El Offcanvas abrió correctamente en los tres viewports; el cierre con X y Escape, la gestión del foco y el backdrop funcionaron en general. La segunda revisión detectó dos hallazgos de severidad baja: en mobile el panel a ancho completo cubre el backdrop y no permite cerrarlo mediante clic físico en él, y la variable de sombra configurada no se refleja en el `box-shadow` efectivo. No se modificó código ni se crearon issues durante esta revisión.
-Mostrando test-case-8.md.
+El Offcanvas abrió correctamente en los cuatro viewports emulados. El cierre con X y Escape, la gestión del foco, las dimensiones responsive y las transiciones se verificaron; el cierre mediante clic en el backdrop funcionó donde quedó área expuesta (desktop y tablet). Se mantiene un hallazgo de severidad baja: la sombra configurada no se refleja en el `box-shadow` efectivo.
