@@ -467,6 +467,78 @@ Antes de finalizar:
 - informa exactamente qué archivos modificaste y qué cambios realizaste
   en cada uno.
 
+-------------------------------------------------------------------------------
+
+Necesito realizar el testing responsive de la migración a Bootstrap
+correspondiente a mi rol de Desarrollador Frontend/Bootstrap.
+
+La aplicación está ejecutándose en:
+
+http://localhost:3000
+
+Utiliza Playwright MCP para navegar y realizar las pruebas directamente
+sobre la aplicación.
+
+Debes probar como mínimo los siguientes dispositivos requeridos:
+
+- iPhone 14 Pro
+- Samsung Galaxy S23
+- iPad Air
+
+Realiza también una comprobación adicional en escritorio.
+
+En cada dispositivo verifica:
+
+- que no exista scroll horizontal;
+- que la sección Ofertas responda correctamente;
+- que la sección Servicios responda correctamente;
+- que la sección Bienvenida responda correctamente;
+- que el Catálogo responda correctamente;
+- que el Footer responda correctamente;
+- que el carrito de compras se visualice correctamente;
+- que las dos imágenes de los productos del carrito sean visibles;
+- que no existan textos, imágenes o elementos superpuestos;
+- que no existan elementos cortados o fuera de pantalla;
+- que la navegación siga siendo utilizable;
+- que Bootstrap no haya roto los estilos existentes del proyecto.
+
+IMPORTANTE:
+
+- Utiliza realmente las herramientas de Playwright MCP.
+- Navega a http://localhost:3000.
+- No supongas resultados.
+- No modifiques el código de la aplicación.
+- No corrijas automáticamente ningún problema encontrado.
+- No modifiques index.html ni los archivos CSS.
+- No modifiques el spec.
+- No inventes resultados de pruebas.
+
+Si encuentras un problema, documenta:
+
+- dispositivo o tamaño donde ocurre;
+- sección afectada;
+- pasos para reproducirlo;
+- comportamiento obtenido;
+- comportamiento esperado.
+
+Al finalizar las pruebas crea únicamente:
+
+docs/04-testing/test-case-6.md
+
+Documenta en ese archivo:
+
+- objetivo de la prueba;
+- entorno utilizado;
+- dispositivos probados;
+- verificaciones realizadas;
+- resultados reales obtenidos con Playwright MCP;
+- problemas encontrados, si existen;
+- estado final de la prueba.
+
+No crees Issues ni ramas fix todavía.
+Si Playwright detecta un problema, primero informa el resultado y déjalo
+documentado en test-case-6.md.
+
 ### Archivos utilizados como contexto
 
 Durante la migración a Bootstrap se utilizaron como contexto los siguientes archivos del proyecto:

@@ -2,6 +2,12 @@
 
 Este archivo se actualiza con cada Pull Request para registrar avances y correcciones
 
+# [Primer Parcial] Unreleased
+
+### Added
+
+- [feature/dev-frontend-bootstrap-migration] Desarrollador FrontEnd / Bootstrap - Migración responsive a Bootstrap, integración con Figma MCP y testing con Playwright MCP PR: [#96](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/96) — @Luchobarrionuevo13 (Desarrollador FrontEnd/Bootstrap)
+
 # [Actividad obligatoria N°2] Unreleased
 ### Added
 - [feature/coord-devops-update-figma-and-readme] Actualizacion del mockup,readme y creacion de spec PR: [#36](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/36) — @alandox1(Coordinador / DevOps)
