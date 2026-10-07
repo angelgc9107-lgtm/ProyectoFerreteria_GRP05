@@ -630,21 +630,40 @@ Dejé detenido el servidor local usado para la prueba. No modifiqué código ni 
 
 ## Correcciones realizadas
 
-- test-case-7 Pendiente
-- test-case-8 Pendiente
+- bootstrap-overrides.css → restauramos la sección GRILLA a la versión de develop, eliminando cambios que pertenecían a la migración Bootstrap #96.
+- index.html → restauramos cambios de grillas/row/col, ofertas y footer que pertenecían a #96, conservando solamente lo relacionado con Dropdown y Offcanvas.
+- TC-7 / TC-8 → agregamos las pruebas de los dispositivos requeridos: iPhone 14 Pro, Galaxy S23 e iPad Air.
+- TC-8 → corregimos la evidencia del backdrop en mobile, eliminando la captura/referencia incorrecta y documentando que queda cubierto por el Offcanvas al 100%.
+- responsive.css → eliminamos la regla innecesaria #catalogo > aside para el ancho del filtro.
+- components.css → eliminamos color: transparent del botón del carrito para recuperar la visibilidad del 🛒.
+- components.css → corregimos los selectores #catalogo > aside → #catalogo aside.
+- components.css → eliminamos width: var(--filters-width) del panel de filtros.
+- bootstrap-overrides.css → agregamos min-height: 0 al Dropdown para corregir la altura de la navegación.
+- bootstrap-overrides.css → eliminamos la media query redundante de #carrito para min-width: 1024px.
+- index.html → eliminamos data-bs-backdrop="true" y data-bs-keyboard="true" porque son valores predeterminados de Bootstrap.
 
 ## Evidencia de cierre
 
-**1° Commit:**
-
-
-**Commit de implementación:**
-
-
-**Pull Request:**
-
+**1° Commit:** [c16c1e5ea1b7a264c672d15deeb68d421a91810e](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/99/changes/c16c1e5ea1b7a264c672d15deeb68d421a91810e)
+**Commit de integración de la migración realizada por el Desarrollador Frontend/Bootstrap** [ac23a608d700e3097331c22a44630af9bf610598](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/99/changes/ac23a608d700e3097331c22a44630af9bf610598)
+**Commit de implementación del primer componente avanzado Bootstrap:** [f94d24036c1860c2cc2e8a33586d2d16b5f45cce](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/99/changes/f94d24036c1860c2cc2e8a33586d2d16b5f45cce)
+**Commit de implementación del segundo componente avanzado Bootstrap:** [38ac9726ef6feeccddd61827d24229ecb580c55b](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/99/changes/38ac9726ef6feeccddd61827d24229ecb580c55b)
+**Pull Request:** [Especialista de componentes avanzados de Bootstrap: Spec-implementación de componentes avanzados-resultados test-case-7 & 8](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/99)
 
 **Issues vinculadas:**
-
+[87](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/87)
+[91](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/91)
+[97](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/97)
+[98](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/98)
 
 **Archivos modificados:**
+- index.html
+- bootstrap-overrides.css
+- components.css
+- responsive.css
+- styles.css
+- spec-componentes-bootstrap.md
+- test-case-7.md
+- test-case-8.md
+- docs\04-testing\capturas\tc-7
+- docs\04-testing\capturas\tc-8
