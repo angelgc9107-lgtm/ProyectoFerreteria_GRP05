@@ -8,6 +8,10 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 - [feature/dev-frontend-bootstrap-migration] Desarrollador FrontEnd / Bootstrap - Migración responsive de FerroLab a Bootstrap PR: [#96](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/96) — @Luchobarrionuevo13 (Desarrollador FrontEnd/Bootstrap)
 
+### Fixed
+
+- [feature/dev-frontend-bootstrap-migration] Desarrollador FrontEnd / Bootstrap - Solucion de errores PR: [#103](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/103) — @Luchobarrionuevo13 (Desarrollador FrontEnd/Bootstrap)
+
 # [Actividad obligatoria N°2] Unreleased
 ### Added
 - [feature/coord-devops-update-figma-and-readme] Actualizacion del mockup,readme y creacion de spec PR: [#36](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/36) — @alandox1(Coordinador / DevOps)
