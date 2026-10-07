@@ -557,6 +557,7 @@ Revisé el diff completo y git diff --check no reportó problemas. No hice commi
 - Ajustes de comportamiento responsive.
 - sombras en Dropdown y Offcanvas pendiente de corrección mediante Fix.
 - Ajustes menores de accesibilidad e interacción.
+- Se agregó la propiedad box-shadow al Dropdown para que la sombra definida en --bs-dropdown-box-shadow se aplique correctamente.
 ## Pruebas realizadas con Playwright MCP
 
 - docs\04-testing\test-case-7.md
@@ -620,7 +621,7 @@ Dejé detenido el servidor local usado para la prueba. No modifiqué código ni 
 # Test-case-7
 | Issue | Viewport | Descripción | Severidad | Estado |
 |-------|----------|-------------|-----------|--------|
-| [#91](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/91) | Todos | `--bs-dropdown-box-shadow` está configurada, pero el `box-shadow` computado del Dropdown es `none` | Baja | Abierto |
+| [#91](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/91) | Todos | `--bs-dropdown-box-shadow` está configurada, pero el `box-shadow` computado del Dropdown es `none` | Baja | En progreso |
 
 # Test-case-8
 | Issue | Viewport | Descripción | Severidad | Estado |

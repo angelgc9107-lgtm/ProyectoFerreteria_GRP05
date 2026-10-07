@@ -62,6 +62,8 @@ nav .dropdown-menu {
     --bs-dropdown-border-color: var(--color-gray-300);
     --bs-dropdown-border-radius: var(--radius-md);
     --bs-dropdown-box-shadow: var(--shadow-card);
+
+    box-shadow: var(--bs-dropdown-box-shadow);
     --bs-dropdown-spacer: var(--space-2);
     --bs-dropdown-padding-x: var(--space-2);
     --bs-dropdown-padding-y: var(--space-2);
