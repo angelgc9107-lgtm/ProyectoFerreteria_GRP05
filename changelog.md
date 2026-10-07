@@ -5,6 +5,7 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 ### Added
 - [feature/coord-devops-update-figma-and-readme] Coordinador/DevOps - Spec, mockup Bootstrap y README del Primer Parcial PR: [#88](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/88) — @Piastrellini (Coordinador / DevOps)
+- [feature/dev-comp-html-avanzados-add-components] DESARROLLADOR DE COMPONENTES HTML AVANZADOS-Componentes html avanzados add components PR: [#90](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/90) — @alandox1 (Desarrollador de Componentes HTML Avanzados)
 
 - [feature/esp-com-bootstrap-add-component] Spec rol Especialista Bootstrap, Implementación del Dropdown de Categorías y Offcanvas del carrito con Bootstrap; pruebas Playwright documentadas PR: [#99](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/99) — @angelgc9107-lgtm (Especialista en componentes Bootstrap)
 - [feature/dev-frontend-bootstrap-migration] Desarrollador FrontEnd / Bootstrap - Migración responsive de FerroLab a Bootstrap PR: [#96](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/96) — @Luchobarrionuevo13 (Desarrollador FrontEnd/Bootstrap)
@@ -15,6 +16,8 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 ### Fixed 
 - [fix/carrito-espacio-vacio] Desarrollador FrontEnd / Bootstrap - Favicon con `link rel="icon"` (O-2) y contador del carrito coherente con su contenido (O-3) PR: [#103](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/103) — @Luchobarrionuevo13 (Desarrollador FrontEnd/Bootstrap)
 - [fix/offcanvas-box-shadow] Corregir la sombra efectiva del Offcanvas del carrito (#carrito) para resolver el issue encontrado del componente bootstrap Offcanvas PR: [#104](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/104) — @angelgc9107-lgtm (Especialista en componentes Bootstrap)
+- [fix/dropdown-box-shadow] Corregir la sombra del componente Bootstrap Dropdown de Categorías para resolver bug del componente implementado PR: [#105](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/105) — @angelgc9107-lgtm (Especialista en componentes Bootstrap)
+
 
 ---
 # [Released] 2026-10-01

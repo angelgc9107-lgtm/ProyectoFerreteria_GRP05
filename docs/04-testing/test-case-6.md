@@ -74,3 +74,41 @@ No se encontraron fallos bloqueantes de responsive. Observaciones menores (pendi
 
 ## Estado final de la prueba
 **APROBADA con observaciones menores (O-1, O-2, O-3).** Las observaciones se reportan.
+
+### O-1 — Altura del carrito
+
+**Estado:** No requiere corrección.
+
+La observación inicial indicaba que el carrito presentaba espacio vacío
+debajo de su contenido.
+
+Posteriormente se verificó el componente mediante Figma MCP utilizando
+el frame `CarritoCompra`. Se confirmó que el carrito está diseñado como
+un panel lateral derecho extendido verticalmente y que el espacio
+observado forma parte de la composición definida en el mockup.
+
+Por este motivo, no se realizaron modificaciones sobre la altura,
+el overlay ni la estructura visual del carrito.
+
+### O-2 — Favicon 404
+
+**Estado:** Corregido.
+
+Se agregó en `index.html` la referencia al recurso existente
+`assets/images/logo.png` mediante `link rel="icon"`.
+
+La verificación con Playwright confirmó que el recurso responde
+correctamente y que ya no se genera la petición fallida `/favicon.ico`.
+
+### O-3 — Contador del carrito
+
+**Estado:** Corregido.
+
+El contador del encabezado mostraba `Carrito (0)`, mientras que el
+carrito contiene dos productos representativos estáticos.
+
+Se actualizó el contador a `Carrito (2)` para mantener coherencia con
+el contenido actual.
+
+Playwright confirmó que el contador muestra 2 y que existen dos
+elementos `article` dentro de `#carrito`.
