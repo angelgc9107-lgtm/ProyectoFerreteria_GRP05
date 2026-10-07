@@ -40,8 +40,6 @@
     --focus-ring: 0 0 0 3px rgb(199 55 43 / 35%);
     --content-width: 72rem;
     --cart-width: 35%;
-    --catalog-columns: repeat(3, minmax(0, 1fr));
-    --filters-width: 11rem;
 }
 
 *,
