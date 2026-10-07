@@ -38,6 +38,7 @@
     --radius-md: 0.25rem;
     --shadow-card: 0 1px 3px rgb(0 0 0 / 16%);
     --focus-ring: 0 0 0 3px rgb(199 55 43 / 35%);
+    --content-width: 72rem;
     --cart-width: 35%;
 }
 
@@ -108,7 +109,16 @@ summary:focus-visible {
     box-shadow: var(--focus-ring);
 }
 
+main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    width: min(100%, var(--content-width));
+    margin: 0 auto;
+}
+
 main > section {
+    grid-column: 1;
     padding: var(--space-6) var(--space-5);
 }
 

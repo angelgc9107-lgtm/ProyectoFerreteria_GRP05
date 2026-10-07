@@ -50,31 +50,75 @@ Se trabaja sobre el mismo archivo de Figma enlazado en el README, agregando una 
   - Ofertas y servicios: `col-12` → `col-md-6` → `col-lg-3`/`col-lg-4`, según la cantidad de tarjetas.
   - Footer: `col-12` → `col-md-4`.
 
-**Componentes avanzados (definición final con cada rol):**
+**Componentes avanzados (definidos con cada rol):**
 
-- Bootstrap (Especialista en Componentes Bootstrap): COMPLETAR los 2 componentes elegidos (propuesta: Navbar con `collapse` en mobile y Carousel de destacados en Inicio).
-- HTML avanzados (Desarrollador de Componentes HTML Avanzados): COMPLETAR los 2 componentes elegidos (propuesta: `iframe` de Google Maps en Contacto/Ubicación dentro de `.ratio .ratio-16x9`).
+| Rol | Componente | Clase / elemento | Dónde aparece en el mockup |
+|---|---|---|---|
+| Especialista en Componentes Bootstrap (@angelgc9107-lgtm) | Dropdown | `.dropdown`, `.dropdown-menu` | Frame "Catalogo – Dropdown": menú de categorías desde CATÁLOGO |
+| Especialista en Componentes Bootstrap (@angelgc9107-lgtm) | Offcanvas | `.offcanvas.offcanvas-end` | Frame "Carrito – Offcanvas": panel lateral del carrito |
+| Desarrollador de Componentes HTML Avanzados (@alandox1) | iframe de Google Maps | `<iframe>` dentro de `.ratio.ratio-16x9` | Footer de INICIO (desktop, tablet y mobile), sección Ubicación |
+| Desarrollador de Componentes HTML Avanzados (@alandox1) | Control deslizante de precio | `<input type="range">` con `.form-range` | Frame "Catalogo – Desktop xl": panel de filtros, sección PRECIO |
 
-**Paleta, tipografías y estados de interacción:**
+Componentes de la migración (Desarrollador Frontend/Bootstrap, @LuchoBarrionuevo13): el mockup incluye una Navbar responsive con `navbar-expand-lg` y `navbar-toggler`, y un Carousel de ofertas, como propuesta de diseño. En #96 se migraron al sistema de columnas Ofertas, Servicios, Bienvenida, Catálogo y Footer. La Navbar y el Carousel quedaron fuera de alcance según `spec-frontend-bootstrap.md`.
 
-- Mapear los tokens de `css/styles.css` a las variables de Bootstrap (`--bs-primary`, `--bs-secondary`, `--bs-body-font-family`, etc.) para mantener la identidad de FerroLab.
-- Representar los estados hover, focus, active y disabled de `.btn`, `.nav-link` y `.form-control`.
+**Paleta, tipografías y estados de interacción (mapeo a Bootstrap 5):**
+
+Tokens tomados de `css/styles.css` (`:root`) y su equivalencia en variables de Bootstrap, para usar en `bootstrap-overrides.css`:
+
+| Token del proyecto | Valor | Variable Bootstrap | Uso |
+|---|---|---|---|
+| `--color-red` | `#c7372b` | `--bs-primary` | Botones primarios, franja de redes |
+| `--color-red-dark` | `#9f2b22` | `:hover` de `.btn-primary` | Footer, hover de botones |
+| `--color-red-muted` | `#c9918d` | `:disabled` de `.btn-primary` | Botón deshabilitado |
+| `--color-ink` | `#2f2f2f` | `--bs-body-color` | Texto general, `:active` de botones, fondo del buscador |
+| `--color-gray-500` | `#9b9b9b` | — | Bordes de inputs y del botón "Iniciar compra" |
+| `--color-gray-700` | `#777777` | — | `:hover` del botón "Iniciar compra" |
+| `--color-text-secondary` | `#6b6b6b` | `--bs-secondary-color` | Texto secundario |
+| `--color-gray-300` | `#d9d9d9` | `--bs-border-color` | Bordes y tarjetas |
+| `--color-gray-100` | `#f4f4f4` | `--bs-tertiary-bg` | Fondos claros |
+| `--color-white` | `#ffffff` | `--bs-body-bg` | Fondo |
+| `--color-danger` | `#b3261e` | `--bs-danger` | Errores |
+| `--font-family-base` | `"Inter", Arial, Helvetica, sans-serif` | `--bs-body-font-family` | Tipografía base |
+
+Escala tipográfica: `h1` 32 px · `h2` 24 px · `h3` 20 px · `body` 16 px.
+
+Estados representados en el mockup (frame "Estados Bootstrap", exportado en `docs/01-mockup/estados-bootstrap.png`). Cada estado se tomó de las reglas reales de `css/components.css`; los estados sin regla en el CSS no se diseñaron.
+
+| Componente (selector real) | Equiv. Bootstrap | Estado | Fondo | Texto | Borde |
+|---|---|---|---|---|---|
+| `button` | `.btn-primary` | normal | `#c7372b` | `#ffffff`, 12 px bold | ninguno, radio 2 px |
+| `button` | `.btn-primary` | `:hover` | `#9f2b22` | `#ffffff` | ninguno |
+| `button` | `.btn-primary` | `:active` | `#2f2f2f` | `#ffffff` | ninguno |
+| `button` | `.btn-primary` | `:disabled` | `#c9918d` | `#ffffff` | ninguno (`cursor: not-allowed`) |
+| `#carrito > button:last-child` | `.btn` | normal | `#ffffff` | `#2f2f2f`, 12 px bold | 1 px `#9b9b9b` |
+| `#carrito > button:last-child` | `.btn` | `:hover` | `#777777` | `#ffffff` | 1 px `#9b9b9b` |
+| `#carrito > button:last-child` | `.btn` | `:active` | sin regla propia: al hacer clic se ve igual que `:hover` | | |
+| `header > form input` | `.form-control` | normal | `#2f2f2f` | `#ffffff` (placeholder) | 1 px `#2f2f2f`, radio 0 |
+| `header > form input` | `.form-control` | `:focus` | `#2f2f2f` | `#ffffff` | 1 px `#c7372b` |
+| `nav a` | `.nav-link` | normal | `#c9362b` | `#ffffff`, 12 px, mayúsculas | sin subrayado |
+| `nav a` | `.nav-link` | `:hover` / `:focus-visible` | `#c9362b` | `#ffffff` | subrayado |
+| `nav a` | `.nav-link` | `:active` | sin regla propia: se ve el subrayado de `:hover` | | |
+
+Sin regla en el CSS, por lo que no se diseñaron: `button:focus`, `header > form input:disabled` y `nav a:disabled`.
+
+Nota de tokens: el fondo del `nav` está definido como `rgb(201 54 43)` (`#c9362b`) y no usa `--color-red` (`#c7372b`).
 
 **Exportación:**
 
-- Exportar el mockup a `docs/01-mockup/disenio-bootstrap.png`.
+- Exportar el mockup a `docs/01-mockup/disenio-bootstrap.png` y el frame de estados a `docs/01-mockup/estados-bootstrap.png`.
 - Actualizar el enlace al archivo de Figma y a la imagen exportada en `README.md`.
 - Compartir el archivo de Figma con el Desarrollador Frontend/Bootstrap para que lo use con el MCP de Figma.
 
 ### 1.3 Criterios de aceptación
 
-- [ ] `spec-devops.md` commiteado en `docs/03-specs/primer-parcial/` antes que cualquier otro cambio
+- [x] `spec-devops.md` commiteado en `docs/03-specs/primer-parcial/` antes que cualquier otro cambio
 - [x] Backport `release/actividad-obligatoria-2` → `develop` mergeado con aprobación de otro integrante ([#84](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/84))
-- [ ] Mockup de Figma actualizado con la grilla de Bootstrap y los componentes elegidos
-- [ ] Paleta, tipografías y estados de interacción coherentes con Bootstrap
-- [ ] Imagen exportada en `docs/01-mockup/disenio-bootstrap.png`
-- [ ] Enlace al Figma actualizado en `README.md`
-- [ ] Tablero Kanban en GitHub Projects con las issues de todo el equipo
+- [x] Mockup de Figma actualizado con la grilla de Bootstrap y los componentes elegidos (desktop 1280, tablet 768 y mobile 390)
+- [x] Paleta, tipografías y estados de interacción coherentes con Bootstrap
+- [x] Imágenes exportadas en `docs/01-mockup/disenio-bootstrap.png` y `docs/01-mockup/estados-bootstrap.png`
+- [x] Enlace al Figma actualizado en `README.md`
+- [x] Tablero Kanban creado en GitHub Projects ([FerroLab – Primer Parcial](https://github.com/users/angelgc9107-lgtm/projects/1))
+- [ ] Issues de todo el equipo cargadas y actualizadas en el tablero Kanban
 - [ ] Mínimo 4 code reviews asistidos con Copilot Agent Mode, documentados en este spec
 - [ ] Request Changes cargados en las líneas del diff
 - [ ] Todas las PR con al menos 1 revisión aprobada antes del merge
@@ -107,7 +151,10 @@ COMPLETAR con el prompt exacto utilizado
 
 | Componente / decisión | Motivo |
 |-----------------------|--------|
-| | |
+| Estados diseñados a partir de `css/components.css` | El mockup tiene que reflejar el comportamiento real del sitio y no los valores por defecto de Bootstrap |
+| Se quitaron `:focus` de botones y `:disabled` del buscador y del nav | No existe ninguna regla en el CSS que los defina |
+| Rótulos con selector real y su equivalente Bootstrap | Trazabilidad entre el diseño, el código y la nomenclatura de Bootstrap |
+| Nota sobre el color del `nav` | Usa `#c9362b` escrito a mano en lugar del token `--color-red` |
 
 ### 2.3 Obstáculos y resolución
 
@@ -118,7 +165,8 @@ COMPLETAR con el prompt exacto utilizado
 ### 2.4 Evidencia
 
 - Mockup exportado: [`docs/01-mockup/disenio-bootstrap.png`](../../01-mockup/disenio-bootstrap.png)
-- Tablero Kanban: COMPLETAR link
+- Estados de interacción: [`docs/01-mockup/estados-bootstrap.png`](../../01-mockup/estados-bootstrap.png)
+- Tablero Kanban: [FerroLab – Primer Parcial](https://github.com/users/angelgc9107-lgtm/projects/1)
 - PR de release: COMPLETAR link
 - GitHub Pages: COMPLETAR link
 - Release / tag `v1.1-primer-parcial`: COMPLETAR link

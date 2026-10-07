@@ -30,12 +30,6 @@ al menos dos componentes avanzados de Bootstrap y dos componentes avanzados
 de HTML, y validarlos con test cases automatizados con Playwright MCP y
 GitHub MCP.
 
-**Primer Parcial:** migrar el sitio a Bootstrap 5 (sistema de 12 columnas y
-utilidades responsive) a partir del mockup actualizado en Figma, incorporar
-al menos dos componentes avanzados de Bootstrap y dos componentes avanzados
-de HTML, y validarlos con test cases automatizados con Playwright MCP y
-GitHub MCP.
-
 ## 🛠️ Tecnologías utilizadas
 
 - HTML5
@@ -65,17 +59,21 @@ En el Primer Parcial el mockup se adaptó a la grilla de Bootstrap 5: desktop
 de 1280 px con container de 1140 px y 12 columnas, mobile de 390 px con las
 columnas apiladas (`col-12`) y la navbar colapsada, y los componentes
 señalados en cada pantalla (Navbar, Carousel, Offcanvas, Dropdown e iframe
-de Google Maps con `.ratio-16x9`).
+de Google Maps dentro de `.ratio.ratio-16x9`).
 
 ## 📁 Documentación
+
 - [Mockup en Figma (actualizado en el Primer Parcial con Bootstrap)](https://www.figma.com/design/jX7NrMUtt6Tg7oiYqock6s/Sin-t%C3%ADtulo?node-id=191-963&t=ouTMvmvpb279r7wJ-1)
 - [Mockup Bootstrap exportado (Primer Parcial)](docs/01-mockup/disenio-bootstrap.png)
+- [Estados de interacción Bootstrap (Primer Parcial)](docs/01-mockup/estados-bootstrap.png)
 - [Mockup con estilos exportado (Actividad Obligatoria N°2)](docs/01-mockup/actividad-obligatoria-2/dise%C3%B1o-con-estilos.png)
 - [Specs del Primer Parcial](docs/03-specs/primer-parcial/)
 - [Tablero Kanban del Primer Parcial](https://github.com/users/angelgc9107-lgtm/projects/1)
 - [Índice de test cases](docs/04-testing/testing-doc.md)
 - [Índice de Prompts](docs/02-prompts/prompts.md)
 - [Changelog](changelog.md)
+
+## 👥 Integrantes del Grupo
 
 | Nombre y Apellido | Matrícula | Usuario de GitHub | Rol |
 |-----| ----- | ------ | ------ |

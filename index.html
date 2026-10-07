@@ -39,11 +39,10 @@
             <a href="#ubicacion">Donde estamos</a>
 
             <div class="dropdown">
-                <button class="btn dropdown-toggle ferrolab-category-toggle" type="button"
-                    id="dropdown-categorias" data-bs-toggle="dropdown" aria-expanded="false">
+                <button class="btn dropdown-toggle" type="button" id="categorias-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     Categorías
                 </button>
-                <ul class="dropdown-menu ferrolab-category-menu" aria-labelledby="dropdown-categorias">
+                <ul class="dropdown-menu" aria-labelledby="categorias-dropdown">
                     <li><a class="dropdown-item" href="#catalogo">Accesorios</a></li>
                     <li><a class="dropdown-item" href="#catalogo">Herramientas manuales</a></li>
                     <li><a class="dropdown-item" href="#catalogo">Herramientas electricas</a></li>
@@ -54,7 +53,7 @@
         </nav>
     </header>
 
-    <main class="container">
+    <main>
         <section id="ofertas" aria-labelledby="titulo-ofertas">
             <h1 id="titulo-ofertas">Ofertas</h1>
             <div class="row">
@@ -113,7 +112,7 @@
 
         <section id="catalogo" aria-labelledby="titulo-catalogo">
             <h2 id="titulo-catalogo">Catalogo de productos</h2>
-            <!-- JavaScript futuro: aplicar el orden seleccionado, filtrar por categoria y limitar los precios entre los valores Desde y Hasta. -->
+            <!-- JavaScript futuro: aplicar el orden seleccionado, filtrar por categoria y limitar los productos al precio maximo elegido en el control deslizante. -->
             <div class="row">
             <div class="col-12 col-md-4 col-lg-3 align-self-md-start">
             <aside aria-label="Filtros del catalogo">
@@ -132,10 +131,8 @@
                     <li><a href="#catalogo">Jardineria</a></li>
                 </ul>
                 <h3 class="filter-heading--price">Precio</h3>
-                <label for="precio-desde">Desde</label>
-                <input type="number" id="precio-desde" name="precio-desde" min="0">
-                <label for="precio-hasta">Hasta</label>
-                <input type="number" id="precio-hasta" name="precio-hasta" min="0">
+                <label for="precio-hasta">Hasta: <output id="precio-hasta-valor" for="precio-hasta">$80.000</output></label>
+                <input type="range" class="form-range" id="precio-hasta" name="precio-hasta" min="0" max="80000" step="1000" value="80000">
             </aside>
             </div>
 
@@ -314,41 +311,36 @@
     </main>
 
     <footer id="ubicacion">
-        <div class="container-fluid px-0">
-            <div class="row g-0">
-                <section class="col-12 d-flex flex-wrap justify-content-center align-items-center gap-4" aria-labelledby="redes-sociales">
-                    <h2 class="w-100" id="redes-sociales">Redes sociales</h2>
-                    <p>Instagram: informacion pendiente.</p>
-                    <p>WhatsApp: informacion pendiente.</p>
-                    <p>TikTok: informacion pendiente.</p>
-                </section>
-                <section class="col-12 col-md-6 col-lg-8" aria-labelledby="datos-contacto">
-                    <h2 id="datos-contacto">Contacto</h2>
-                    <p>Email: contacto@ferrelab.com</p>
-                    <p>Celular: +54 9 1234-5678</p>
-                    <p>Horario: lunes a sabado de 8 a 22 hs</p>
-                </section>
-                                <section class="col-12 col-md-6 col-lg-4" aria-labelledby="direccion">
-    <h2 id="direccion">Ubicacion</h2>
-    <div class="ratio ratio-16x9">
-        <iframe src="https://www.google.com/maps?q=Ferreter%C3%ADa+JYJ,-34.8211567,-58.3908095&z=17&output=embed"
-                title="Mapa con la ubicacion de FerroLab"
-                loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade"
-                allowfullscreen></iframe>
-    </div>
-</section>
-    </div>
-</section>
-            </div>
+        <div class="row g-0">
+            <section class="col-12" aria-labelledby="redes-sociales">
+                <h2 id="redes-sociales">Redes sociales</h2>
+                <p>Instagram: informacion pendiente.</p>
+                <p>WhatsApp: informacion pendiente.</p>
+                <p>TikTok: informacion pendiente.</p>
+            </section>
+            <section class="col-12 col-md-6" aria-labelledby="datos-contacto">
+                <h2 id="datos-contacto">Contacto</h2>
+                <p>Email: contacto@ferrelab.com</p>
+                <p>Celular: +54 9 1234-5678</p>
+                <p>Horario: lunes a sabado de 8 a 22 hs</p>
+            </section>
+            <section class="col-12 col-md-6 ms-lg-auto" aria-labelledby="direccion">
+                <h2 id="direccion">Ubicacion</h2>
+                <div class="ratio ratio-16x9">
+                    <iframe src="https://www.google.com/maps?q=-34.8211567,-58.3908095&z=17&output=embed"
+                            title="Mapa con la ubicacion de FerroLab"
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"
+                            allowfullscreen></iframe>
+                </div>
+            </section>
         </div>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    document.getElementById('precio-hasta').addEventListener('input', function () {
-        document.getElementById('precio-hasta-valor').textContent =
-            '$' + Number(this.value).toLocaleString('es-AR');
-    });
-</script>
+        document.getElementById('precio-hasta').addEventListener('input', function () {
+            document.getElementById('precio-hasta-valor').textContent =
+                '$' + Number(this.value).toLocaleString('es-AR');
+        });
+    </script>
 </body>
 </html>
