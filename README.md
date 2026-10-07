@@ -59,7 +59,7 @@ En el Primer Parcial el mockup se adaptó a la grilla de Bootstrap 5: desktop
 de 1280 px con container de 1140 px y 12 columnas, mobile de 390 px con las
 columnas apiladas (`col-12`) y la navbar colapsada, y los componentes
 señalados en cada pantalla (Navbar, Carousel, Offcanvas, Dropdown e iframe
-de Google Maps con `.ratio-16x9`).
+de Google Maps dentro de `.ratio.ratio-16x9`).
 
 ## 📁 Documentación
 
