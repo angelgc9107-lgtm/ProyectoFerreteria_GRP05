@@ -324,10 +324,18 @@ textarea {
     margin: 0;
 }
 
-#catalogo aside label[for="precio-desde"] { grid-column: 1; grid-row: 7; }
-#catalogo aside input#precio-desde { grid-column: 1; grid-row: 8; }
-#catalogo aside label[for="precio-hasta"] { grid-column: 2; grid-row: 7; }
-#catalogo aside input#precio-hasta { grid-column: 2; grid-row: 8; }
+#catalogo aside label[for="precio-hasta"] { grid-column: 1 / -1; grid-row: 7; }
+#catalogo aside input#precio-hasta { grid-column: 1 / -1; grid-row: 8; }
+
+#catalogo aside .form-range {
+    height: 1.5rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
+#catalogo aside .form-range::-webkit-slider-thumb { background-color: var(--color-white); }
+#catalogo aside .form-range::-moz-range-thumb { background-color: var(--color-white); }
 
 section[aria-label="Servicios de FerroLab"] li > div {
     display: flex;
