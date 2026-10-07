@@ -100,6 +100,19 @@ Guardá las capturas en docs/04-testing/capturas/tc-8/
 - **Contenido conservado y visible:** dos productos (Amoladora y Martillo), cantidades `1` y `1`, precios unitarios `$50.000` y `$16.000`, subtotales representativos `$50.000` y `$16.000`, resumen de `$66.000` sin envío, `$75.000` con envío y total `$75.000`; también se encontró el botón “Iniciar compra”.
 - **Problemas observados:** no se registraron problemas visuales ni funcionales durante la ejecución. La consola no mostró errores.
 
+### Segunda revisión independiente — 2026-10-06
+
+Se repitieron las interacciones y comprobaciones de layout y estilos con Playwright MCP. Estos resultados complementan la ejecución inicial y registran hallazgos que no se habían detectado entonces.
+
+- **Desktop (1280×800):** el Offcanvas abrió desde la derecha, con ancho efectivo de 448 px (35%). Cerró con el botón X, Escape y clic en el backdrop. Hubo un único backdrop, que desapareció al cerrar. El foco entró al panel, permaneció dentro al recorrer controles con Tab y volvió al botón de apertura al cerrar. Los elementos revisados quedaron dentro del panel.
+- **Mobile (390×844):** abrió desde la derecha a ancho completo (390 px), dejando el backdrop cubierto por el panel. Cerró con X y Escape, pero no con clic físico en el backdrop: al comprobar un punto del borde, `elementFromPoint` identificó `.offcanvas-body`; después del clic el panel siguió abierto y continuó habiendo un backdrop. El foco se mantuvo dentro al usar Tab y volvió al botón con Escape y X. No se detectó overflow horizontal ni desbordamiento de textos revisados.
+- **Tablet (768×1024):** abrió desde la derecha, con ancho efectivo aproximado de 461 px (60%). Cerró con X, Escape y clic en el backdrop. Hubo un único backdrop, que desapareció al cerrar. El foco permaneció dentro con Tab y volvió al botón al cerrar; los elementos revisados quedaron dentro del panel y no hubo overflow horizontal.
+- **Contenido y controles:** en los tres viewports se encontraron ambos productos, cantidades, precios, subtotales, total y botón de compra; los textos, botones e inputs revisados estaban visibles y dentro del panel.
+- **Overflow vertical:** el contenido observado cabía en el área visible (`scrollHeight` igual a `clientHeight` en el panel). El cuerpo conserva `overflow-y: auto`.
+- **Estilos computados en los tres viewports:** `--bs-offcanvas-width` fue 35%, 100% y 60%, respectivamente, reflejándose en el ancho efectivo. `--bs-offcanvas-bg: #c9362b` se reflejó como `rgb(201, 54, 43)`; `--bs-offcanvas-color: #ffffff` como texto blanco; `--bs-offcanvas-border-width: 1px` y `--bs-offcanvas-border-color: #c7372b` como borde efectivo `1px solid rgb(199, 55, 43)`. En cambio, aunque `--bs-offcanvas-box-shadow` computó como `0 1px 3px rgb(0 0 0 / 16%)`, el `box-shadow` efectivo fue `none`.
+- **Transición:** el panel computó `transform 0.3s ease-in-out`.
+- **Conflictos y consola:** no se detectaron backdrops duplicados, elementos del carrito fuera de los límites del panel ni overflow horizontal. No hubo errores o warnings de consola relacionados con el componente. La consola sí registró un 404 de `/favicon.ico`, ajeno al Offcanvas.
+
 ## Capturas de pantalla
 | Viewport / Estado | Captura | Estado |
 |-------------------|---------|--------|
@@ -114,22 +127,35 @@ Guardá las capturas en docs/04-testing/capturas/tc-8/
 | Tablet — backdrop visible | ![](capturas/tc-8/tablet-overlay.png) | Capturada |
 
 ## Hallazgos
+
 | # | Viewport | Descripción del problema | Comportamiento esperado | Comportamiento observado | Severidad |
 |---|----------|--------------------------|-------------------------|--------------------------|-----------|
-| — | — | No se observaron problemas visuales ni funcionales | El Offcanvas abre/cierra, integra el backdrop y conserva el contenido y los estilos en los viewports probados | Comportamiento verificado en desktop, mobile y tablet | — |
+| 1 | Desktop, mobile y tablet | La sombra configurada no se aplica al panel | El valor de `--bs-offcanvas-box-shadow` debe reflejarse en el `box-shadow` efectivo | La variable computada es `0 1px 3px rgb(0 0 0 / 16%)`, pero `box-shadow` computa como `none` en los tres viewports | Baja |
+
+### Observaciones
+
+- En mobile (390×844), el Offcanvas ocupa el 100% del ancho del viewport (390 px), por lo que el backdrop queda completamente cubierto por el panel y no existe un área exterior disponible para cerrarlo mediante clic. Este comportamiento es consistente con la configuración responsive actual y no se considera un problema funcional. El componente puede cerrarse correctamente mediante el botón de cierre y la tecla Escape.
 
 ### Severidad
+
 - **Alta** — Componente no funciona o no se renderiza
 - **Media** — Problema visual o de interacción significativo
 - **Baja** — Detalle estético menor
 
 ## Issues creados
+
 | Issue | Viewport | Descripción | Severidad | Estado |
 |-------|----------|-------------|-----------|--------|
-| No creado | — | No se detectaron hallazgos que requieran registrar un issue | — | No aplica |
+| [#97](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/97) | Desktop, mobile y tablet | `--bs-offcanvas-box-shadow` está definida, pero `box-shadow` efectivo es `none` | Baja | Abierto |
 
 ## Conclusión general
-**Resultado final:** APROBADO
 
-El Offcanvas del carrito funcionó en los tres viewports probados. La apertura desde la derecha, el cierre con botón, Escape y backdrop, el overlay oficial, las transiciones y los estilos verificados se comportaron como se esperaba. No se observaron problemas durante la ejecución ni se registraron issues.
-Mostrando test-case-8.md.
+**Resultado final:** APROBADO CON OBSERVACIONES
+
+El Offcanvas abrió correctamente en los tres viewports. El cierre mediante el botón X y Escape, la gestión del foco, el backdrop y el comportamiento responsive funcionaron correctamente durante las pruebas.
+
+La segunda revisión detectó un hallazgo visual de severidad baja: la variable `--bs-offcanvas-box-shadow` está configurada, pero su valor no se refleja en el `box-shadow` efectivo del panel.
+
+En mobile, el Offcanvas ocupa el 100% del ancho del viewport, por lo que el backdrop queda completamente cubierto y no puede recibir un clic físico. Este comportamiento corresponde a la configuración responsive actual y se registra como observación, no como problema funcional.
+
+No se modificó código ni se crearon issues durante esta revisión.
