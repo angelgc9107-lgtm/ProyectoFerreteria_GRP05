@@ -50,7 +50,7 @@
     </header>
 
     <main>
-        <section id="ofertas" class="container" aria-labelledby="titulo-ofertas">
+        <section id="ofertas" aria-labelledby="titulo-ofertas">
             <h1 id="titulo-ofertas">Ofertas</h1>
             <div class="row">
                 <div class="col-12 col-md-6 col-lg-4">
@@ -84,7 +84,7 @@
             </div>
         </section>
 
-        <section class="container" aria-label="Servicios de FerroLab">
+        <section aria-label="Servicios de FerroLab">
             <h2>Servicios para tus proyectos</h2>
             <ul class="row list-unstyled">
                 <li class="col-12 col-md-6 col-lg-4"><div class="h-100">Pago con tarjeta de credito.</div></li>
@@ -93,7 +93,7 @@
             </ul>
         </section>
 
-        <section class="container" aria-labelledby="bienvenida">
+        <section aria-labelledby="bienvenida">
             <div class="row g-0">
                 <div class="col-12 col-md-6">
                     <img src="assets/images/bienvenido1.png" alt="Interior de FerroLab con herramientas y maquinas en exhibicion">
@@ -106,10 +106,12 @@
             <p>Somos la nueva opcion en ferreteria: un espacio pensado para dar soluciones rapidas y eficientes a tus proyectos. Aunque recien empezamos, nos mueve la pasion por el oficio, la calidad en cada herramienta y el compromiso de acompanarte paso a paso. Encontra asesoramiento cercano y todo lo que buscas para construir, arreglar y crear.</p>
         </section>
 
-        <section id="catalogo" class="row" aria-labelledby="titulo-catalogo">
-            <h2 id="titulo-catalogo" class="col-12">Catalogo de productos</h2>
+        <section id="catalogo" aria-labelledby="titulo-catalogo">
+            <h2 id="titulo-catalogo">Catalogo de productos</h2>
             <!-- JavaScript futuro: aplicar el orden seleccionado, filtrar por categoria y limitar los precios entre los valores Desde y Hasta. -->
-            <aside class="col-12 col-md-4 col-lg-3 align-self-md-start" aria-label="Filtros del catalogo">
+            <div class="row">
+            <div class="col-12 col-md-4 col-lg-3 align-self-md-start">
+            <aside aria-label="Filtros del catalogo">
                 <h3 class="filter-heading--sort">Ordenar por</h3>
                 <label for="orden">Orden de productos</label>
                 <select id="orden" name="orden">
@@ -130,6 +132,7 @@
                 <label for="precio-hasta">Hasta</label>
                 <input type="number" id="precio-hasta" name="precio-hasta" min="0">
             </aside>
+            </div>
 
             <div class="col-12 col-md-8 col-lg-9">
                 <div class="row">
@@ -224,6 +227,7 @@
                         </article>
                     </div>
                 </div>
+            </div>
             </div>
         </section>
 
@@ -322,6 +326,5 @@
             </section>
         </div>
     </footer>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 </body>
 </html>

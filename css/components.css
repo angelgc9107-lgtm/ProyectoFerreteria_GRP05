@@ -237,7 +237,7 @@ button[aria-disabled="true"] {
     cursor: not-allowed;
 }
 
-#catalogo > aside {
+#catalogo aside {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-rows: repeat(8, auto);
@@ -250,7 +250,7 @@ button[aria-disabled="true"] {
     box-shadow: var(--shadow-card);
 }
 
-#catalogo > aside h3 {
+#catalogo aside h3 {
     grid-column: 1 / -1;
     margin: var(--space-2) 0 var(--space-1);
     color: var(--color-white);
@@ -268,7 +268,7 @@ button[aria-disabled="true"] {
 .filter-heading--category { grid-row: 4; }
 .filter-heading--price { grid-row: 6; }
 
-#catalogo > aside label {
+#catalogo aside label {
     display: block;
     margin: 0;
     color: var(--color-white);
@@ -276,12 +276,12 @@ button[aria-disabled="true"] {
     line-height: var(--line-height-tight);
 }
 
-#catalogo > aside > label[for="orden"] {
+#catalogo aside > label[for="orden"] {
     grid-column: 1 / -1;
     grid-row: 2;
 }
 
-#catalogo > aside ul {
+#catalogo aside ul {
     grid-column: 1 / -1;
     grid-row: 5;
     margin: 0;
@@ -289,22 +289,22 @@ button[aria-disabled="true"] {
     list-style: none;
 }
 
-#catalogo > aside li {
+#catalogo aside li {
     margin-bottom: var(--space-1);
     font-size: var(--font-size-xs);
     line-height: var(--line-height-tight);
 }
 
-#catalogo > aside a {
+#catalogo aside a {
     text-decoration: none;
 }
 
-#catalogo > aside a:hover {
+#catalogo aside a:hover {
     color: var(--color-white);
     text-decoration: underline;
 }
 
-#catalogo > aside select {
+#catalogo aside select {
     grid-column: 1 / -1;
     grid-row: 3;
     width: 100%;
@@ -329,7 +329,7 @@ textarea {
     background: var(--color-white);
 }
 
-#catalogo > aside input[type="number"] {
+#catalogo aside input[type="number"] {
     width: 100%;
     height: 1.75rem;
     padding: var(--space-1);
@@ -339,15 +339,15 @@ textarea {
     font-size: var(--font-size-xs);
 }
 
-#catalogo > aside label[for^="precio-"] {
+#catalogo aside label[for^="precio-"] {
     width: auto;
     margin: 0;
 }
 
-#catalogo > aside label[for="precio-desde"] { grid-column: 1; grid-row: 7; }
-#catalogo > aside input#precio-desde { grid-column: 1; grid-row: 8; }
-#catalogo > aside label[for="precio-hasta"] { grid-column: 2; grid-row: 7; }
-#catalogo > aside input#precio-hasta { grid-column: 2; grid-row: 8; }
+#catalogo aside label[for="precio-desde"] { grid-column: 1; grid-row: 7; }
+#catalogo aside input#precio-desde { grid-column: 1; grid-row: 8; }
+#catalogo aside label[for="precio-hasta"] { grid-column: 2; grid-row: 7; }
+#catalogo aside input#precio-hasta { grid-column: 2; grid-row: 8; }
 
 section[aria-label="Servicios de FerroLab"] li > div {
     display: flex;
