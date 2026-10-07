@@ -35,13 +35,13 @@ Implementar dos componentes HTML avanzados en la página de FerroLAB:
 - [x] Input range funcional en el sidebar del catálogo, con rango de
       `$0` a `$80.000`, valor inicial en `$80.000` (sin filtrar), y el
       valor seleccionado visible en vivo mediante un elemento `<output>`.
-- [ ] Ambos componentes conservan la identidad visual del sitio (colores,
+- [x] Ambos componentes conservan la identidad visual del sitio (colores,
       tipografías, bordes redondeados) y no generan overflow horizontal en
       ningún breakpoint.
-- [ ] Tests ejecutados con Playwright MCP sobre iPhone 14 Pro, Samsung
+- [x] Tests ejecutados con Playwright MCP sobre iPhone 14 Pro, Samsung
       Galaxy S23 y iPad Air, documentados en `test-case-9.md` (mapa) y
       `test-case-10.md` (input range).
-- [ ] Issues creados con GitHub MCP por cada hallazgo, resueltos mediante
+- [x] Issues creados con GitHub MCP por cada hallazgo, resueltos mediante
       ramas `fix/` contra `develop`, documentados en `changelog.md` bajo
       `[Fixed]`.
 
@@ -50,7 +50,7 @@ Implementar dos componentes HTML avanzados en la página de FerroLAB:
 | Test case | Componente | Qué se valida |
 |---|---|---|
 | `test-case-9.md` | Iframe Google Maps | Carga correcta del iframe, proporción responsive (ratio Bootstrap), que el link "Ver mapa más grande" abra la ubicación correcta, ausencia de overflow en los 3 dispositivos. |
-| `test-case-10.md` | Input range (filtro de precio) | El slider se arrastra correctamente en pantallas táctiles, el valor en `<output>` se actualiza en vivo, el componente conserva su estilo visual en los 3 dispositivos. |
+| `test-case-10.md` | Input range (filtro de precio) | El slider responde correctamente a interacciones por clic y arrastre bajo emulación de viewport (sin perfil de touch real), el valor en `<output>` se actualiza en vivo, el componente conserva su estilo visual en los 3 dispositivos. |
 
 ## Archivos a modificar
 
@@ -94,9 +94,13 @@ apunten exactamente al mismo lugar de referencia.
   mínimo-máximo) para simplificar la implementación sin JavaScript
   funcional completo, acorde a que esta entrega no lo exige como
   obligatorio.
-- Se agregó un `oninput` inline mínimo para actualizar el valor mostrado
-  en el `<output>` en tiempo real, sin implicar lógica de filtrado real
-  de productos (eso queda marcado como JavaScript futuro, según el
+markdown
+- Se implementó la actualización del valor en vivo del `<output>` mediante
+  un `addEventListener('input', ...)` en un `<script>` externo al final
+  del `<body>` (no un `oninput` inline), para evitar acoplar comportamiento
+  y estructura y mantener compatibilidad con una Content Security Policy
+  que bloquee scripts inline. No implica lógica de filtrado real de
+  productos (eso queda marcado como JavaScript futuro, según el
   comentario ya presente en el HTML).
 - Los límites del slider (`$0` a `$80.000`) se definieron en base al rango
   real de precios visible en el catálogo actual.

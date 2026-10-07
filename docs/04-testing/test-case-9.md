@@ -31,6 +31,7 @@ Para cada dispositivo verificá:
 | iPhone 14 Pro · 390×844 | OK. Iframe completo dentro del ancho disponible; cargó contenido del mapa, con solicitudes de Maps y teselas respondidas con HTTP 200. Sin overflow horizontal. |
 | Samsung Galaxy S23 · 412×915 | OK. Iframe completo y cargado; sin overflow horizontal. |
 | iPad Air · 820×1180 | OK. Iframe completo y cargado; sin overflow horizontal. |
+| Verificación del link "Ver mapa más grande" | Se hizo clic en el link dentro del iframe embebido y se confirmó que abre la ficha específica de "Ferretería JYJ" en Google Maps (vía CID), no una búsqueda genérica por nombre. |
 
 **Resultado general:** ✅ Aprobado en los tres viewports. No se detectó
 overflow horizontal; el mapa cargó correctamente con contenido y controles
