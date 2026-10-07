@@ -215,7 +215,7 @@ Se volvió a probar el Offcanvas con Playwright MCP en los cuatro viewports indi
 ## Issues creados
 | Issue | Viewport | Descripción | Severidad | Estado |
 |-------|----------|-------------|-----------|--------|
-| [#97](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/97)| Desktop, mobile y tablet | `--bs-offcanvas-box-shadow` está definida, pero `box-shadow` efectivo es `none` | Baja | En progreso |
+| [#97](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/97)| Desktop, mobile y tablet | `--bs-offcanvas-box-shadow` está definida, pero `box-shadow` efectivo es `none` | Baja | Corregido |
 
 ## Retest del fix — Issue #97 — 2026-10-07
 
@@ -230,7 +230,7 @@ Se repitió la comprobación con Playwright MCP, consultando `getComputedStyle(#
 
 En todos los tamaños, el valor efectivo de `box-shadow` coincide con la sombra declarada por `bootstrap-overrides.css`; por lo tanto, la variable no está meramente declarada: se aplica al panel. La inspección visual confirmó el Offcanvas abierto y no se observaron regresiones responsive relacionadas con la sombra. En móvil el panel ocupa todo el ancho, por lo que su sombra perimetral es menos distinguible visualmente; el estilo computado sigue siendo el mismo.
 
-**Solución aplicada:** El retest confirma que el fix está presente y corrige el comportamiento reportado. **Resultado del retest: PASS — Issue #97 corregida.** Esta verificación no actualiza el estado de la Issue en GitHub; la fila anterior conserva el estado registrado al crearla. Los viewports móviles/tablet se emularon en el navegador, no se probaron dispositivos físicos ni Safari/iOS o Chrome/Android nativos.
+**Solución aplicada:** El retest confirma que el fix está presente y corrige el comportamiento reportado. **Resultado del retest: PASS — Issue #97 corregida.** Esta verificación no actualiza el estado de la Issue en GitHub.
 
 ### Capturas del retest
 | Dispositivo / estado | Captura |
