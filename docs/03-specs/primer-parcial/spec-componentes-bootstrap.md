@@ -92,11 +92,11 @@ Las pruebas mediante Playwright MCP permitirán comprobar el funcionamiento de c
 
 - [X] Por cada hallazgo relevante se creó un issue tipo bug mediante GitHub MCP desde Copilot Agent Mode.
 
-- [ ] Los issues encontrados fueron corregidos mediante ramas `fix/` contra `develop`.
+- [X] Los issues encontrados fueron corregidos mediante ramas `fix/` contra `develop`.
 
-- [ ] Las correcciones fueron documentadas en `[Fixed]` dentro de `changelog.md`.
+- [X] Las correcciones fueron documentadas en `[Fixed]` dentro de `changelog.md`.
 
-- [ ] Al finalizar la tarea, este spec contiene los prompts utilizados, resultados obtenidos, ajustes manuales y hallazgos de las pruebas.
+- [X] Al finalizar la tarea, este spec contiene los prompts utilizados, resultados obtenidos, ajustes manuales y hallazgos de las pruebas.
 
 
 ## Plan de testing con Playwright MCP
@@ -555,9 +555,9 @@ Revisé el diff completo y git diff --check no reportó problemas. No hice commi
 ## Ajustes manuales realizados
 - Adaptación de estilos para mantener la identidad visual de FerroLab.
 - Ajustes de comportamiento responsive.
-- sombras en Dropdown y Offcanvas pendiente de corrección mediante Fix.
 - Ajustes menores de accesibilidad e interacción.
-- Se agregó la propiedad box-shadow al Dropdown para que la sombra definida en --bs-dropdown-box-shadow se aplique correctamente.
+- Corrección del issue [#97](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/97)
+- Corrección del issue [#91](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/91)
 ## Pruebas realizadas con Playwright MCP
 
 - docs\04-testing\test-case-7.md
@@ -621,12 +621,12 @@ Dejé detenido el servidor local usado para la prueba. No modifiqué código ni 
 # Test-case-7
 | Issue | Viewport | Descripción | Severidad | Estado |
 |-------|----------|-------------|-----------|--------|
-| [#91](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/91) | Todos | `--bs-dropdown-box-shadow` está configurada, pero el `box-shadow` computado del Dropdown es `none` | Baja | En progreso |
+| [#91](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/91) | Todos | `--bs-dropdown-box-shadow` está configurada, pero el `box-shadow` computado del Dropdown es `none` | Baja | Corregido |
 
 # Test-case-8
 | Issue | Viewport | Descripción | Severidad | Estado |
 |-------|----------|-------------|-----------|--------|
-| [#97](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/97) | Desktop, mobile y tablet | `--bs-offcanvas-box-shadow` está definida, pero `box-shadow` efectivo es `none` | Baja | Abierto |
+| [#97](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/97) | Desktop, mobile y tablet | `--bs-offcanvas-box-shadow` está definida, pero `box-shadow` efectivo es `none` | Baja | Corregido |
 
 
 ## Correcciones realizadas

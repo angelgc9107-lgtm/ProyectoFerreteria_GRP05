@@ -161,7 +161,7 @@ utilizando nombres que permitan identificar el dispositivo y el estado probado.
 ## Issues creados
 | Issue | Viewport | Descripción | Severidad | Estado |
 |-------|----------|-------------|-----------|--------|
-| [#91](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/91) | Todos | `--bs-dropdown-box-shadow` está configurada, pero el `box-shadow` computado del Dropdown es `none` | Baja | En progreso |
+| [#91](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/91) | Todos | `--bs-dropdown-box-shadow` está configurada, pero el `box-shadow` computado del Dropdown es `none` | Baja | Corregido |
 
 ## Retest del fix — Issue #91 — 2026-10-07
 
