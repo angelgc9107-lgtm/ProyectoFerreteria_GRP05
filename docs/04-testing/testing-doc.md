@@ -82,7 +82,7 @@ Los test cases 6 a 10 se ejecutaron sobre las ramas de cada componente del Prime
 | Test Case | Resultado | Issues / observaciones | Responsable |
 |-----------|-----------|------------------------|-------------|
 | TC-6 — Responsive de la migración a Bootstrap | OK con observaciones | Sin issues. Las observaciones O-2 (favicon) y O-3 (contador del carrito) se corrigieron en [#103](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/103); O-1 no requirió corrección | Desarrollador Frontend/Bootstrap |
-| TC-7 — Dropdown | OK con hallazgo | [#91](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/91) — `--bs-dropdown-box-shadow` definida pero `box-shadow` efectivo `none` ((corregido en [#105](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/105))) | Especialista en Componentes Bootstrap |
+| TC-7 — Dropdown | OK con hallazgo | [#91](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/91) — `--bs-dropdown-box-shadow` definida pero `box-shadow` efectivo `none` (corregido en [#105](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/105)) | Especialista en Componentes Bootstrap |
 | TC-8 — Offcanvas | OK con hallazgo | [#97](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/97) — `--bs-offcanvas-box-shadow` definida pero `box-shadow` efectivo `none` (corregido en [#104](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/104)) | Especialista en Componentes Bootstrap |
 | TC-9 — Iframe de Google Maps | OK | Ninguno | — |
 | TC-10 — Input range de precio | OK | Ninguno | — |
