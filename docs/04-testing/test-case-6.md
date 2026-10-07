@@ -64,7 +64,7 @@ Nota: las imágenes de los productos del carrito (`cart-item--grinder` y `cart-i
 
 ## Problemas encontrados
 
-No se encontraron fallos bloqueantes de responsive. Observaciones menores (sin corregir, sin Issue):
+No se encontraron fallos bloqueantes de responsive. Observaciones menores (pendientes de evaluación; no bloquean la entrega):
 
 | # | Observación | Dispositivo | Sección | Pasos | Obtenido | Esperado |
 |---|-------------|-------------|---------|-------|----------|----------|
@@ -73,4 +73,4 @@ No se encontraron fallos bloqueantes de responsive. Observaciones menores (sin c
 | O-3 | Texto "Carrito (0)" en el encabezado con 2 productos en el carrito | iPad Air (820 px) | Header | Cargar la página a 820 px y observar el header. | Muestra "Carrito (0)" mientras el carrito contiene 2 artículos. | Contador coherente con el contenido (es HTML estático; relevante para la futura lógica JS). |
 
 ## Estado final de la prueba
-**APROBADA con observaciones menores (O-1, O-2, O-3).** Las observaciones se reportan como issues bug con GitHub MCP y se resuelven mediante ramas fix/ contra develop, documentadas en [Fixed] del changelog.md.
+**APROBADA con observaciones menores (O-1, O-2, O-3).** Las observaciones se reportan.
