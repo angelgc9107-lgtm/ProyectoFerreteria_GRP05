@@ -5,11 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="FerroLab: herramientas, accesorios y productos de ferreteria para tus proyectos.">
     <title>FerroLab | Ferreteria</title>
+    <link rel="icon" type="image/png" href="assets/images/logo.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/responsive.css">
     <link rel="stylesheet" href="css/bootstrap-overrides.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous" defer></script>
 </head>
 <body>
     <!-- CSS futuro: organizar la cabecera en una barra superior oscura con logo, buscador, carrito y acceso a la cuenta, respetando la jerarquia visual del mockup. -->
@@ -25,8 +27,9 @@
             <button type="submit">Buscar</button>
         </form>
 
-        <!-- JavaScript futuro: abrir y cerrar el panel lateral del carrito al activar este enlace. -->
-        <a href="#carrito" aria-label="Ver carrito de compras">Carrito (0)</a>
+        <button type="button" aria-label="Ver carrito de compras" data-bs-toggle="offcanvas" data-bs-target="#carrito" aria-controls="carrito">
+            Carrito (2)
+        </button>
         <span>Iniciar sesion</span>
 
         <nav aria-label="Navegacion principal">
@@ -253,34 +256,36 @@
             </table>
         </section>
 
-        <!-- Frame 12: este aside representa el panel lateral abierto del carrito sobre el sitio. No hay calculos ni operaciones funcionales en esta entrega. -->
-        <aside id="carrito" aria-labelledby="titulo-carrito" data-estado="abierto">
-            <h2 id="titulo-carrito">Carrito de compras</h2>
-            <button type="button" class="cart-close" aria-label="Cerrar carrito">Cerrar</button>
-            <!-- JavaScript futuro: abrir y cerrar este panel desde el acceso del encabezado. -->
-            <!-- JavaScript futuro: agregar productos, eliminar productos y modificar cantidades desde cada articulo del carrito. -->
-            <!-- JavaScript futuro: recalcular subtotales y total cuando cambien productos o cantidades. -->
-            <article class="cart-item--grinder">
-                <h3>Amoladora angular inalambrica DeWalt Flexvolt DCG416B</h3>
-                <p>Precio unitario: $50.000</p>
-                <label for="cantidad-amoladora">Cantidad</label>
-                <input type="number" id="cantidad-amoladora" value="1" min="1">
-                <p>Subtotal representativo: $50.000</p>
-                <button type="button">Eliminar</button>
-            </article>
-            <article class="cart-item--hammer">
-                <h3>Martillo galponero mango de fibra Black Jack</h3>
-                <p>Precio unitario: $16.000</p>
-                <label for="cantidad-martillo">Cantidad</label>
-                <input type="number" id="cantidad-martillo" value="1" min="1">
-                <p>Subtotal representativo: $16.000</p>
-                <button type="button">Eliminar</button>
-            </article>
-            <p>Subtotal (sin envio): $66.000</p>
-            <p>Subtotal (con envio): $75.000</p>
-            <p>Total: $75.000</p>
-            <!-- JavaScript futuro: habilitar el inicio de compra y conectar el resumen con los metodos de pago en una etapa posterior. -->
-            <button type="button">Iniciar compra</button>
+        <aside id="carrito" class="offcanvas offcanvas-end" tabindex="-1" aria-labelledby="titulo-carrito">
+            <div class="offcanvas-header">
+                <h2 id="titulo-carrito">Carrito de compras</h2>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Cerrar carrito"></button>
+            </div>
+            <div class="offcanvas-body">
+                <!-- JavaScript futuro: agregar productos, eliminar productos y modificar cantidades desde cada articulo del carrito. -->
+                <!-- JavaScript futuro: recalcular subtotales y total cuando cambien productos o cantidades. -->
+                <article class="cart-item--grinder">
+                    <h3>Amoladora angular inalambrica DeWalt Flexvolt DCG416B</h3>
+                    <p>Precio unitario: $50.000</p>
+                    <label for="cantidad-amoladora">Cantidad</label>
+                    <input type="number" id="cantidad-amoladora" value="1" min="1">
+                    <p>Subtotal representativo: $50.000</p>
+                    <button type="button">Eliminar</button>
+                </article>
+                <article class="cart-item--hammer">
+                    <h3>Martillo galponero mango de fibra Black Jack</h3>
+                    <p>Precio unitario: $16.000</p>
+                    <label for="cantidad-martillo">Cantidad</label>
+                    <input type="number" id="cantidad-martillo" value="1" min="1">
+                    <p>Subtotal representativo: $16.000</p>
+                    <button type="button">Eliminar</button>
+                </article>
+                <p>Subtotal (sin envio): $66.000</p>
+                <p>Subtotal (con envio): $75.000</p>
+                <p>Total: $75.000</p>
+                <!-- JavaScript futuro: habilitar el inicio de compra y conectar el resumen con los metodos de pago en una etapa posterior. -->
+                <button type="button">Iniciar compra</button>
+            </div>
         </aside>
 
         <section id="contacto" aria-labelledby="titulo-contacto">
