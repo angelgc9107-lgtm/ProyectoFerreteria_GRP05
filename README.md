@@ -62,6 +62,7 @@ señalados en cada pantalla (Navbar, Carousel, Offcanvas, Dropdown e iframe
 de Google Maps con `.ratio-16x9`).
 
 ## 📁 Documentación
+
 - [Mockup en Figma (actualizado en el Primer Parcial con Bootstrap)](https://www.figma.com/design/jX7NrMUtt6Tg7oiYqock6s/Sin-t%C3%ADtulo?node-id=191-963&t=ouTMvmvpb279r7wJ-1)
 - [Mockup Bootstrap exportado (Primer Parcial)](docs/01-mockup/disenio-bootstrap.png)
 - [Estados de interacción Bootstrap (Primer Parcial)](docs/01-mockup/estados-bootstrap.png)
