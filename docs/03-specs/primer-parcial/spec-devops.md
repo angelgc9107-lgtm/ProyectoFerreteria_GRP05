@@ -152,9 +152,15 @@ Publica comentarios directamente en el código si lo consideras necesario.
 | 1 | [#90](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/90) | @alandox1 | Desarrollador de Componentes HTML Avanzados | 8 — REQUEST CHANGES | Sí, comentarios inline |
 | 2 | [#96](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/96) | @LuchoBarrionuevo13 | Desarrollador Frontend/Bootstrap | 9 (8 aceptados, 1 rechazado: #6) — REQUEST CHANGES | Sí, comentarios inline |
 | 3 | [#99](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/99) | @angelgc9107-lgtm | Especialista en Componentes Bootstrap | 12 (#6 reatribuido a #96 tras verificar el origen) — REQUEST CHANGES | Sí, comentarios inline |
-| 4 | [#90](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/90) (re-review) | @alandox1 | Desarrollador de Componentes HTML Avanzados | 12 (#1–#8 verificados, #9–#12 nuevos) — REQUEST CHANGES | Sí, comentarios inline |
+| 4 | [#90](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/90) (re-review) | @alandox1 | Desarrollador de Componentes HTML Avanzados | 6 verificados como resueltos (#2 a #7), 2 abiertos (#1 y #8) y 4 nuevos (#9 a #12) — REQUEST CHANGES | Sí, comentarios inline |
 | 5 | [#96](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/96) (re-review) | @LuchoBarrionuevo13 | Desarrollador Frontend/Bootstrap | 8 (#7 retirado por el revisor) — APPROVE tras correcciones | Sí, comentarios inline |
 | 6 | [#103](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/103) | @LuchoBarrionuevo13 | Desarrollador Frontend/Bootstrap | 1 (aplicado) — APPROVE | Sí, comentario inline |
+| 7 | [#90](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/90) (re-review 2) | @alandox1 | Desarrollador de Componentes HTML Avanzados | 1 (el commit eliminaba `spec-componentes-bootstrap.md` de #99 y dejaba un spec duplicado) — REQUEST CHANGES | Solo en la conversación |
+| 8 | [#90](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/90) (re-review 3) | @alandox1 | Desarrollador de Componentes HTML Avanzados | 0 — APPROVE | No aplica |
+| 9 | [#104](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/104) | @angelgc9107-lgtm | Especialista en Componentes Bootstrap | 5 — REQUEST CHANGES | Solo en la conversación |
+| 10 | [#104](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/104) (re-review) | @angelgc9107-lgtm | Especialista en Componentes Bootstrap | 2 (changelog: entrada de #103 pisada y enlace a #99 en vez de #104) — REQUEST CHANGES | Sí, comentario inline |
+| 11 | [#104](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/104) (re-review 2) | @angelgc9107-lgtm | Especialista en Componentes Bootstrap | 0 — APPROVE | No aplica |
+| 12 | [#105](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/105) | @angelgc9107-lgtm | Especialista en Componentes Bootstrap | 1 (orden en el CSS, no bloqueante) — APPROVE | Solo en la conversación |
 
 ### 2.2 Decisiones del mockup
 
@@ -176,6 +182,9 @@ Publica comentarios directamente en el código si lo consideras necesario.
 | En la review de #99 se atribuyó a Angel un cambio en los totales del carrito que venía de #96 | Se verificó el origen en el diff de #96, se corrigió el hallazgo en #99 y se pidió documentarlo en el spec de #96 |
 | Criterio cambiado sobre el bundle de #96: la primera review pidió agregarlo y la re-review, quitarlo | El cambio se debió a la integración: al revisar #99 se detectó que el bundle quedaba duplicado |
 | El autor de #103 no podía resolver los conflictos por horario laboral | Con su OK escrito, el coordinador resolvió los conflictos en la rama y lo dejó documentado en la PR |
+| La fix de #104 reemplazaba la entrada de #103 en el changelog en lugar de agregarse debajo, y Git no marcaba conflicto con develop | Se detectó comparando el changelog resultante contra develop; se corrigió en la rama antes del merge y el changelog final conserva las entradas de #88, #90, #96, #99, #103 y #104 |
+| #90 acumuló varias rondas de Request Changes con hallazgos nuevos en cada una, y el autor no lograba converger a tiempo | El coordinador entregó `index.html` y `components.css` corregidos y verificados contra develop para que el autor los incorporara en su rama; antes del merge se comprobó que no hubiera conflictos ni bundle de Bootstrap duplicado |
+| #105 (fix de #91) y la rama de cierre completaban a la vez el índice de `testing-doc.md` con los test cases 6, 7 y 8, lo que generó conflicto | Se resolvió por terminal conservando una sola versión de las filas del índice (la de develop) y la sección de issues del Primer Parcial |
 
 ### 2.4 Evidencia
 

@@ -161,9 +161,32 @@ utilizando nombres que permitan identificar el dispositivo y el estado probado.
 ## Issues creados
 | Issue | Viewport | Descripción | Severidad | Estado |
 |-------|----------|-------------|-----------|--------|
-| [#91](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/91) | Todos | `--bs-dropdown-box-shadow` está configurada, pero el `box-shadow` computado del Dropdown es `none` | Baja | Abierto |
+| [#91](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/91) | Todos | `--bs-dropdown-box-shadow` está configurada, pero el `box-shadow` computado del Dropdown es `none` | Baja | Corregido |
+
+## Retest del fix — Issue #91 — 2026-10-07
+
+Se repitió la prueba con Playwright MCP y se consultó `getComputedStyle()` del menú abierto asociado a `#categorias-dropdown` en cada viewport. El valor de `--bs-dropdown-box-shadow` computado fue `0 1px 3px rgb(0 0 0 / 16%)` y el `box-shadow` efectivo fue `rgba(0, 0, 0, 0.16) 0px 1px 3px 0px`; en ninguno de los tamaños fue `none`.
+
+| Dispositivo / viewport | `--bs-dropdown-box-shadow` | `box-shadow` efectivo | ¿Es `none`? | Abre / Escape / `aria-expanded` / foco | Overflow | Resultado |
+|------------------------|----------------------------|----------------------|-------------|-----------------------------------------|----------|-----------|
+| Desktop — 1280×800 | `0 1px 3px rgb(0 0 0 / 16%)` | `rgba(0, 0, 0, 0.16) 0px 1px 3px 0px` | No | Sí / Sí / correcto / vuelve al botón | No | PASS |
+| iPhone 14 Pro — 390×844 (viewport emulado) | `0 1px 3px rgb(0 0 0 / 16%)` | `rgba(0, 0, 0, 0.16) 0px 1px 3px 0px` | No | Sí / Sí / correcto / vuelve al botón | No | PASS |
+| Samsung Galaxy S23 — 360×780 (viewport emulado) | `0 1px 3px rgb(0 0 0 / 16%)` | `rgba(0, 0, 0, 0.16) 0px 1px 3px 0px` | No | Sí / Sí / correcto / vuelve al botón | No | PASS |
+| iPad Air — 820×1180 (viewport emulado) | `0 1px 3px rgb(0 0 0 / 16%)` | `rgba(0, 0, 0, 0.16) 0px 1px 3px 0px` | No | Sí / Sí / correcto / vuelve al botón | No | PASS |
+
+En los cuatro viewports el botón continuó visible y funcional; el menú mostró las cinco categorías existentes (Accesorios, Herramientas manuales, Herramientas electricas, Electricidad y Jardineria), conservando `#catalogo` como destino de todos los enlaces. `aria-expanded` pasó de `false` a `true` al abrir y volvió a `false` al cerrar con Escape; el foco regresó a `#categorias-dropdown`. Se mantuvieron los colores (botón blanco, menú blanco, enlaces en tinta), tipografía Inter, borde gris y radio de 4 px. La duración computada de transición continuó en `0s`, por lo que no se observó una animación perceptible; no se detectaron errores de consola durante este retest.
+
+**Solución aplicada:** El `box-shadow` computado coincide con la sombra definida y no es `none` en ninguno de los cuatro viewports. **Resultado: PASS — Issue #91 corregida.** La fila de Issues conserva el estado registrado en GitHub y no implica que se haya cerrado la Issue. Los viewports móviles y tablet se emularon en el navegador; no se probaron dispositivos físicos ni Safari/iOS o Chrome/Android nativos.
+
+### Capturas del retest
+| Dispositivo / estado | Captura |
+|----------------------|---------|
+| Desktop 1280×800 — Dropdown abierto | ![](capturas/tc-7/issue-91-desktop-dropdown-abierto.png) |
+| iPhone 14 Pro 390×844 — Dropdown abierto | ![](capturas/tc-7/issue-91-iphone14pro-dropdown-abierto.png) |
+| Samsung Galaxy S23 360×780 — Dropdown abierto | ![](capturas/tc-7/issue-91-galaxy-s23-dropdown-abierto.png) |
+| iPad Air 820×1180 — Dropdown abierto | ![](capturas/tc-7/issue-91-ipad-air-dropdown-abierto.png) |
 
 ## Conclusión general
-**Resultado final:** APROBADO CON OBSERVACIONES
+**Resultado final:** APROBADO — HALLAZGO HISTÓRICO CORREGIDO
 
-El Dropdown de Categorías fue visible y funcional en los cuatro viewports probados. La apertura, el cierre con Escape, el estado `aria-expanded` y la devolución del foco se comportaron correctamente; no se detectó overflow horizontal y se verificaron los estilos principales de FerroLab. Como observación, el menú no refleja la sombra configurada y no se observó transición de apertura. La consola registró un `404` de `/favicon.ico`, ajeno al componente. Las ocho capturas están guardadas en `docs/04-testing/capturas/tc-7/`.
+El Dropdown de Categorías fue visible y funcional en los cuatro viewports probados. La apertura, el cierre con Escape, el estado `aria-expanded` y la devolución del foco se comportaron correctamente; no se detectó overflow horizontal y se verificaron los estilos principales de FerroLab. La observación histórica de que la sombra configurada no se reflejaba quedó corregida según el retest de la Issue #91; no se observó transición de apertura y el 404 de `/favicon.ico` registrado en la ejecución inicial es ajeno al componente.
