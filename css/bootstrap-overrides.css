@@ -1,0 +1,155 @@
+/*
+  bootstrap-overrides.css
+  Integración de Bootstrap 5.3 con los estilos de FerroLab (Primer Parcial).
+  Se carga al final para ajustar Reboot y la grilla sin usar !important.
+*/
+
+/* ==========================================================
+   REBOOT — se restaura el aspecto previo a Bootstrap
+   ========================================================== */
+
+/* Reboot fija los títulos en 500; FerroLab los usa en negrita. */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: var(--font-weight-bold);
+}
+
+/* Reboot usa 1rem; el valor original equivalía a 1em. */
+p,
+ul {
+    margin-bottom: 1em;
+}
+
+/* Reboot ubica la leyenda abajo, a la izquierda y en gris. */
+table {
+    caption-side: top;
+}
+
+caption {
+    padding: 0;
+    color: inherit;
+    text-align: center;
+}
+
+/* Dropdown de Categorías: conserva el contraste y la superficie del menú previo. */
+nav .dropdown-toggle {
+    --bs-btn-color: var(--color-white);
+    --bs-btn-bg: transparent;
+    --bs-btn-border-color: transparent;
+    --bs-btn-hover-color: var(--color-white);
+    --bs-btn-hover-bg: transparent;
+    --bs-btn-hover-border-color: transparent;
+    --bs-btn-active-color: var(--color-white);
+    --bs-btn-active-bg: transparent;
+    --bs-btn-active-border-color: transparent;
+    --bs-btn-padding-x: 0;
+    --bs-btn-padding-y: 0;
+
+    min-height: 0;
+
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-base);
+    text-transform: uppercase;
+}
+
+nav .dropdown-menu {
+    --bs-dropdown-color: var(--color-ink);
+    --bs-dropdown-bg: var(--color-white);
+    --bs-dropdown-border-color: var(--color-gray-300);
+    --bs-dropdown-border-radius: var(--radius-md);
+    --bs-dropdown-box-shadow: var(--shadow-card);
+
+    box-shadow: var(--bs-dropdown-box-shadow);
+    --bs-dropdown-spacer: var(--space-2);
+    --bs-dropdown-padding-x: var(--space-2);
+    --bs-dropdown-padding-y: var(--space-2);
+    --bs-dropdown-link-color: var(--color-ink);
+    --bs-dropdown-link-hover-color: var(--color-white);
+    --bs-dropdown-link-hover-bg: var(--color-red);
+    --bs-dropdown-link-active-color: var(--color-white);
+    --bs-dropdown-link-active-bg: var(--color-red-dark);
+}
+
+nav .dropdown-menu li + li {
+    margin-top: var(--space-2);
+}
+
+nav .dropdown-menu .dropdown-item:hover,
+nav .dropdown-menu .dropdown-item:focus-visible {
+    color: var(--bs-dropdown-link-hover-color);
+    background-color: var(--bs-dropdown-link-hover-bg);
+    text-decoration: none;
+}
+
+/* Offcanvas del carrito: conserva la superficie, cabecera y dimensiones de FerroLab. */
+#carrito {
+    --bs-offcanvas-width: var(--cart-width);
+    --bs-offcanvas-padding-x: 0;
+    --bs-offcanvas-padding-y: 0;
+    --bs-offcanvas-color: var(--color-white);
+    --bs-offcanvas-bg: var(--color-cart-body);
+    --bs-offcanvas-border-width: var(--border-width);
+    --bs-offcanvas-border-color: var(--color-red);
+    --bs-offcanvas-box-shadow: var(--shadow-card);
+
+    border: var(--border-width) solid var(--color-red);
+    box-shadow: var(--bs-offcanvas-box-shadow);
+}
+
+#carrito .offcanvas-header {
+    margin-bottom: var(--space-3);
+    padding: var(--space-3);
+    padding-right: var(--space-7);
+    background: var(--color-cart-header);
+    border-bottom: var(--border-width) solid rgb(255 255 255 / 30%);
+}
+
+#carrito .offcanvas-header .btn-close {
+    position: absolute;
+    top: var(--space-2);
+    right: var(--space-3);
+    margin: 0;
+    --bs-btn-close-focus-shadow: var(--focus-ring);
+}
+
+#carrito .offcanvas-body {
+    padding: 0 0 var(--space-6);
+}
+
+@media (max-width: 767.98px) {
+    #carrito {
+        --bs-offcanvas-width: 100%;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1023.98px) {
+    #carrito {
+        --bs-offcanvas-width: 60%;
+    }
+}
+
+
+/* ==========================================================
+   GRILLA — gutters y ancho de la columna central (mockup)
+   ========================================================== */
+
+/* Ofertas y servicios: separación de unos 20 px entre tarjetas. */
+#ofertas > .row,
+section[aria-label="Servicios de FerroLab"] > .row {
+    --bs-gutter-x: 1.25rem;
+    --bs-gutter-y: 1.25rem;
+}
+
+/* Catálogo: gutters de la row interna y del contenedor de columnas. */
+#catalogo .row {
+    --bs-gutter-x: var(--space-3);
+    --bs-gutter-y: var(--space-3);
+}
+
+#catalogo > .row {
+    --bs-gutter-y: var(--space-4);
+}
