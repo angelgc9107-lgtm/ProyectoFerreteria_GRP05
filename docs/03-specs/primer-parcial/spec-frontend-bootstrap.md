@@ -110,7 +110,7 @@ Cada regla llevará un comentario breve cuando su motivo no sea evidente, y el a
 ## Evidencia (completar al finalizar el desarrollo)
 
 ### Prompt exacto utilizado con Figma MCP / Copilot Agent
-
+```text
 Estoy trabajando en el Primer Parcial del proyecto FerroLab.
 
 Mi rol es Desarrollador Frontend/Bootstrap.
@@ -536,7 +536,7 @@ Documenta en ese archivo:
 No crees Issues ni ramas fix todavía.
 Si Playwright detecta un problema, primero informa el resultado y déjalo
 documentado en test-case-6.md.
-
+```
 ### Archivos utilizados como contexto
 
 Durante la migración a Bootstrap se utilizaron como contexto los siguientes archivos del proyecto:
