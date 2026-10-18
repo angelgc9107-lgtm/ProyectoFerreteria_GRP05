@@ -115,6 +115,11 @@ nav .dropdown-menu .dropdown-item:focus-visible {
     margin: 0;
     --bs-btn-close-focus-shadow: var(--focus-ring);
 }
+/* RC7: evitar el fondo blanco al pasar el mouse sobre la X. */
+#carrito .offcanvas-header .btn-close:hover {
+    background-color: transparent;
+    box-shadow: none;
+}
 
 #carrito .offcanvas-body {
     padding: 0 0 var(--space-6);

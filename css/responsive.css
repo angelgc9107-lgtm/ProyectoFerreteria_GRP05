@@ -175,4 +175,16 @@
         min-width: 0;
         padding: var(--space-4) var(--space-5);
     }
+   
+
+}
+
+/* ==========================================================
+   DESKTOP — desde 1024px
+   Mantiene la navegación debajo del logo posicionado en la fila superior.
+   ========================================================== */
+@media (min-width: 1024px) {
+    header > form {
+        min-height: 4rem;
+    }
 }
