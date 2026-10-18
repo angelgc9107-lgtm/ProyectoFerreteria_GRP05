@@ -31,7 +31,8 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 - [fix/spec-devops-links-release] Fix spec-devops: completar evidencia y checklist de cierre del Primer Parcial: [#109](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/109) — @Piastrellini (Coordinador / DevOps)
 
----
+- [fix/recuperatorio-primer-parcial] Fix Frontend/Bootstrap: corregir RC1 a RC9 del recuperatorio del Primer Parcial: [#111](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/111) — @luchobarrionuevo13 (Desarrollador Frontend/Bootstrap)
+
 # [Released] 2026-10-01
 ### Added
 - [feature/coord-devops-update-figma-and-readme] Actualizacion del mockup,readme y creacion de spec PR: [#36](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/36) — @alandox1(Coordinador / DevOps)
