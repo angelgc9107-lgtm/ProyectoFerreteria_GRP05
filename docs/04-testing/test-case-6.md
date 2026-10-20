@@ -112,3 +112,51 @@ el contenido actual.
 
 Playwright confirmó que el contador muestra 2 y que existen dos
 elementos `article` dentro de `#carrito`.
+
+## Retest posterior a la PR #111 — RC17 — 2026-10-20
+
+Retest de las correcciones RC4 a RC9 de la PR #111 (Issue #110), ejecutado con Playwright MCP (Chromium, viewports emulados con `setViewportSize`, sin user-agent ni touch) contra la rama `fix/recuperatorio-primer-parcial` servida en `http://localhost:3000`. No se modificó HTML, CSS ni JavaScript. La verificación del hover del botón de cierre del carrito se registra en [test-case-8.md](test-case-8.md).
+
+| Dispositivo | Viewport |
+|-------------|----------|
+| Escritorio | 1280 × 800 |
+| iPad Air | 820 × 1180 |
+| iPhone 14 Pro | 390 × 844 |
+| Samsung Galaxy S23 | 360 × 780 |
+
+### Resultados
+
+| Verificación (RC) | Escritorio | iPad Air | iPhone 14 Pro | Galaxy S23 |
+|-------------------|------------|----------|---------------|------------|
+| Sin scroll horizontal | PASS (1265 = 1265) | PASS (805 = 805) | PASS (375 = 375) | PASS (345 = 345) |
+| RC4 — Ofertas: tarjetas alineadas | PASS — 3 tarjetas en 1 fila: misma altura (287 px) y mismo `top` de título, descripción y botón | PASS — fila de 2 + 1 tarjeta; en cada fila los `top` coinciden | PASS — 3 filas, 287 px cada una | PASS — 3 filas, 287 px cada una |
+| RC4 — Separación título–descripción | PASS — 12 px en todas (`min-height` 30 px, `margin-bottom` 12 px) | PASS — 12 px | PASS — 12 px | PASS — 12 px |
+| RC5 — Bienvenida: imágenes → título → párrafo | PASS — 16 px / 16 px; `margin-bottom` del título 0 px | PASS — 16 px / 16 px | PASS — 16 px / 16 px | PASS — 16 px / 16 px |
+| RC6 — Formulario: `required` en los 4 campos | PASS | PASS | PASS | PASS |
+| RC6 — Envío vacío bloqueado | PASS — 0 eventos `submit`, foco en `#nombre`, mensaje "Completa este campo" | PASS (igual) | PASS (igual) | PASS (igual) |
+| RC6 — Cada campo faltante bloquea el envío | PASS — el foco avanza `#correo` → `#motivo` → `#mensaje` | PASS | PASS | PASS |
+| RC6 — Formulario completo válido (`checkValidity()`) | PASS | PASS | PASS | PASS |
+| RC8 — Productos del carrito | PASS — imagen 72 px, separación imagen–título 8 px (`column-gap`), `padding-right` 4 px, sin overflow | PASS (igual) | PASS (igual) | PASS (igual) |
+| RC9 — Logo vs. navegación | PASS — logo 56×56 en y 8–64; nav desde y 64; 0 solapes | PASS — logo 48×48 en y 16–64; nav desde y 76; 0 solapes | PASS — logo 44×44 en y 12–56; nav desde y 128; 0 solapes | PASS — logo 44×44 en y 12–56; nav desde y 128 (2 líneas); 0 solapes |
+
+- **Navegación (RC9):** en escritorio y tablet se ven los 5 elementos; en iPhone 14 Pro, 4 (el enlace "Inicio" se oculta en móvil por diseño, como en la ejecución original); en Galaxy S23, 4 elementos con "Categorías" en una segunda línea.
+- **Carrito (RC8):** en los 4 viewports las imágenes de `amoladora.png` y `martillo-galponero.png` se renderizan (`display:block`) y el texto del título arranca 8 px a la derecha de la imagen. Se mantiene la observación ya documentada arriba: la caja del `h3` se intersecta con el botón "Eliminar" (20×20 px), pero visualmente el texto no se pisa.
+- **Validación (RC6):** el globo nativo de validación del navegador no aparece en las capturas (el navegador controlado no lo renderiza); la evidencia es el foco, `validationMessage` y la ausencia de eventos `submit`.
+
+### Capturas del retest
+| Verificación | Escritorio | iPad Air | iPhone 14 Pro | Galaxy S23 |
+|--------------|------------|----------|---------------|------------|
+| Encabezado (RC9) | ![](capturas/tc-6/retest-rc17/desktop-1280x800-header.png) | ![](capturas/tc-6/retest-rc17/ipad-air-820x1180-header.png) | ![](capturas/tc-6/retest-rc17/iphone14pro-390x844-header.png) | ![](capturas/tc-6/retest-rc17/galaxy-s23-360x780-header.png) |
+| Ofertas (RC4) | ![](capturas/tc-6/retest-rc17/desktop-1280x800-ofertas.png) | ![](capturas/tc-6/retest-rc17/ipad-air-820x1180-ofertas.png) | ![](capturas/tc-6/retest-rc17/iphone14pro-390x844-ofertas.png) | ![](capturas/tc-6/retest-rc17/galaxy-s23-360x780-ofertas.png) |
+| Bienvenida (RC5) | ![](capturas/tc-6/retest-rc17/desktop-1280x800-bienvenida.png) | ![](capturas/tc-6/retest-rc17/ipad-air-820x1180-bienvenida.png) | ![](capturas/tc-6/retest-rc17/iphone14pro-390x844-bienvenida.png) | ![](capturas/tc-6/retest-rc17/galaxy-s23-360x780-bienvenida.png) |
+| Formulario vacío (RC6) | ![](capturas/tc-6/retest-rc17/desktop-1280x800-formulario-vacio.png) | ![](capturas/tc-6/retest-rc17/ipad-air-820x1180-formulario-vacio.png) | ![](capturas/tc-6/retest-rc17/iphone14pro-390x844-formulario-vacio.png) | ![](capturas/tc-6/retest-rc17/galaxy-s23-360x780-formulario-vacio.png) |
+| Carrito abierto (RC8) | ![](capturas/tc-6/retest-rc17/desktop-1280x800-carrito-productos.png) | ![](capturas/tc-6/retest-rc17/ipad-air-820x1180-carrito-productos.png) | ![](capturas/tc-6/retest-rc17/iphone14pro-390x844-carrito-productos.png) | ![](capturas/tc-6/retest-rc17/galaxy-s23-360x780-carrito-productos.png) |
+
+Las capturas del carrito se tomaron con el mouse sobre el botón de cierre, por lo que la X no se ve en ellas (ver el hallazgo en [test-case-8.md](test-case-8.md)).
+
+**Resultado del retest de RC4, RC5, RC6, RC8 y RC9: PASS en los 4 viewports.** Esta verificación no actualiza el estado de la Issue #110 ni de la PR #111 en GitHub.
+
+### Pendiente
+- Verificación en dispositivos físicos y en navegadores distintos de Chromium (solo se emularon viewports).
+- Visualización del globo nativo de validación del formulario.
+- Approve/LGTM del profesor (criterio abierto de la Issue #110).
