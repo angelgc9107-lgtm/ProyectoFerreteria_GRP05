@@ -263,6 +263,31 @@ Se verificó con Playwright MCP (Chromium, viewports emulados, sin modificar có
 | iPhone 14 Pro 390×844 | ![](capturas/tc-8/retest-rc17/iphone14pro-390x844-cierre-sin-hover.png) | ![](capturas/tc-8/retest-rc17/iphone14pro-390x844-cierre-hover.png) |
 | Galaxy S23 360×780 | ![](capturas/tc-8/retest-rc17/galaxy-s23-360x780-cierre-sin-hover.png) | ![](capturas/tc-8/retest-rc17/galaxy-s23-360x780-cierre-hover.png) |
 
+## Retest RC25 — botón de cierre del carrito — 2026-10-20
+
+**Contexto:** observación RC25 de la PR #107 (`release/primer-parcial`); seguimiento en la Issue #115. Corrección en la rama `fix/recuperatorio-primer-parcial`, archivo `css/bootstrap-overrides.css`, selector `#carrito .offcanvas-header .btn-close:hover`. Problema original: la regla genérica `button:hover` de `components.css` interfería con la imagen de fondo de la X y aparecía un fondo blanco al pasar el mouse.
+
+**Corrección verificada:** la regla conserva `background-image: var(--bs-btn-close-bg)`, usa `background-repeat: no-repeat`, `background-position: center`, `background-size: 1em auto`, `background-color: transparent` y `box-shadow: none`.
+
+**Método:** Playwright MCP (Chromium, viewports emulados, servidor local `http://localhost:3000`) con el Offcanvas abierto. Hover simulado con el mouse sobre `#carrito .btn-close` en un contexto sin touch; en los dispositivos táctiles se probó el cierre con `tap()` en un contexto con `hasTouch`. No se modificó HTML, CSS ni JavaScript; las capturas son nuevas y no reutilizan las de RC17.
+
+| Dispositivo / viewport | Fondo sin hover | Fondo con hover | Fondo del encabezado | Imagen de la X con hover | Repetición / tamaño | Opacidad normal → hover | Cierre táctil con la X | Resultado |
+|------------------------|-----------------|-----------------|----------------------|--------------------------|---------------------|--------------------------|------------------------|-----------|
+| Desktop — 1280×800 | `rgba(0, 0, 0, 0)` | `rgba(0, 0, 0, 0)` | `rgb(166, 45, 35)` | Se conserva (`url(...)`) | `no-repeat` / `12px auto` | 0.5 → 0.75 | No aplica (mouse) | PASS |
+| iPad Air — 820×1180 | `rgba(0, 0, 0, 0)` | `rgba(0, 0, 0, 0)` | `rgb(166, 45, 35)` | Se conserva (`url(...)`) | `no-repeat` / `12px auto` | 0.5 → 0.75 | Sí — cerró panel y backdrop | PASS |
+| iPhone 14 Pro — 390×844 | `rgba(0, 0, 0, 0)` | `rgba(0, 0, 0, 0)` | `rgb(166, 45, 35)` | Se conserva (`url(...)`) | `no-repeat` / `12px auto` | 0.5 → 0.75 | Sí — cerró panel y backdrop | PASS |
+| Samsung Galaxy S23 — 360×780 | `rgba(0, 0, 0, 0)` | `rgba(0, 0, 0, 0)` | `rgb(166, 45, 35)` | Se conserva (`url(...)`) | `no-repeat` / `12px auto` | 0.5 → 0.75 | Sí — cerró panel y backdrop | PASS |
+
+**Resultado:** el fondo blanco al pasar el mouse sobre la X del carrito está corregido en los cuatro viewports: el fondo se mantiene transparente, coherente con el encabezado rojo, y la X sigue visible en hover. Esto también resuelve el hallazgo del retest anterior (RC17), donde la imagen de la X desaparecía con hover. Sin overflow horizontal ni errores de consola en las pruebas. Limitaciones: viewports emulados, solo Chromium; no se probaron dispositivos físicos ni Safari/Chrome Android reales. **Resultado del retest RC25: PASS.**
+
+### Capturas del retest RC25
+| Dispositivo | Sin hover | Con hover |
+|-------------|-----------|-----------|
+| Desktop 1280×800 | ![](capturas/tc-8/retest-rc25/desktop-1280x800-cierre-sin-hover.png) | ![](capturas/tc-8/retest-rc25/desktop-1280x800-cierre-hover.png) |
+| iPad Air 820×1180 | ![](capturas/tc-8/retest-rc25/ipad-air-820x1180-cierre-sin-hover.png) | ![](capturas/tc-8/retest-rc25/ipad-air-820x1180-cierre-hover.png) |
+| iPhone 14 Pro 390×844 | ![](capturas/tc-8/retest-rc25/iphone14pro-390x844-cierre-sin-hover.png) | ![](capturas/tc-8/retest-rc25/iphone14pro-390x844-cierre-hover.png) |
+| Galaxy S23 360×780 | ![](capturas/tc-8/retest-rc25/galaxy-s23-360x780-cierre-sin-hover.png) | ![](capturas/tc-8/retest-rc25/galaxy-s23-360x780-cierre-hover.png) |
+
 ## Conclusión general
 **Resultado final:** APROBADO — HALLAZGO HISTÓRICO CORREGIDO
 
