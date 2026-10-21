@@ -2,7 +2,47 @@
 
 Este archivo se actualiza con cada Pull Request para registrar avances y correcciones
 
-# [Actividad obligatoria N°2] Unreleased
+## [Unreleased]
+
+## [Primer Parcial] - 2026-10-07 
+
+### Added
+- [feature/coord-devops-update-figma-and-readme] Coordinador/DevOps - Spec, mockup Bootstrap y README del Primer Parcial PR: [#88](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/88) — Issue: [#85](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/85) — @Piastrellini (Coordinador / DevOps)
+
+
+- [feature/dev-comp-html-avanzados-add-components] DESARROLLADOR DE COMPONENTES HTML AVANZADOS-Componentes html avanzados add components PR: [#90](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/90) — Issue: [#89](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/89) — @alandox1 (Desarrollador de Componentes HTML Avanzados)
+
+- [feature/esp-com-bootstrap-add-component] Especialista de componentes avanzados de Bootstrap: Spec-implementación de componentes avanzados-resultados test-case-7 & 8 PR: [#99](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/99) — Issues: [#87](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/87), [#91](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/91), [#97](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/97) y [#98](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/98)— @angelgc9107-lgtm (Especialista en componentes Bootstrap)
+
+- [feature/dev-frontend-bootstrap-migration] Desarrollador FrontEnd Bootstrap - Migración responsive de FerroLab a Bootstrap PR: [#96](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/96) — Issues: [#92](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/92), [#93](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/93), [#94](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/94) y [#95](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/95) — @Luchobarrionuevo13 (Desarrollador FrontEnd/Bootstrap)
+
+
+- [feature/coord-devops-close-primer-parcial] Coordinador/DevOps - Cierre del Primer Parcial: code reviews, obstáculos y testing-doc PR: [#106](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/106) — Issue: [#85](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/85) — @Piastrellini (Coordinador / DevOps)
+
+### Changed
+- [backport/release-actividad-obligatoria-2] Backport de release/actividad-obligatoria-2 hacia develop PR: [#84](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/84) — @Piastrellini (Coordinador / DevOps)
+
+### Fixed 
+
+- [fix/carrito-espacio-vacio] Desarrollador FrontEnd Bootstrap - Correccion de hallazgos responsive detectados con Playwrtight PR: [#103](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/103) — Issues: [#100](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/100), [#101](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/101) y [#102](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/102)— @Luchobarrionuevo13 (Desarrollador FrontEnd/Bootstrap)
+
+- [fix/offcanvas-box-shadow] Commit - Fix del bug informado en el Issue #97 PR: [#104](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/104) — Issue: [#97](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/97) — @angelgc9107-lgtm (Especialista en componentes Bootstrap)
+
+- [fix/dropdown-box-shadow] Fix/dropdown box shadow PR: [#105](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/105) — Issue: [#91](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/91) — @angelgc9107-lgtm (Especialista en componentes Bootstrap)
+
+- [fix/spec-devops-links-release] Fix spec-devops: completar evidencia y checklist de cierre del Primer Parcial: [#109](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/109) — Issue: [#108](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/108) — @Piastrellini (Coordinador / DevOps)
+
+- [fix/recuperatorio-primer-parcial] Fix Frontend/Bootstrap - Corrección de RC1 a RC9 del recuperatorio del Primer Parcial: [#111](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/111) — Issue: [#110](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/110) — @luchobarrionuevo13 (Desarrollador Frontend/Bootstrap)
+
+- [fix/recuperatorio-primer-parcial] Fix Frontend/Bootstrap: corregir RC10 a RC17 del recuperatorio del Primer Parcial: [#114](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/114) — Issue: [#110](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/110) — @LuchoBarrionuevo13 (Desarrollador Frontend/Bootstrap)
+
+- [fix/recuperatorio-primer-parcial] Fix Frontend/Bootstrap - Corrección de RC18 a RC27 del recuperatorio del Primer Parcial: [#116](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/116) — Issue: [#115](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/115) — @LuchoBarrionuevo13 (Desarrollador Frontend/Bootstrap)
+
+- [fix/recuperatorio-rc28-rc32] Fix Frontend/Bootstrap - Corrección de RC28 a RC32 del recuperatorio del Primer Parcial: [#118](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/118) — Issue [#117](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/117) — @LuchoBarrionuevo13 (Desarrollador Frontend/Bootstrap)
+
+
+
+# [Released] 2026-10-01
 ### Added
 - [feature/coord-devops-update-figma-and-readme] Actualizacion del mockup,readme y creacion de spec PR: [#36](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/36) — @alandox1(Coordinador / DevOps)
 
