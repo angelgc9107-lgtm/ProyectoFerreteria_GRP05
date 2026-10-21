@@ -138,6 +138,10 @@ section[aria-labelledby="bienvenida"] {
     grid-template-columns: minmax(0, 1fr);
     gap: var(--space-4);
 }
+/* RC5: uniformar el espaciado de la sección Bienvenida. */
+section[aria-labelledby="bienvenida"] > h2 {
+    margin-bottom: 0;
+}
 
 #contacto {
     width: min(100%, 44rem);

@@ -121,9 +121,9 @@ Nota de tokens: el fondo del `nav` está definido como `rgb(201 54 43)` (`#c9362
 - [x] Issues de todo el equipo cargadas y actualizadas en el tablero Kanban
 - [x] Mínimo 4 code reviews asistidos con IA (Claude Code; la especificación indicaba Copilot Agent Mode), documentados en este spec
 - [x] Request Changes cargados en las líneas del diff
-- [ ] Todas las PR con al menos 1 revisión aprobada antes del merge
+- [x] Todas las PR con al menos 1 revisión aprobada antes del merge
 - [x] `changelog.md` con las contribuciones de todo el equipo
-- [ ] `release/primer-parcial` creada desde `develop` y GitHub Pages habilitado
+- [x] `release/primer-parcial` creada desde `develop` y GitHub Pages habilitado
 - [ ] PR de release creada con el template, publicada en Slack y subida al campus
 - [ ] Ramas limpias: solo `master`, `develop` y `release/primer-parcial`
 - [ ] Tag `v1.1-primer-parcial` y release de GitHub creados después del merge a `master`
@@ -192,6 +192,6 @@ Publica comentarios directamente en el código si lo consideras necesario.
 - Mockup exportado: [`docs/01-mockup/disenio-bootstrap.png`](../../01-mockup/disenio-bootstrap.png)
 - Estados de interacción: [`docs/01-mockup/estados-bootstrap.png`](../../01-mockup/estados-bootstrap.png)
 - Tablero Kanban: [FerroLab – Primer Parcial](https://github.com/users/angelgc9107-lgtm/projects/1)
-- PR de release: COMPLETAR link
-- GitHub Pages: COMPLETAR link
-- Release / tag `v1.1-primer-parcial`: COMPLETAR link
+- PR de release: https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/107
+- GitHub Pages: https://angelgc9107-lgtm.github.io/ProyectoFerreteria_GRP05/
+- Release / tag `v1.1-primer-parcial`: pendiente. Se crea después de que el docente apruebe y se mergee la release a `master`.
