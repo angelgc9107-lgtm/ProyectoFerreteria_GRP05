@@ -1,0 +1,93 @@
+# 🧪 Spec — Tester JavaScript / QA Engineer — Actividad Obligatoria N°3
+
+## 📌 Datos
+
+- **Integrante:** Thiago Piastrellini ([@Piastrellini](https://github.com/Piastrellini)) — Matrícula 158097
+- **Rol:** Tester JavaScript / QA Engineer
+- **Rama:** `feature/tester-javascript-jasmine`
+- **Fecha de inicio:** 2026-10-21
+- **Fecha límite de entrega:** 2026-11-02 23:55
+- **Archivos de la tarea:** `js/test/test-runner.html`, `js/test/script.spec.js`, `js/test/testing-doc.md`
+
+---
+
+## 1. ANTES de escribir cualquier test (planificación)
+
+### 1.1 Plan de testing
+
+Se testea `js/script.js` (a cargo del Desarrollador JavaScript) con Jasmine en el navegador. Hay una suite por cada flujo principal y cada suite tiene como mínimo 3 tests. Las funciones y los flujos se completan a partir de `spec-dev-javascript.md` y de los diagramas de actividades del Arquitecto.
+
+| Flujo | Función a testear | Happy path | Casos borde | Errores / datos inválidos |
+|-------|-------------------|------------|-------------|---------------------------|
+| 1. COMPLETAR | COMPLETAR | COMPLETAR | COMPLETAR | COMPLETAR |
+| 2. COMPLETAR | COMPLETAR | COMPLETAR | COMPLETAR | COMPLETAR |
+| 3. COMPLETAR | COMPLETAR | COMPLETAR | COMPLETAR | COMPLETAR |
+| 4. COMPLETAR | COMPLETAR | COMPLETAR | COMPLETAR | COMPLETAR |
+
+Categorías que cubre cada suite:
+
+- **Funcionalidad básica (happy path):** casos normales de uso.
+- **Casos borde y valores límite:** 0, negativos, números muy grandes, strings vacíos.
+- **Validación de errores y datos inválidos:** tipos incorrectos, `null` y `undefined`.
+- **Operaciones con arrays y objetos:** agregar, eliminar, buscar y filtrar elementos; crear objetos, modificar propiedades y ejecutar métodos.
+- **Cálculos y algoritmos:** verificar que las operaciones matemáticas sean correctas.
+
+Alcance: solo se testean funciones de lógica de negocio. Las funciones que llaman a `prompt()` o `alert()` no se testean directamente, porque la entrega no permite manipulación del DOM ni eventos.
+
+### 1.2 Herramientas a utilizar
+
+| Herramienta | Uso | Justificación |
+|-------------|-----|---------------|
+| Copilot Agent Mode | Generar `js/test/script.spec.js` con `js/script.js` adjunto como contexto | COMPLETAR |
+| Playwright MCP (`@playwright/mcp`) | Abrir `js/test/test-runner.html` en un browser real, ejecutar las suites de Jasmine y capturar screenshots PASS/FAIL | COMPLETAR |
+| Jasmine 5.10.0 (CDN) | Framework de testing en el navegador | Lo exige la consigna; no requiere instalación |
+
+### 1.3 Criterios de aceptación
+
+- [ ] `spec-tester.md` commiteado en `docs/03-specs/actividad-obligatoria-3/` antes que `script.spec.js`
+- [ ] 4 suites de tests (una por flujo), mínimo 3 tests por suite
+- [ ] Tests ejecutados exitosamente en `test-runner.html` vía Playwright MCP
+- [ ] Screenshots del test runner con resultados PASS/FAIL capturados
+- [ ] Bugs reportados como issues en GitHub con pasos para reproducir y test case que falla
+- [ ] `js/test/test-runner.html` con la configuración correcta de Jasmine y carga de archivos
+- [ ] `js/test/testing-doc.md` con instrucciones de ejecución, descripción de suites y cobertura, métricas y capturas
+- [ ] Coordinación con el Desarrollador JavaScript para mejorar la testabilidad del código
+- [ ] Rama `feature/` con formato correcto, issue asociada al rol, PR hacia `develop` con revisión de otro integrante y entrada en `changelog.md`
+
+---
+
+## 2. AL CERRAR la tarea (evidencia)
+
+> Esta sección se completa al terminar la ejecución de los tests.
+
+### 2.1 Prompt utilizado para generar `script.spec.js`
+
+Archivo adjunto como contexto: `js/script.js`.
+
+```text
+COMPLETAR (prompt exacto)
+```
+
+### 2.2 Screenshots del test runner (Playwright MCP)
+
+| Suite | Resultado | Captura |
+|-------|-----------|---------|
+| Flujo 1 | COMPLETAR | COMPLETAR |
+| Flujo 2 | COMPLETAR | COMPLETAR |
+| Flujo 3 | COMPLETAR | COMPLETAR |
+| Flujo 4 | COMPLETAR | COMPLETAR |
+
+### 2.3 Resumen de resultados
+
+| Métrica | Valor |
+|---------|-------|
+| Tests totales | COMPLETAR |
+| Tests que pasaron | COMPLETAR |
+| Tests que fallaron | COMPLETAR |
+| Bugs reportados como issues | COMPLETAR |
+
+### 2.4 Ajustes manuales y coordinación con el Desarrollador JavaScript
+
+| Ajuste / pedido | Resultado |
+|-----------------|-----------|
+| COMPLETAR | COMPLETAR |
