@@ -4,6 +4,11 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 ## [Unreleased]
 
+### Added
+- [feature/tester-javascript-jasmine] Tester JavaScript: suite de testing con Jasmine y Playwright MCP: [#123](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/123) — Issue: [#124](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/124) — @Piastrellini (Tester JavaScript / QA Engineer)
+
+## [Unreleased]
+
 ## [Primer Parcial] - 2026-10-07 
 
 ### Added
