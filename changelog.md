@@ -4,7 +4,22 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 ## [Unreleased]
 
-## [Primer Parcial] - 2026-10-07 
+### Added
+
+- [feature/arq-diagramas-actividades] Arquitecto de Diagramas de Actividades - 4 diagramas de actividades PlantUML (.puml y .png) y diagramas-doc.md PR: [#122](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/122) — @alandox1 (Arquitecto de Diagramas de Actividades)
+
+
+
+
+
+
+
+
+
+
+
+
+# [Released]  - 2026-10-07 
 
 ### Added
 - [feature/coord-devops-update-figma-and-readme] Coordinador/DevOps - Spec, mockup Bootstrap y README del Primer Parcial PR: [#88](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/88) — Issue: [#85](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/85) — @Piastrellini (Coordinador / DevOps)
