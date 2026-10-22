@@ -1,0 +1,241 @@
+# Spec: spec-dev-javascript
+
+**Rol:** Desarrollador JavaScript
+
+**Se traza contra:** `plan.md` — RF4-RF5, RF9-RF24, según los cuatro diagramas de actividades.
+
+**Entrega:** Actividad Obligatoria N.º 3 — Programación Web I — FerroLab
+
+**Estado:** Planificado, pendiente de implementación.
+
+## Qué se va a hacer
+
+Se implementará la lógica de negocio de FerroLab utilizando JavaScript puro, tomando como referencia los cuatro diagramas de actividades desarrollados por el Arquitecto de Software y los requerimientos funcionales establecidos en `plan.md`.
+
+La implementación se realizará mediante GitHub Copilot en modo Agente y se organizará en `js/script.js`, que será vinculado desde `index.html`.
+
+Se desarrollarán cuatro flujos principales:
+
+1. Búsqueda y filtrado del catálogo.
+2. Gestión del carrito de compras.
+3. Pago y cálculo de cuotas.
+4. Resumen y confirmación del pedido.
+
+Cada flujo contará con entrada de datos mediante `prompt()`, procesamiento mediante funciones JavaScript y presentación de resultados con `alert()` o `console.log()`.
+
+Se utilizarán condicionales, ciclos, arrays y objetos, separando la lógica de negocio de las funciones de interacción con el usuario para facilitar las pruebas automatizadas con Jasmine.
+
+En esta instancia únicamente se redacta el spec. No se modifica `index.html` ni se genera código JavaScript.
+
+## Por qué
+
+- Permite incorporar las funcionalidades comerciales previstas en FerroLab sin modificar la estructura visual desarrollada en las entregas anteriores.
+- Implementa los procesos definidos en los diagramas de actividades, manteniendo la trazabilidad con los requerimientos funcionales.
+- Facilita la organización del código mediante funciones reutilizables, parámetros explícitos y valores de retorno.
+- Permite realizar pruebas unitarias con Jasmine al mantener la lógica de negocio independiente de `prompt()` y `alert()`.
+- Prepara la aplicación para una futura integración con el DOM y eventos, sin incorporarlos en esta actividad.
+
+La manipulación del DOM, la implementación de eventos, las modificaciones visuales y la creación de las suites de Jasmine no forman parte del alcance de este rol.
+
+## Estado actual del proyecto (análisis previo)
+
+- **`index.html`:** contiene la estructura HTML5 de FerroLab, incluyendo catálogo, filtros, productos, carrito y secciones comerciales. La interfaz utiliza Bootstrap y estilos propios.
+- **`css/styles.css`, `css/components.css`, `css/responsive.css` y `css/bootstrap-overrides.css`:** contienen los estilos visuales y responsive existentes. No serán modificados.
+- **`plan.md`:** establece los requerimientos funcionales y no funcionales del proyecto.
+- **Diagramas PlantUML:** describen los cuatro procesos de negocio que deberán implementarse.
+- **`js/script.js`:** archivo previsto para centralizar la lógica JavaScript correspondiente a esta entrega.
+
+La implementación deberá respetar los archivos existentes y evitar modificaciones ajenas al alcance del Desarrollador JavaScript.
+
+## Flujos de actividades a implementar
+
+### Flujo 1 — Búsqueda y filtrado del catálogo (RF4, RF5)
+
+Se permitirá buscar productos mediante texto, categoría y precio máximo.
+
+El sistema cargará el catálogo como un array de objetos, validará los criterios ingresados y recorrerá los productos para identificar coincidencias.
+
+Los filtros podrán utilizarse de manera independiente. Los resultados se ordenarán por precio ascendente y se mostrarán mediante `alert()` o `console.log()`.
+
+Si no existen coincidencias, se informará al usuario. Se permitirá repetir la búsqueda o regresar al menú principal.
+
+Se contemplarán entradas inválidas, filtros vacíos y cancelaciones.
+
+### Flujo 2 — Gestión del carrito de compras (RF9-RF13, RF20)
+
+Se implementará un menú que permita agregar productos, modificar cantidades, eliminar productos y consultar el contenido del carrito.
+
+El sistema verificará la existencia de cada producto en el catálogo y validará que las cantidades sean números enteros mayores o iguales a uno.
+
+Si el producto ya existe en el carrito, se incrementará su cantidad. Para visualizar el carrito, se recorrerán sus elementos y se calcularán los subtotales y el total de la compra.
+
+Las operaciones mostrarán mensajes de confirmación o error. La opción de salir regresará directamente al menú principal.
+
+El carrito conservará su contenido durante la ejecución de la aplicación.
+
+### Flujo 3 — Pago y cálculo de cuotas (RF14-RF19)
+
+Se simularán las condiciones de pago utilizando el total calculado a partir del carrito.
+
+El sistema verificará que existan productos y solicitará un método de pago mediante `prompt()`.
+
+Para efectivo o transferencia se establecerá un pago sin recargo. Para tarjeta de crédito se permitirá seleccionar una cantidad válida de cuotas y se obtendrá el porcentaje de recargo correspondiente.
+
+Se calcularán el interés, el total financiado y el valor de cada cuota.
+
+Las condiciones se mostrarán al usuario para su confirmación. Si son aceptadas, se guardarán para el resumen del pedido.
+
+Se permitirá cancelar la operación sin modificar el carrito.
+
+Las cuotas disponibles y sus recargos deberán definirse previamente con el Arquitecto de Software.
+
+### Flujo 4 — Resumen y confirmación del pedido (RF21-RF24)
+
+Se permitirá confirmar una compra simulada utilizando los productos del carrito y las condiciones de pago seleccionadas.
+
+El sistema verificará que exista un carrito con productos y un método de pago válido.
+
+Posteriormente solicitará nombre, correo electrónico y dirección de envío, validando los datos ingresados.
+
+Se generará un resumen con los productos, cantidades, precios, total y condiciones de pago, que será mostrado mediante `alert()`.
+
+Si el usuario confirma, se generará un número de pedido, se informará el resultado y se limpiarán el carrito y los datos de pago.
+
+Si cancela, se conservarán los productos y se regresará al menú principal.
+
+## Menú principal e interacción
+
+Se implementará un menú mediante `prompt()` con las siguientes opciones:
+
+```text
+FERROLAB — MENÚ PRINCIPAL
+
+1. Buscar y filtrar productos
+2. Gestionar carrito
+3. Pagar y calcular cuotas
+4. Confirmar pedido
+0. Salir
+```
+
+El menú se repetirá hasta seleccionar la opción de salida.
+
+Cada operación validará las entradas y permitirá regresar al menú principal al finalizar o cancelar.
+
+La interacción se limitará a `prompt()`, `alert()` y `console.log()`, sin modificar elementos HTML ni registrar eventos.
+
+## Estrategia de implementación
+
+1. **Análisis previo:** revisar `plan.md`, los cuatro diagramas PlantUML y este spec antes de generar código.
+
+2. **GitHub Copilot Agent Mode:** utilizar los diagramas y el spec como contexto para implementar los flujos, respetando las decisiones, validaciones y ciclos definidos.
+
+3. **Funciones reutilizables:** implementar funciones con nombres descriptivos en `camelCase`, parámetros explícitos, valores de retorno y una responsabilidad concreta.
+
+4. **Separación de responsabilidades:** mantener las funciones de negocio independientes de `prompt()`, `alert()` y `console.log()`. La interacción con el usuario se resolverá mediante funciones separadas.
+
+5. **Arrays y objetos:** utilizar estructuras de datos para representar el catálogo, el carrito, las condiciones de pago y el resumen del pedido.
+
+6. **Estado compartido:** conservar los datos necesarios entre flujos. Si se modifica el carrito después de seleccionar un método de pago, se invalidarán las condiciones anteriores para evitar importes desactualizados.
+
+7. **Validaciones:** contemplar opciones inválidas, cantidades incorrectas, campos vacíos y cancelaciones, evitando ciclos sin salida.
+
+8. **Testabilidad:** mantener las funciones de negocio accesibles para Jasmine, sin encerrarlas en estructuras que impidan su ejecución desde las pruebas.
+
+9. **Buenas prácticas:** utilizar indentación consistente, evitar duplicación de código e incorporar JSDoc cuando la complejidad de una función lo justifique.
+
+10. **Integración:** vincular `js/script.js` desde `index.html`, modificando únicamente lo necesario para incorporar el archivo.
+
+## Coordinación con otros roles
+
+- **Arquitecto de Software:** proporciona los cuatro diagramas definitivos y coordina las reglas de negocio, validaciones y posibles ajustes de los flujos.
+- **Tester:** desarrolla las suites de Jasmine y ejecuta las pruebas. El Desarrollador JavaScript debe facilitar funciones accesibles y corregir los defectos que le correspondan.
+- **Coordinador / DevOps:** gestiona la integración mediante Issues, Pull Requests, revisiones y documentación del proyecto.
+
+Las diferencias entre los diagramas y la implementación deberán revisarse con el Arquitecto y documentarse antes de considerar finalizado el desarrollo.
+
+## Archivos previstos
+
+| Archivo | Intervención |
+|---|---|
+| `docs/03-specs/actividad-obligatoria-3/spec-dev-javascript.md` | Crear y completar la especificación |
+| `js/script.js` | Implementar la lógica de negocio |
+| `index.html` | Incorporar la referencia al archivo JavaScript |
+| `plan.md` | Consultar como referencia, sin modificar |
+| Cuatro diagramas `.puml` | Consultar como contrato de implementación |
+
+No se modificarán archivos CSS, componentes Bootstrap ni documentos pertenecientes a otros roles.
+
+## Criterios de aceptación
+
+- [ ] Dado este spec, cuando se inicie la actividad, entonces estará creado y commiteado antes de implementar `js/script.js`.
+- [ ] Dados los cuatro diagramas PlantUML, cuando se revise la implementación, entonces los procesos, decisiones y ciclos corresponderán con los flujos definidos.
+- [ ] Dado `index.html`, cuando se revise su estructura, entonces `js/script.js` estará correctamente vinculado.
+- [ ] Dado el menú principal, cuando el usuario seleccione una opción válida, entonces se ejecutará el flujo correspondiente.
+- [ ] Dada una entrada inválida, cuando el sistema la procese, entonces informará el error y permitirá corregirla o cancelar.
+- [ ] Dado el catálogo, cuando se aplique una búsqueda, entonces se obtendrán los productos que cumplan los criterios ingresados.
+- [ ] Dado el carrito, cuando se agreguen, modifiquen o eliminen productos, entonces sus cantidades y totales se actualizarán correctamente.
+- [ ] Dado un carrito con productos, cuando se seleccione un método de pago, entonces se calcularán correctamente los recargos, el total financiado y las cuotas.
+- [ ] Dado un pedido válido, cuando el usuario confirme la operación, entonces se generará un identificador y se limpiarán los datos de la compra.
+- [ ] Dada una cancelación, cuando se interrumpa una operación, entonces no se registrarán cambios indebidos.
+- [ ] Dadas las funciones de negocio, cuando el Tester las ejecute mediante Jasmine, entonces podrán recibir parámetros y devolver resultados sin depender de `prompt()` o `alert()`.
+- [ ] Dado `js/script.js`, cuando se revise, entonces utilizará condicionales, ciclos, arrays, objetos y funciones reutilizables.
+- [ ] Dada la implementación final, cuando se inspeccione el código, entonces no contendrá manipulación del DOM ni eventos.
+- [ ] Dado el desarrollo finalizado, cuando se revise este spec, entonces contendrá los prompts reales de Copilot, ejemplos de código y ajustes manuales documentados.
+- [ ] Dada la Pull Request hacia `develop`, cuando se solicite su integración, entonces contará con la revisión de otro integrante.
+
+## Evidencia (completar al finalizar el desarrollo)
+
+### Prompt exacto utilizado con GitHub Copilot Agent Mode
+
+**Pendiente de completar.**
+
+Se registrará el prompt exacto utilizado para analizar e implementar la lógica JavaScript, junto con los archivos adjuntados como contexto.
+
+### Archivos utilizados como contexto
+
+**Previstos:**
+
+- `plan.md`
+- `index.html`
+- `docs/03-specs/actividad-obligatoria-3/spec-dev-javascript.md`
+- Los cuatro diagramas de actividades `.puml`.
+
+Se actualizará esta sección con los archivos efectivamente utilizados.
+
+### Código generado
+
+**Pendiente de completar.**
+
+Se incorporará un fragmento representativo del código generado por Copilot correspondiente, como mínimo, a uno de los cuatro flujos implementados.
+
+### Resultado obtenido
+
+**Pendiente de completar.**
+
+Se documentará el funcionamiento real de los cuatro flujos, las funciones implementadas y su correspondencia con los diagramas.
+
+### Ajustes manuales realizados
+
+**Pendiente de completar.**
+
+Se registrarán las correcciones aplicadas al código generado, especialmente las relacionadas con validaciones, separación de lógica de negocio, estado compartido y testabilidad.
+
+### Pruebas y verificación
+
+**Pendiente de completar.**
+
+Se documentarán las verificaciones funcionales realizadas durante el desarrollo y las correcciones derivadas de los resultados de Jasmine proporcionados por el Tester.
+
+La creación de suites, el test runner y la documentación formal de pruebas corresponden al rol Tester.
+
+### Obstáculos y resolución
+
+**Pendiente de completar.**
+
+Se registrarán los problemas encontrados durante la implementación y las soluciones aplicadas.
+
+### Evidencia de integración
+
+**Pendiente de completar.**
+
+Se incorporarán los enlaces al Issue, commits y Pull Request correspondientes, junto con la referencia a la contribución registrada en `changelog.md`.
