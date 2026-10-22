@@ -1,0 +1,75 @@
+@startuml actividad-flujo-2-carrito
+title Flujo 2 - Gestión del carrito de compras (RF9 a RF13, RF20)
+skinparam defaultFontName Arial
+skinparam ArrowColor #444444
+skinparam ActivityBackgroundColor #FDECEA
+skinparam ActivityBorderColor #C0392B
+skinparam SwimlaneBorderColor #7D7D7D
+
+|Usuario|
+start
+:Elige "Gestionar carrito" en el menú principal;
+
+repeat
+  |Usuario|
+  :Elige una acción con prompt()
+  (1 agregar, 2 cambiar cantidad, 3 eliminar, 4 ver, 0 salir);
+
+  |Sistema|
+  switch (¿Qué opción eligió?)
+  case (1 - Agregar)
+    |Usuario|
+    :Ingresa código de producto y cantidad;
+    |Sistema|
+    if (¿El producto existe en el catálogo?) then (no)
+      :Muestra error con alert();
+    elseif (¿La cantidad es un entero ≥ 1?) then (no)
+      :Muestra error con alert();
+    elseif (¿El producto ya está en el carrito?) then (sí)
+      :Suma la cantidad al ítem existente;
+    else (no)
+      :Agrega el ítem nuevo al carrito;
+    endif
+  case (2 - Cambiar cantidad)
+    |Usuario|
+    :Ingresa código de producto y nueva cantidad;
+    |Sistema|
+    if (¿El ítem está en el carrito\ny la cantidad es un entero ≥ 1?) then (sí)
+      :Actualiza la cantidad del ítem;
+    else (no)
+      :Muestra error con alert();
+    endif
+  case (3 - Eliminar)
+    |Usuario|
+    :Ingresa código de producto;
+    |Sistema|
+    if (¿El ítem está en el carrito?) then (sí)
+      :Elimina el ítem del carrito;
+    else (no)
+      :Muestra error con alert();
+    endif
+  case (4 - Ver)
+    :Prepara la visualización del carrito;
+  case (0 - Salir)
+    :Marca que el usuario terminó;
+  case (Otra)
+    :Informa "Opción inválida" con alert();
+  endswitch
+
+  |Sistema|
+  :Reinicia el total en 0;
+  while (¿Quedan ítems por recorrer?) is (sí)
+    :Calcula subtotal = precio unitario x cantidad;
+    :Suma el subtotal al total;
+  endwhile (no)
+  if (¿El carrito tiene ítems?) then (sí)
+    :Muestra ítems, subtotales y total\ncon console.log() / alert();
+  else (no)
+    :Informa "El carrito está vacío";
+  endif
+repeat while (¿El usuario NO eligió salir?) is (sí) not (no)
+
+|Sistema|
+:Vuelve al menú principal;
+stop
+@enduml

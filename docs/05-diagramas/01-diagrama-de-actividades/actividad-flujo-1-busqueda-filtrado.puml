@@ -1,0 +1,49 @@
+@startuml actividad-flujo-1-busqueda-filtrado
+title Flujo 1 - Búsqueda y filtrado del catálogo (RF4, RF5)
+skinparam defaultFontName Arial
+skinparam ArrowColor #444444
+skinparam ActivityBackgroundColor #FDECEA
+skinparam ActivityBorderColor #C0392B
+skinparam SwimlaneBorderColor #7D7D7D
+
+|Usuario|
+start
+:Elige "Buscar y filtrar productos" en el menú principal;
+
+|Sistema|
+:Carga el catálogo (array de objetos producto);
+
+repeat
+  |Usuario|
+  :Ingresa con prompt() el texto de búsqueda,
+  la categoría y el precio máximo;
+
+  |Sistema|
+  :Valida los datos ingresados;
+  if (¿El precio máximo es un número válido (≥ 0)?) then (no)
+    :Muestra el error con alert();
+  else (sí)
+    :Crea la lista de resultados vacía;
+    while (¿Quedan productos por revisar?) is (sí)
+      :Toma el siguiente producto;
+      if (¿Coincide con el texto, la categoría\ny su precio es ≤ al máximo?) then (sí)
+        :Agrega el producto a los resultados;
+      else (no)
+      endif
+    endwhile (no)
+    if (¿Hay resultados?) then (sí)
+      :Ordena los resultados por precio;
+      :Muestra la lista con console.log() / alert();
+    else (no)
+      :Informa "Sin coincidencias" con alert();
+    endif
+  endif
+
+  |Usuario|
+  :Decide si quiere filtrar de nuevo;
+repeat while (¿Filtrar de nuevo?) is (sí) not (no)
+
+|Sistema|
+:Vuelve al menú principal;
+stop
+@enduml

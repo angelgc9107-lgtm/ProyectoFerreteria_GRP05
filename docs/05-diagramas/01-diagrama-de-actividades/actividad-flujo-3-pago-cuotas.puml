@@ -1,0 +1,55 @@
+@startuml actividad-flujo-3-pago-cuotas
+title Flujo 3 - Pago y cálculo de cuotas (RF14 a RF19)
+skinparam defaultFontName Arial
+skinparam ArrowColor #444444
+skinparam ActivityBackgroundColor #FDECEA
+skinparam ActivityBorderColor #C0392B
+skinparam SwimlaneBorderColor #7D7D7D
+
+|Usuario|
+start
+:Elige "Pagar" en el menú principal;
+
+|Sistema|
+:Obtiene el total del carrito;
+if (¿El carrito está vacío?) then (sí)
+  :Informa "No hay productos para pagar" con alert();
+  stop
+else (no)
+endif
+
+repeat
+  |Usuario|
+  :Elige el método de pago con prompt()
+  (1 efectivo / transferencia, 2 tarjeta de crédito);
+  |Sistema|
+  :Valida la opción ingresada;
+repeat while (¿La opción es válida?) is (no) not (sí)
+
+|Sistema|
+if (¿El método permite financiación (tarjeta de crédito)?) then (no)
+  :Fija cuotas = 1 y recargo = 0 %;
+else (sí)
+  repeat
+    |Usuario|
+    :Ingresa la cantidad de cuotas con prompt();
+    |Sistema|
+    :Valida que sea una cantidad ofrecida;
+  repeat while (¿La cantidad de cuotas es válida?) is (no) not (sí)
+  :Obtiene el % de recargo de la tabla\nsegún la cantidad de cuotas;
+endif
+
+|Sistema|
+:Calcula el interés = total x recargo;
+:Calcula el total financiado = total + interés;
+:Calcula el valor de cada cuota = total financiado / cuotas;
+:Muestra las condiciones con alert():\ntotal original, cuotas, interés,\ntotal financiado y valor de cuota;
+
+|Usuario|
+:Revisa las condiciones de financiación;
+
+|Sistema|
+:Guarda el método y las cuotas elegidas\npara el resumen del pedido;
+:Vuelve al menú principal;
+stop
+@enduml
