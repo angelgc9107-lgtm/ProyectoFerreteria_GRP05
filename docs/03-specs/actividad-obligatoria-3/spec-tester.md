@@ -15,14 +15,14 @@
 
 ### 1.1 Plan de testing
 
-Se testea `js/script.js` (a cargo del Desarrollador JavaScript) con Jasmine en el navegador. Hay una suite por cada flujo principal y cada suite tiene como mínimo 3 tests. Las funciones y los flujos se completan a partir de `spec-dev-javascript.md` y de los diagramas de actividades del Arquitecto.
+Se testea `js/script.js` (a cargo del Desarrollador JavaScript) con Jasmine en el navegador. Hay una suite por cada flujo principal y cada suite tiene como mínimo 3 tests. Las funciones y los flujos se definieron a partir de `spec-dev-javascript.md` y de los diagramas de actividades del Arquitecto.
 
 | Flujo | Función a testear | Happy path | Casos borde | Errores / datos inválidos |
 |-------|-------------------|------------|-------------|---------------------------|
-| 1. COMPLETAR | COMPLETAR | COMPLETAR | COMPLETAR | COMPLETAR |
-| 2. COMPLETAR | COMPLETAR | COMPLETAR | COMPLETAR | COMPLETAR |
-| 3. COMPLETAR | COMPLETAR | COMPLETAR | COMPLETAR | COMPLETAR |
-| 4. COMPLETAR | COMPLETAR | COMPLETAR | COMPLETAR | COMPLETAR |
+| 1. Búsqueda y filtrado | normalizarTexto, validarPrecioMaximo, buscarProductos | filtro por texto, por categoría, orden por precio | precio máximo 0, precio igual al máximo, sin resultados | precio no numérico, negativo, null, undefined, catálogo null |
+| 2. Gestión de carrito | validarCantidad, agregarProductoAlCarrito, cambiarCantidadCarrito, eliminarProductoDelCarrito, calcularResumenCarrito | agregar, sumar, cambiar, eliminar, total | carrito vacío, código con mayúsculas o espacios, cantidad en el límite seguro | producto inexistente, cantidad 0, negativa, decimal, null |
+| 3. Pago y cuotas | calcularCondicionesPago | contado, tarjeta en 1, 3 y 6 cuotas | redondeo a 2 decimales, total muy grande, cuotas como string | total 0, negativo o null; método inválido; cuotas no ofrecidas |
+| 4. Confirmación de pedido | validarNombre, validarCorreo, validarDireccion, validarDatosCliente, crearResumenPedido, crearNumeroPedido | cliente válido, resumen completo, formato FL-…-0007 | espacios recortados, secuencia de más de 4 dígitos | nombre solo numérico, correo sin dominio, carrito vacío, pago o cliente null |
 
 Categorías que cubre cada suite:
 
@@ -38,8 +38,8 @@ Alcance: solo se testean funciones de lógica de negocio. Las funciones que llam
 
 | Herramienta | Uso | Justificación |
 |-------------|-----|---------------|
-| Copilot Agent Mode | Generar `js/test/script.spec.js` con `js/script.js` adjunto como contexto | COMPLETAR |
-| Playwright MCP (`@playwright/mcp`) | Abrir `js/test/test-runner.html` en un browser real, ejecutar las suites de Jasmine y capturar screenshots PASS/FAIL | COMPLETAR |
+| Claude (Anthropic) | Generar `js/test/script.spec.js` con `js/script.js` adjunto como contexto | Asistente de IA que lee el código real de `script.js` y escribe los tests a partir de las funciones y reglas que existen, sin inventar funciones. Se usa en lugar de Copilot Agent Mode (la consigna menciona Copilot): es la herramienta con la que se generaron los tests.  Lo generado se ejecuta en el navegador con Jasmine y se revisa antes de commitearlo.
+| Playwright MCP (`@playwright/mcp`) | Abrir `js/test/test-runner.html` en un browser real, ejecutar las suites de Jasmine y capturar screenshots PASS/FAIL | Permite ejecutar los tests en un navegador real, igual que en producción, y capturar evidencia visual (screenshots) del resultado sin hacerlo a mano. Lo exige la consigna. |
 | Jasmine 5.10.0 (CDN) | Framework de testing en el navegador | Lo exige la consigna; no requiere instalación |
 
 ### 1.3 Criterios de aceptación
