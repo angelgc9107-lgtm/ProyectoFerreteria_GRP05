@@ -19,14 +19,21 @@ repeat
   la categoría y el precio máximo;
 
   |Sistema|
+  if (¿El usuario canceló algún prompt()?) then (sí)
+    :Vuelve al menú principal sin cambios;
+    stop
+  else (no)
+  endif
+
   :Valida los datos ingresados;
-  if (¿El precio máximo es un número válido (≥ 0)?) then (no)
+  :Texto o categoría vacíos = no se filtra por ese campo;
+  if (¿El precio máximo está vacío o es un número válido (≥ 0)?) then (no)
     :Muestra el error con alert();
   else (sí)
     :Crea la lista de resultados vacía;
     while (¿Quedan productos por revisar?) is (sí)
       :Toma el siguiente producto;
-      if (¿Coincide con el texto, la categoría\ny su precio es ≤ al máximo?) then (sí)
+      if (¿Cumple los filtros que no están vacíos\ny su precio es ≤ al máximo?) then (sí)
         :Agrega el producto a los resultados;
       else (no)
       endif

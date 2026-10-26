@@ -24,8 +24,9 @@ Todos usan swimlanes: **Usuario** (ingresa datos con `prompt()` y decide) y
 
 El usuario ingresa texto, categoría y precio máximo. El sistema valida el
 precio, recorre el catálogo, arma la lista de coincidencias, la ordena por
-precio y la muestra. El ciclo se repite mientras el usuario quiera filtrar
-de nuevo.
+precio y la muestra. Los campos vacíos no filtran y cancelar un `prompt()`
+vuelve al menú. El ciclo se repite mientras el usuario quiera filtrar de
+nuevo.
 
 ![Flujo 1](actividad-flujo-1-busqueda-filtrado.png)
 
@@ -33,7 +34,9 @@ de nuevo.
 
 Menú con `prompt()` para agregar, cambiar cantidad, eliminar, comprar o salir.
 Cada acción valida producto y cantidad. Después de cada acción el sistema
-recorre los ítems, recalcula subtotales y total, y muestra el carrito.
+recorre los ítems, recalcula subtotales y total, y muestra el carrito. Cancelar un
+`prompt()` no modifica el carrito, y si el total cambia se descarta el pago
+ya elegido.
 
 ![Flujo 2](actividad-flujo-2-carrito.png)
 
@@ -42,6 +45,7 @@ recorre los ítems, recalcula subtotales y total, y muestra el carrito.
 El usuario elige el método de pago. Si permite financiación, ingresa la
 cantidad de cuotas (se repite hasta que sea válida). El sistema calcula
 interés, total financiado y valor de cada cuota, y muestra las condiciones.
+Cancelar en cualquier `prompt()` no guarda nada y vuelve al menú.
 
 ![Flujo 3](actividad-flujo-3-pago-cuotas.png)
 
@@ -50,7 +54,8 @@ interés, total financiado y valor de cada cuota, y muestra las condiciones.
 El sistema verifica que haya carrito y pago elegido. El usuario ingresa
 nombre, correo y dirección (cada dato se repite hasta ser válido). Se
 muestra el resumen y el usuario confirma o cancela; si confirma, se genera
-el número de pedido y se vacía el carrito.
+el número de pedido y se vacían el carrito y el pago. Cancelar la carga de
+datos o responder NO cancela el pedido y conserva el carrito y el pago.
 
 ![Flujo 4](actividad-flujo-4-confirmacion-pedido.png)
 

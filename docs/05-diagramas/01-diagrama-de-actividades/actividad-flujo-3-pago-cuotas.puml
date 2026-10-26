@@ -23,7 +23,13 @@ repeat
   :Elige el método de pago con prompt()
   (1 efectivo / transferencia, 2 tarjeta de crédito);
   |Sistema|
-  :Valida la opción ingresada;
+  if (¿Canceló el prompt()?) then (sí)
+    :No se guarda método ni cuotas;
+    :Vuelve al menú principal;
+    stop
+  else (no)
+    :Valida la opción ingresada;
+  endif
 repeat while (¿La opción es válida?) is (no) not (sí)
 
 |Sistema|
@@ -34,7 +40,13 @@ else (sí)
     |Usuario|
     :Ingresa la cantidad de cuotas con prompt();
     |Sistema|
-    :Valida que sea una cantidad ofrecida;
+    if (¿Canceló el prompt()?) then (sí)
+      :No se guarda método ni cuotas;
+      :Vuelve al menú principal;
+      stop
+    else (no)
+      :Valida que sea una cantidad de cuotas ofrecida;
+    endif
   repeat while (¿La cantidad de cuotas es válida?) is (no) not (sí)
   :Obtiene el % de recargo de la tabla\nsegún la cantidad de cuotas;
 endif

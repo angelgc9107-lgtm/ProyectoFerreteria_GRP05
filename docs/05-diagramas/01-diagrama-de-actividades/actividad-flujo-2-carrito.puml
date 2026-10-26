@@ -22,61 +22,79 @@ repeat
     |Usuario|
     :Ingresa código de producto y cantidad;
     |Sistema|
-    if (¿El producto existe en el catálogo?) then (sí)
-      if (¿La cantidad es válida (entero ≥ 1)?) then (sí)
-        if (¿El producto ya está en el carrito?) then (sí)
-          :Suma la cantidad al ítem existente;
+    if (¿Canceló algún prompt()?) then (sí)
+      :No se modifica el carrito;
+    else (no)
+      if (¿El producto existe en el catálogo?) then (sí)
+        if (¿La cantidad es válida (entero ≥ 1)?) then (sí)
+          if (¿El producto ya está en el carrito?) then (sí)
+            :Suma la cantidad al ítem existente;
+          else (no)
+            :Agrega el ítem nuevo al carrito;
+          endif
         else (no)
-          :Agrega el ítem nuevo al carrito;
+          :Muestra error de cantidad con alert();
         endif
       else (no)
-        :Muestra error de cantidad con alert();
+        :Muestra error de producto con alert();
       endif
-    else (no)
-      :Muestra error de producto con alert();
     endif
   case (2 - Cambiar cantidad)
     |Usuario|
     :Ingresa código de producto y nueva cantidad;
     |Sistema|
-    if (¿El ítem está en el carrito?) then (sí)
-      if (¿La cantidad es válida (entero ≥ 1)?) then (sí)
-        :Actualiza la cantidad del ítem;
-      else (no)
-        :Muestra error de cantidad con alert();
-      endif
+    if (¿Canceló algún prompt()?) then (sí)
+      :No se modifica el carrito;
     else (no)
-      :Muestra error de ítem con alert();
+      if (¿El ítem está en el carrito?) then (sí)
+        if (¿La cantidad es válida (entero ≥ 1)?) then (sí)
+          :Actualiza la cantidad del ítem;
+        else (no)
+          :Muestra error de cantidad con alert();
+        endif
+      else (no)
+        :Muestra error de ítem con alert();
+      endif
     endif
   case (3 - Eliminar)
     |Usuario|
     :Ingresa código de producto;
     |Sistema|
-    if (¿El ítem está en el carrito?) then (sí)
-      :Elimina el ítem del carrito;
+    if (¿Canceló el prompt()?) then (sí)
+      :No se modifica el carrito;
     else (no)
-      :Muestra error con alert();
+      if (¿El ítem está en el carrito?) then (sí)
+        :Elimina el ítem del carrito;
+      else (no)
+        :Muestra error de ítem con alert();
+      endif
     endif
   case (4 - Comprar)
     :Prepara la visualización del carrito;
-  case (0 - Salir)
+  case (0 - Salir o cancelar el menú)
     :Marca que el usuario terminó;
   case (Otra)
     :Informa "Opción inválida" con alert();
   endswitch
 
   |Sistema|
+  :Guarda el total anterior;
   :Reinicia el total en 0;
   while (¿Quedan ítems por recorrer?) is (sí)
     :Calcula subtotal = precio unitario x cantidad;
     :Suma el subtotal al total;
   endwhile (no)
+  if (¿Cambió el total y ya había\nun método de pago elegido?) then (sí)
+    :Descarta el método de pago y las cuotas elegidos;
+    :Informa que hay que volver a elegir el pago;
+  else (no)
+  endif
   if (¿El carrito tiene ítems?) then (sí)
     :Muestra ítems, subtotales y total\ncon console.log() / alert();
   else (no)
     :Informa "El carrito está vacío";
   endif
-repeat while (¿El usuario NO eligió salir?) is (sí) not (no)
+repeat while (¿El usuario NO eligió salir ni canceló el menú?) is (sí) not (no)
 
 |Sistema|
 :Vuelve al menú principal;
