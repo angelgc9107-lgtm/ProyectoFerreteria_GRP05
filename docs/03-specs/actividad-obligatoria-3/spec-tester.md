@@ -38,19 +38,19 @@ Alcance: solo se testean funciones de lógica de negocio. Las funciones que llam
 
 | Herramienta | Uso | Justificación |
 |-------------|-----|---------------|
-| Claude (Anthropic) | Generar `js/test/script.spec.js` con `js/script.js` adjunto como contexto | Asistente de IA que lee el código real de `script.js` y escribe los tests a partir de las funciones y reglas que existen, sin inventar funciones. Se usa en lugar de Copilot Agent Mode (la consigna menciona Copilot): es la herramienta con la que se generaron los tests.  Lo generado se ejecuta en el navegador con Jasmine y se revisa antes de commitearlo.
+| Claude (Anthropic) | Generar `js/test/script.spec.js` con `js/script.js` adjunto como contexto | Asistente de IA que lee el código real de `script.js` y escribe los tests a partir de las funciones y reglas que existen, sin inventar funciones. Se usa en lugar de Copilot Agent Mode (la consigna menciona Copilot): es la herramienta con la que se generaron los tests. Lo generado se ejecuta en el navegador con Jasmine y se revisa antes de commitearlo. |
 | Playwright MCP (`@playwright/mcp`) | Abrir `js/test/test-runner.html` en un browser real, ejecutar las suites de Jasmine y capturar screenshots PASS/FAIL | Permite ejecutar los tests en un navegador real, igual que en producción, y capturar evidencia visual (screenshots) del resultado sin hacerlo a mano. Lo exige la consigna. |
 | Jasmine 5.10.0 (CDN) | Framework de testing en el navegador | Lo exige la consigna; no requiere instalación |
 
 ### 1.3 Criterios de aceptación
 
-- [ ] `spec-tester.md` commiteado en `docs/03-specs/actividad-obligatoria-3/` antes que `script.spec.js`
-- [ ] 4 suites de tests (una por flujo), mínimo 3 tests por suite
-- [ ] Tests ejecutados exitosamente en `test-runner.html` vía Playwright MCP
-- [ ] Screenshots del test runner con resultados PASS/FAIL capturados
-- [ ] Bugs reportados como issues en GitHub con pasos para reproducir y test case que falla
-- [ ] `js/test/test-runner.html` con la configuración correcta de Jasmine y carga de archivos
-- [ ] `js/test/testing-doc.md` con instrucciones de ejecución, descripción de suites y cobertura, métricas y capturas
+- [x] `spec-tester.md` commiteado en `docs/03-specs/actividad-obligatoria-3/` antes que `script.spec.js`
+- [x] 4 suites de tests (una por flujo), mínimo 3 tests por suite
+- [x] Tests ejecutados exitosamente en `test-runner.html` vía Playwright MCP
+- [x] Screenshots del test runner con resultados PASS/FAIL capturados
+- [x] Bugs reportados como issues en GitHub con pasos para reproducir y test case que falla
+- [x] `js/test/test-runner.html` con la configuración correcta de Jasmine y carga de archivos
+- [x] `js/test/testing-doc.md` con instrucciones de ejecución, descripción de suites y cobertura, métricas y capturas
 - [ ] Coordinación con el Desarrollador JavaScript para mejorar la testabilidad del código
 - [ ] Rama `feature/` con formato correcto, issue asociada al rol, PR hacia `develop` con revisión de otro integrante y entrada en `changelog.md`
 
@@ -95,4 +95,6 @@ Reglas:
 
 | Ajuste / pedido | Resultado |
 |-----------------|-----------|
-| COMPLETAR | COMPLETAR |
+| Pedido al Dev JS: funciones puras, expuestas y menú sin autoejecución en `script.js` | `script.js` entregado en la rama del Dev JS con funciones globales y `module.exports`; las 15 funciones de lógica de negocio quedaron testeables sin cambios |
+| Primera corrida sin Playwright MCP conectado (se usó la librería Playwright por script) | Se registró el servidor en Claude Code y se repitió la corrida con Playwright MCP |
+| Observación en `buscarProductos`: condición `valor === null` inalcanzable | Reportada como issue [#127](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/127) |
