@@ -31,7 +31,7 @@ de nuevo.
 
 ## Flujo 2 — Gestión del carrito
 
-Menú con `prompt()` para agregar, cambiar cantidad, eliminar, ver o salir.
+Menú con `prompt()` para agregar, cambiar cantidad, eliminar, comprar o salir.
 Cada acción valida producto y cantidad. Después de cada acción el sistema
 recorre los ítems, recalcula subtotales y total, y muestra el carrito.
 

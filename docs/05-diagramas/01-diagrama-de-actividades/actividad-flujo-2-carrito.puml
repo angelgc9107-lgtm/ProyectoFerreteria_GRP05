@@ -13,7 +13,8 @@ start
 repeat
   |Usuario|
   :Elige una acción con prompt()
-  (1 agregar, 2 cambiar cantidad, 3 eliminar, 4 ver, 0 salir);
+  (1 agregar, 2 cambiar cantidad (si es que hay productos),
+  3 eliminar, 4 comprar, 0 salir);
 
   |Sistema|
   switch (¿Qué opción eligió?)
@@ -21,23 +22,31 @@ repeat
     |Usuario|
     :Ingresa código de producto y cantidad;
     |Sistema|
-    if (¿El producto existe en el catálogo?) then (no)
-      :Muestra error con alert();
-    elseif (¿La cantidad es un entero ≥ 1?) then (no)
-      :Muestra error con alert();
-    elseif (¿El producto ya está en el carrito?) then (sí)
-      :Suma la cantidad al ítem existente;
+    if (¿El producto existe en el catálogo?) then (sí)
+      if (¿La cantidad es válida (entero ≥ 1)?) then (sí)
+        if (¿El producto ya está en el carrito?) then (sí)
+          :Suma la cantidad al ítem existente;
+        else (no)
+          :Agrega el ítem nuevo al carrito;
+        endif
+      else (no)
+        :Muestra error de cantidad con alert();
+      endif
     else (no)
-      :Agrega el ítem nuevo al carrito;
+      :Muestra error de producto con alert();
     endif
   case (2 - Cambiar cantidad)
     |Usuario|
     :Ingresa código de producto y nueva cantidad;
     |Sistema|
-    if (¿El ítem está en el carrito\ny la cantidad es un entero ≥ 1?) then (sí)
-      :Actualiza la cantidad del ítem;
+    if (¿El ítem está en el carrito?) then (sí)
+      if (¿La cantidad es válida (entero ≥ 1)?) then (sí)
+        :Actualiza la cantidad del ítem;
+      else (no)
+        :Muestra error de cantidad con alert();
+      endif
     else (no)
-      :Muestra error con alert();
+      :Muestra error de ítem con alert();
     endif
   case (3 - Eliminar)
     |Usuario|
@@ -48,7 +57,7 @@ repeat
     else (no)
       :Muestra error con alert();
     endif
-  case (4 - Ver)
+  case (4 - Comprar)
     :Prepara la visualización del carrito;
   case (0 - Salir)
     :Marca que el usuario terminó;

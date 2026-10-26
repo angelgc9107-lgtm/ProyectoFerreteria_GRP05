@@ -43,17 +43,19 @@ UI. Dentro de cada diagrama:
 
 ### Criterios de aceptación
 
-- [ ] 4 diagramas con `start`, `stop`, actividades, decisiones `if-then-else`
+- [x] 4 diagramas con `start`, `stop`, actividades, decisiones `if-then-else`
       y ciclos (`while` o `repeat`).
-- [ ] Swimlanes `|Usuario|` y `|Sistema|` en los flujos donde interviene el
+- [x] Swimlanes `|Usuario|` y `|Sistema|` en los flujos donde interviene el
       usuario.
-- [ ] Flujo lógico coherente con la implementación planificada en `plan.md`
+- [x] Flujo lógico coherente con la implementación planificada en `plan.md`
       y con `index.html`.
-- [ ] Archivos `.puml` y `.png` exportados para cada diagrama.
-- [ ] `diagramas-doc.md` con índice, descripción de cada flujo, enlace al
-      `.puml`, imagen `.png` embebida e instrucciones de edición.
+- [x] Archivos `.puml` y `.png` exportados para cada diagrama (cada `.png`
+      se regeneró desde su `.puml` y se comprobó que coincide).
+- [x] `diagramas-doc.md` con índice, descripción de cada flujo, enlace al
+      `.puml`, imagen `.png` embebida e instrucciones de edición (se
+      comprobó que los enlaces relativos apuntan a archivos existentes).
 - [ ] Coordinación con el Desarrollador JavaScript para que los diagramas
-      reflejen la implementación.
+      reflejen la implementación (pendiente de confirmación por su parte).
 
 ### Herramientas
 
@@ -77,30 +79,78 @@ docs/05-diagramas/01-diagrama-de-actividades/actividad-flujo-4-confirmacion-pedi
 
 ## AL CERRAR — Evidencia del proceso
 
-*(Completar cuando terminen los diagramas.)*
+### Herramienta y contexto
 
-### Prompt exacto usado en Copilot Agent
+Los borradores de los 4 `.puml` se generaron con un asistente de IA
+conversacional (Claude), no con GitHub Copilot en modo Agente. Se le
+proporcionó como contexto:
 
-Archivos adjuntados como contexto: `plan.md`, `index.html`, mockup
-(`docs/01-mockup/...`).
+- El repositorio del proyecto (`ProyectoFerreteria_GRP05`, rama
+  `origin/develop`), del que se leyeron `plan.md` e `index.html`.
+- La consigna de la Actividad Obligatoria N°3 (PDF).
+
+No se adjuntó la imagen del mockup en esa generación; la estructura de
+pantallas se tomó de `index.html`.
+
+Los diagramas se renderizaron con PlantUML (`plantuml.jar` 1.2024.7) para
+validar la sintaxis y exportar los `.png`.
+
+### Prompt utilizado
+
+Mensaje enviado al asistente, junto con el zip del repositorio y el PDF de
+la consigna:
 
 ```
-(pegar acá el prompt exacto)
+ya elegi el rol de Arquitecto de Diagramas de Actividades aca tenemos el actual estado del proyecto
 ```
 
-### Fragmento del `.puml` generado por Copilot
+A partir de eso el asistente propuso los 4 flujos (ver sección ANTES), que
+se aceptaron, y generó el spec y los `.puml`. Más tarde se pidió pasar a
+PlantUML un diagrama editado a mano (flujo 2) y se aplicaron las
+correcciones del code review.
+
+### Fragmento generado (primera versión del flujo 2)
 
 ```plantuml
-(pegar acá el fragmento de al menos uno de los diagramas, tal como lo generó Copilot)
+    if (¿El producto existe en el catálogo?) then (no)
+      :Muestra error con alert();
+    elseif (¿La cantidad es un entero ≥ 1?) then (no)
+      :Muestra error con alert();
+    elseif (¿El producto ya está en el carrito?) then (sí)
+      :Suma la cantidad al ítem existente;
+    else (no)
+      :Agrega el ítem nuevo al carrito;
+    endif
 ```
 
-### Ajustes manuales realizados
+### Ajustes manuales y correcciones
 
-- (errores de sintaxis PlantUML corregidos)
-- (flujos incorrectos o incompletos)
-- (swimlanes mal modeladas)
+- **Flujo 2, menú:** se cambió la opción 4 de "ver" a "comprar" y se agregó
+  "(si es que hay productos)" a la opción 2, editando el diagrama a mano.
+- **Flujo 2, estructura:** la primera versión resolvía el menú con una
+  cadena de `elseif`, que quedaba ancha y difícil de leer; se reescribió con
+  `switch`.
+- **Flujo 2, validaciones (code review):** la cadena de `elseif` mezclaba
+  condiciones formuladas en positivo con ramas `no` de error, lo que hacía
+  ambiguo el recorrido. Se reemplazó por decisiones anidadas con una
+  condición clara por nivel: primero existencia del producto, después
+  cantidad válida y finalmente si ya está en el carrito. Se aplicó el mismo
+  criterio al caso "cambiar cantidad".
+- **Verificación:** se regeneraron los 4 `.png` desde sus `.puml` y se
+  comprobó que coinciden con los archivos exportados.
 
 ### Decisiones de diseño finales
 
-- (por qué cada flujo quedó modelado como quedó)
-- (acuerdos con el Desarrollador JavaScript)
+- Swimlanes `|Usuario|` / `|Sistema|` en los cuatro diagramas, porque toda
+  la interacción es `prompt()` contra `alert()` / `console.log()` y eso
+  deja visible la separación entre interacción y lógica de negocio que se
+  pide para facilitar el testing.
+- Cada dato que se ingresa con `prompt()` se modela con un ciclo
+  `repeat ... repeat while` que vuelve a pedirlo hasta que sea válido.
+- Los flujos 2, 3 y 4 son consecutivos (carrito, pago, confirmación); el
+  flujo 1 es independiente y alimenta al 2.
+- En el flujo 3 se modelan dos métodos de pago: efectivo/transferencia (sin
+  cuotas) y tarjeta de crédito (con cuotas). El porcentaje de recargo se
+  representa como una consulta a una tabla según la cantidad de cuotas;
+  los valores concretos los define la implementación en `js/script.js`.
+- El flujo 4 solicita nombre, correo y dirección de envío del comprador.
