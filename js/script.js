@@ -95,9 +95,8 @@ function normalizarTexto(texto) {
 function validarPrecioMaximo(valor) {
     if (valor === null || valor === undefined || String(valor).trim() === "") {
         return {
-            valido: false,
+            valido: true,
             valor: null,
-            error: "El precio maximo debe ser un numero mayor o igual a cero."
         };
     }
 
@@ -515,7 +514,7 @@ function ejecutarBusquedaYFiltrado() {
         if (categoria === null) {
             return;
         }
-        var precioMaximo = prompt("Precio maximo (numero mayor o igual a cero):");
+        var precioMaximo = prompt("Precio maximo (vacio para omitir, o numero mayor o igual a cero):");
         if (precioMaximo === null) {
             return;
         }
@@ -559,9 +558,17 @@ function mostrarCarrito() {
  */
 function actualizarCarrito(resultado) {
     if (resultado.exito) {
+        var totalAnterior = calcularResumenCarrito(carritoActual).total;
+        var totalNuevo = calcularResumenCarrito(resultado.carrito).total;
+
         carritoActual = resultado.carrito;
-        condicionesPagoActuales = null;
-        alert("Carrito actualizado. Las condiciones de pago anteriores se invalidaron.");
+
+        if (totalAnterior !== totalNuevo) {
+            condicionesPagoActuales = null;
+            alert("Carrito actualizado. Debes seleccionar nuevamente el metodo de pago y las cuotas.");
+        } else {
+            alert("Carrito actualizado.");
+        }
     } else {
         alert(resultado.error);
     }
@@ -585,11 +592,11 @@ function ejecutarGestionCarrito() {
             }).join("\n");
             var codigoNuevo = prompt("Codigo de producto:\n" + codigosDisponibles);
             if (codigoNuevo === null) {
-                return;
+                continue;
             }
             var cantidadNueva = prompt("Cantidad (entero mayor o igual a 1):");
             if (cantidadNueva === null) {
-                return;
+                continue;
             }
             actualizarCarrito(agregarProductoAlCarrito(
                 carritoActual,
@@ -600,11 +607,11 @@ function ejecutarGestionCarrito() {
         } else if (opcion.trim() === "2") {
             var codigoActualizar = prompt("Codigo del producto en el carrito:");
             if (codigoActualizar === null) {
-                return;
+                continue;
             }
             var cantidadActualizar = prompt("Nueva cantidad (entero mayor o igual a 1):");
             if (cantidadActualizar === null) {
-                return;
+                continue;
             }
             actualizarCarrito(cambiarCantidadCarrito(
                 carritoActual,
@@ -614,7 +621,7 @@ function ejecutarGestionCarrito() {
         } else if (opcion.trim() === "3") {
             var codigoEliminar = prompt("Codigo del producto a eliminar:");
             if (codigoEliminar === null) {
-                return;
+                continue;
             }
             actualizarCarrito(eliminarProductoDelCarrito(carritoActual, codigoEliminar));
         } else if (opcion.trim() !== "4") {
@@ -630,6 +637,7 @@ function ejecutarGestionCarrito() {
  * @returns {void}
  */
 function ejecutarPago() {
+    condicionesPagoActuales = null;
     var resumen = calcularResumenCarrito(carritoActual);
     if (!resumen.items.length) {
         alert("No hay productos para pagar.");
@@ -755,6 +763,7 @@ function ejecutarConfirmacionPedido() {
         formatearResumenPedido(resumen)
     );
     carritoActual = [];
+    condicionesPagoActuales = null;
 }
 
 /**
