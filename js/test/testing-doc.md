@@ -257,7 +257,7 @@ Las capturas se tomaron con Playwright MCP sobre `test-runner.html?random=false`
 
 No hubo tests fallando en la corrida. Se registra una observación de calidad de código detectada al revisar `js/script.js`:
 
-### Issue #COMPLETAR: Condición inalcanzable en `buscarProductos()`
+### Issue #127: Condición inalcanzable en `buscarProductos()`
 - **Severidad:** Baja
 - **Suite Afectada:** `describe("buscarProductos")`
 - **Test Afectado:** Ninguno (hallazgo por revisión del código, no hay un test que falle)
@@ -268,7 +268,7 @@ No hubo tests fallando en la corrida. Se registra una observación de calidad de
   2. Notar que el filtro solo continúa si `validarPrecioMaximo()` devolvió `valido: true`.
   3. En ese caso `precioValidado.valor` es un número y la comparación `=== null` no se cumple.
 - **Código del Test que Falla:** No aplica (no hay un test que falle).
-- **GitHub Issue:** #COMPLETAR
+- **GitHub Issue:** #127
 - **Estado:** Abierto
 
 ---
