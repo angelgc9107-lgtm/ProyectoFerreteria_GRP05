@@ -8,7 +8,7 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 ### Added
 
-- [feature/coord-devops-tercera-entrega] COORDINADOR / DEVOPS - Especificación DevOps, actualización de README.md y changelog.md para la Actividad Obligatoria N.º 3 PR: Pendiente — Issue: [#128](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/128) — @LuchoBarrionuevo13 (Coordinador / DevOps)
+- [feature/coord-devops-tercera-entrega] [A3] Coordinador / DevOps - Documentación inicial y seguimiento PR: [#129](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/129) — Issue: [#128](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/128) — @LuchoBarrionuevo13 (Coordinador / DevOps)
 
 ### Changed
 
