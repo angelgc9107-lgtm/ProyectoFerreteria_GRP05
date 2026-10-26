@@ -62,29 +62,34 @@ Alcance: solo se testean funciones de lógica de negocio. Las funciones que llam
 
 ### 2.1 Prompt utilizado para generar `script.spec.js`
 
-Archivo adjunto como contexto: `js/script.js`.
+Herramienta: Claude (Anthropic), en una conversación de chat. No se usó Copilot Agent Mode. Contexto adjunto: `js/script.js` de la rama `feature/dev-javascript-logica-negocio` y el PDF de la actividad. No hubo un único prompt: se trabajó en una conversación. Las instrucciones que guiaron la generación fueron:
 
 ```text
-COMPLETAR (prompt exacto)
+Adjunto js/script.js. Generá js/test/script.spec.js con Jasmine 5.10.0 para ejecutar en el navegador.
+Reglas:
+- 4 bloques describe, uno por flujo: (1) Búsqueda y filtrado: normalizarTexto, validarPrecioMaximo, buscarProductos; (2) Gestión de carrito: validarCantidad, agregarProductoAlCarrito, cambiarCantidadCarrito, eliminarProductoDelCarrito, calcularResumenCarrito; (3) Pago y cuotas: calcularCondicionesPago; (4) Confirmación de pedido: validarNombre, validarCorreo, validarDireccion, validarDatosCliente, crearResumenPedido, crearNumeroPedido.
+- Mínimo 3 it por describe. Cubrí: happy path, casos borde y valores límite, datos inválidos (tipos incorrectos, null, undefined), operaciones con arrays y objetos, y cálculos.
+- Testeá solo lógica de negocio. No uses DOM, eventos, prompt ni alert.
+- No inventes funciones ni comportamientos que no existan en script.js.
 ```
 
 ### 2.2 Screenshots del test runner (Playwright MCP)
 
 | Suite | Resultado | Captura |
 |-------|-----------|---------|
-| Flujo 1 | COMPLETAR | COMPLETAR |
-| Flujo 2 | COMPLETAR | COMPLETAR |
-| Flujo 3 | COMPLETAR | COMPLETAR |
-| Flujo 4 | COMPLETAR | COMPLETAR |
+| Flujo 1 | 16 specs, 0 failures | [captura-flujo-1.png](../../../js/test/capturas/captura-flujo-1.png) |
+| Flujo 2 | 21 specs, 0 failures | [captura-flujo-2.png](../../../js/test/capturas/captura-flujo-2.png) |
+| Flujo 3 | 11 specs, 0 failures | [captura-flujo-3.png](../../../js/test/capturas/captura-flujo-3.png) |
+| Flujo 4 | 17 specs, 0 failures | [captura-flujo-4.png](../../../js/test/capturas/captura-flujo-4.png) |
 
 ### 2.3 Resumen de resultados
 
 | Métrica | Valor |
 |---------|-------|
-| Tests totales | COMPLETAR |
-| Tests que pasaron | COMPLETAR |
-| Tests que fallaron | COMPLETAR |
-| Bugs reportados como issues | COMPLETAR |
+| Tests totales | 65 |
+| Tests que pasaron | 65 |
+| Tests que fallaron | 0 |
+| Bugs reportados como issues | 1 (observación de código, no falla ningún test) |
 
 ### 2.4 Ajustes manuales y coordinación con el Desarrollador JavaScript
 
