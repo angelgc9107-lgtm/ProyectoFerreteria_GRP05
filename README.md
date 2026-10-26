@@ -30,12 +30,19 @@ al menos dos componentes avanzados de Bootstrap y dos componentes avanzados
 de HTML, y validarlos con test cases automatizados con Playwright MCP y
 GitHub MCP.
 
+**Actividad Obligatoria N.º 3:** incorporar lógica de programación con JavaScript mediante cuatro flujos funcionales que permitan procesar datos, realizar validaciones y mostrar resultados. Los flujos deberán utilizar estructuras condicionales, ciclos, arreglos y objetos, según corresponda. Se documentará su funcionamiento mediante diagramas de actividades realizados con PlantUML y se desarrollarán pruebas automatizadas con Jasmine para verificar los resultados esperados.
+
 ## 🛠️ Tecnologías utilizadas
 
 - HTML5
 - CSS3 (`css/styles.css`, `css/components.css` y `css/responsive.css`)
 - Bootstrap 5
-- JavaScript (a incorporar en próximas entregas)
+- JavaScript
+- PlantUML
+- Jasmine 
+- Git y GitHub
+- GitHub Copilot Agent Mode
+- Playwright MCP (validación y pruebas)
 
 ## ✅ Funcionalidades previstas
  
@@ -44,6 +51,12 @@ GitHub MCP.
 - Carrito de compras con cantidad editable y cálculo de subtotales
 - Selección de método de pago 
 - Resumen y confirmación de pedido
+- Ejecución de cuatro flujos funcionales mediante JavaScript.
+- Validación de datos ingresados por el usuario.
+- Procesamiento de información mediante condicionales, ciclos, arreglos y objetos.
+- Presentación de resultados mediante `alert()` y `console.log()`.
+- Menú de opciones mediante `prompt()` para ejecutar los flujos de JavaScript.
+- Pruebas automatizadas de las funciones JavaScript mediante Jasmine.
 
 ## 🎨 Maqueta de diseño web
  
@@ -61,6 +74,8 @@ columnas apiladas (`col-12`) y la navbar colapsada, y los componentes
 señalados en cada pantalla (Navbar, Carousel, Offcanvas, Dropdown e iframe
 de Google Maps dentro de `.ratio.ratio-16x9`).
 
+Para la Actividad Obligatoria N.º 3 se incorporará lógica JavaScript mediante un menú de opciones y cuatro flujos funcionales, sin requerir manipulación del DOM ni programación de eventos.
+
 ## 📁 Documentación
 
 - [Mockup en Figma (actualizado en el Primer Parcial con Bootstrap)](https://www.figma.com/design/jX7NrMUtt6Tg7oiYqock6s/Sin-t%C3%ADtulo?node-id=191-963&t=ouTMvmvpb279r7wJ-1)
@@ -68,6 +83,7 @@ de Google Maps dentro de `.ratio.ratio-16x9`).
 - [Estados de interacción Bootstrap (Primer Parcial)](docs/01-mockup/estados-bootstrap.png)
 - [Mockup con estilos exportado (Actividad Obligatoria N°2)](docs/01-mockup/actividad-obligatoria-2/dise%C3%B1o-con-estilos.png)
 - [Specs del Primer Parcial](docs/03-specs/primer-parcial/)
+- [Specs de la Actividad N.º 3](docs/03-specs/actividad-obligatoria-3/)
 - [Tablero Kanban del Primer Parcial](https://github.com/users/angelgc9107-lgtm/projects/1)
 - [Índice de test cases](docs/04-testing/testing-doc.md)
 - [Índice de Prompts](docs/02-prompts/prompts.md)
@@ -77,7 +93,7 @@ de Google Maps dentro de `.ratio.ratio-16x9`).
 
 | Nombre y Apellido | Matrícula | Usuario de GitHub | Rol |
 |-----| ----- | ------ | ------ |
-| Luciano Barrionuevo | 156398 | @LuchoBarrionuevo13 | Desarrollador Frontend/Bootstrap |
-| Alan Diaz | 152841 | @alandox1 | Desarrollador de Componentes HTML Avanzados |
-| Angel Cuarteron | 159438 | @angelgc9107-lgtm | Especialista en Componentes Bootstrap |
-| Thiago Piastrellini | 158097 | @Piastrellini | Coordinador y DevOps |
+| Luciano Barrionuevo | 156398 | @LuchoBarrionuevo13 | Coordinador y DevOps |
+| Alan Diaz | 152841 | @alandox1 | Arquitecto de Diagramas |
+| Angel Cuarteron | 159438 | @angelgc9107-lgtm | Desarrollador JavaScript |
+| Thiago Piastrellini | 158097 | @Piastrellini | Tester JavaScript / QA Engineer |

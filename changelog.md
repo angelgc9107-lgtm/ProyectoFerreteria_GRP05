@@ -4,7 +4,19 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 ## [Unreleased]
 
-## [Primer Parcial] - 2026-10-07 
+## [Actividad N°3] - 2026-11-02 
+
+### Added
+
+- [feature/coord-devops-tercera-entrega] COORDINADOR / DEVOPS - Especificación DevOps, actualización de README.md y changelog.md para la Actividad Obligatoria N.º 3 PR: Pendiente — Issue: [#128](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/128) — @LuchoBarrionuevo13 (Coordinador / DevOps)
+
+### Changed
+
+- [backport/primer-parcial] COORDINADOR / DEVOPS - Backport del Primer Parcial de master a develop PR: [#119](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/119) — Issue: [#120](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/120) — @LuchoBarrionuevo13 (Coordinador / DevOps)
+
+### Fixed 
+
+## [Released] - 2026-10-07
 
 ### Added
 - [feature/coord-devops-update-figma-and-readme] Coordinador/DevOps - Spec, mockup Bootstrap y README del Primer Parcial PR: [#88](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/88) — Issue: [#85](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/85) — @Piastrellini (Coordinador / DevOps)
