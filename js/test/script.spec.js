@@ -35,13 +35,16 @@ describe("Flujo 1 - Búsqueda y filtrado", function () {
             expect(validarPrecioMaximo(0).valido).toBeTruthy();
             expect(validarPrecioMaximo("0").valor).toBe(0);
         });
-        it("rechaza negativos, texto, vacío, null y undefined", function () {
+        it("rechaza negativos, texto e infinito", function () {
             expect(validarPrecioMaximo(-1).valido).toBeFalsy();
             expect(validarPrecioMaximo("abc").valido).toBeFalsy();
-            expect(validarPrecioMaximo("").valido).toBeFalsy();
-            expect(validarPrecioMaximo(null).valido).toBeFalsy();
-            expect(validarPrecioMaximo(undefined).valido).toBeFalsy();
             expect(validarPrecioMaximo(Infinity).valido).toBeFalsy();
+        });
+        it("permite omitir el precio máximo (vacío, espacios, null o undefined)", function () {
+            expect(validarPrecioMaximo("")).toEqual({ valido: true, valor: null });
+            expect(validarPrecioMaximo("   ").valido).toBeTruthy();
+            expect(validarPrecioMaximo(null).valido).toBeTruthy();
+            expect(validarPrecioMaximo(undefined).valor).toBeNull();
         });
         it("informa un mensaje de error y valor null cuando es inválido", function () {
             var r = validarPrecioMaximo("x");
@@ -85,9 +88,14 @@ describe("Flujo 1 - Búsqueda y filtrado", function () {
             expect(r.resultados).toEqual([]);
             expect(r.error).toBeTruthy();
         });
-        it("no falla con criterios null o undefined (devuelve error por precio)", function () {
-            expect(buscarProductos(catalogoPrueba, null).valido).toBeFalsy();
-            expect(buscarProductos(catalogoPrueba, undefined).valido).toBeFalsy();
+        it("con criterios null o undefined no falla y devuelve todo el catálogo", function () {
+            expect(buscarProductos(catalogoPrueba, null).resultados.length).toBe(3);
+            expect(buscarProductos(catalogoPrueba, undefined).valido).toBeTruthy();
+        });
+        it("sin precio máximo no filtra por precio", function () {
+            var r = buscarProductos(catalogoPrueba, { texto: "", categoria: "", precioMaximo: "" });
+            expect(r.valido).toBeTruthy();
+            expect(r.resultados.map(function (p) { return p.codigo; })).toEqual(["C-003", "A-001", "B-002"]);
         });
         it("lanza error si el catálogo es null", function () {
             expect(function () {
