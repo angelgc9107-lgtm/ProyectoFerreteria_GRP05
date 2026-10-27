@@ -46,8 +46,8 @@ Se testea únicamente la lógica de negocio (funciones que reciben parámetros y
 **Funciones testeadas:**
 
 - `normalizarTexto()` - Pasa a minúsculas, quita tildes y recorta espacios
-- `validarPrecioMaximo()` - Valida que el precio máximo sea un número ≥ 0
-- `buscarProductos()` - Filtra por texto, categoría y precio máximo y ordena por precio
+- `validarPrecioMaximo()` - Valida el precio máximo: número ≥ 0, u omitido (vacío, `null` o `undefined`)
+- `buscarProductos()` - Filtra por texto, categoría y precio máximo (opcional) y ordena por precio
 
 **Casos de prueba:**
 
@@ -57,20 +57,22 @@ Se testea únicamente la lógica de negocio (funciones que reciben parámetros y
 | 2 | Devuelve string vacío para null, undefined y vacío | Validación de Errores |
 | 3 | Acepta números y strings numéricos mayores o iguales a cero | Happy Path |
 | 4 | Acepta el valor límite 0 | Caso Borde |
-| 5 | Rechaza negativos, texto, vacío, null y undefined | Validación de Errores |
-| 6 | Informa mensaje de error y valor null cuando el precio es inválido | Validación de Errores |
-| 7 | Filtra por texto sin distinguir mayúsculas ni tildes | Happy Path |
-| 8 | Filtra por categoría | Happy Path |
-| 9 | Ordena los resultados por precio ascendente | Operaciones Arrays/Objetos |
-| 10 | Incluye un producto cuyo precio es exactamente el máximo | Caso Borde |
-| 11 | Devuelve lista vacía válida cuando nada coincide | Caso Borde |
-| 12 | Con precio máximo 0 no devuelve productos | Caso Borde |
-| 13 | Informa error cuando el precio máximo es inválido | Validación de Errores |
-| 14 | No falla con criterios null o undefined (devuelve error por precio) | Validación de Errores |
-| 15 | Lanza error si el catálogo es null | Validación de Errores |
-| 16 | No modifica el catálogo original | Operaciones Arrays/Objetos |
+| 5 | Rechaza negativos, texto e infinito | Validación de Errores |
+| 6 | Permite omitir el precio máximo (vacío, espacios, null o undefined) | Caso Borde |
+| 7 | Informa mensaje de error y valor null cuando el precio es inválido | Validación de Errores |
+| 8 | Filtra por texto sin distinguir mayúsculas ni tildes | Happy Path |
+| 9 | Filtra por categoría | Happy Path |
+| 10 | Ordena los resultados por precio ascendente | Operaciones Arrays/Objetos |
+| 11 | Incluye un producto cuyo precio es exactamente el máximo | Caso Borde |
+| 12 | Devuelve lista vacía válida cuando nada coincide | Caso Borde |
+| 13 | Con precio máximo 0 no devuelve productos | Caso Borde |
+| 14 | Informa error cuando el precio máximo es inválido | Validación de Errores |
+| 15 | Con criterios null o undefined no falla y devuelve todo el catálogo | Caso Borde |
+| 16 | Sin precio máximo no filtra por precio | Happy Path |
+| 17 | Lanza error si el catálogo es null | Validación de Errores |
+| 18 | No modifica el catálogo original | Operaciones Arrays/Objetos |
 
-**Total de la suite:** 16 tests
+**Total de la suite:** 18 tests
 
 ---
 
@@ -181,22 +183,22 @@ Se testea únicamente la lógica de negocio (funciones que reciben parámetros y
 ### Resumen General
 | Métrica | Valor |
 |---------|-------|
-| Total de Tests | 65 |
-| Tests Pasando | 65 ✅ |
+| Total de Tests | 67 |
+| Tests Pasando | 67 ✅ |
 | Tests Fallando | 0 ❌ |
 | Porcentaje de Éxito | 100% |
 
-Resultado de la corrida con Playwright MCP: `65 specs, 0 failures`.
+Resultado de la corrida con Playwright MCP: `67 specs, 0 failures`.
 
 ### Cobertura por Tipo de Test
 Cada test se clasificó según su propósito principal.
 
 | Tipo | Cantidad | Porcentaje |
 |------|----------|------------|
-| Happy Path | 16 | 24,6% |
-| Casos Borde | 14 | 21,5% |
-| Validación de Errores | 25 | 38,5% |
-| Operaciones Arrays/Objetos | 10 | 15,4% |
+| Happy Path | 17 | 25,4% |
+| Casos Borde | 16 | 23,9% |
+| Validación de Errores | 24 | 35,8% |
+| Operaciones Arrays/Objetos | 10 | 14,9% |
 
 ### Análisis de Cobertura de Código
 **Metodología:** Se ejecutó la misma suite (`script.spec.js`) contra `js/script.js` en Node.js con `jasmine-core` 5.10.0 y se midió la cobertura con la herramienta `c8` (cobertura de V8). Esta medición se hizo una vez, fuera del repositorio, y no forma parte de la ejecución en el navegador. Las "líneas ejecutables" excluyen líneas en blanco, comentarios y llaves de cierre.
@@ -204,8 +206,8 @@ Cada test se clasificó según su propósito principal.
 | Función | Líneas Ejecutables | Tests | Líneas Cubiertas | Cobertura |
 |---------|--------------------|-------|------------------|-----------|
 | `normalizarTexto()` | 6 | 2 | 6 | 100% |
-| `validarPrecioMaximo()` | 13 | 4 | 13 | 100% |
-| `buscarProductos()` | 24 | 10 | 24 | 100% |
+| `validarPrecioMaximo()` | 12 | 5 | 12 | 100% |
+| `buscarProductos()` | 24 | 11 | 24 | 100% |
 | `validarCantidad()` | 5 | 3 | 5 | 100% |
 | `agregarProductoAlCarrito()` | 28 | 8 | 28 | 100% |
 | `cambiarCantidadCarrito()` | 13 | 4 | 13 | 100% |
@@ -219,14 +221,14 @@ Cada test se clasificó según su propósito principal.
 | `crearResumenPedido()` | 14 | 6 | 14 | 100% |
 | `crearNumeroPedido()` | 2 | 3 | 2 | 100% |
 
-**Cobertura de las funciones de lógica de negocio testeadas:** 100% (159/159 líneas ejecutables).
-**Cobertura Total Estimada del archivo:** aproximadamente 39% (159/405 líneas ejecutables de funciones). El resto corresponde a funciones de interacción con `prompt()`/`alert()`, funciones de formato y el bloque `module.exports`, que están fuera del alcance de los tests. Cobertura de ramas de la suite: 96,55% (medida con c8).
+**Cobertura de las funciones de lógica de negocio testeadas:** 100% (158/158 líneas ejecutables).
+**Cobertura Total Estimada del archivo:** aproximadamente 39% (159/411 líneas ejecutables, contando desde las funciones). El resto corresponde a funciones de interacción con `prompt()`/`alert()`, funciones de formato y el bloque `module.exports`, que están fuera del alcance de los tests. Cobertura de ramas de la suite: 96,59% (medida con c8).
 
 #### Líneas NO Cubiertas
-- `script.js:416-459` - `formatearMoneda`, `formatearResumenCarrito` y `formatearResumenPedido`: funciones puras de formato, sin tests en esta iteración.
-- `script.js:468-790` - Funciones de interacción (`solicitarDatoValido`, `preguntarSiNo`, `ejecutar*`, `mostrarCarrito`, `actualizarCarrito`, `iniciarMenuPrincipal`): usan `prompt()` y `alert()`, fuera del alcance.
-- `script.js:792-813` - Bloque `module.exports`: no se ejecuta en el navegador.
-- `script.js:238` - Rama `codigo || ""` de `cambiarCantidadCarrito()` cuando el código es `null` o `undefined`: no hay un test que la ejecute.
+- `script.js:415-458` - `formatearMoneda`, `formatearResumenCarrito` y `formatearResumenPedido`: funciones puras de formato, sin tests en esta iteración.
+- `script.js:467-799` - Funciones de interacción (`solicitarDatoValido`, `preguntarSiNo`, `ejecutar*`, `mostrarCarrito`, `actualizarCarrito`, `iniciarMenuPrincipal`): usan `prompt()` y `alert()`, fuera del alcance.
+- `script.js:801-822` - Bloque `module.exports`: no se ejecuta en el navegador.
+- `script.js:237` - Rama `codigo || ""` de `cambiarCantidadCarrito()` cuando el código es `null` o `undefined`: no hay un test que la ejecute.
 
 ---
 
@@ -234,7 +236,7 @@ Cada test se clasificó según su propósito principal.
 
 ### Tests Pasando
 ![Tests Exitosos](./capturas/captura-vista-general.png)
-*Todos los tests ejecutándose correctamente (65 specs, 0 failures)*
+*Todos los tests ejecutándose correctamente (67 specs, 0 failures)*
 
 ### Vista Detallada de Suites
 ![Flujo 1](./capturas/captura-flujo-1.png)
@@ -249,27 +251,27 @@ Cada test se clasificó según su propósito principal.
 ![Flujo 4](./capturas/captura-flujo-4.png)
 *Suite Flujo 4 - Confirmación del pedido*
 
-Las capturas se tomaron con Playwright MCP sobre `test-runner.html?random=false`. No hay capturas de tests fallando porque la corrida no tuvo fallos.
+Las capturas se tomaron con Playwright MCP sobre `test-runner.html?random=false`. No hay capturas de tests fallando porque la corrida final no tuvo fallos.
 
 ---
 
 ## Issues Conocidos
 
-No hubo tests fallando en la corrida. Se registra una observación de calidad de código detectada al revisar `js/script.js`:
+No hubo tests fallando en la corrida final. Se registra una observación detectada al revisar `js/script.js`, ya resuelta:
 
 ### Issue #127: Condición inalcanzable en `buscarProductos()`
 - **Severidad:** Baja
 - **Suite Afectada:** `describe("buscarProductos")`
 - **Test Afectado:** Ninguno (hallazgo por revisión del código, no hay un test que falle)
 - **Comportamiento Esperado:** Que todas las condiciones del filtro puedan evaluarse en algún caso.
-- **Comportamiento Obtenido:** La condición `precioValidado.valor === null` (línea 143) nunca es verdadera, porque si el precio es válido `valor` siempre es un número.
+- **Comportamiento Obtenido:** La condición `precioValidado.valor === null` nunca era verdadera, porque si el precio era válido `valor` siempre era un número.
 - **Pasos para Reproducir:**
   1. Abrir `js/script.js` y revisar `buscarProductos()`.
-  2. Notar que el filtro solo continúa si `validarPrecioMaximo()` devolvió `valido: true`.
-  3. En ese caso `precioValidado.valor` es un número y la comparación `=== null` no se cumple.
-- **Código del Test que Falla:** No aplica (no hay un test que falle).
-- **GitHub Issue:** #127
-- **Estado:** Abierto
+  2. Notar que el filtro solo continuaba si `validarPrecioMaximo()` devolvía `valido: true`.
+  3. En ese caso `precioValidado.valor` era un número y la comparación `=== null` no se cumplía.
+- **Código del Test que Falla:** No aplica (no había un test que fallara).
+- **GitHub Issue:** [#127](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/127)
+- **Estado:** Resuelto. El Desarrollador JavaScript modificó `validarPrecioMaximo()` para permitir omitir el precio máximo (devuelve `valido: true` y `valor: null`), de modo que la condición ahora es alcanzable. Se actualizaron los tests del Flujo 1 al nuevo comportamiento y se agregaron dos tests que lo cubren.
 
 ---
 
@@ -285,6 +287,6 @@ No hubo tests fallando en la corrida. Se registra una observación de calidad de
 
 ---
 
-**Última Actualización:** 2026-10-25
+**Última Actualización:** 2026-10-27
 **Tester/QA Engineer:** Thiago Piastrellini (@Piastrellini)
 **Colaboración con:** Desarrollador JavaScript - @angelgc9107-lgtm
