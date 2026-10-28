@@ -1,20 +1,20 @@
 # Changelog
 
-Este archivo se actualiza con cada Pull Request para registrar avances y correcciones
+Este archivo se actualiza con cada Pull Request para registrar avances y correcciones.
 
 ## [Unreleased]
 
+## [Actividad N°3] - 2026-11-02
+
 ### Added
 
-- [feature/arq-diagramas-actividades] Arquitecto de Diagramas de Actividades - 4 diagramas de actividades PlantUML (.puml y .png) y diagramas-doc.md PR: [#122](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/122) — @alandox1 (Arquitecto de Diagramas de Actividades)
+- [feature/coord-devops-tercera-entrega] [A3] Coordinador / DevOps - Documentación inicial y seguimiento PR: [#129](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/129) — Issue: [#128](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/128) — @LuchoBarrionuevo13 (Coordinador / DevOps)
 
+### Changed
 
+- [backport/primer-parcial] COORDINADOR / DEVOPS - Backport del Primer Parcial de master a develop PR: [#119](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/119) — Issue: [#120](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/120) — @LuchoBarrionuevo13 (Coordinador / DevOps)
 
-
-
-
-
-
+### Fixed
 
 
 

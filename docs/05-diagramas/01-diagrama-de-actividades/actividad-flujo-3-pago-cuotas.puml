@@ -8,7 +8,8 @@ skinparam SwimlaneBorderColor #7D7D7D
 
 |Usuario|
 start
-:Elige "Pagar" en el menú principal;
+:Elige "Pagar" en el menú principal
+o llega desde "Comprar" del Flujo 2;
 
 |Sistema|
 :Obtiene el total del carrito;

@@ -70,7 +70,11 @@ repeat
       endif
     endif
   case (4 - Comprar)
-    :Prepara la visualización del carrito;
+    if (¿El carrito tiene ítems?) then (sí)
+      :Marca que el usuario sale hacia el pago;
+    else (no)
+      :Informa que no se puede comprar con el carrito vacío;
+    endif
   case (0 - Salir o cancelar el menú)
     :Marca que el usuario terminó;
   case (Otra)
@@ -94,9 +98,13 @@ repeat
   else (no)
     :Informa "El carrito está vacío";
   endif
-repeat while (¿El usuario NO eligió salir ni canceló el menú?) is (sí) not (no)
+repeat while (¿El usuario NO salió, canceló el menú\nni eligió comprar?) is (sí) not (no)
 
 |Sistema|
-:Vuelve al menú principal;
+if (¿El usuario eligió comprar?) then (sí)
+  :Continúa en el Flujo 3 - Pago y cálculo de cuotas;
+else (no)
+  :Vuelve al menú principal;
+endif
 stop
 @enduml

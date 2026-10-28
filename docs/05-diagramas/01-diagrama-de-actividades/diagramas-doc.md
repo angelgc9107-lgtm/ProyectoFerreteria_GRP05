@@ -36,7 +36,8 @@ Menú con `prompt()` para agregar, cambiar cantidad, eliminar, comprar o salir.
 Cada acción valida producto y cantidad. Después de cada acción el sistema
 recorre los ítems, recalcula subtotales y total, y muestra el carrito. Cancelar un
 `prompt()` no modifica el carrito, y si el total cambia se descarta el pago
-ya elegido.
+ya elegido. La opción "Comprar" (solo con el
+carrito con ítems) sale del menú del carrito y continúa en el flujo 3 (pago).
 
 ![Flujo 2](actividad-flujo-2-carrito.png)
 

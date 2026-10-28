@@ -140,6 +140,13 @@ correcciones del code review.
 - **Reglas acordadas con el Desarrollador JavaScript** (issue de
   coordinación): se agregaron a los 4 diagramas las ramas de cancelación de
   `prompt()` y los efectos entre flujos (ver tabla más abajo).
+- **Flujo 2, opción "Comprar" (code review):** la opción preparaba la
+  visualización del carrito y el flujo volvía al menú, sin mostrar la
+  transición al pago. Ahora, si el carrito tiene ítems, marca la salida
+  hacia el pago, termina el ciclo del menú y continúa en el flujo 3; con el
+  carrito vacío informa que no se puede comprar y permanece en el menú. El
+  flujo 3 se ajustó para indicar que puede iniciarse desde el menú
+  principal o desde "Comprar".
 - **Exportación:** el `.png` del flujo 2 superaba el límite por defecto de
   PlantUML (4096 px de ancho) y salía cortado; se re-exportó ampliando el
   límite con `-DPLANTUML_LIMIT_SIZE`.
@@ -153,6 +160,7 @@ correcciones del code review.
 | 1 Búsqueda | Filtros vacíos | Texto, categoría o precio vacíos = no se filtra por ese campo |
 | 1 Búsqueda | Cancelar un `prompt()` | Vuelve al menú principal sin cambios |
 | 2 Carrito | Modificar productos con pago elegido | Si cambia el total, se descartan el método de pago y las cuotas y hay que volver a elegir |
+| 2 Carrito | Opción "Comprar" | Con ítems en el carrito, sale del menú y continúa en el flujo de pago; con el carrito vacío informa y permanece en el menú |
 | 2 Carrito | Cancelar un `prompt()` | No se modifica el carrito; cancelar el menú equivale a salir |
 | 3 Pago | Cancelar la selección | No se guarda método ni cuotas y vuelve al menú principal |
 | 3 Pago | Cuotas y recargos | Se consultan en una tabla según la cantidad de cuotas; los valores concretos se definen en `js/script.js` y `spec-dev-javascript.md` |
