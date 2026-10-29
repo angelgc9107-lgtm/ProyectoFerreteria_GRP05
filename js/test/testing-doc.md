@@ -85,6 +85,8 @@ Se testea únicamente la lógica de negocio (funciones que reciben parámetros y
 - `cambiarCantidadCarrito()` - Reemplaza la cantidad de un producto del carrito
 - `eliminarProductoDelCarrito()` - Quita un producto del carrito
 - `calcularResumenCarrito()` - Calcula subtotales y total
+- `formatearMoneda()` - Da formato de moneda argentina (`$1.234,50`)
+- `formatearResumenCarrito()` - Convierte el resumen del carrito en texto con una línea por producto y el total
 
 **Casos de prueba:**
 
@@ -111,8 +113,12 @@ Se testea únicamente la lógica de negocio (funciones que reciben parámetros y
 | 19 | Calcula subtotales y total | Happy Path |
 | 20 | Devuelve total 0 y sin ítems para un carrito vacío | Caso Borde |
 | 21 | No modifica los ítems del carrito original al calcular el resumen | Operaciones Arrays/Objetos |
+| 22 | Formatea con símbolo $, separador de miles y dos decimales (es-AR) | Happy Path |
+| 23 | Formatea el cero y acepta strings numéricos | Caso Borde |
+| 24 | Avisa que el carrito está vacío | Caso Borde |
+| 25 | Arma una línea por producto y el total | Happy Path |
 
-**Total de la suite:** 21 tests
+**Total de la suite:** 25 tests
 
 ---
 
@@ -152,6 +158,7 @@ Se testea únicamente la lógica de negocio (funciones que reciben parámetros y
 - `validarDatosCliente()` - Valida nombre, correo y dirección en conjunto
 - `crearResumenPedido()` - Arma el resumen del pedido
 - `crearNumeroPedido()` - Genera el número `FL-tiempo-secuencia`
+- `formatearResumenPedido()` - Convierte el pedido en texto con productos, pago, cuotas, recargo y envío
 
 **Casos de prueba:**
 
@@ -174,8 +181,10 @@ Se testea únicamente la lógica de negocio (funciones que reciben parámetros y
 | 15 | Genera el formato FL-tiempo-secuencia con 4 dígitos | Happy Path |
 | 16 | No recorta secuencias de más de 4 dígitos | Caso Borde |
 | 17 | Genera números distintos para secuencias distintas | Happy Path |
+| 18 | Detalla productos, pago en tarjeta, cuotas, recargo y envío | Happy Path |
+| 19 | Indica efectivo / transferencia, 1 cuota y 0 % de recargo | Caso Borde |
 
-**Total de la suite:** 17 tests
+**Total de la suite:** 19 tests
 
 ---
 ## Métricas de Cobertura
@@ -183,22 +192,22 @@ Se testea únicamente la lógica de negocio (funciones que reciben parámetros y
 ### Resumen General
 | Métrica | Valor |
 |---------|-------|
-| Total de Tests | 67 |
-| Tests Pasando | 67 ✅ |
+| Total de Tests | 73 |
+| Tests Pasando | 73 ✅ |
 | Tests Fallando | 0 ❌ |
 | Porcentaje de Éxito | 100% |
 
-Resultado de la corrida con Playwright MCP: `67 specs, 0 failures`.
+Resultado de la corrida con Playwright MCP: `73 specs, 0 failures`.
 
 ### Cobertura por Tipo de Test
 Cada test se clasificó según su propósito principal.
 
 | Tipo | Cantidad | Porcentaje |
 |------|----------|------------|
-| Happy Path | 17 | 25,4% |
-| Casos Borde | 16 | 23,9% |
-| Validación de Errores | 24 | 35,8% |
-| Operaciones Arrays/Objetos | 10 | 14,9% |
+| Happy Path | 20 | 27,4% |
+| Casos Borde | 19 | 26,0% |
+| Validación de Errores | 24 | 32,9% |
+| Operaciones Arrays/Objetos | 10 | 13,7% |
 
 ### Análisis de Cobertura de Código
 **Metodología:** Se ejecutó la misma suite (`script.spec.js`) contra `js/script.js` en Node.js con `jasmine-core` 5.10.0 y se midió la cobertura con la herramienta `c8` (cobertura de V8). Esta medición se hizo una vez, fuera del repositorio, y no forma parte de la ejecución en el navegador. Las "líneas ejecutables" excluyen líneas en blanco, comentarios y llaves de cierre.
@@ -220,12 +229,14 @@ Cada test se clasificó según su propósito principal.
 | `validarDatosCliente()` | 6 | 2 | 6 | 100% |
 | `crearResumenPedido()` | 14 | 6 | 14 | 100% |
 | `crearNumeroPedido()` | 2 | 3 | 2 | 100% |
+| `formatearMoneda()` | 4 | 2 | 4 | 100% |
+| `formatearResumenCarrito()` | 8 | 2 | 8 | 100% |
+| `formatearResumenPedido()` | 12 | 2 | 12 | 100% |
 
-**Cobertura de las funciones de lógica de negocio testeadas:** 100% (158/158 líneas ejecutables).
-**Cobertura Total Estimada del archivo:** aproximadamente 39% (159/411 líneas ejecutables, contando desde las funciones). El resto corresponde a funciones de interacción con `prompt()`/`alert()`, funciones de formato y el bloque `module.exports`, que están fuera del alcance de los tests. Cobertura de ramas de la suite: 96,59% (medida con c8).
+**Cobertura de las funciones de lógica de negocio y de formato testeadas:** 100% (182/182 líneas ejecutables).
+**Cobertura Total Estimada del archivo:** aproximadamente 44,5% (183/411 líneas ejecutables, contando desde las funciones). El resto corresponde a funciones de interacción con `prompt()`/`alert()` y al bloque `module.exports`, que están fuera del alcance de los tests. Cobertura de ramas de la suite: 96,84% (medida con c8).
 
 #### Líneas NO Cubiertas
-- `script.js:415-458` - `formatearMoneda`, `formatearResumenCarrito` y `formatearResumenPedido`: funciones puras de formato, sin tests en esta iteración.
 - `script.js:467-799` - Funciones de interacción (`solicitarDatoValido`, `preguntarSiNo`, `ejecutar*`, `mostrarCarrito`, `actualizarCarrito`, `iniciarMenuPrincipal`): usan `prompt()` y `alert()`, fuera del alcance.
 - `script.js:801-822` - Bloque `module.exports`: no se ejecuta en el navegador.
 - `script.js:237` - Rama `codigo || ""` de `cambiarCantidadCarrito()` cuando el código es `null` o `undefined`: no hay un test que la ejecute.
@@ -236,7 +247,7 @@ Cada test se clasificó según su propósito principal.
 
 ### Tests Pasando
 ![Tests Exitosos](./capturas/captura-vista-general.png)
-*Todos los tests ejecutándose correctamente (67 specs, 0 failures)*
+*Todos los tests ejecutándose correctamente (73 specs, 0 failures)*
 
 ### Vista Detallada de Suites
 ![Flujo 1](./capturas/captura-flujo-1.png)
@@ -281,12 +292,11 @@ No hubo tests fallando en la corrida final. Se registra una observación detecta
 - Sin cobertura automatizada dentro del repositorio: la cobertura se midió una vez en Node con `c8`.
 - Requiere conexión a internet (CDN de Jasmine).
 - No incluye tests de integración con DOM ni de funciones con `prompt()`/`alert()`.
-- Las funciones de formato (`formatear*`) no tienen tests.
 - Los casos que el spec del Desarrollador JavaScript deja sin definir (búsqueda con texto o categoría vacíos, cancelación de los `prompt`) no están cubiertos como comportamiento especificado.
 - La clasificación por tipo de test es manual y cada test se asigna a un solo tipo.
 
 ---
 
-**Última Actualización:** 2026-10-27
+**Última Actualización:** 2026-10-29
 **Tester/QA Engineer:** Thiago Piastrellini (@Piastrellini)
 **Colaboración con:** Desarrollador JavaScript - @angelgc9107-lgtm
