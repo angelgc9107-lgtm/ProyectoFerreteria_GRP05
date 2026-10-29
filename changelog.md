@@ -7,6 +7,7 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 ### Added
 - [feature/dev-javascript-logica-negocio] Implementación de la lógica de negocio y correcciones de los cuatro flujos de actividades PR: [#125](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/125) — @angelgc9107-lgtm (Desarrollador Javascript)
 - [feature/tester-javascript-jasmine] Tester JavaScript: suite de testing con Jasmine y Playwright MCP: [#123](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/123) — Issue: [#124](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/124) — @Piastrellini (Tester JavaScript / QA Engineer)
+- [feature/tester-spec-review-aprobada] Tester JavaScript: tildo en spec-tester el criterio de PR revisado y mergeado: [#132](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/132) — Issue: [#124](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/124) — @Piastrellini (Tester JavaScript / QA Engineer)
 
 ## [Primer Parcial] - 2026-10-07
 
