@@ -1,0 +1,78 @@
+@startuml actividad-flujo-4-confirmacion-pedido
+title Flujo 4 - Resumen y confirmación del pedido (RF21 a RF24)
+skinparam defaultFontName Arial
+skinparam ArrowColor #444444
+skinparam ActivityBackgroundColor #FDECEA
+skinparam ActivityBorderColor #C0392B
+skinparam SwimlaneBorderColor #7D7D7D
+
+|Usuario|
+start
+:Elige "Confirmar pedido" en el menú principal;
+
+|Sistema|
+if (¿El carrito tiene ítems\ny hay un método de pago elegido?) then (no)
+  :Informa que falta completar el carrito o el pago;
+  stop
+else (sí)
+endif
+
+repeat
+  |Usuario|
+  :Ingresa el nombre con prompt();
+  |Sistema|
+  if (¿Canceló el prompt()?) then (sí)
+    :Informa "Pedido cancelado" con alert();
+    :Conserva el carrito y el método de pago;
+    stop
+  else (no)
+    :Valida que no esté vacío y no sea numérico;
+  endif
+repeat while (¿El nombre es válido?) is (no) not (sí)
+
+repeat
+  |Usuario|
+  :Ingresa el correo con prompt();
+  |Sistema|
+  if (¿Canceló el prompt()?) then (sí)
+    :Informa "Pedido cancelado" con alert();
+    :Conserva el carrito y el método de pago;
+    stop
+  else (no)
+    :Valida que tenga "@" y un dominio;
+  endif
+repeat while (¿El correo es válido?) is (no) not (sí)
+
+repeat
+  |Usuario|
+  :Ingresa la dirección de envío con prompt();
+  |Sistema|
+  if (¿Canceló el prompt()?) then (sí)
+    :Informa "Pedido cancelado" con alert();
+    :Conserva el carrito y el método de pago;
+    stop
+  else (no)
+    :Valida que no esté vacía;
+  endif
+repeat while (¿La dirección es válida?) is (no) not (sí)
+
+|Sistema|
+:Arma el resumen: productos, cantidades,\nprecios, total, método de pago y cuotas;
+:Muestra el resumen con alert();
+
+|Usuario|
+:Responde con prompt() si confirma el pedido (SI / NO);
+
+|Sistema|
+if (¿Respondió SI?) then (sí)
+  :Genera el número de pedido;
+  :Muestra la confirmación de la operación\ny el resumen de la compra;
+  :Vacía el carrito y el método de pago;
+else (no)
+  :Informa "Pedido cancelado" con alert();
+  :Conserva el carrito y el método de pago;
+endif
+
+:Vuelve al menú principal;
+stop
+@enduml
