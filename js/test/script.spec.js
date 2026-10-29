@@ -245,8 +245,36 @@ describe("Flujo 2 - Gestión del carrito", function () {
             var carrito = agregarProductoAlCarrito([], catalogoPrueba, "A-001", 1).carrito;
             calcularResumenCarrito(carrito);
             expect(carrito[0].subtotal).toBeUndefined();
+                });
+    });
+
+    describe("formatearMoneda", function () {
+        it("formatea con símbolo $, separador de miles y dos decimales (es-AR)", function () {
+            expect(formatearMoneda(1234.5)).toBe("$1.234,50");
+            expect(formatearMoneda(1234567.891)).toBe("$1.234.567,89");
+        });
+        it("formatea el cero y acepta strings numéricos", function () {
+            expect(formatearMoneda(0)).toBe("$0,00");
+            expect(formatearMoneda("250")).toBe("$250,00");
         });
     });
+
+    describe("formatearResumenCarrito", function () {
+        it("avisa que el carrito está vacío", function () {
+            expect(formatearResumenCarrito(calcularResumenCarrito([]))).toBe("El carrito esta vacio.");
+        });
+        it("arma una línea por producto y el total", function () {
+            var carrito = agregarProductoAlCarrito([], catalogoPrueba, "A-001", 2).carrito;
+            carrito = agregarProductoAlCarrito(carrito, catalogoPrueba, "C-003", 3).carrito;
+            var texto = formatearResumenCarrito(calcularResumenCarrito(carrito));
+            expect(texto).toBe(
+                "Martillo Grande | 2 x $1.000,00 = $2.000,00\n" +
+                "Pala | 3 x $300,00 = $900,00\n" +
+                "Total: $2.900,00"
+            );
+        });
+    });
+
 });
 
 describe("Flujo 3 - Pago y cálculo de cuotas", function () {
@@ -408,6 +436,34 @@ describe("Flujo 4 - Confirmación del pedido", function () {
         });
         it("genera números distintos para secuencias distintas", function () {
             expect(crearNumeroPedido(100, 1)).not.toBe(crearNumeroPedido(100, 2));
+        });
+    });
+    
+    describe("formatearResumenPedido", function () {
+        var carrito;
+        beforeEach(function () {
+            carrito = agregarProductoAlCarrito([], catalogoPrueba, "A-001", 2).carrito;
+        });
+        it("detalla productos, pago en tarjeta, cuotas, recargo y envío", function () {
+            var pago = calcularCondicionesPago(2000, "tarjeta", 3);
+            var texto = formatearResumenPedido(crearResumenPedido(carrito, pago, clienteValido));
+            expect(texto).toBe(
+                "Martillo Grande | 2 x $1.000,00 = $2.000,00\n" +
+                "Total original: $2.000,00\n" +
+                "Metodo: Tarjeta de credito\n" +
+                "Cuotas: 3\n" +
+                "Recargo: 10% ($200,00)\n" +
+                "Total financiado: $2.200,00\n" +
+                "Valor de cada cuota: $733,33\n" +
+                "Envio a: Calle 123"
+            );
+        });
+        it("indica efectivo / transferencia, 1 cuota y 0% de recargo", function () {
+            var pago = calcularCondicionesPago(2000, "efectivo-transferencia");
+            var texto = formatearResumenPedido(crearResumenPedido(carrito, pago, clienteValido));
+            expect(texto).toContain("Metodo: Efectivo / transferencia");
+            expect(texto).toContain("Cuotas: 1");
+            expect(texto).toContain("Recargo: 0% ($0,00)");
         });
     });
 });
