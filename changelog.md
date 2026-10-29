@@ -3,8 +3,6 @@
 Este archivo se actualiza con cada Pull Request para registrar avances y correcciones
 
 ## [Unreleased]
-### Added
-- [feature/dev-javascript-logica-negocio] Implementación de la lógica de negocio y correcciones de los cuatro flujos de actividades PR: [#125](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/125) — @angelgc9107-lgtm (Desarrollador Javascript)
 
 ### Added
 - [feature/dev-javascript-logica-negocio] Implementación de la lógica de negocio y correcciones de los cuatro flujos de actividades PR: [#125](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/125) — @angelgc9107-lgtm (Desarrollador Javascript)
