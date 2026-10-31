@@ -52,7 +52,7 @@ Alcance: solo se testean funciones de lógica de negocio. Las funciones que llam
 - [x] `js/test/test-runner.html` con la configuración correcta de Jasmine y carga de archivos
 - [x] `js/test/testing-doc.md` con instrucciones de ejecución, descripción de suites y cobertura, métricas y capturas
 - [x] Coordinación con el Desarrollador JavaScript para mejorar la testabilidad del código
-- [x] Rama `feature/` con formato correcto, issue asociada al rol, PR hacia `develop` con revisión de otro integrante y entrada en `changelog.md`
+- [x] Rama con formato correcto (`feature/tester-javascript-jasmine` en el PR #123 y `docs/tester-spec-review-aprobada` en este PR de seguimiento #132), issue asociada al rol (#124), PR hacia `develop` con revisión de otro integrante (#123, revisado por @LuchoBarrionuevo13) y entrada en `changelog.md`
 
 ---
 
