@@ -77,7 +77,7 @@ de Google Maps dentro de `.ratio.ratio-16x9`).
 
 | Nombre y Apellido | Matrícula | Usuario de GitHub | Rol |
 |-----| ----- | ------ | ------ |
-| Luciano Barrionuevo | 156398 | @LuchoBarrionuevo13 | Desarrollador Frontend/Bootstrap |
-| Alan Diaz | 152841 | @alandox1 | Desarrollador de Componentes HTML Avanzados |
-| Angel Cuarteron | 159438 | @angelgc9107-lgtm | Especialista en Componentes Bootstrap |
-| Thiago Piastrellini | 158097 | @Piastrellini | Coordinador y DevOps |
+| Luciano Barrionuevo | 156398 | @LuchoBarrionuevo13 | Coordinador y DevOps |
+| Alan Diaz | 152841 | @alandox1 | Arquitecto de Diagramas de Actividades |
+| Angel Cuarteron | 159438 | @angelgc9107-lgtm | Desarrollador javascript |
+| Thiago Piastrellini | 158097 | @Piastrellini | Tester JavaScript / QA Engineer |

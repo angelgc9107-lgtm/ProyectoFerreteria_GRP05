@@ -1,9 +1,28 @@
 # Changelog
 
-Este archivo se actualiza con cada Pull Request para registrar avances y correcciones
+Este archivo se actualiza con cada Pull Request para registrar avances y correcciones.
 
 ## [Unreleased]
 
+## [Actividad N°3] - 2026-11-02
+
+### Added
+
+- [feature/coord-devops-tercera-entrega] [A3] Coordinador / DevOps - Documentación inicial y seguimiento PR: [#129](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/129) — Issue: [#128](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/128) — @LuchoBarrionuevo13 (Coordinador / DevOps)
+
+- [feature/arq-diagramas-actividades] Arquitecto de Diagramas de Actividades - 4 diagramas de actividades PlantUML (.puml y .png) y diagramas-doc.md PR: [#122](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/122) — @alandox1 (Arquitecto de Diagramas de Actividades)
+
+
+### Changed
+
+- [backport/primer-parcial] COORDINADOR / DEVOPS - Backport del Primer Parcial de master a develop PR: [#119](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/119) — Issue: [#120](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/120) — @LuchoBarrionuevo13 (Coordinador / DevOps)
+
+### Fixed
+
+
+
+
+# [Released]  - 2026-10-07 
 ### Added
 - [feature/dev-javascript-logica-negocio] Implementación de la lógica de negocio y correcciones de los cuatro flujos de actividades PR: [#125](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/125) — @angelgc9107-lgtm (Desarrollador Javascript)
 - [feature/tester-javascript-jasmine] Tester JavaScript: suite de testing con Jasmine y Playwright MCP: [#123](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/123) — Issue: [#124](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/124) — @Piastrellini (Tester JavaScript / QA Engineer)
