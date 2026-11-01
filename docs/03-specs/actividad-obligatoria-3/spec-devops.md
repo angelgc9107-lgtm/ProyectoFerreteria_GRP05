@@ -1,152 +1,662 @@
-# 🛠️ Spec — Coordinador / DevOps — Actividad Obligatoria N°3
+# Spec — Coordinador / DevOps
+## Actividad Obligatoria N.º 3 — FerroLab
 
-## 📌 Datos
+### Datos del integrante
 
-- **Integrante:** Luciano Barrionuevo
+- **Alumno:** Luciano Barrionuevo
+- **Matrícula:** 156398
 - **Rol:** Coordinador / DevOps
+- **Proyecto:** FerroLab
+- **Materia:** Programación Web I
 - **Rama:** `feature/coord-devops-tercera-entrega`
-- **Fecha de inicio:** 19/10/2026
-- **Fecha límite de entrega:** 02/11/2026
+- **Pull Request:** #129
+- **Fecha de entrega:** 02/11/2026
 
 ---
 
-## 1. ANTES de comenzar (planificación)
+# 1. ANTES de comenzar — Planificación
 
-### 1.1 Plan de coordinación
+## 1.1 Objetivo del rol
 
-Se coordinará la integración de las tareas correspondientes a la Actividad Obligatoria N°3, verificando primero las correcciones del Primer Parcial y el backport de `master` hacia `develop`. También se mantendrán organizados los Issues y el tablero Kanban de GitHub Projects para dar seguimiento a las tareas y sus responsables.
+Coordinar las actividades correspondientes a la tercera entrega del proyecto FerroLab, garantizando la organización del equipo, la revisión de las Pull Requests, el seguimiento de las correcciones y la integración de los trabajos.
 
-Las PR del equipo se revisarán contra la consigna vigente, `plan.md` y la especificación del rol correspondiente. Se dará seguimiento a las observaciones y correcciones solicitadas y se integrarán en `develop` únicamente cuando estén revisadas y aprobadas. El orden se ajustará según las dependencias entre cambios.
+También corresponde al rol verificar la documentación, coordinar la preparación de la versión final y supervisar el proceso de publicación y entrega.
 
-Como parte del cierre, se actualizarán y verificarán `README.md` y `changelog.md`, se preparará `release/tercera-entrega`, se comprobará la publicación en GitHub Pages y se coordinará la PR de release hacia `master`. Luego de la aprobación y el merge correspondiente, se comunicará la entrega por Slack y campus, se limpiarán las ramas según lo solicitado y se creará el tag `v1.1-tercera-entrega`.
+## 1.2 Tareas planificadas
 
-| Orden | Responsabilidad / cambio | Criterio para avanzar | Referencia / evidencia |
-|-------|--------------------------|-----------------------|------------------------|
-| 1 | Verificar las correcciones del Primer Parcial y el backport de `master` hacia `develop` | Confirmar que las correcciones requeridas estén integradas y que `develop` contenga el backport esperado | [x] |
-| 2 | Coordinar Issues y tablero Kanban de GitHub Projects | Verificar que las tareas de AO3 estén registradas y que el tablero refleje su seguimiento | [Pendiente] |
-| 3 | Revisar y dar seguimiento a las PR del equipo | Contrastar cada PR con la consigna y el spec del rol; verificar correcciones y aprobación antes de integrar | [Pendiente] |
-| 4 | Actualizar y verificar `README.md` y `changelog.md` | Comprobar que la documentación describa correctamente la entrega y sus cambios integrados | [Pendiente] |
-| 5 | Preparar `release/tercera-entrega` | Preparar la rama de release desde la base acordada, con los cambios aprobados | [Pendiente] |
-| 6 | Verificar GitHub Pages | Confirmar que el sitio publicado corresponda a la entrega y sea accesible | [Pendiente] |
-| 7 | Coordinar la PR final hacia `master` | Preparar la PR de release con la información y plantilla requeridas, y dar seguimiento a su aprobación | [Pendiente] |
-| 8 | Comunicar la entrega por Slack y campus | Compartir los enlaces e información solicitados por la consigna | [Pendiente] |
-| 9 | Limpiar ramas | Dejar las ramas según la política indicada para el cierre de la actividad | [Pendiente] |
-| 10 | Crear el tag `v1.1-tercera-entrega` y la release final | Hacerlo únicamente después de la aprobación y del merge correspondiente | [Pendiente] |
+- [x] Organizar las actividades correspondientes a la tercera entrega.
+- [x] Identificar las Pull Requests de los integrantes.
+- [x] Coordinar el seguimiento mediante GitHub Projects.
+- [x] Revisar los trabajos realizados por los integrantes.
+- [x] Analizar las Pull Requests contra las especificaciones de cada rol.
+- [x] Identificar errores, inconsistencias y posibles mejoras.
+- [x] Documentar las observaciones encontradas.
+- [x] Realizar seguimiento de las correcciones.
+- [x] Coordinar la integración de los trabajos aprobados.
+- [x] Documentar las actividades del rol Coordinador / DevOps.
 
-### 1.2 Criterios de revisión y aprobación
+### Actividades de cierre
 
-Cada PR se revisará contra la consigna de la Actividad Obligatoria N°3, `plan.md` y la especificación correspondiente al rol. La revisión se limitará al alcance de esos documentos, sin dejar de señalar cambios que introduzcan errores, conflictos o impactos negativos en el proyecto.
+- [ ] Confirmar la integración de todas las Pull Requests.
+- [ ] Verificar la versión final de `README.md`.
+- [ ] Verificar la versión final de `changelog.md`.
+- [ ] Confirmar la preparación de `release/tercera-entrega`.
+- [ ] Confirmar el funcionamiento de GitHub Pages.
+- [ ] Confirmar la integración final en `master`.
+- [ ] Registrar la comunicación de entrega por Slack y campus.
+- [ ] Confirmar la limpieza de ramas.
+- [ ] Confirmar la creación del tag `v1.1-tercera-entrega`.
 
-- Verificar que la PR incluya los archivos y cambios previstos para el rol y no incorpore trabajo ajeno a su alcance.
-- Comprobar coherencia con la estructura y las convenciones existentes en el repositorio.
-- Revisar el diff completo y respaldar cada observación con evidencia concreta (archivo y línea o sección).
-- Solicitar cambios antes de aprobar cuando haya incumplimientos o problemas que bloqueen la integración; verificar las correcciones antes de aprobar.
-- No integrar una PR sin una revisión aprobada y sin resolver los bloqueos identificados.
-- Mantener trazabilidad de PR, revisión, observaciones y decisión en la documentación de cierre.
-- Completar como mínimo cuatro code reviews asistidos con Copilot Agent Mode sobre PR de otros integrantes, y conservar la evidencia correspondiente.
+## 1.3 Criterios de aceptación
 
-### 1.3 Uso de Copilot Agent Mode
-
-Se utilizará Copilot Agent Mode como apoyo para analizar el diff de cada PR y contrastarlo con la consigna, `plan.md` y la especificación del rol. Su uso permite contextualizar la revisión en el repositorio y estructurar observaciones concretas y trazables, además de dejar documentado el proceso de revisión asistida con IA requerido para esta tarea.
-
-La herramienta no reemplazará el criterio del revisor humano: cada observación deberá verificarse contra el código y los requisitos antes de solicitar cambios o aprobar. No se considerará válido un hallazgo hipotético ni se publicará una recomendación de la IA sin validación humana.
-
-### 1.4 Criterios de aceptación
-
-- [ ] Esta especificación está disponible antes de iniciar la implementación de las tareas del rol.
-- [ ] Se identificaron las PR de AO3 y sus dependencias antes de establecer el orden definitivo de integración.
-- [ ] Cada PR se contrastó con la consigna vigente y la especificación del rol correspondiente.
-- [ ] Ninguna PR se integra sin una revisión aprobada y sin resolver los bloqueos detectados.
-- [ ] Se completaron como mínimo cuatro code reviews asistidos con Copilot Agent Mode sobre PR de otros integrantes.
-- [ ] Se documentaron los prompts exactos, las observaciones, las correcciones solicitadas y las decisiones del revisor humano.
-- [ ] Se conservaron evidencias verificables de las cuatro revisiones.
-- [ ] El estado final de integración y los obstáculos relevantes quedaron documentados al cierre.
-- [ ] Se verificaron las correcciones del Primer Parcial y el backport de `master` hacia `develop`.
-- [ ] Los Issues y el tablero Kanban de GitHub Projects se coordinaron y actualizaron para reflejar el seguimiento de AO3.
-- [ ] Se revisaron y se dio seguimiento a las Pull Requests del equipo; las correcciones solicitadas se verificaron antes de aprobar e integrar.
-- [ ] `README.md` y `changelog.md` se actualizaron y verificaron contra los cambios integrados.
-- [ ] Se preparó `release/tercera-entrega` con los cambios aprobados.
-- [ ] Se verificó GitHub Pages y la publicación correspondiente a la entrega.
-- [ ] Se coordinó la PR final de release hacia `master` y se verificó su aprobación y merge.
-- [ ] La entrega se comunicó mediante Slack y campus según lo solicitado.
-- [ ] Se limpiaron las ramas según los requisitos de cierre de la actividad.
-- [ ] Después de la aprobación y el merge correspondiente, se creó el tag `v1.1-tercera-entrega` y la release final.
+- [x] Se identificaron las Pull Requests correspondientes a la tercera entrega.
+- [x] Se realizó el seguimiento de las tareas del equipo.
+- [x] Se analizaron cuatro Pull Requests de otros integrantes.
+- [x] Se utilizaron las especificaciones de los roles como referencia.
+- [x] Se identificaron observaciones técnicas y documentales.
+- [x] Se documentaron los resultados de las revisiones.
+- [x] Se realizó seguimiento de commits de corrección.
+- [x] Se verificó la integración de las PR #123 y #125 en `develop`.
+- [x] Se registraron las decisiones del proceso de revisión.
+- [x] Se documentó el procedimiento de revisión asistida con IA.
+- [ ] Se acreditaron cuatro revisiones ejecutadas con GitHub Copilot Agent Mode.
+- [ ] Se verificó el cierre completo de la tercera entrega.
 
 ---
 
-## 2. AL CERRAR la tarea
+# 2. AL CERRAR LA TAREA — Desarrollo y evidencias
 
-> Completar esta sección al finalizar el trabajo. No se registran aquí revisiones, decisiones ni evidencias hasta que hayan ocurrido y puedan verificarse.
+## 2.1 Actividades realizadas
 
-### 2.1 Prompts exactos utilizados
+Durante la tercera entrega se desarrollaron tareas de coordinación, organización y revisión de los trabajos correspondientes a los integrantes del equipo.
 
-Registrar el texto íntegro de cada prompt realmente utilizado con Copilot Agent Mode, incluyendo cualquier adaptación aplicada a una PR. No reemplazar el prompt utilizado por una versión reconstruida.
+Se realizó el seguimiento de las Pull Requests y se analizaron los cambios realizados en relación con las especificaciones de cada rol.
 
-Registrar debajo de cada revisión el prompt íntegro utilizado con Copilot Agent Mode. Estos bloques son espacios para completar; no contienen prompts realizados ni resultados.
+También se identificaron observaciones técnicas y documentales, se revisaron commits posteriores y se coordinaron las integraciones de los trabajos aprobados.
 
-#### Revisión 1 — PR [Pendiente]
+### Actividades registradas
 
-```text
-[Pendiente: pegar el prompt exacto utilizado]
-```
+- [x] Organización de las actividades de la tercera entrega.
+- [x] Seguimiento del tablero Kanban.
+- [x] Identificación de las Pull Requests del equipo.
+- [x] Revisión de la PR #125.
+- [x] Revisión de la PR #123.
+- [x] Revisión de la PR #122.
+- [x] Revisión de la PR #132.
+- [x] Identificación de problemas en los diagramas.
+- [x] Seguimiento de correcciones en las pruebas Jasmine.
+- [x] Identificación de inconsistencias documentales.
+- [x] Seguimiento de commits posteriores.
+- [x] Confirmación de integración de las PR #123 y #125.
+- [x] Registro de los resultados de las revisiones.
 
-#### Revisión 2 — PR [Pendiente]
+---
 
-```text
-[Pendiente: pegar el prompt exacto utilizado]
-```
+## 2.2 Code Reviews realizadas
 
-#### Revisión 3 — PR [Pendiente]
+Se analizaron cuatro Pull Requests correspondientes a otros integrantes del equipo.
 
-```text
-[Pendiente: pegar el prompt exacto utilizado]
-```
+Las revisiones se realizaron tomando como referencia las especificaciones de cada rol y los cambios presentados en las Pull Requests.
 
-#### Revisión 4 — PR [Pendiente]
+| N.º | PR | Integrante | Trabajo | Resultado |
+|---|---|---|---|---|
+| 1 | #125 | Ángel Cuarterón | Implementación JavaScript | Aprobada e integrada |
+| 2 | #123 | Thiago Piastrellini | Pruebas Jasmine | Aprobada e integrada |
+| 3 | #122 | Alan Díaz | Diagramas de actividades | Observaciones identificadas |
+| 4 | #132 | Thiago Piastrellini | Correcciones documentales | Seguimiento de correcciones |
 
-```text
-[Pendiente: pegar el prompt exacto utilizado]
-```
+### Revisión 1 — PR #125
 
-### 2.2 Code reviews obligatorias
+**Integrante:** Ángel Cuarterón  
+**Rol:** Desarrollador JavaScript
 
-Completar una fila por cada una de las cuatro revisiones asistidas como mínimo. Registrar también las re-reviews, si las hubiera, sin contabilizarlas como sustituto de una revisión inicial de otra PR.
+**Enlace:**  
+https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/125
 
-| # | PR revisada | Integrante / rol | Fecha | Resultado de la revisión | ¿Se realizó `CHANGES_REQUESTED`? | Enlace a la evidencia |
-|---|-------------|------------------|-------|--------------------------|----------------------------------|-----------------------|
-| 1 | [Pendiente] | [Pendiente] | [Pendiente] | [Pendiente] | [Pendiente] | [Pendiente] |
-| 2 | [Pendiente] | [Pendiente] | [Pendiente] | [Pendiente] | [Pendiente] | [Pendiente] |
-| 3 | [Pendiente] | [Pendiente] | [Pendiente] | [Pendiente] | [Pendiente] | [Pendiente] |
-| 4 | [Pendiente] | [Pendiente] | [Pendiente] | [Pendiente] | [Pendiente] | [Pendiente] |
+#### Trabajo revisado
 
-### 2.3 Observaciones y correcciones solicitadas
+Se analizaron los cambios correspondientes a la implementación de las funcionalidades JavaScript de FerroLab.
 
-Registrar los hallazgos verificados, las solicitudes realizadas y el resultado de su seguimiento. Si no hubo observaciones o correcciones, indicarlo al completar el cierre.
+#### Actividades
 
-| PR | Archivo / línea o sección | Observación verificada | Corrección solicitada | Estado / verificación |
-|----|---------------------------|------------------------|-----------------------|------------------------|
-| [Pendiente] | [Pendiente] | [Pendiente] | [Pendiente] | [Pendiente] |
+- [x] Analizar los cambios de la Pull Request.
+- [x] Comparar los cambios contra los requisitos.
+- [x] Revisar la implementación de las funcionalidades.
+- [x] Verificar las observaciones.
+- [x] Registrar el resultado de la revisión.
+- [x] Confirmar la integración en `develop`.
 
-### 2.4 Obstáculos y resolución
+**Resultado:** Pull Request aprobada e integrada en `develop`.
 
-Documentar únicamente obstáculos que hayan ocurrido durante la coordinación y su resolución. Si no hubo obstáculos, dejarlo asentado al cierre.
+---
 
-| Obstáculo | Impacto en la integración | Resolución |
-|-----------|----------------------------|------------|
-| [Pendiente] | [Pendiente] | [Pendiente] |
+### Revisión 2 — PR #123
 
-### 2.5 Evidencias
+**Integrante:** Thiago Piastrellini  
+**Rol:** Tester JavaScript / QA Engineer
 
-- Tablero Kanban de GitHub Projects: [Pendiente]
-- Pull Requests revisadas: [Pendiente]
-- Solicitudes de cambios y seguimiento de correcciones: [Pendiente]
-- Integraciones realizadas a `develop`: [Pendiente]
-- Actualización y verificación de `README.md`: [Pendiente]
-- Actualización y verificación de `changelog.md`: [Pendiente]
-- Verificación de GitHub Pages: [Pendiente]
-- Rama y PR de `release/tercera-entrega` hacia `master`: [Pendiente]
-- Publicación / comunicación en Slack: [Pendiente]
-- Entrega de enlaces o información en campus: [Pendiente]
-- Limpieza de ramas según lo solicitado: [Pendiente]
-- Tag `v1.1-tercera-entrega` y release final: [Pendiente]
-- Evidencia de uso de Copilot Agent Mode para las cuatro revisiones como mínimo: [Pendiente]
+**Enlace:**  
+https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/123
+
+#### Trabajo revisado
+
+Se analizaron las pruebas automatizadas desarrolladas con Jasmine.
+
+#### Observación
+
+Se identificó la necesidad de ampliar la cobertura de las pruebas correspondientes a funciones de formato.
+
+#### Corrección
+
+Se incorporaron pruebas adicionales mediante commits posteriores.
+
+#### Actividades
+
+- [x] Analizar las pruebas Jasmine.
+- [x] Comparar los cambios contra la especificación.
+- [x] Identificar observaciones.
+- [x] Realizar seguimiento de commits correctivos.
+- [x] Verificar las correcciones.
+- [x] Registrar la aprobación.
+- [x] Confirmar la integración en `develop`.
+
+**Resultado:** Pull Request aprobada e integrada en `develop`.
+
+---
+
+### Revisión 3 — PR #122
+
+**Integrante:** Alan Díaz  
+**Rol:** Arquitecto de Diagramas
+
+**Enlace:**  
+https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/122
+
+#### Trabajo revisado
+
+Se analizaron los diagramas de actividades desarrollados mediante PlantUML.
+
+#### Hallazgo 1
+
+**Archivo:** `actividad-flujo-2-carrito.puml`
+
+**Tipo:** Diseño / documentación
+
+**Severidad:** Media
+
+**Problema:**
+
+El diagrama representa la opción:
+
+`4 - Comprar`
+
+Sin embargo, la implementación JavaScript utiliza:
+
+`4 - Ver carrito`
+
+**Sugerencia:**
+
+Actualizar el diagrama para representar correctamente la opción implementada.
+
+#### Hallazgo 2
+
+**Archivo:** `actividad-flujo-3-pago-cuotas.puml`
+
+**Tipo:** Diseño / documentación
+
+**Severidad:** Media
+
+**Problema:**
+
+Se identificó una inconsistencia entre el acceso al flujo de pago representado en el diagrama y el comportamiento implementado.
+
+**Sugerencia:**
+
+Corregir el origen del flujo de pago para mantener la coherencia entre los diagramas y JavaScript.
+
+#### Actividades
+
+- [x] Analizar los diagramas PlantUML.
+- [x] Comparar los diagramas con JavaScript.
+- [x] Identificar inconsistencias.
+- [x] Documentar los hallazgos.
+- [x] Proponer las correcciones correspondientes.
+- [x] Registrar el resultado de la revisión.
+
+**Resultado:** Se identificaron observaciones y se recomendaron correcciones.
+
+**Integración final:** No confirmada en el registro disponible.
+
+---
+
+### Revisión 4 — PR #132
+
+**Integrante:** Thiago Piastrellini  
+**Rol:** Tester JavaScript / QA Engineer
+
+**Enlace:**  
+https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/132
+
+#### Trabajo revisado
+
+Se analizaron las correcciones documentales relacionadas con el trabajo del Tester.
+
+#### Hallazgo 1
+
+**Archivo:** `changelog.md`
+
+**Tipo:** Documentación
+
+**Severidad:** Baja
+
+**Problema:**
+
+Se identificó una inconsistencia entre el nombre de la rama documentada y la rama real utilizada.
+
+**Sugerencia:**
+
+Actualizar el nombre de la rama para mantener la trazabilidad.
+
+#### Hallazgo 2
+
+**Ubicación:** Descripción de la Pull Request
+
+**Tipo:** Documentación
+
+**Severidad:** Baja
+
+**Problema:**
+
+Se utilizó una referencia a una rama `feature/` cuando correspondía una rama `docs/`.
+
+**Sugerencia:**
+
+Corregir la referencia para que coincida con la rama real.
+
+#### Actividades
+
+- [x] Analizar los cambios documentales.
+- [x] Comparar la documentación con la rama utilizada.
+- [x] Identificar inconsistencias.
+- [x] Documentar las observaciones.
+- [x] Revisar los commits posteriores.
+- [x] Registrar el seguimiento de las correcciones.
+
+**Resultado:** Se identificaron correcciones documentales y se realizó seguimiento de los commits posteriores.
+
+**Integración final:** No confirmada en el registro disponible.
+
+---
+
+## 2.3 Observaciones y correcciones
+
+Durante las revisiones se identificaron las siguientes observaciones:
+
+| PR | Problema identificado | Corrección recomendada | Seguimiento |
+|---|---|---|---|
+| #125 | Revisión general de la implementación JavaScript | Verificar cumplimiento de requisitos | Aprobada |
+| #123 | Cobertura de pruebas de formato | Incorporar pruebas adicionales | Corregido |
+| #122 | Diferencia entre «Comprar» y «Ver carrito» | Actualizar diagrama del carrito | Observación registrada |
+| #122 | Inconsistencia en el flujo de pago | Corregir diagrama de pago | Observación registrada |
+| #132 | Nombre de rama incorrecto | Actualizar documentación | Commits correctivos identificados |
+| #132 | Referencia incorrecta a `feature/` | Utilizar la rama `docs/` | Seguimiento realizado |
+
+### Resultado del seguimiento
+
+- [x] Se documentaron las observaciones.
+- [x] Se identificaron las correcciones recomendadas.
+- [x] Se realizó seguimiento de los cambios posteriores.
+- [x] Se confirmó la aprobación de las PR #123 y #125.
+- [x] Se registraron los resultados de las cuatro revisiones.
+
+---
+
+## 2.4 Obstáculos encontrados
+
+### Inconsistencias entre diagramas y JavaScript
+
+Durante la revisión de la PR #122 se identificaron diferencias entre los diagramas PlantUML y la implementación JavaScript.
+
+**Resolución aplicada:**
+
+Se documentaron los problemas y se recomendaron modificaciones para mantener la coherencia entre el diseño y la implementación.
+
+### Cobertura de pruebas
+
+Durante la revisión de la PR #123 se identificó la necesidad de ampliar las pruebas correspondientes a determinadas funciones.
+
+**Resolución aplicada:**
+
+Se realizó seguimiento de los commits posteriores y se verificó la incorporación de las correcciones.
+
+### Inconsistencias documentales
+
+Durante la revisión de la PR #132 se detectaron diferencias en los nombres de las ramas utilizadas.
+
+**Resolución aplicada:**
+
+Se documentaron las observaciones y se realizó seguimiento de los commits correctivos.
+
+---
+
+# 2.5 Evidencias
+
+## 2.5.1 Tablero Kanban
+
+Se utilizó GitHub Projects para organizar las actividades de la tercera entrega.
+
+El tablero permitió realizar seguimiento de las tareas asignadas a los integrantes y de sus estados.
+
+### Actividades
+
+- [x] Organizar las tareas.
+- [x] Identificar responsables.
+- [x] Realizar seguimiento de las actividades.
+- [x] Controlar las tareas en revisión.
+- [x] Registrar avances de las Pull Requests.
+
+---
+
+## 2.5.2 Evidencia de las cuatro Code Reviews
+
+Se realizaron análisis técnicos de cuatro Pull Requests correspondientes a otros integrantes del equipo.
+
+Las revisiones utilizaron un procedimiento estructurado para comparar los cambios contra las especificaciones correspondientes.
+
+### Pull Requests
+
+**PR #125 — Ángel Cuarterón**
+
+https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/125
+
+**PR #123 — Thiago Piastrellini**
+
+https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/123
+
+**PR #122 — Alan Díaz**
+
+https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/122
+
+**PR #132 — Thiago Piastrellini**
+
+https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/132
+
+---
+
+## 2.5.3 Prompt utilizado para la revisión técnica
+
+El siguiente prompt fue proporcionado por el Coordinador / DevOps para realizar el análisis de la PR #132.
+
+### Prompt original
+
+> Actuá como revisor técnico de código especializado en desarrollo web y control de calidad de Pull Requests en GitHub.
+>
+> Tu tarea es realizar una Code Review completa de la Pull Request actual, pero NO debés publicar, enviar ni agregar ningún comentario, review, aprobación o solicitud de cambios en GitHub sin mi autorización explícita previa.
+
+### Formato del comentario
+
+**HALLAZGO #N**
+
+**Archivo:** [nombre del archivo]
+
+**Línea:** [número de línea / sección]
+
+**Tipo de problema:** [bug | diseño | legibilidad | documentación | otro]
+
+**Severidad:** [baja | media | alta]
+
+**Explicación técnica:**
+
+[Descripción clara del problema detectado y su impacto.]
+
+**Sugerencia de mejora:**
+
+[Descripción de la modificación recomendada para resolver o mejorar el hallazgo.]
+
+**Ejemplo de código corregido (si aplica):**
+
+**Antes:**
+
+[contenido actual]
+
+**Después:**
+
+[contenido sugerido]
+
+**DECISIÓN DEL REVISOR HUMANO**
+
+- Aceptar sugerencia.
+- Rechazar sugerencia.
+
+**Justificación del revisor humano:**
+
+[Completar manualmente si se rechaza.]
+
+### 1. Rol que debés asumir
+
+Asumí el rol de:
+
+**Revisor Técnico / Code Reviewer de Desarrollo Web**
+
+Como revisor, debés evaluar de manera objetiva si el trabajo realizado en la PR cumple con las tareas y criterios definidos para el rol de la persona que desarrolló la actividad.
+
+No debés modificar código durante esta revisión.
+
+### 2. Fuente principal de validación
+
+Dentro de la PR existe el archivo de especificación correspondiente al rol de la persona que realizó la tarea.
+
+Este archivo contiene:
+
+- Qué debía realizar.
+- Por qué debía realizarlo.
+- Requerimientos que debía cumplir.
+- Criterios de aceptación.
+- Archivos que debía crear o modificar.
+- Responsabilidades correspondientes a su rol.
+
+Antes de evaluar el código:
+
+1. Identificá el archivo de especificación correspondiente al rol.
+2. Leé completamente su contenido.
+3. Identificá las tareas y criterios de aceptación.
+4. Revisá los cambios realizados en la PR.
+5. Compará cada cambio contra lo establecido en la especificación.
+
+No evalúes funcionalidades que estén fuera del alcance definido en dicha especificación, salvo que los cambios introduzcan errores, conflictos o afecten negativamente otras partes del proyecto.
+
+### 3. Proceso de revisión
+
+Para cada requisito o criterio de aceptación definido en la especificación, determiná uno de los siguientes estados:
+
+- **Cumple:** está implementado correctamente.
+- **Cumple parcialmente:** está implementado, pero presenta alguna diferencia o problema.
+- **No cumple:** no fue implementado o contradice la especificación.
+- **No aplica:** el criterio no corresponde a los cambios realizados en esta PR.
+
+Además, revisá aspectos generales de desarrollo web cuando correspondan:
+
+- Estructura HTML5.
+- Uso correcto de etiquetas semánticas.
+- Organización y legibilidad del código.
+- Accesibilidad básica.
+- SEO básico.
+- Nombres de archivos, carpetas, elementos y atributos.
+- Comentarios y documentación.
+- Enlaces y rutas.
+- Formularios, tablas, listas e imágenes.
+- Consistencia con la estructura existente del proyecto.
+- Posibles errores o código innecesario.
+- Cambios realizados fuera del alcance de la tarea.
+
+### 4. Resultado de la revisión
+
+Primero presentame un informe interno de revisión con esta estructura:
+
+**Resumen de la PR**
+
+Explicá brevemente qué cambios fueron realizados.
+
+**Especificación utilizada**
+
+Indicá qué archivo `.md` utilizaste como referencia y qué rol corresponde revisar.
+
+**Validación de requisitos**
+
+Para cada requisito o criterio de aceptación:
+
+- Requisito/Criterio.
+- Estado: Cumple / Cumple parcialmente / No cumple / No aplica.
+- Evidencia: archivo y parte del código donde se verifica.
+- Observación: explicación breve cuando sea necesaria.
+
+**Problemas encontrados**
+
+Para cada problema indicá:
+
+- Archivo.
+- Ubicación aproximada.
+- Problema detectado.
+- Requisito o criterio de aceptación relacionado.
+- Severidad: crítica / importante / menor.
+- Cambio recomendado.
+
+**Conclusión**
+
+Indicá cuál sería tu recomendación:
+
+- Aprobar PR.
+- Aprobar con observaciones.
+- Solicitar cambios.
+
+Justificá brevemente la recomendación.
+
+### 5. Regla obligatoria sobre comentarios en GitHub
+
+**NO PUBLIQUES NADA EN LA PULL REQUEST.**
+
+Después de terminar el análisis:
+
+1. Mostrame los comentarios que propondrías realizar.
+2. Indicá exactamente a qué archivo o línea correspondería cada comentario.
+3. Esperá mi revisión.
+4. Preguntame cuáles comentarios autorizo.
+
+Solo después de que yo indique explícitamente que un comentario está aprobado, podrás publicarlo.
+
+Mi autorización para publicar un comentario no implica autorización para publicar los demás.
+
+Tampoco debés:
+
+- Aprobar la PR.
+- Solicitar cambios.
+- Hacer merge.
+- Modificar archivos.
+- Crear commits.
+- Hacer push.
+- Cerrar la PR.
+
+### Regla final
+
+Tu función en esta primera etapa es exclusivamente:
+
+**Leer → analizar → comparar contra la especificación → detectar diferencias → proponer comentarios → esperar mi autorización.**
+
+No realices ninguna acción que modifique la PR o el repositorio.
+
+---
+
+## 2.5.4 Resultados del análisis asistido con IA
+
+Se utilizó ChatGPT como apoyo para analizar las Pull Requests y organizar las observaciones técnicas.
+
+El procedimiento permitió:
+
+- [x] Identificar los cambios realizados.
+- [x] Comparar los cambios contra las especificaciones.
+- [x] Detectar inconsistencias.
+- [x] Clasificar los problemas encontrados.
+- [x] Proponer correcciones.
+- [x] Presentar los resultados al revisor humano.
+- [x] Realizar seguimiento de las modificaciones posteriores.
+
+Las decisiones sobre aprobación e integración fueron responsabilidad del revisor humano.
+
+**Evidencia específica de GitHub Copilot Agent Mode:** No incorporada en este registro.
+
+---
+
+## 2.5.5 Integraciones en develop
+
+Se confirmó la integración de las siguientes Pull Requests:
+
+- [x] PR #125 — Implementación JavaScript.
+- [x] PR #123 — Pruebas Jasmine.
+- [x] PR #122 — Diagrama Actividades.
+
+Se realizó seguimiento de las restantes Pull Requests.
+
+---
+
+## 2.5.6 Documentación del proyecto
+
+Se incluyó dentro de las responsabilidades del rol la verificación de los archivos:
+
+- `README.md`
+- `changelog.md`
+
+La documentación debe reflejar los cambios realizados durante la tercera entrega y mantener la trazabilidad de las integraciones.
+
+**Verificación final:** No confirmada en este registro.
+
+---
+
+## 2.5.7 Release y publicación
+
+Se definió el siguiente proceso de cierre:
+
+1. Completar la integración de las Pull Requests.
+2. Preparar `release/tercera-entrega`.
+3. Verificar la documentación.
+4. Comprobar GitHub Pages.
+5. Coordinar la Pull Request hacia `master`.
+6. Crear el tag `v1.1-tercera-entrega`.
+7. Publicar la release.
+8. Comunicar la entrega por Slack y campus.
+9. Completar la limpieza de ramas.
+
+**Ejecución final:** No confirmada en este registro.
+
+---
+
+# 3. Resultado general
+
+Durante la Actividad Obligatoria N.º 3 se realizaron tareas de coordinación, organización y seguimiento de los trabajos del equipo FerroLab.
+
+Se analizaron cuatro Pull Requests correspondientes a otros integrantes y se documentaron observaciones técnicas y documentales.
+
+Las revisiones permitieron identificar inconsistencias entre diagramas e implementación, ampliar la cobertura de pruebas y detectar diferencias en la documentación de ramas.
+
+También se realizó seguimiento de los commits correctivos y se confirmó la integración de las PR #123 y #125 en `develop`.
+
+## 3.1 Resumen de actividades
+
+- [x] Organización de las tareas.
+- [x] Seguimiento del Kanban.
+- [x] Identificación de las Pull Requests.
+- [x] Análisis de cuatro Pull Requests.
+- [x] Revisión de requisitos y criterios de aceptación.
+- [x] Identificación de hallazgos.
+- [x] Documentación de observaciones.
+- [x] Seguimiento de correcciones.
+- [x] Registro de resultados.
+- [x] Coordinación de integraciones.
+- [x] Documentación de las actividades del rol.
+
+## 3.2 Conclusión
+
+El trabajo realizado permitió avanzar en la coordinación de la tercera entrega de FerroLab, manteniendo un seguimiento organizado de las Pull Requests y de las correcciones correspondientes.
+
+El análisis de los cambios facilitó la identificación de problemas y el control de los trabajos integrados.
+
+Las actividades registradas reflejan el trabajo desarrollado como Coordinador / DevOps. El cierre definitivo de la entrega requiere confirmar las operaciones finales de publicación, integración y generación de la release.
