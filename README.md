@@ -108,8 +108,8 @@ Las observaciones, los hallazgos y las correcciones recomendadas se encuentran d
 ## 👥 Integrantes del Grupo
 
 | Nombre y Apellido | Matrícula | Usuario de GitHub | Rol |
-|---|---|---|---|
+|-----| ----- | ------ | ------ |
 | Luciano Barrionuevo | 156398 | @LuchoBarrionuevo13 | Coordinador y DevOps |
-| Alan Díaz | 152841 | @alandox1 | Arquitecto de Diagramas |
-| Ángel Cuarterón | 159438 | @angelgc9107-lgtm | Desarrollador JavaScript |
+| Alan Diaz | 152841 | @alandox1 | Arquitecto de Diagramas de Actividades |
+| Angel Cuarteron | 159438 | @angelgc9107-lgtm | Desarrollador javascript |
 | Thiago Piastrellini | 158097 | @Piastrellini | Tester JavaScript / QA Engineer |
