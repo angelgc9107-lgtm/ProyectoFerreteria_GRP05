@@ -59,8 +59,8 @@ También corresponde al rol verificar la documentación, coordinar la preparaci�
 - [x] Se verificó la integración de las PR #123 y #125 en `develop`.
 - [x] Se registraron las decisiones del proceso de revisión.
 - [x] Se documentó el procedimiento de revisión asistida con IA.
-- [ ] Se acreditaron cuatro revisiones ejecutadas con GitHub Copilot Agent Mode.
-- [ ] Se verificó el cierre completo de la tercera entrega.
+- [x] Se acreditaron cuatro revisiones ejecutadas con GitHub Copilot Agent Mode.
+- [x] Se verificó el cierre completo de la tercera entrega.
 
 ---
 
@@ -186,7 +186,7 @@ Se analizaron los diagramas de actividades desarrollados mediante PlantUML.
 
 **Problema:**
 
-El diagrama representa la opción:
+El diagrama representaba la opción:
 
 `4 - Comprar`
 
@@ -222,10 +222,22 @@ Corregir el origen del flujo de pago para mantener la coherencia entre los diagr
 - [x] Documentar los hallazgos.
 - [x] Proponer las correcciones correspondientes.
 - [x] Registrar el resultado de la revisión.
+- [x] Realizar seguimiento de la Pull Request.
+- [x] Confirmar la integración en `develop`.
 
-**Resultado:** Se identificaron observaciones y se recomendaron correcciones.
+#### Resultado de la revisión
 
-**Integración final:** No confirmada en el registro disponible.
+**Recomendación inicial:** Solicitar correcciones.
+
+Durante la Code Review se identificaron dos inconsistencias entre los diagramas PlantUML y la implementación JavaScript.
+
+Se documentaron los hallazgos y se recomendaron las modificaciones correspondientes.
+
+**Estado de la revisión:** Finalizada.
+
+**Integración final:** Integrada en `develop`.
+
+**Resultado:** La PR #122 fue integrada en `develop` después del proceso de revisión y seguimiento.
 
 ---
 
@@ -339,47 +351,189 @@ Se documentaron las observaciones y se realizó seguimiento de los commits corre
 
 ---
 
-# 2.5 Evidencias
+## 2.5 Evidencias
 
-## 2.5.1 Tablero Kanban
+### 2.5.1 Tablero Kanban
 
-Se utilizó GitHub Projects para organizar las actividades de la tercera entrega.
+Se utilizó GitHub Projects para organizar y realizar el seguimiento
+de las actividades correspondientes a la Actividad Obligatoria N.º 3.
 
-El tablero permitió realizar seguimiento de las tareas asignadas a los integrantes y de sus estados.
+El tablero permitió identificar las tareas asignadas a cada integrante,
+controlar sus estados y realizar el seguimiento de las Pull Requests.
 
-### Actividades
+**Enlace al tablero Kanban:**
 
-- [x] Organizar las tareas.
-- [x] Identificar responsables.
-- [x] Realizar seguimiento de las actividades.
+[GitHub Projects — FerroLab](https://github.com/users/angelgc9107-lgtm/projects/1)
+
+#### Actividades realizadas
+
+- [x] Organizar las tareas correspondientes a la tercera entrega.
+- [x] Identificar los responsables de cada actividad.
+- [x] Realizar seguimiento de las tareas en desarrollo.
 - [x] Controlar las tareas en revisión.
-- [x] Registrar avances de las Pull Requests.
+- [x] Registrar los avances de las Pull Requests.
+- [x] Coordinar la integración de los trabajos aprobados.
+- [x] Realizar seguimiento de las cuatro Pull Requests revisadas.
+
+**Evidencia:** Tablero GitHub Projects utilizado para gestionar
+las actividades y sus estados durante la tercera entrega.
 
 ---
 
-## 2.5.2 Evidencia de las cuatro Code Reviews
+### 2.5.2 Evidencia de las cuatro Code Reviews
 
-Se realizaron análisis técnicos de cuatro Pull Requests correspondientes a otros integrantes del equipo.
+Se realizaron cuatro revisiones técnicas de Pull Requests
+correspondientes a otros integrantes del equipo.
 
-Las revisiones utilizaron un procedimiento estructurado para comparar los cambios contra las especificaciones correspondientes.
+Las revisiones consistieron en analizar los cambios realizados,
+compararlos con las especificaciones de cada rol, identificar
+observaciones y realizar seguimiento de las correcciones.
 
-### Pull Requests
+#### Code Review 1 — PR #125
 
-**PR #125 — Ángel Cuarterón**
+**Integrante:** Ángel Cuarterón  
+**Rol:** Desarrollador JavaScript
+
+**Enlace:**
 
 https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/125
 
-**PR #123 — Thiago Piastrellini**
+**Trabajo revisado:** Implementación de las funcionalidades JavaScript.
+
+**Actividades realizadas:**
+
+- [x] Analizar los cambios de la Pull Request.
+- [x] Comparar la implementación con la especificación del rol.
+- [x] Revisar las funcionalidades desarrolladas.
+- [x] Registrar el resultado de la revisión.
+- [x] Confirmar la integración en `develop`.
+
+**Resultado:** Revisión finalizada e integrada en `develop`.
+
+#### Code Review 2 — PR #123
+
+**Integrante:** Thiago Piastrellini  
+**Rol:** Tester JavaScript / QA Engineer
+
+**Enlace:**
 
 https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/123
 
-**PR #122 — Alan Díaz**
+**Trabajo revisado:** Pruebas automatizadas mediante Jasmine.
+
+**Hallazgo identificado:**
+
+Se identificó la necesidad de ampliar la cobertura de las
+pruebas correspondientes a funciones de formato.
+
+**Corrección realizada:**
+
+Se incorporaron pruebas adicionales mediante commits posteriores.
+
+**Actividades realizadas:**
+
+- [x] Analizar las pruebas Jasmine.
+- [x] Comparar las pruebas con la especificación del rol.
+- [x] Identificar observaciones.
+- [x] Realizar seguimiento de los commits correctivos.
+- [x] Verificar las correcciones.
+- [x] Confirmar la integración en `develop`.
+
+**Resultado:** Revisión finalizada e integrada en `develop`.
+
+#### Code Review 3 — PR #122
+
+**Integrante:** Alan Díaz  
+**Rol:** Arquitecto de Diagramas
+
+**Enlace:**
 
 https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/122
 
-**PR #132 — Thiago Piastrellini**
+**Trabajo revisado:** Diagramas de actividades desarrollados con PlantUML.
+
+**Hallazgo 1:**
+
+En el archivo `actividad-flujo-2-carrito.puml` se identificó
+una diferencia entre la opción `4 - Comprar` del diagrama
+y la opción `4 - Ver carrito` de JavaScript.
+
+**Hallazgo 2:**
+
+En el archivo `actividad-flujo-3-pago-cuotas.puml` se identificó
+una inconsistencia entre el acceso al flujo de pago representado
+en el diagrama y el comportamiento implementado.
+
+**Correcciones recomendadas:**
+
+- Actualizar el diagrama del carrito.
+- Corregir el origen del flujo de pago en cuotas.
+- Regenerar los diagramas correspondientes.
+
+**Actividades realizadas:**
+
+- [x] Analizar los diagramas PlantUML.
+- [x] Comparar los diagramas con JavaScript.
+- [x] Identificar inconsistencias.
+- [x] Documentar los hallazgos.
+- [x] Proponer las correcciones.
+- [x] Realizar seguimiento de la Pull Request.
+- [x] Confirmar la integración en `develop`.
+
+**Resultado:** Revisión finalizada e integrada en `develop`.
+
+#### Code Review 4 — PR #132
+
+**Integrante:** Thiago Piastrellini  
+**Rol:** Tester JavaScript / QA Engineer
+
+**Enlace:**
 
 https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/132
+
+**Trabajo revisado:** Correcciones documentales.
+
+**Hallazgo 1:**
+
+Se identificó una inconsistencia entre el nombre de la rama
+documentada en `changelog.md` y la rama utilizada en la PR.
+
+**Hallazgo 2:**
+
+Se identificó una referencia a una rama `feature/` cuando
+correspondía una rama `docs/`.
+
+**Correcciones recomendadas:**
+
+- Corregir el nombre de la rama documentada.
+- Actualizar las referencias a la rama utilizada.
+- Mantener la trazabilidad de los cambios.
+
+**Actividades realizadas:**
+
+- [x] Analizar los cambios documentales.
+- [x] Comparar la documentación con la rama utilizada.
+- [x] Identificar inconsistencias.
+- [x] Documentar las observaciones.
+- [x] Realizar seguimiento de los commits correctivos.
+- [x] Confirmar la integración en `develop`.
+
+**Resultado:** Revisión finalizada e integrada en `develop`.
+
+#### Resultado general de las Code Reviews
+
+| PR | Integrante | Resultado | Integración |
+|---|---|---|---|
+| #125 | Ángel Cuarterón | Revisión finalizada | Integrada en `develop` |
+| #123 | Thiago Piastrellini | Revisión finalizada | Integrada en `develop` |
+| #122 | Alan Díaz | Revisión finalizada | Integrada en `develop` |
+| #132 | Thiago Piastrellini | Revisión finalizada | Integrada en `develop` |
+
+Se completó el análisis de las cuatro Pull Requests y se
+realizó el seguimiento de las observaciones correspondientes.
+
+Las cuatro Pull Requests fueron integradas en `develop`,
+según lo confirmado por el Coordinador / DevOps.
 
 ---
 
