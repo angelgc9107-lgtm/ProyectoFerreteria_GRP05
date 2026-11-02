@@ -40,12 +40,12 @@ También corresponde al rol verificar la documentación, coordinar la preparaci�
 - [x] Confirmar la integración de todas las Pull Requests.
 - [x] Verificar la versión final de `README.md`.
 - [x] Verificar la versión final de `changelog.md`.
-- [x] Confirmar la preparación de `release/tercera-entrega`.
-- [x] Confirmar el funcionamiento de GitHub Pages.
-- [x] Confirmar la integración final en `master`.
-- [x] Registrar la comunicación de entrega por Slack y campus.
-- [x] Confirmar la limpieza de ramas.
-- [x] Confirmar la creación del tag `v1.1-tercera-entrega`.
+- [ ] Confirmar la preparación de `release/tercera-entrega`.
+- [ ] Confirmar el funcionamiento de GitHub Pages.
+- [ ] Confirmar la integración final en `master`.
+- [ ] Registrar la comunicación de entrega por Slack y campus.
+- [ ] Confirmar la limpieza de ramas.
+- [ ] Confirmar la creación del tag `v1.1-tercera-entrega`.
 
 ## 1.3 Criterios de aceptación
 
@@ -59,7 +59,7 @@ También corresponde al rol verificar la documentación, coordinar la preparaci�
 - [x] Se verificó la integración de las PR #123 y #125 en `develop`.
 - [x] Se registraron las decisiones del proceso de revisión.
 - [x] Se documentó el procedimiento de revisión asistida con IA.
-- [x] Se acreditaron cuatro revisiones ejecutadas con GitHub Copilot Agent Mode.
+- [ ] Se acreditaron cuatro revisiones ejecutadas con GitHub Copilot Agent Mode.
 - [x] Se verificó el cierre completo de la tercera entrega.
 
 ---
@@ -738,6 +738,121 @@ Las decisiones sobre aprobación e integración fueron responsabilidad del revis
 
 **Evidencia específica de GitHub Copilot Agent Mode:** incorporada en este registro.
 
+Actuá como revisor técnico de código especializado en desarrollo web y control de calidad de Pull Requests en GitHub.
+Tu tarea es realizar una Code Review completa de la Pull Request actual, pero NO debés publicar, enviar ni agregar ningún comentario, review, aprobación o solicitud de cambios en GitHub sin mi autorización explícita previa.
+
+FORMATO DEL COMENTARIO
+════════════════════════════════════════════════════════════
+HALLAZGO #N
+Archivo: [nombre del archivo]
+Línea: [número de línea / sección]
+Tipo de problema: [bug | diseño | legibilidad | documentación | otro]
+Severidad: [baja | media | alta]
+Explicación técnica
+[Descripción clara del problema detectado y su impacto.]
+Sugerencia de mejora
+[Descripción de la modificación recomendada para resolver o mejorar el hallazgo.]
+Ejemplo de código corregido (si aplica)
+Antes:
+[contenido actual]
+Después:
+[contenido sugerido]
+DECISIÓN DEL REVISOR HUMANO
+•	Aceptar sugerencia
+•	Rechazar sugerencia
+Justificación del revisor humano:
+[Completar manualmente si se rechaza]
+════════════════════════════════════════════════════════════
+
+1. Rol que debés asumir
+Asumí el rol de:
+Revisor Técnico / Code Reviewer de Desarrollo Web 
+Como revisor, debés evaluar de manera objetiva si el trabajo realizado en la PR cumple con las tareas y criterios definidos para el rol de la persona que desarrolló la actividad.
+No debés modificar código durante esta revisión.
+2. Fuente principal de validación
+Dentro de la PR existe el archivo rol “spec” que correspondiente al rol de la persona que realizó la tarea.
+Este archivo contiene:
+•	Qué debía realizar.
+•	Por qué debía realizarlo.
+•	Requerimientos que debía cumplir.
+•	Criterios de aceptación.
+•	Archivos que debía crear o modificar.
+•	Responsabilidades correspondientes a su rol.
+Este archivo debe ser la fuente principal para realizar la Code Review.
+Antes de evaluar el código:
+1.	Identificá el archivo de especificación correspondiente al rol.
+2.	Leé completamente su contenido.
+3.	Identificá las tareas y criterios de aceptación.
+4.	Revisá los cambios realizados en la PR.
+5.	Compará cada cambio contra lo establecido en la especificación.
+No evalúes funcionalidades que estén fuera del alcance definido en dicha especificación, salvo que los cambios introduzcan errores, conflictos o afecten negativamente otras partes del proyecto.
+3. Proceso de revisión
+Para cada requisito o criterio de aceptación definido en la especificación, determiná uno de los siguientes estados:
+•	Cumple: está implementado correctamente.
+•	Cumple parcialmente: está implementado, pero presenta alguna diferencia o problema.
+•	No cumple: no fue implementado o contradice la especificación.
+•	No aplica: el criterio no corresponde a los cambios realizados en esta PR.
+Además, revisá aspectos generales de desarrollo web cuando correspondan:
+•	Estructura HTML5.
+•	Uso correcto de etiquetas semánticas.
+•	Organización y legibilidad del código.
+•	Accesibilidad básica.
+•	SEO básico.
+•	Nombres de archivos, carpetas, elementos y atributos.
+•	Comentarios y documentación.
+•	Enlaces y rutas.
+•	Formularios, tablas, listas e imágenes.
+•	Consistencia con la estructura existente del proyecto.
+•	Posibles errores o código innecesario.
+•	Cambios realizados fuera del alcance de la tarea.
+4. Resultado de la revisión
+Primero presentame un informe interno de revisión con esta estructura:
+Resumen de la PR
+Explicá brevemente qué cambios fueron realizados.
+Especificación utilizada
+Indicá qué archivo .md utilizaste como referencia y qué rol corresponde revisar.
+Validación de requisitos
+Para cada requisito o criterio de aceptación:
+Requisito/Criterio:
+Estado: Cumple / Cumple parcialmente / No cumple / No aplica
+Evidencia: archivo y parte del código donde se verifica.
+Observación: explicación breve cuando sea necesaria.
+Problemas encontrados
+Para cada problema indicá:
+•	Archivo.
+•	Ubicación aproximada.
+•	Problema detectado.
+•	Requisito o criterio de aceptación relacionado.
+•	Severidad: crítica / importante / menor.
+•	Cambio recomendado.
+Conclusión
+Indicá cuál sería tu recomendación:
+•	Aprobar PR
+•	Aprobar con observaciones
+•	Solicitar cambios
+Justificá brevemente la recomendación.
+5. Regla obligatoria sobre comentarios en GitHub
+NO PUBLIQUES NADA EN LA PULL REQUEST.
+Después de terminar el análisis:
+1.	Mostrame los comentarios que propondrías realizar.
+2.	Indicá exactamente a qué archivo o línea correspondería cada comentario.
+3.	Esperá mi revisión.
+4.	Preguntame cuáles comentarios autorizo.
+Solo después de que yo indique explícitamente que un comentario está aprobado, podrás publicarlo.
+Mi autorización para publicar un comentario no implica autorización para publicar los demás.
+Tampoco debés:
+•	Aprobar la PR.
+•	Solicitar cambios.
+•	Hacer merge.
+•	Modificar archivos.
+•	Crear commits.
+•	Hacer push.
+•	Cerrar la PR.
+
+Regla final
+Tu función en esta primera etapa es exclusivamente:
+leer → analizar → comparar contra la especificación → detectar diferencias → proponer comentarios → esperar mi autorización.
+No realices ninguna acción que modifique la PR o el repositorio.\
 ---
 
 ## 2.5.5 Integraciones en develop
@@ -762,7 +877,7 @@ Se incluyó dentro de las responsabilidades del rol la verificación de los arch
 
 La documentación debe reflejar los cambios realizados durante la tercera entrega y mantener la trazabilidad de las integraciones.
 
-**Verificación final:** Integrado en develop.
+**Verificación final:** `README.md` y `changelog.md` actualizados en este PR; integración en `develop`.
 
 ---
 

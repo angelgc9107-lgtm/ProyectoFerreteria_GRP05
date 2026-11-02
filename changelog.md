@@ -23,7 +23,8 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 - [backport/primer-parcial] COORDINADOR / DEVOPS - Backport del Primer Parcial de master a develop PR: [#119](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/119) — Issue: [#120](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/120) — @LuchoBarrionuevo13 (Coordinador / DevOps)
 
-## [Primer Parcial]  - 2026-10-07 
+## [Primer Parcial] - 2026-10-07
+
 ### Added
 - [feature/coord-devops-update-figma-and-readme] Coordinador/DevOps - Spec, mockup Bootstrap y README del Primer Parcial PR: [#88](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/88) — Issue: [#85](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/85) — @Piastrellini (Coordinador / DevOps)
 
