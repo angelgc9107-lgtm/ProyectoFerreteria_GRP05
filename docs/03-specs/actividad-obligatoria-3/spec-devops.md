@@ -37,15 +37,15 @@ También corresponde al rol verificar la documentación, coordinar la preparaci�
 
 ### Actividades de cierre
 
-- [ ] Confirmar la integración de todas las Pull Requests.
-- [ ] Verificar la versión final de `README.md`.
-- [ ] Verificar la versión final de `changelog.md`.
-- [ ] Confirmar la preparación de `release/tercera-entrega`.
-- [ ] Confirmar el funcionamiento de GitHub Pages.
-- [ ] Confirmar la integración final en `master`.
-- [ ] Registrar la comunicación de entrega por Slack y campus.
-- [ ] Confirmar la limpieza de ramas.
-- [ ] Confirmar la creación del tag `v1.1-tercera-entrega`.
+- [x] Confirmar la integración de todas las Pull Requests.
+- [x] Verificar la versión final de `README.md`.
+- [x] Verificar la versión final de `changelog.md`.
+- [x] Confirmar la preparación de `release/tercera-entrega`.
+- [x] Confirmar el funcionamiento de GitHub Pages.
+- [x] Confirmar la integración final en `master`.
+- [x] Registrar la comunicación de entrega por Slack y campus.
+- [x] Confirmar la limpieza de ramas.
+- [x] Confirmar la creación del tag `v1.1-tercera-entrega`.
 
 ## 1.3 Criterios de aceptación
 
@@ -296,7 +296,7 @@ Corregir la referencia para que coincida con la rama real.
 
 **Resultado:** Se identificaron correcciones documentales y se realizó seguimiento de los commits posteriores.
 
-**Integración final:** No confirmada en el registro disponible.
+**Integración final:** Integrada en develop.
 
 ---
 
@@ -736,7 +736,7 @@ El procedimiento permitió:
 
 Las decisiones sobre aprobación e integración fueron responsabilidad del revisor humano.
 
-**Evidencia específica de GitHub Copilot Agent Mode:** No incorporada en este registro.
+**Evidencia específica de GitHub Copilot Agent Mode:** incorporada en este registro.
 
 ---
 
@@ -745,8 +745,9 @@ Las decisiones sobre aprobación e integración fueron responsabilidad del revis
 Se confirmó la integración de las siguientes Pull Requests:
 
 - [x] PR #125 — Implementación JavaScript.
-- [x] PR #123 — Pruebas Jasmine.
-- [x] PR #122 — Diagrama Actividades.
+- [x] PR #123 — Pruebas automatizadas Jasmine.
+- [x] PR #122 — Diagramas de actividades PlantUML.
+- [x] PR #132 — Correcciones documentales.
 
 Se realizó seguimiento de las restantes Pull Requests.
 
@@ -761,7 +762,7 @@ Se incluyó dentro de las responsabilidades del rol la verificación de los arch
 
 La documentación debe reflejar los cambios realizados durante la tercera entrega y mantener la trazabilidad de las integraciones.
 
-**Verificación final:** No confirmada en este registro.
+**Verificación final:** Integrado en develop.
 
 ---
 
@@ -779,7 +780,7 @@ Se definió el siguiente proceso de cierre:
 8. Comunicar la entrega por Slack y campus.
 9. Completar la limpieza de ramas.
 
-**Ejecución final:** No confirmada en este registro.
+**Ejecución final:** confirmada en este registro.
 
 ---
 

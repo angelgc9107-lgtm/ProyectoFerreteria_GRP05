@@ -7,17 +7,36 @@
 
 ## 📖 Descripción
 
-Tienda online de una ferretería que en teoría es física, pero que también cuenta con venta a través de internet. El sitio permite a los clientes explorar el catálogo de productos organizados por categoría, agregarlos al carrito de compras, elegir un método de pago y confirmar su pedido.
+Tienda online de una ferretería que en teoría es física, pero que también
+cuenta con venta a través de internet. El sitio permite a los clientes
+explorar el catálogo de productos organizados por categoría, agregarlos al
+carrito de compras, elegir un método de pago y confirmar su pedido.
 
 ## 🎯 Objetivo del entregable
 
-**Actividad Obligatoria N°1:** construir la estructura base en HTML5 de la página web, con sus secciones principales (Inicio, Catálogo, Carrito y Contacto).
+**Actividad Obligatoria N°1:** construir la estructura base en HTML5 de la
+página web, con sus secciones principales (Inicio, Catálogo, Carrito y
+Contacto).
 
-**Actividad Obligatoria N°2:** incorporar los estilos visuales mediante CSS a partir del mockup actualizado en Figma (paleta de colores, tipografías, espaciados y estados de interacción), implementar el diseño responsive para mobile, tablet y desktop con Flexbox, CSS Grid y media queries, y validar el sitio con un proceso de QA asistido por Playwright MCP y GitHub MCP.
+**Actividad Obligatoria N°2:** incorporar los estilos visuales mediante CSS
+a partir del mockup actualizado en Figma (paleta de colores, tipografías,
+espaciados y estados de interacción), implementar el diseño responsive para
+mobile, tablet y desktop con Flexbox, CSS Grid y media queries, y validar el
+sitio con un proceso de QA asistido por Playwright MCP y GitHub MCP.
 
-**Primer Parcial:** migrar el sitio a Bootstrap 5 (sistema de 12 columnas y utilidades responsive) a partir del mockup actualizado en Figma, incorporar al menos dos componentes avanzados de Bootstrap y dos componentes avanzados de HTML, y validarlos con test cases automatizados con Playwright MCP y GitHub MCP.
+**Primer Parcial:** migrar el sitio a Bootstrap 5 (sistema de 12 columnas y
+utilidades responsive) a partir del mockup actualizado en Figma, incorporar
+al menos dos componentes avanzados de Bootstrap y dos componentes avanzados
+de HTML, y validarlos con test cases automatizados con Playwright MCP y
+GitHub MCP.
 
-**Actividad Obligatoria N.º 3:** incorporar lógica de programación con JavaScript mediante cuatro flujos funcionales que permitan procesar datos, realizar validaciones y mostrar resultados. Los flujos deberán utilizar estructuras condicionales, ciclos, arreglos y objetos, según corresponda. Se documentará su funcionamiento mediante diagramas de actividades realizados con PlantUML y se desarrollarán pruebas automatizadas con Jasmine para verificar los resultados esperados.
+**Actividad Obligatoria N.º 3:** incorporar lógica de programación con
+JavaScript mediante cuatro flujos funcionales que permitan procesar datos,
+realizar validaciones y mostrar resultados. Los flujos deberán utilizar
+estructuras condicionales, ciclos, arreglos y objetos, según corresponda.
+Se documentará su funcionamiento mediante diagramas de actividades
+realizados con PlantUML y se desarrollarán pruebas automatizadas con
+Jasmine para verificar los resultados esperados.
 
 ## 🛠️ Tecnologías utilizadas
 
