@@ -736,11 +736,12 @@ El procedimiento permitió:
 
 Las decisiones sobre aprobación e integración fueron responsabilidad del revisor humano.
 
-**Evidencia específica de GitHub Copilot Agent Mode:** incorporada en este registro.
+**Evidencia específica de GitHub Copilot Agent Mode:** no incorporada en este registro.
 
 Actuá como revisor técnico de código especializado en desarrollo web y control de calidad de Pull Requests en GitHub.
 Tu tarea es realizar una Code Review completa de la Pull Request actual, pero NO debés publicar, enviar ni agregar ningún comentario, review, aprobación o solicitud de cambios en GitHub sin mi autorización explícita previa.
 
+```text 
 FORMATO DEL COMENTARIO
 ════════════════════════════════════════════════════════════
 HALLAZGO #N
@@ -852,7 +853,8 @@ Tampoco debés:
 Regla final
 Tu función en esta primera etapa es exclusivamente:
 leer → analizar → comparar contra la especificación → detectar diferencias → proponer comentarios → esperar mi autorización.
-No realices ninguna acción que modifique la PR o el repositorio.\
+No realices ninguna acción que modifique la PR o el repositorio.
+```
 ---
 
 ## 2.5.5 Integraciones en develop
