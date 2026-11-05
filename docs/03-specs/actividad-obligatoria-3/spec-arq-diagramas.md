@@ -2,7 +2,7 @@
 
 Rama: `feature/arq-diagramas-actividades` → `develop`
 
-Este spec se commitea **antes** de abrir Copilot o escribir cualquier `.puml`.
+Este spec se commitea **antes** de generar o escribir cualquier `.puml`.
 
 ---
 
@@ -60,10 +60,14 @@ UI. Dentro de cada diagrama:
 
 ### Herramientas
 
-- **GitHub Copilot en modo Agente**, con `plan.md`, `index.html` y el mockup
-  como contexto, para generar el primer borrador de los `.puml`.
-- **PlantUML** (extensión de VS Code o plantumleditor.com) para validar la
-  sintaxis y exportar a `.png`.
+- **Claude (Anthropic) en modo agente**, con acceso a archivos y a una consola
+  de comandos del entorno de trabajo, con `plan.md`, `index.html` y la
+  consigna como contexto, para generar el borrador de los `.puml`. Se
+  documenta en AL CERRAR (sección "Uso de IA en modo agente"). Originalmente
+  se había previsto GitHub Copilot en modo Agente; no se usó.
+- **PlantUML** (`plantuml.jar`, ejecutado por el propio agente) para validar
+  la sintaxis y exportar a `.png`; también se puede usar la extensión de
+  VS Code o plantumleditor.com.
 
 ### Archivos a entregar
 
@@ -82,19 +86,44 @@ docs/05-diagramas/01-diagrama-de-actividades/actividad-flujo-4-confirmacion-pedi
 
 ### Herramienta y contexto
 
-Los borradores de los 4 `.puml` se generaron con un asistente de IA
-conversacional (Claude), no con GitHub Copilot en modo Agente. Se le
-proporcionó como contexto:
+Los borradores de los 4 `.puml` se generaron con **Claude (Anthropic) en modo
+agente**, no con GitHub Copilot. La consigna no exige una marca de
+herramienta; lo que se documenta es el uso real de la IA en modo agente. Se
+le proporcionó como contexto:
 
 - El repositorio del proyecto (`ProyectoFerreteria_GRP05`, rama
-  `origin/develop`), del que se leyeron `plan.md` e `index.html`.
+  `origin/develop`), del que leyó `plan.md` e `index.html`.
 - La consigna de la Actividad Obligatoria N°3 (PDF).
 
 No se adjuntó la imagen del mockup en esa generación; la estructura de
 pantallas se tomó de `index.html`.
 
-Los diagramas se renderizaron con PlantUML (`plantuml.jar` 1.2024.7) para
-validar la sintaxis y exportar los `.png`.
+### Uso de IA en modo agente
+
+Qué hizo el agente por su cuenta (con herramientas), y no solo respondiendo
+texto:
+
+1. **Leyó los archivos del repositorio** descomprimido en su entorno
+   (`plan.md`, `index.html`, specs de los otros roles) para identificar los
+   4 flujos y sus requisitos.
+2. **Escribió los archivos** `spec-arq-diagramas.md`, los 4 `.puml` y
+   `diagramas-doc.md` directamente en la estructura de carpetas del proyecto.
+3. **Ejecutó PlantUML** (`plantuml.jar` 1.2024.7) desde la consola para
+   validar la sintaxis y exportar los `.png`. Al detectar que el `.png` del
+   flujo 2 salía cortado (límite de 4096 px), lo re-exportó con
+   `-DPLANTUML_LIMIT_SIZE=16384`.
+4. **Verificó el resultado:** miró cada `.png` exportado, comprobó que
+   coincidiera con su `.puml` y que los enlaces de `diagramas-doc.md`
+   apuntaran a archivos existentes.
+5. **Aplicó las correcciones de las revisiones** (ver "Ajustes manuales y
+   correcciones"), re-exportando y re-verificando cada vez.
+
+Las decisiones de contenido (rol elegido, aceptar los 4 flujos propuestos,
+reglas de cancelación acordadas con el Desarrollador JavaScript, qué
+corrección de revisión aplicar) las tomó el estudiante; la revisión humana
+quedó en la PR #122.
+
+Los diagramas se renderizaron con PlantUML (`plantuml.jar` 1.2024.7).
 
 ### Prompt utilizado
 
@@ -104,6 +133,11 @@ la consigna:
 ```
 ya elegi el rol de Arquitecto de Diagramas de Actividades aca tenemos el actual estado del proyecto
 ```
+
+Mensajes posteriores relevantes al agente (resumidos): pedir pasar a
+PlantUML el diagrama del flujo 2 editado a mano (adjuntando la imagen);
+enviar los hallazgos del code review para aplicarlos; y enviar las
+correcciones de la revisión del profesor.
 
 A partir de eso el asistente propuso los 4 flujos (ver sección ANTES), que
 se aceptaron, y generó el spec y los `.puml`. Más tarde se pidió pasar a
@@ -147,6 +181,18 @@ correcciones del code review.
   carrito vacío informa que no se puede comprar y permanece en el menú. El
   flujo 3 se ajustó para indicar que puede iniciarse desde el menú
   principal o desde "Comprar".
+- **Revisión del profesor (RC1, RC2, RC3):** los flujos 1, 3 y 4 tenían
+  varios `stop` (cancelaciones y carrito vacío) además del cierre principal.
+  Ahora cada diagrama tiene un único `stop` y las salidas alternativas
+  terminan en `end`. Se re-exportaron los `.png` y se actualizó la
+  sintaxis en `diagramas-doc.md`.
+- **Revisión del profesor (RC4):** el diagrama del flujo 2 define la opción
+  `4 - Comprar` con transición al flujo de pago; el menú de `js/script.js`
+  todavía mostraba `4. Ver`. El diagrama no cambia: se alinea `script.js` al
+  diagrama (corrección a cargo del Desarrollador JavaScript).
+- **Revisión del profesor (RC5):** se reescribió la documentación de
+  herramienta para registrar con precisión el uso de IA en modo agente
+  (sección "Uso de IA en modo agente").
 - **Exportación:** el `.png` del flujo 2 superaba el límite por defecto de
   PlantUML (4096 px de ancho) y salía cortado; se re-exportó ampliando el
   límite con `-DPLANTUML_LIMIT_SIZE`.
