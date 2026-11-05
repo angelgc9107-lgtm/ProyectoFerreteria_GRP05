@@ -21,7 +21,7 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 ### Changed
 
-- [backport/primer-parcial] COORDINADOR / DEVOPS - Backport del Primer Parcial de master a develop PR: [#119](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/119) — Issue: [#120](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/120) — @LuchoBarrionuevo13 (Coordinador / DevOps)
+- [backport/primer-parcial] [GRUPO N°5] [Backport Primer Parcial] Sincronización de master hacia develop PR: [#119](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/119) — Issue: [#120](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/120) — @LuchoBarrionuevo13 (Coordinador / DevOps)
 
 ## [Primer Parcial] - 2026-10-07
 
