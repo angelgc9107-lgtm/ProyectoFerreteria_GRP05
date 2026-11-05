@@ -39,7 +39,10 @@ Archivo testeado: `js/script.js` | Framework: Jasmine 5.10.0 (CDN)
 
 ## Suites de Tests
 
-Se testea únicamente la lógica de negocio (funciones que reciben parámetros y devuelven un resultado). Las funciones con `prompt()` o `alert()` no se testean.
+Hay dos tipos de suites por cada flujo:
+
+- **Lógica pura** (73 tests): funciones que reciben parámetros y devuelven un resultado.
+- **Interacción** (70 tests): funciones que usan `prompt()` y `alert()` (`ejecutarBusquedaYFiltrado`, `ejecutarGestionCarrito`, `ejecutarPago`, `ejecutarConfirmacionPedido`, `solicitarDatoValido`, `preguntarSiNo`, `mostrarCarrito` e `iniciarMenuPrincipal`). Se reemplazan `prompt()` y `alert()` con espías de Jasmine (`spyOn(window, "prompt")` con `and.callFake`, y `spyOn(window, "alert")`), de modo que no se abre ningún cuadro real. Los tests verifican los argumentos y la cantidad de llamadas, el orden de interacción, los mensajes mostrados y el estado final (carrito y condiciones de pago).
 
 ### Suite 1: Flujo 1 - Búsqueda y filtrado
 
@@ -186,21 +189,35 @@ Se testea únicamente la lógica de negocio (funciones que reciben parámetros y
 
 **Total de la suite:** 19 tests
 
+### Suites de interacción (prompt/alert con espías)
+
+Cada una cubre cancelaciones, entradas inválidas con reintento, despacho y mensajes esperados del flujo, según los diagramas de actividades.
+
+| Suite | Tests | Qué verifica |
+|-------|-------|--------------|
+| Flujo 1 - Búsqueda y filtrado (interacción) | 19 | `preguntarSiNo` y `solicitarDatoValido` (SI/NO, cancelación, reintento); `ejecutarBusquedaYFiltrado`: búsqueda por texto, por categoría y por precio máximo con orden por precio, filtros vacíos, "Sin coincidencias", precio inválido con reintento, repetición con SI y cancelación en cada `prompt` |
+| Flujo 2 - Gestión del carrito (interacción) | 21 | `mostrarCarrito` (vacío y con ítems); `ejecutarGestionCarrito`: agregar válido e inválido, sumar cantidades, cambiar cantidad, eliminar, opción inválida, cancelar cada entrada, salir con 0 o cancelando el menú, descarte del pago cuando cambia el total, y la opción «Comprar» (carrito vacío: informa y permanece; con ítems: sale y continúa en el pago) |
+| Flujo 3 - Pago y cálculo de cuotas (interacción) | 11 | `ejecutarPago`: carrito vacío, efectivo/transferencia, tarjeta en 1, 3 y 6 cuotas con recargo, método y cuotas inválidos con reintento, cancelación en cada paso sin dejar condiciones guardadas y resumen mostrado |
+| Flujo 4 - Confirmación del pedido (interacción) | 15 | `ejecutarConfirmacionPedido`: carrito vacío o sin pago, nombre/correo/dirección inválidos con reintento, resumen mostrado, número de pedido, vaciado de carrito y pago al confirmar, NO y cancelación en cada dato conservando el estado |
+| Menú principal - integración de los flujos | 4 | `iniciarMenuPrincipal`: salir, opción inválida, despacho de cada opción y recorrido completo carrito → Comprar → pago → confirmación |
+
+**Total de las suites de interacción:** 70 tests
+
 ---
 ## Métricas de Cobertura
 
 ### Resumen General
 | Métrica | Valor |
 |---------|-------|
-| Total de Tests | 73 |
-| Tests Pasando | 73 ✅ |
+| Total de Tests | 143 (73 de lógica pura + 70 de interacción) |
+| Tests Pasando | 143 ✅ |
 | Tests Fallando | 0 ❌ |
 | Porcentaje de Éxito | 100% |
 
-Resultado de la corrida con Playwright MCP: `73 specs, 0 failures`.
+Resultado de la corrida en Chromium (Playwright, por script) sobre `test-runner.html?random=false`: `143 specs, 0 failures`, sin abrirse ningún cuadro de diálogo real. La misma suite también se corrió en Node con `jasmine` 5 (`143 specs, 0 failures`).
 
 ### Cobertura por Tipo de Test
-Cada test se clasificó según su propósito principal.
+Cada test de lógica pura (los 73 originales) se clasificó según su propósito principal. Los 70 tests de interacción no se clasifican por tipo: se agrupan por flujo en la tabla de suites de interacción.
 
 | Tipo | Cantidad | Porcentaje |
 |------|----------|------------|
@@ -210,36 +227,57 @@ Cada test se clasificó según su propósito principal.
 | Operaciones Arrays/Objetos | 10 | 13,7% |
 
 ### Análisis de Cobertura de Código
-**Metodología:** Se ejecutó la misma suite (`script.spec.js`) contra `js/script.js` en Node.js con `jasmine-core` 5.10.0 y se midió la cobertura con la herramienta `c8` (cobertura de V8). Esta medición se hizo una vez, fuera del repositorio, y no forma parte de la ejecución en el navegador. Las "líneas ejecutables" excluyen líneas en blanco, comentarios y llaves de cierre.
+**Metodología:** Se ejecutó la suite completa (`script.spec.js`, 143 specs) contra `js/script.js` en Node.js con `jasmine` 5 (`jasmine-core` 5.10.0) y se midió la cobertura con la herramienta `c8` (cobertura de V8). `script.js` se carga como script clásico, igual que en el navegador, y `prompt()`/`alert()` se reemplazan con espías. La medición se hizo fuera del repositorio y no forma parte de la ejecución en el navegador. Las "líneas ejecutables" son las líneas con sentencias según `c8`, sin líneas en blanco ni comentarios.
 
-| Función | Líneas Ejecutables | Tests | Líneas Cubiertas | Cobertura |
-|---------|--------------------|-------|------------------|-----------|
-| `normalizarTexto()` | 6 | 2 | 6 | 100% |
-| `validarPrecioMaximo()` | 12 | 5 | 12 | 100% |
-| `buscarProductos()` | 24 | 11 | 24 | 100% |
-| `validarCantidad()` | 5 | 3 | 5 | 100% |
-| `agregarProductoAlCarrito()` | 28 | 8 | 28 | 100% |
-| `cambiarCantidadCarrito()` | 13 | 4 | 13 | 100% |
-| `eliminarProductoDelCarrito()` | 6 | 3 | 6 | 100% |
-| `calcularResumenCarrito()` | 7 | 3 | 7 | 100% |
-| `calcularCondicionesPago()` | 28 | 11 | 28 | 100% |
-| `validarNombre()` | 3 | 3 | 3 | 100% |
-| `validarCorreo()` | 2 | 2 | 2 | 100% |
-| `validarDireccion()` | 2 | 1 | 2 | 100% |
-| `validarDatosCliente()` | 6 | 2 | 6 | 100% |
-| `crearResumenPedido()` | 14 | 6 | 14 | 100% |
-| `crearNumeroPedido()` | 2 | 3 | 2 | 100% |
-| `formatearMoneda()` | 4 | 2 | 4 | 100% |
-| `formatearResumenCarrito()` | 8 | 2 | 8 | 100% |
-| `formatearResumenPedido()` | 12 | 2 | 12 | 100% |
+**Resultado de `c8` sobre todo el archivo `js/script.js`:**
 
-**Cobertura de las funciones de lógica de negocio y de formato testeadas:** 100% (182/182 líneas ejecutables).
-**Cobertura Total Estimada del archivo:** aproximadamente 44,5% (183/411 líneas ejecutables, contando desde las funciones). El resto corresponde a funciones de interacción con `prompt()`/`alert()` y al bloque `module.exports`, que están fuera del alcance de los tests. Cobertura de ramas de la suite: 96,84% (medida con c8).
+| Métrica | Valor |
+|---------|-------|
+| Funciones | 100 % (28/28) |
+| Ramas | 96,27 % (207/215) |
+| Líneas | 95,48 % (825/864) |
+
+**Cobertura por función** (las 28 funciones tienen tests; incluye las funciones con `prompt()`/`alert()`):
+
+| Función | Líneas Ejecutables | Líneas Cubiertas | Cobertura |
+|---------|--------------------|------------------|-----------|
+| `normalizarTexto()` | 7 | 7 | 100% |
+| `validarPrecioMaximo()` | 19 | 19 | 100% |
+| `buscarProductos()` | 35 | 35 | 100% |
+| `validarCantidad()` | 8 | 8 | 100% |
+| `agregarProductoAlCarrito()` | 44 | 44 | 100% |
+| `cambiarCantidadCarrito()` | 22 | 22 | 100% |
+| `eliminarProductoDelCarrito()` | 10 | 10 | 100% |
+| `calcularResumenCarrito()` | 10 | 10 | 100% |
+| `calcularCondicionesPago()` | 36 | 36 | 100% |
+| `validarNombre()` | 4 | 4 | 100% |
+| `validarCorreo()` | 3 | 3 | 100% |
+| `validarDireccion()` | 3 | 3 | 100% |
+| `validarDatosCliente()` | 8 | 8 | 100% |
+| `crearResumenPedido()` | 19 | 19 | 100% |
+| `crearNumeroPedido()` | 3 | 3 | 100% |
+| `formatearMoneda()` | 6 | 6 | 100% |
+| `formatearResumenCarrito()` | 12 | 12 | 100% |
+| `formatearResumenPedido()` | 14 | 14 | 100% |
+| `solicitarDatoValido()` | 12 | 12 | 100% |
+| `preguntarSiNo()` | 16 | 16 | 100% |
+| `ejecutarBusquedaYFiltrado()` | 36 | 36 | 100% |
+| `mostrarCarrito()` | 6 | 6 | 100% |
+| `actualizarCarrito()` | 17 | 17 | 100% |
+| `ejecutarGestionCarrito()` | 65 | 65 | 100% |
+| `ejecutarPago()` | 60 | 57 | 95% |
+| `informarPedidoCancelado()` | 3 | 3 | 100% |
+| `ejecutarConfirmacionPedido()` | 67 | 64 | 96% |
+| `iniciarMenuPrincipal()` | 27 | 27 | 100% |
+
+**Cobertura de las 28 funciones:** 98,95 % (566/572 líneas ejecutables).
 
 #### Líneas NO Cubiertas
-- `script.js:467-799` - Funciones de interacción (`solicitarDatoValido`, `preguntarSiNo`, `ejecutar*`, `mostrarCarrito`, `actualizarCarrito`, `iniciarMenuPrincipal`): usan `prompt()` y `alert()`, fuera del alcance.
-- `script.js:801-822` - Bloque `module.exports`: no se ejecuta en el navegador.
-- `script.js:237` - Rama `codigo || ""` de `cambiarCantidadCarrito()` cuando el código es `null` o `undefined`: no hay un test que la ejecute.
+- `script.js:698-700` - En `ejecutarPago()`, la comprobación `if (!condiciones.valido)`. Es una guarda defensiva: el flujo solo llega ahí con un total mayor que cero y con un método y cuotas ya validados, por lo que `calcularCondicionesPago()` no puede devolver un error.
+- `script.js:767-769` - En `ejecutarConfirmacionPedido()`, la comprobación `if (!resumen.valido)`. Es una guarda defensiva por el mismo motivo: el carrito, el pago y los datos ya se validaron antes.
+- `script.js:830-831` - Arranque automático del menú (`data-iniciar-menu`): solo se ejecuta en `index.html`; `test-runner.html` no lo activa a propósito. Se comprobó a mano en Chromium que `index.html` abre el menú principal.
+- `script.js:834-864` - Bloque `module.exports`: se carga como script clásico, así que no se ejecuta; existe para poder usar el archivo desde Node.
+- Ramas no cubiertas (8 de 215): las condiciones del arranque automático y de `module.exports` (líneas 828-833), las dos guardas defensivas (líneas 697 y 766) y la rama `codigo || ""` de `cambiarCantidadCarrito()` (línea 237) cuando el código es `null` o `undefined`, que ningún test ejecuta.
 
 ---
 
@@ -247,56 +285,80 @@ Cada test se clasificó según su propósito principal.
 
 ### Tests Pasando
 ![Tests Exitosos](./capturas/captura-vista-general.png)
-*Todos los tests ejecutándose correctamente (73 specs, 0 failures)*
+*Todos los tests ejecutándose correctamente (143 specs, 0 failures)*
 
 ### Vista Detallada de Suites
 ![Flujo 1](./capturas/captura-flujo-1.png)
-*Suite Flujo 1 - Búsqueda y filtrado*
+*Suite Flujo 1 - Búsqueda y filtrado (lógica pura)*
+
+![Flujo 1 - interacción](./capturas/captura-flujo-1-interaccion.png)
+*Suite Flujo 1 - Búsqueda y filtrado (interacción)*
 
 ![Flujo 2](./capturas/captura-flujo-2.png)
-*Suite Flujo 2 - Gestión del carrito*
+*Suite Flujo 2 - Gestión del carrito (lógica pura)*
+
+![Flujo 2 - interacción](./capturas/captura-flujo-2-interaccion.png)
+*Suite Flujo 2 - Gestión del carrito (interacción, incluye la transición Comprar → Pago)*
 
 ![Flujo 3](./capturas/captura-flujo-3.png)
-*Suite Flujo 3 - Pago y cálculo de cuotas*
+*Suite Flujo 3 - Pago y cálculo de cuotas (lógica pura)*
+
+![Flujo 3 - interacción](./capturas/captura-flujo-3-interaccion.png)
+*Suite Flujo 3 - Pago y cálculo de cuotas (interacción)*
 
 ![Flujo 4](./capturas/captura-flujo-4.png)
-*Suite Flujo 4 - Confirmación del pedido*
+*Suite Flujo 4 - Confirmación del pedido (lógica pura)*
 
-Las capturas se tomaron con Playwright MCP sobre `test-runner.html?random=false`. No hay capturas de tests fallando porque la corrida final no tuvo fallos.
+![Flujo 4 - interacción](./capturas/captura-flujo-4-interaccion.png)
+*Suite Flujo 4 - Confirmación del pedido (interacción)*
+
+![Menú principal](./capturas/captura-menu-principal.png)
+*Suite Menú principal - integración de los flujos*
+
+Las capturas se tomaron en Chromium con Playwright (por script) sobre `test-runner.html?random=false`. No hay capturas de tests fallando porque la corrida final no tuvo fallos; la evidencia de tests que fallan está en el Issue #127.
 
 ---
 
 ## Issues Conocidos
 
-No hubo tests fallando en la corrida final. Se registra una observación detectada al revisar `js/script.js`, ya resuelta:
+No hubo tests fallando en la corrida final. Se registra un bug detectado por revisión del código, ya resuelto, y se documenta con pasos de reproducción y con el test que falla contra la versión anterior.
 
-### Issue #127: Condición inalcanzable en `buscarProductos()`
+### Issue #127: Omitir el precio máximo devolvía error y la condición `valor === null` era inalcanzable
 - **Severidad:** Baja
-- **Suite Afectada:** `describe("buscarProductos")`
-- **Test Afectado:** Ninguno (hallazgo por revisión del código, no hay un test que falle)
-- **Comportamiento Esperado:** Que todas las condiciones del filtro puedan evaluarse en algún caso.
-- **Comportamiento Obtenido:** La condición `precioValidado.valor === null` nunca era verdadera, porque si el precio era válido `valor` siempre era un número.
-- **Pasos para Reproducir:**
-  1. Abrir `js/script.js` y revisar `buscarProductos()`.
-  2. Notar que el filtro solo continuaba si `validarPrecioMaximo()` devolvía `valido: true`.
-  3. En ese caso `precioValidado.valor` era un número y la comparación `=== null` no se cumplía.
-- **Código del Test que Falla:** No aplica (no había un test que fallara).
+- **Suite Afectada:** `describe("buscarProductos")` y `describe("validarPrecioMaximo")`, en "Flujo 1 - Búsqueda y filtrado (lógica pura)"
+- **Tests Afectados:** `validarPrecioMaximo › permite omitir el precio máximo (vacío, espacios, null o undefined)`, `buscarProductos › sin precio máximo no filtra por precio` y `buscarProductos › con criterios null o undefined no falla y devuelve todo el catálogo`
+- **Comportamiento Esperado:** Que un precio máximo vacío, `null` o `undefined` signifique "no filtrar por precio" (regla acordada con el Desarrollador JavaScript y reflejada en los diagramas de actividades) y que todas las condiciones del filtro puedan evaluarse en algún caso.
+- **Comportamiento Obtenido (versión anterior, commit `95d2d5f`):** `validarPrecioMaximo()` trataba el valor vacío como inválido (`valido: false`), por lo que `buscarProductos()` devolvía el error "El precio maximo debe ser un numero mayor o igual a cero." y una lista vacía. Además, la condición `precioValidado.valor === null` de `buscarProductos()` nunca era verdadera, porque si el precio era válido `valor` siempre era un número.
+- **Pasos para Reproducir (contra `js/script.js` del commit `95d2d5f`):**
+  1. Abrir `js/test/test-runner.html` apuntando a esa versión de `js/script.js`, o cargarla en Node.
+  2. Ejecutar `buscarProductos(catalogoPrueba, { texto: "", categoria: "", precioMaximo: "" })`.
+  3. Resultado obtenido: `{ valido: false, error: "El precio maximo debe ser un numero mayor o igual a cero.", resultados: [] }`. Resultado esperado: `valido: true` y los 3 productos de `catalogoPrueba`, ordenados por precio.
+- **Código del Test que Falla** (contra la versión anterior):
+  ```javascript
+  it("sin precio máximo no filtra por precio", function () {
+      var r = buscarProductos(catalogoPrueba, { texto: "", categoria: "", precioMaximo: "" });
+      expect(r.valido).toBeTruthy();
+      expect(r.resultados.map(function (p) { return p.codigo; })).toEqual(["C-003", "A-001", "B-002"]);
+  });
+  ```
+  Resultado contra la versión anterior: `Expected false to be truthy.` y `Expected $.length = 0 to equal 3.` Los otros dos tests afectados también fallan contra esa versión; se comprobó ejecutando la suite contra el `script.js` del commit `95d2d5f`.
 - **GitHub Issue:** [#127](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/127)
-- **Estado:** Resuelto. El Desarrollador JavaScript modificó `validarPrecioMaximo()` para permitir omitir el precio máximo (devuelve `valido: true` y `valor: null`), de modo que la condición ahora es alcanzable. Se actualizaron los tests del Flujo 1 al nuevo comportamiento y se agregaron dos tests que lo cubren.
+- **Estado:** Resuelto. El Desarrollador JavaScript modificó `validarPrecioMaximo()` para permitir omitir el precio máximo (devuelve `valido: true` y `valor: null`), de modo que la condición ahora es alcanzable. Con `script.js` actual los tres tests pasan.
 
 ---
 
 ## Limitaciones del Testing
 
 - Tests síncronos únicamente (sin Promises/async-await).
-- Sin cobertura automatizada dentro del repositorio: la cobertura se midió una vez en Node con `c8`.
+- Sin cobertura automatizada dentro del repositorio: la cobertura se midió en Node con `c8`, fuera del repo.
 - Requiere conexión a internet (CDN de Jasmine).
-- No incluye tests de integración con DOM ni de funciones con `prompt()`/`alert()`.
-- Los casos que el spec del Desarrollador JavaScript deja sin definir (búsqueda con texto o categoría vacíos, cancelación de los `prompt`) no están cubiertos como comportamiento especificado.
-- La clasificación por tipo de test es manual y cada test se asigna a un solo tipo.
+- No hay tests de integración con el DOM; las funciones con `prompt()`/`alert()` se testean con espías, no con cuadros de diálogo reales.
+- Quedan sin cubrir las dos guardas defensivas de `ejecutarPago()` y `ejecutarConfirmacionPedido()`, el arranque automático de `index.html` y el bloque `module.exports` (ver "Líneas NO Cubiertas").
+- Los casos que el spec del Desarrollador JavaScript deja sin definir (búsqueda con texto o categoría vacíos, cancelación de los `prompt`) se cubren según las reglas acordadas en los diagramas de actividades.
+- La clasificación por tipo de test es manual y solo cubre los 73 tests de lógica pura.
 
 ---
 
-**Última Actualización:** 2026-10-29
+**Última Actualización:** 2026-11-05 (correcciones de la revisión del profesor)
 **Tester/QA Engineer:** Thiago Piastrellini (@Piastrellini)
 **Colaboración con:** Desarrollador JavaScript - @angelgc9107-lgtm
