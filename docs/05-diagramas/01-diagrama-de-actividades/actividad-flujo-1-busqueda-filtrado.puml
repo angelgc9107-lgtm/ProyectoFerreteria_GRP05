@@ -21,7 +21,7 @@ repeat
   |Sistema|
   if (¿El usuario canceló algún prompt()?) then (sí)
     :Vuelve al menú principal sin cambios;
-    stop
+    end
   else (no)
   endif
 

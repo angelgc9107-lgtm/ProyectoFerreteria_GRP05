@@ -65,7 +65,8 @@ datos o responder NO cancela el pedido y conserva el carrito y el pago.
 1. Abrí el archivo `.puml` en VS Code con la extensión **PlantUML** (requiere
    Java) y usá `Alt + D` para la vista previa; o pegá el contenido en
    [plantumleditor.com](https://www.plantumleditor.com/).
-2. Modificá el texto. Sintaxis usada: `start` / `stop`, `:Actividad;`,
+2. Modificá el texto. Sintaxis usada: `start`, un único `stop` al final del flujo, `end` para las salidas
+   alternativas (cancelaciones, carrito vacío), `:Actividad;`,
    `if (...) then (sí) ... else (no) ... endif`, `while` / `repeat`
    para ciclos y `|Usuario|` / `|Sistema|` para los swimlanes.
 3. Exportá a PNG (en VS Code: *PlantUML: Export Current Diagram*) y

@@ -15,7 +15,7 @@ o llega desde "Comprar" del Flujo 2;
 :Obtiene el total del carrito;
 if (¿El carrito está vacío?) then (sí)
   :Informa "No hay productos para pagar" con alert();
-  stop
+  end
 else (no)
 endif
 
@@ -27,7 +27,7 @@ repeat
   if (¿Canceló el prompt()?) then (sí)
     :No se guarda método ni cuotas;
     :Vuelve al menú principal;
-    stop
+    end
   else (no)
     :Valida la opción ingresada;
   endif
@@ -44,7 +44,7 @@ else (sí)
     if (¿Canceló el prompt()?) then (sí)
       :No se guarda método ni cuotas;
       :Vuelve al menú principal;
-      stop
+      end
     else (no)
       :Valida que sea una cantidad de cuotas ofrecida;
     endif
