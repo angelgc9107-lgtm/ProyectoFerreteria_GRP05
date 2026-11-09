@@ -13,7 +13,7 @@ start
 |Sistema|
 if (¿El carrito tiene ítems\ny hay un método de pago elegido?) then (no)
   :Informa que falta completar el carrito o el pago;
-  stop
+  end
 else (sí)
 endif
 
@@ -24,7 +24,7 @@ repeat
   if (¿Canceló el prompt()?) then (sí)
     :Informa "Pedido cancelado" con alert();
     :Conserva el carrito y el método de pago;
-    stop
+    end
   else (no)
     :Valida que no esté vacío y no sea numérico;
   endif
@@ -37,7 +37,7 @@ repeat
   if (¿Canceló el prompt()?) then (sí)
     :Informa "Pedido cancelado" con alert();
     :Conserva el carrito y el método de pago;
-    stop
+    end
   else (no)
     :Valida que tenga "@" y un dominio;
   endif
@@ -50,7 +50,7 @@ repeat
   if (¿Canceló el prompt()?) then (sí)
     :Informa "Pedido cancelado" con alert();
     :Conserva el carrito y el método de pago;
-    stop
+    end
   else (no)
     :Valida que no esté vacía;
   endif

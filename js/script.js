@@ -575,14 +575,16 @@ function actualizarCarrito(resultado) {
 }
 
 /**
- * Ejecuta el menú interactivo para agregar, actualizar, eliminar o consultar productos.
+ * Ejecuta el menú interactivo para agregar, actualizar o eliminar productos del carrito.
+ * La opción "Comprar" (solo con ítems) sale del menú y continúa en el flujo de pago.
  * @returns {void}
  */
 function ejecutarGestionCarrito() {
     var salir = false;
+    var irAPago = false;
     while (!salir) {
         var opcion = prompt(
-            "GESTIONAR CARRITO\n1. Agregar\n2. Cambiar cantidad\n3. Eliminar\n4. Ver\n0. Volver al menu"
+            "GESTIONAR CARRITO\n1. Agregar\n2. Cambiar cantidad\n3. Eliminar\n4. Comprar\n0. Volver al menu"
         );
         if (opcion === null || opcion.trim() === "0") {
             salir = true;
@@ -624,11 +626,22 @@ function ejecutarGestionCarrito() {
                 continue;
             }
             actualizarCarrito(eliminarProductoDelCarrito(carritoActual, codigoEliminar));
-        } else if (opcion.trim() !== "4") {
+        } else if (opcion.trim() === "4") {
+            if (carritoActual.length) {
+                irAPago = true;
+                salir = true;
+            } else {
+                alert("No se puede comprar con el carrito vacio.");
+            }
+        } else {
             alert("Opcion invalida.");
         }
 
         mostrarCarrito();
+    }
+
+    if (irAPago) {
+        ejecutarPago();
     }
 }
 
@@ -698,6 +711,14 @@ if (metodoPago === "tarjeta") {
 }
 
 /**
+ * Avisa que el pedido se canceló; el carrito y las condiciones de pago no se modifican.
+ * @returns {void}
+ */
+function informarPedidoCancelado() {
+    alert("Pedido cancelado. Se conservaron el carrito y las condiciones de pago.");
+}
+
+/**
  * Solicita los datos del cliente, muestra el resumen y procesa la confirmación del pedido.
  * @returns {void}
  */
@@ -713,6 +734,7 @@ function ejecutarConfirmacionPedido() {
         "El nombre no puede estar vacio ni ser unicamente numerico."
     );
     if (nombre === null) {
+        informarPedidoCancelado();
         return;
     }
 
@@ -722,6 +744,7 @@ function ejecutarConfirmacionPedido() {
         "Ingresa un correo valido con usuario y dominio."
     );
     if (correo === null) {
+        informarPedidoCancelado();
         return;
     }
 
@@ -731,6 +754,7 @@ function ejecutarConfirmacionPedido() {
         "La direccion no puede estar vacia."
     );
     if (direccion === null) {
+        informarPedidoCancelado();
         return;
     }
 
@@ -752,7 +776,7 @@ function ejecutarConfirmacionPedido() {
 
     var confirmar = preguntarSiNo("¿Confirmas el pedido? (SI / NO)");
     if (confirmar === null || !confirmar) {
-        alert("Pedido cancelado. Se conservaron el carrito y las condiciones de pago.");
+        informarPedidoCancelado();
         return;
     }
 
@@ -798,6 +822,14 @@ function iniciarMenuPrincipal() {
     }
 }
 
+// Arranque automático: solo en las páginas que lo piden con el atributo
+// data-iniciar-menu en <body> (index.html). test-runner.html no lo tiene,
+// así que al correr los tests no se abre el menú.
+if (typeof document !== "undefined" && document.body &&
+        document.body.hasAttribute("data-iniciar-menu")) {
+    iniciarMenuPrincipal();
+}
+
 if (typeof module !== "undefined" && module.exports) {
     module.exports = {
         catalogoProductos: catalogoProductos,
@@ -817,6 +849,16 @@ if (typeof module !== "undefined" && module.exports) {
         validarDatosCliente: validarDatosCliente,
         crearResumenPedido: crearResumenPedido,
         crearNumeroPedido: crearNumeroPedido,
+        formatearMoneda: formatearMoneda,
+        formatearResumenCarrito: formatearResumenCarrito,
+        formatearResumenPedido: formatearResumenPedido,
+        solicitarDatoValido: solicitarDatoValido,
+        preguntarSiNo: preguntarSiNo,
+        ejecutarBusquedaYFiltrado: ejecutarBusquedaYFiltrado,
+        mostrarCarrito: mostrarCarrito,
+        ejecutarGestionCarrito: ejecutarGestionCarrito,
+        ejecutarPago: ejecutarPago,
+        ejecutarConfirmacionPedido: ejecutarConfirmacionPedido,
         iniciarMenuPrincipal: iniciarMenuPrincipal
     };
 }
