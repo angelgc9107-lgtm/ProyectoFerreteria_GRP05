@@ -22,10 +22,13 @@ La tarea conecta búsqueda y filtrado (RF4-RF5), carrito y cálculos (RF9-RF13 y
 
 ### 1. Búsqueda y filtrado del catálogo
 
-- **Existentes:** formulario `form[role="search"]`, campo `#busqueda`, selector `#orden`, rango `#precio-hasta` e indicador `#precio-hasta-valor`. La categoría se ofrece actualmente como enlaces de navegación, sin un valor de filtro identificado.
-- **A incorporar o adecuar:** controles de categoría con valores de categoría identificables, una región de resultados que pueda actualizarse y botones de compra vinculados inequívocamente al código del producto. Los controles de ordenar, categoría y precio deben formar parte de los criterios que el controlador entrega al dominio.
-- **Eventos:** `submit` en búsqueda para impedir la navegación y mostrar los resultados; `input` en texto y precio si se decide filtrar mientras se escribe, así como para actualizar el indicador del rango; `change` en categoría, orden y precio para aplicar los criterios seleccionados.
-- Los filtros de texto y categoría vacíos se omiten; el precio máximo puede omitirse y, si se ingresa, debe ser numérico y mayor o igual a cero. La función actual de dominio ordena por precio ascendente, mientras que `#orden` ofrece también descendente: el contrato con POO deberá resolver cómo representar esa selección sin duplicar el ordenamiento en el controlador ni asumir un método todavía inexistente.
+- **Existentes:** formulario form[role="search"], campo `#busqueda`, selector `#orden`, rango `#precio-hasta` e indicador `#precio-hasta-valor`. La categoría se ofrece actualmente como enlaces de navegación, sin un valor de filtro identificado.
+
+- **A incorporar o adecuar:** checkbox `#activar-filtro-precio` para habilitar o deshabilitar el filtro de precio máximo; controles de categoría con valores identificables; una región de resultados que pueda actualizarse dinámicamente y botones de compra vinculados al código del producto. Los controles de ordenamiento, categoría y precio deberán formar parte de los criterios enviados al dominio.
+
+- **Eventos:** submit en el formulario de búsqueda para impedir la navegación y mostrar los resultados; input en el campo de texto y el rango de precio para actualizar los resultados cuando corresponda y mostrar el valor seleccionado; change en el checkbox, la categoría y el selector de ordenamiento para aplicar los criterios seleccionados.
+
+- **Comportamiento:** los filtros de texto y categoría vacíos se omitirán. El filtro de precio máximo estará desactivado por defecto, mostrando el texto «Sin límite» en `#precio-hasta-valor` y manteniendo deshabilitado el rango `#precio-hasta`. Al activar el checkbox, se habilitará el rango y se aplicará el precio máximo seleccionado, que deberá ser un valor numérico mayor o igual a cero. Al desactivarlo, se eliminará la restricción de precio y se actualizarán los resultados del catálogo.
 
 ### 2. Gestión del carrito de compras
 
