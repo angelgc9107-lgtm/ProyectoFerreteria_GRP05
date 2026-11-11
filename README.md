@@ -4,6 +4,8 @@
 
 - **Carrera:** Tecnicatura Universitaria en Programación de Sistemas
 - **Materia:** Programación Web I
+- **Profesor:** Lic. Matias Velasquez
+- **Cuatrimestre / Año:** 2.º Cuatrimestre / 2026
 
 ## 📖 Descripción
 
@@ -32,38 +34,86 @@ GitHub MCP.
 
 **Actividad Obligatoria N.º 3:** incorporar lógica de programación con
 JavaScript mediante cuatro flujos funcionales que permitan procesar datos,
-realizar validaciones y mostrar resultados. Los flujos deberán utilizar
-estructuras condicionales, ciclos, arreglos y objetos, según corresponda.
-Se documentará su funcionamiento mediante diagramas de actividades
-realizados con PlantUML y se desarrollarán pruebas automatizadas con
-Jasmine para verificar los resultados esperados.
+realizar validaciones y mostrar resultados. Los flujos utilizan estructuras
+condicionales, ciclos, arreglos y objetos. Su funcionamiento se documentó
+mediante diagramas de actividades realizados con PlantUML y se desarrollaron
+pruebas automatizadas con Jasmine.
+
+**Actividad Obligatoria N.º 4 (Cuarta Entrega):** transformar el proyecto
+—que usaba `prompt()` y `alert()`— en una aplicación web interactiva
+completa, aplicando cuatro pilares técnicos:
+
+- Manipulación del DOM y eventos del usuario.
+- Programación Orientada a Objetos, con clases en `js/models/`.
+- Almacenamiento persistente con `localStorage` y `sessionStorage`, a través
+  de una capa de abstracción en `js/utils/storage.js`.
+- Testing automatizado con Jasmine.
+
+Esta entrega se construye sobre las correcciones de la Actividad
+Obligatoria N.º 3 y es la base técnica del Segundo Parcial Integrador.
 
 ## 🛠️ Tecnologías utilizadas
 
 - HTML5
-- CSS3 (`css/styles.css`, `css/components.css` y `css/responsive.css`)
+- CSS3 (`css/styles.css`, `css/components.css`, `css/responsive.css` y `css/bootstrap-overrides.css`)
 - Bootstrap 5
-- JavaScript
-- PlantUML (diagramas de actividades)
+- JavaScript (módulos ES6, DOM y eventos)
+- Programación Orientada a Objetos (clases de dominio en `js/models/`)
+- Web Storage API (`localStorage` y `sessionStorage`)
+- PlantUML (diagramas de actividades y diagrama de clases)
 - Jasmine (pruebas automatizadas de JavaScript)
-- Git y GitHub (control de versiones y gestión de Pull Requests)
-- GitHub Copilot Agent Mode (asistencia al desarrollo, cuando corresponda)
-- ChatGPT (asistencia en las Code Reviews de la Actividad Obligatoria N.º 3)
-- Playwright MCP (validación y pruebas)
+- Git y GitHub (control de versiones, Pull Requests, Issues, Projects, Pages y Releases)
+- GitHub Copilot Agent Mode (asistencia al desarrollo, según el rol)
+- Claude (asistencia en documentación y code reviews del rol Coordinador / DevOps)
+- Playwright MCP (validación y pruebas en un navegador real)
 
-## ✅ Funcionalidades previstas
+## ✅ Funcionalidades
 
 - Visualización del catálogo de productos por categoría.
 - Búsqueda y filtrado de productos.
 - Carrito de compras con cantidad editable y cálculo de subtotales.
-- Selección de método de pago.
+- Selección de método de pago y cálculo de cuotas.
 - Resumen y confirmación de pedido.
-- Ejecución de cuatro flujos funcionales mediante JavaScript.
-- Validación de datos ingresados por el usuario.
-- Procesamiento de información mediante condicionales, ciclos, arreglos y objetos.
-- Presentación de resultados mediante `alert()` y `console.log()`.
-- Menú de opciones mediante `prompt()` para ejecutar los flujos de JavaScript.
-- Pruebas automatizadas de las funciones JavaScript mediante Jasmine.
+- Los cuatro flujos funcionales operan desde la interfaz HTML, con
+  formularios, inputs y botones, sin `prompt()` ni `alert()`.
+- Validación de las entradas en tiempo real, con feedback visual.
+- Resultados mostrados mediante manipulación del DOM.
+- Persistencia de datos de la aplicación con Web Storage.
+- Pruebas automatizadas de modelos, storage y controlador con Jasmine.
+
+## 🏗️ Arquitectura del proyecto
+
+El código se organiza por responsabilidad:
+
+| Archivo / carpeta | Responsabilidad |
+|---|---|
+| `js/script.js` | Controlador principal: solo manejo de eventos y manipulación del DOM. Invoca a las clases del dominio. |
+| `js/models/` | Clases del dominio (PascalCase, un archivo por clase) con la lógica de negocio, validaciones internas y serialización (`toJSON()` / `fromJSON()`). No toca el DOM ni los eventos. |
+| `js/utils/storage.js` | Capa de abstracción para `localStorage` y `sessionStorage`: operaciones CRUD, manejo de errores y serialización de JSON. |
+| `js/test/` | Suites de Jasmine (`script.spec.js`, `models.spec.js`, `storage.spec.js`), el runner `test-runner.html` y `testing-doc.md`. |
+
+```
+.
+├── .github/PULL_REQUEST_TEMPLATE/   # Plantillas de PR (feature y release)
+├── README.md
+├── changelog.md
+├── index.html
+├── css/
+├── js/
+│   ├── script.js                    # Controlador (eventos y DOM)
+│   ├── models/                      # Clases del dominio (POO)
+│   ├── utils/storage.js             # Utilidades de storage
+│   └── test/                        # Jasmine: specs, runner y testing-doc.md
+└── docs/
+    ├── 01-mockup/
+    ├── 02-prompts/
+    ├── 03-specs/                    # Un spec por rol y por actividad
+    ├── 04-testing/
+    ├── 05-diagramas/
+    │   ├── 01-diagrama-de-actividades/
+    │   └── 02-diagrama-de-clases/
+    └── 06-storage/                  # storage-doc.md
+```
 
 ## 🎨 Maqueta de diseño web
 
@@ -73,62 +123,73 @@ El diseño completo puede verse en el mockup de Figma enlazado abajo.
 
 En el Primer Parcial el mockup se adaptó a la grilla de Bootstrap 5: desktop de 1280 px con container de 1140 px y 12 columnas, mobile de 390 px con las columnas apiladas (`col-12`) y la navbar colapsada, y los componentes señalados en cada pantalla (Navbar, Carousel, Offcanvas, Dropdown e iframe de Google Maps dentro de `.ratio.ratio-16x9`).
 
-Para la Actividad Obligatoria N.º 3 se incorporará lógica JavaScript mediante un menú de opciones y cuatro flujos funcionales, sin requerir manipulación del DOM ni programación de eventos.
-
 ## 📁 Documentación
+
+**Diseño**
 
 - [Mockup en Figma (actualizado en el Primer Parcial con Bootstrap)](https://www.figma.com/design/jX7NrMUtt6Tg7oiYqock6s/Sin-t%C3%ADtulo?node-id=191-963&t=ouTMvmvpb279r7wJ-1)
 - [Mockup Bootstrap exportado (Primer Parcial)](docs/01-mockup/disenio-bootstrap.png)
 - [Estados de interacción Bootstrap (Primer Parcial)](docs/01-mockup/estados-bootstrap.png)
 - [Mockup con estilos exportado (Actividad Obligatoria N°2)](docs/01-mockup/actividad-obligatoria-2/dise%C3%B1o-con-estilos.png)
+
+**Especificaciones por rol**
+
 - [Specs del Primer Parcial](docs/03-specs/primer-parcial/)
 - [Specs de la Actividad Obligatoria N.º 3](docs/03-specs/actividad-obligatoria-3/)
-- [Especificación del Coordinador / DevOps](docs/03-specs/actividad-obligatoria-3/spec-devops.md)
-- [Tablero Kanban del Primer Parcial](https://github.com/users/angelgc9107-lgtm/projects/1)
-- [Índice de test cases](docs/04-testing/testing-doc.md)
+- [Specs de la Actividad Obligatoria N.º 4](docs/03-specs/actividad-obligatoria-4/)
+  - [Coordinador / DevOps](docs/03-specs/actividad-obligatoria-4/spec-devops.md)
+  - [Tester QA](docs/03-specs/actividad-obligatoria-4/spec-tester-qa.md)
+  - [Desarrollador JS Eventos + DOM](docs/03-specs/actividad-obligatoria-4/spec-dev-eventos-dom.md)
+  - [Desarrollador JS POO](docs/03-specs/actividad-obligatoria-4/spec-dev-poo.md)
+  - [Desarrollador JS Storage](docs/03-specs/actividad-obligatoria-4/spec-dev-storage.md)
+
+**Diagramas**
+
+- [Diagramas de actividades](docs/05-diagramas/01-diagrama-de-actividades/diagramas-doc.md)
+- [Diagrama de clases](docs/05-diagramas/02-diagrama-de-clases/diagrama-clases-doc.md)
+
+**Storage**
+
+- [Estrategia de almacenamiento (localStorage vs sessionStorage)](docs/06-storage/storage-doc.md)
+
+**Testing**
+
+- [Índice de test cases (HTML/CSS)](docs/04-testing/testing-doc.md)
+- [Documentación de testing con Jasmine](js/test/testing-doc.md)
 - [Pruebas automatizadas con Jasmine](js/test/)
+
+**Gestión del proyecto**
+
+- [Tablero Kanban](https://github.com/users/angelgc9107-lgtm/projects/1)
 - [Índice de Prompts](docs/02-prompts/prompts.md)
 - [Changelog](changelog.md)
 
 ## 🧪 Pruebas automatizadas con Jasmine
 
-Para la Actividad Obligatoria N.º 3 se incorporaron pruebas automatizadas mediante Jasmine, con el objetivo de verificar el comportamiento de las funciones JavaScript desarrolladas.
-
-Las pruebas permiten comprobar los resultados esperados de las funciones y detectar posibles errores en su funcionamiento.
-
-La implementación y los archivos correspondientes a las pruebas se encuentran en:
+Las pruebas verifican el comportamiento de las clases del dominio, de la
+capa de storage y del controlador.
 
 - **Directorio de pruebas:** `js/test/`
-- **Archivo de especificaciones:** `js/test/script.spec.js`
+- **Runner:** `js/test/test-runner.html` (se abre en el navegador)
+- **Suites:**
+  - `js/test/models.spec.js`: clases del dominio (constructores, métodos de negocio, validaciones y serialización).
+  - `js/test/storage.spec.js`: operaciones CRUD y manejo de errores de storage.
+  - `js/test/script.spec.js`: controlador principal.
+- **Documentación:** [`js/test/testing-doc.md`](js/test/testing-doc.md), con la estructura de testing, las instrucciones para ejecutar cada módulo, las métricas de cobertura y las capturas de resultados.
 
-Para consultar las pruebas implementadas, revisar el directorio correspondiente y la documentación del rol Tester JavaScript / QA Engineer.
+## 🔍 Code Reviews
 
-## 🔍 Code Reviews — Actividad Obligatoria N.º 3
-
-Durante la tercera entrega se realizaron revisiones técnicas de las Pull Requests correspondientes a los integrantes del equipo.
-
-Las revisiones fueron coordinadas por el responsable del rol Coordinador / DevOps, utilizando las especificaciones de cada rol como referencia para analizar los cambios y detectar posibles inconsistencias.
-
-Se utilizó ChatGPT como herramienta de apoyo para el análisis técnico y documental.
-
-Las decisiones de aprobación e integración fueron responsabilidad del revisor humano.
-
-### Pull Requests revisadas
-
-| PR | Integrante | Trabajo | Resultado |
-|---|---|---|---|
-| [#125](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/125) | Ángel Cuarterón | Implementación JavaScript | Aprobada e integrada |
-| [#123](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/123) | Thiago Piastrellini | Pruebas Jasmine | Aprobada e integrada |
-| [#122](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/122) | Alan Díaz | Diagramas de actividades | Observaciones identificadas |
-| [#132](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/132) | Thiago Piastrellini | Correcciones documentales | Seguimiento de correcciones |
-
-Las observaciones, los hallazgos y las correcciones recomendadas se encuentran documentados en la [especificación del Coordinador / DevOps](docs/03-specs/actividad-obligatoria-3/spec-devops.md).
+Los code reviews de las Pull Requests de los demás integrantes son
+responsabilidad del rol Coordinador / DevOps. Los prompts utilizados, el
+resumen de cada review y los `CHANGES_REQUESTED` cargados se documentan en
+la [especificación del Coordinador / DevOps](docs/03-specs/actividad-obligatoria-4/spec-devops.md).
+La decisión de aprobar e integrar cada cambio es del revisor humano.
 
 ## 👥 Integrantes del Grupo
 
-| Nombre y Apellido | Matrícula | Usuario de GitHub | Rol |
+| Nombre y Apellido | Matrícula | Usuario de GitHub | Rol (Cuarta Entrega) |
 |-----| ----- | ------ | ------ |
-| Luciano Barrionuevo | 156398 | @LuchoBarrionuevo13 |Desarrollador JS POO |
-| Alan Diaz | 152841 | @alandox1 | Coordinador / DevOps + Tester QA |
+| Luciano Barrionuevo | 156398 | @LuchoBarrionuevo13 | Desarrollador JS POO |
+| Alan Diaz | 152841 | @alandox1 |Coordinador / DevOps + Tester QA |
 | Angel Cuarteron | 159438 | @angelgc9107-lgtm | Desarrollador JS Eventos + DOM |
 | Thiago Piastrellini | 158097 | @Piastrellini | Desarrollador JS Local y Session Storage |
