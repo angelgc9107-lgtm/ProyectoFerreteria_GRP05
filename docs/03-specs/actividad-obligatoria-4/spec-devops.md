@@ -30,7 +30,7 @@ Criterio de aprobación de una PR hacia `develop`:
 - Hay al menos un commit relevante del autor, una issue asociada y la entrada en `changelog.md` con el link a la PR.
 - No quedan `prompt()` ni `alert()`, ni `console.log` innecesarios.
 - Se respeta la separación: `script.js` solo eventos y DOM, `js/models/` solo lógica de negocio, `js/utils/storage.js` solo storage.
-- Los tests pasan en `test-runner.html`.
+- Los tests pasan en `test-runner.html` (aplica desde la PR 7; las PRs 4 a 6 se validan manualmente contra los criterios de arquitectura de este spec).
 
 ### Herramientas
 
@@ -49,7 +49,7 @@ Criterio de aprobación de una PR hacia `develop`:
 - [ ] `README.md` actualizado con la información de la cuarta entrega y los enlaces a la documentación
 - [ ] `changelog.md` con las contribuciones de cada integrante, con link a su PR y su issue
 - [ ] Issues administradas en GitHub Projects (Kanban)
-- [ ] Ramas innecesarias eliminadas (solo quedan `master`, `develop` y `release/cuarta-entrega`)
+- [ ] Ramas innecesarias eliminadas (quedan `master`, `develop`, `release/tercera-entrega` y `release/cuarta-entrega`; la rama de la tercera entrega se conserva porque es la base de las correcciones `[Fixed]` y del backport)
 - [ ] Release `v1.2-cuarta-entrega` publicada con el extracto del changelog
 - [ ] PR de la release publicada en Slack y enlaces subidos al campus (PR y GitHub Pages)
 

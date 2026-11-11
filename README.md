@@ -128,7 +128,7 @@ Las observaciones, los hallazgos y las correcciones recomendadas se encuentran d
 
 | Nombre y Apellido | Matrícula | Usuario de GitHub | Rol |
 |-----| ----- | ------ | ------ |
-| Luciano Barrionuevo | 156398 | @LuchoBarrionuevo13 | Coordinador y DevOps |
-| Alan Diaz | 152841 | @alandox1 | Arquitecto de Diagramas de Actividades |
-| Angel Cuarteron | 159438 | @angelgc9107-lgtm | Desarrollador javascript |
-| Thiago Piastrellini | 158097 | @Piastrellini | Tester JavaScript / QA Engineer |
+| Luciano Barrionuevo | 156398 | @LuchoBarrionuevo13 |Desarrollador JS POO |
+| Alan Diaz | 152841 | @alandox1 | Coordinador / DevOps + Tester QA |
+| Angel Cuarteron | 159438 | @angelgc9107-lgtm | Desarrollador JS Eventos + DOM |
+| Thiago Piastrellini | 158097 | @Piastrellini | Desarrollador JS Local y Session Storage |
