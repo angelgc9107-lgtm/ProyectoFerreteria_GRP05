@@ -63,8 +63,7 @@ Obligatoria N.º 3 y es la base técnica del Segundo Parcial Integrador.
 - PlantUML (diagramas de actividades y diagrama de clases)
 - Jasmine (pruebas automatizadas de JavaScript)
 - Git y GitHub (control de versiones, Pull Requests, Issues, Projects, Pages y Releases)
-- GitHub Copilot Agent Mode (asistencia al desarrollo, según el rol)
-- Claude (asistencia en documentación y code reviews del rol Coordinador / DevOps)
+- GitHub Copilot Agent Mode (asistencia al desarrollo y code reviews del rol Coordinador / DevOps)
 - Playwright MCP (validación y pruebas en un navegador real)
 
 ## ✅ Funcionalidades
