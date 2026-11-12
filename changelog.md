@@ -2,7 +2,13 @@
 
 Este archivo se actualiza con cada Pull Request para registrar avances y correcciones.
 
-## [Unreleased]
+## [Actividad N°4] - Unreleased
+
+### Added
+
+- [feature/coord-devops-cuarta-entrega] [A4] Coordinador / DevOps + Tester QA - Spec PR: [#138](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/138) — @alandox1 (Coordinador / DevOps + Tester QA)
+
+- [feature/dev-storage] Desarrollador JS Storage: spec-dev-storage (sección BEFORE: estrategia local vs session, convención de claves, schemas y criterios de aceptación): [#141](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/141) — Issue: [#142](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/142) — @Piastrellini (Desarrollador JS Local y Session Storage)
 
 ## [Actividad N°3] - 2026-11-02
 
