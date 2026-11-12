@@ -3,7 +3,7 @@
 **Actividad Obligatoria N.º 4 — Programación Web I (UCES)**
 **Grupo:** GRP05 · **Rol:** Desarrollador JS Local y Session Storage · **Integrante:** Thiago Piastrellini (@Piastrellini)
 **Rama de trabajo:** `feature/dev-storage` → `develop`
-**Issue asociada:** #<!-- COMPLETAR número de issue -->
+**Issue asociada:** [#142](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/142)
 
 **Entregables del rol:**
 - `js/utils/storage.js` (capa de abstracción, estilo ORM)
@@ -14,7 +14,7 @@
 
 ---
 
-# BEFORE — Se completa antes de abrir Copilot o escribir código
+# BEFORE — Se completa antes de abrir Claude Code o escribir código
 
 ## 1. Estrategia de almacenamiento
 
@@ -118,7 +118,7 @@ Decisión de diseño: `actualizar()` no crea claves (difiere de `guardar()`), pa
 
 ## 7. Herramientas y coordinación
 
-**Herramienta:** GitHub Copilot en modo Agente, con las clases de `js/models/` y este archivo como contexto. Se usa porque la consigna lo exige y porque permite generar el esqueleto de las funciones CRUD a partir de la API definida acá; la revisión del resultado y los ajustes (manejo de errores, casos borde) se hacen a mano.
+**Herramienta:** Claude Code (agente de IA de Anthropic), en lugar de GitHub Copilot en modo Agente, con las clases de `js/models/` y este archivo como contexto. Motivo: Sin tokens en GitHub Copilot Agent Mode. Se deja constancia de que esto difiere de lo que pide la consigna (§2.2.9).
 
 **Coordinación:**
 - Con el **Desarrollador JS POO**: confirmar qué clases se persisten (carrito, pedido, producto) y que implementen `toJSON()` / `fromJSON()`.
@@ -129,9 +129,9 @@ Decisión de diseño: `actualizar()` no crea claves (difiere de `guardar()`), pa
 
 # AT CLOSE — Se completa al cerrar la tarea (evidencia)
 
-_Esta sección se completa **después** de usar Copilot Agent, con el contenido real de la sesión._
+_Esta sección se completa **después** de usar Claude Code, con el contenido real de la sesión._
 
-## 1. Prompt exacto utilizado en Copilot Agent
+## 1. Prompt exacto utilizado en Claude Code
 
 Archivos adjuntados como contexto: <!-- COMPLETAR: lista real de archivos de js/models/ y spec-dev-storage.md -->
 
@@ -139,10 +139,10 @@ Archivos adjuntados como contexto: <!-- COMPLETAR: lista real de archivos de js/
 <!-- COMPLETAR: pegar el prompt exacto -->
 ```
 
-## 2. Output generado por Copilot (fragmento de al menos una función CRUD)
+## 2. Output generado por Claude Code (fragmento de al menos una función CRUD)
 
 ```javascript
-// COMPLETAR: pegar el fragmento generado por Copilot, sin modificar
+// COMPLETAR: pegar el fragmento generado por Claude Code, sin modificar
 ```
 
 ## 3. Ajustes manuales realizados y justificación
