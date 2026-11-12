@@ -8,6 +8,8 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 - [feature/coord-devops-cuarta-entrega] [A4] Coordinador / DevOps + Tester QA - Spec PR: [#138](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/138) — @alandox1 (Coordinador / DevOps + Tester QA)
 
+- [feature/dev-poo-logica-negocio] [A4] Desarrollador JS POO (Lógica de Negocio) - Spec PR: [#144](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/144) - Issue: [#143](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/143) - @LucianoBarrionuevo (Desarrollador JS POO)
+
 ## [Actividad N°3] - 2026-11-02
 
 ### Added
