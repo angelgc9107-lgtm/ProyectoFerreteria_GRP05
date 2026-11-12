@@ -52,29 +52,70 @@ El prefijo `app:` es obligatorio: permite listar y limpiar solo los datos de est
 
 Todos los valores se guardan serializados con `JSON.stringify`. Los nombres de campos se confirman con el Desarrollador JS POO antes de cerrar (ver sección 7).
 
+`Cada schema se muestra en su propio bloque, con la clave asociada indicada antes del bloque.
+
+**`app:carrito:items`** (local)
+
 ```json
-// app:carrito:items
-[ { "productoId": 12, "nombre": "Martillo Grande", "precio": 1000, "cantidad": 2 } ]
+[
+  { "productoId": 12, "nombre": "Martillo Grande", "precio": 1000, "cantidad": 2 }
+]
+```
 
-// app:pedidos:historial
-[ { "id": "P-1730000000000", "fecha": "2026-11-10T14:30:00.000Z",
-    "items": [ { "productoId": 12, "nombre": "Martillo Grande", "precio": 1000, "cantidad": 2 } ],
-    "totalOriginal": 2000, "metodoPago": "tarjeta", "cuotas": 3, "recargoPorcentaje": 10,
-    "totalFinanciado": 2200, "valorCuota": 733.33, "direccionEnvio": "Calle 123" } ]
+**`app:pedidos:historial`** (local)
 
-// app:usuario:preferencias
+```json
+[
+  {
+    "id": "P-1730000000000",
+    "fecha": "2026-11-10T14:30:00.000Z",
+    "items": [
+      { "productoId": 12, "nombre": "Martillo Grande", "precio": 1000, "cantidad": 2 }
+    ],
+    "totalOriginal": 2000,
+    "metodoPago": "tarjeta",
+    "cuotas": 3,
+    "recargoPorcentaje": 10,
+    "totalFinanciado": 2200,
+    "valorCuota": 733.33,
+    "direccionEnvio": "Calle 123"
+  }
+]
+```
+
+**`app:usuario:preferencias`** (local)
+
+```json
 { "categoriaFavorita": "Herramientas", "metodoPagoPreferido": "tarjeta" }
+```
 
-// app:catalogo:cache
-{ "guardadoEn": 1730000000000, "ttlMs": 3600000, "productos": [ { "id": 12, "nombre": "Martillo Grande", "precio": 1000, "categoria": "Herramientas" } ] }
+**`app:catalogo:cache`** (local)
 
-// app:checkout:borrador
+```json
+{
+  "guardadoEn": 1730000000000,
+  "ttlMs": 3600000,
+  "productos": [
+    { "id": 12, "nombre": "Martillo Grande", "precio": 1000, "categoria": "Herramientas" }
+  ]
+}
+```
+
+**`app:checkout:borrador`** (session)
+
+```json
 { "metodoPago": "tarjeta", "cuotas": 3, "direccionEnvio": "Calle 123" }
+```
 
-// app:catalogo:filtros
+**`app:catalogo:filtros`** (session)
+
+```json
 { "categoria": "Herramientas", "precioMaximo": 5000, "orden": "precio-asc" }
+```
 
-// app:ui:bienvenida-vista
+**`app:ui:bienvenida-vista`** (session)
+
+```json
 true
 ```
 
