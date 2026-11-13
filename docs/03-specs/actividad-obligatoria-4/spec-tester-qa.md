@@ -2,7 +2,7 @@
 
 **Rol:** Tester QA (junto con Coordinador / DevOps) · **Integrante:** Alan Diaz (@alandox1)
 **Rama:** `feature/tester-qa-specs` → `develop`
-**Issue asociada:** _(completar con el número al crearla)_
+**Issue asociada:** [#145](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/145)
 **Entrega:** Actividad Obligatoria N.º 4 — FerroLab
 
 **Entregables del rol:**
