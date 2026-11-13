@@ -9,6 +9,10 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 - [feature/coord-devops-cuarta-entrega] [A4] Coordinador / DevOps + Tester QA - Spec PR: [#138](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/138) — @alandox1 (Coordinador / DevOps + Tester QA)
 
 - [feature/dev-poo-logica-negocio] [A4] Desarrollador JS POO (Lógica de Negocio) - Spec PR: [#144](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/144) - Issue: [#143](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/143) - @LucianoBarrionuevo (Desarrollador JS POO)
+- [feature/dev-storage] Desarrollador JS Storage: spec-dev-storage (sección BEFORE: estrategia local vs session, convención de claves, schemas y criterios de aceptación): [#141](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/141) — Issue: [#142](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/142) — @Piastrellini (Desarrollador JS Local y Session Storage)
+
+- [feature/tester-qa-specs] Tester QA: spec-tester-qa (sección BEFORE: plan de testing, herramientas, coordinación y criterios de aceptación) PR: [#146](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/146) — Issue: [#145](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/145) — @alandox1 (Coordinador / DevOps + Tester QA)
+
 
 ## [Actividad N°3] - 2026-11-02
 
