@@ -60,6 +60,16 @@ interfaces son una **propuesta para acordar** con Eventos + DOM, Storage y
 QA. A continuación, `objeto` significa objeto plano serializable y las
 colecciones devueltas son copias; las clases no reciben nodos ni eventos.
 
+**Clases principales (mínimo obligatorio):** `Producto`, `Catalogo` y
+`Carrito`. Estas tres cumplen el mínimo de tres clases exigido por la consigna.
+
+**Clases adicionales (alcance complementario):** `Pago` y `Pedido`. Amplían
+el diseño para representar los flujos de pago y confirmación del pedido.
+
+Las cinco clases forman parte del diseño propuesto, pero únicamente tres son
+necesarias para cumplir el requisito mínimo. Se mantienen las
+responsabilidades, propiedades, métodos y relaciones definidos para todas.
+
 ### 4.1 `Producto`
 
 **Responsabilidad:** representar los datos de un producto del catálogo y
@@ -308,21 +318,20 @@ herencia. Señalar las dependencias de parámetros de construcción y que
 `Pedido` conserva instantáneas. Exportar el `.puml` a `.png` y documentar el
 contenido, relaciones, generación y enlaces en `diagrama-clases-doc.md`.
 
-**Ruta a coordinar antes de generar:** el entregable indicado para este rol
-es `docs/04-diagramas/02-diagrama-de-clases/`, pero el README y los diagramas
-de actividades existentes usan `docs/05-diagramas/`. Se mantiene abajo la
-ruta solicitada para este rol; confirmar con DevOps la ubicación definitiva
-y alinear referencias antes de producir los diagramas.
+**Ruta definitiva:** los diagramas de clases se ubicarán en
+`docs/05-diagramas/02-diagrama-de-clases/`, respetando la estructura
+existente del proyecto.
 
 ## 10. Archivos y entregables esperados
 
 | Entregable | Estado y alcance |
 |---|---|
 | `docs/03-specs/actividad-obligatoria-4/spec-dev-poo.md` | Este spec; pendiente de revisión y del commit previo. |
-| `js/models/Producto.js`, `Catalogo.js`, `Carrito.js`, `Pago.js`, `Pedido.js` | Propuestos; no implementados. |
-| `docs/04-diagramas/02-diagrama-de-clases/diagrama-clases.puml` | Pendiente; sujeto a coordinación de ruta. |
-| `docs/04-diagramas/02-diagrama-de-clases/diagrama-clases.png` | Pendiente de exportación. |
-| `docs/04-diagramas/02-diagrama-de-clases/diagrama-clases-doc.md` | Pendiente. |
+| `js/models/Producto.js`, `Catalogo.js`, `Carrito.js` | Clases principales (mínimo obligatorio); propuestas, no implementadas. |
+| `js/models/Pago.js`, `Pedido.js` | Clases adicionales (alcance complementario: pago y confirmación del pedido); propuestas, no implementadas. |
+| `docs/05-diagramas/02-diagrama-de-clases/diagrama-clases.puml` | Pendiente. |
+| `docs/05-diagramas/02-diagrama-de-clases/diagrama-clases.png` | Pendiente de exportación. |
+| `docs/05-diagramas/02-diagrama-de-clases/diagrama-clases-doc.md` | Pendiente. |
 | `index.html` | Referencias JavaScript necesarias: modificación posterior coordinada con Eventos + DOM. |
 
 La migración y adaptación de `js/script.js`, la implementación de storage
@@ -334,7 +343,10 @@ realizan en esta primera etapa.
 Todos quedan pendientes hasta verificar la implementación y la evidencia:
 
 - [ ] Se identificaron y justificaron las entidades del dominio.
-- [ ] Se implementaron al menos tres clases en `js/models/`.
+- [ ] Se implementaron al menos tres clases en `js/models/`: las principales
+  `Producto`, `Catalogo` y `Carrito` cumplen el mínimo exigido.
+- [ ] Se implementaron las clases adicionales `Pago` y `Pedido` (alcance
+  complementario, no necesarias para el mínimo).
 - [ ] Se documentaron constructores y métodos mediante JSDoc.
 - [ ] Se aplicó encapsulamiento y validaciones internas.
 - [ ] Se separó la lógica de negocio de eventos y DOM.
