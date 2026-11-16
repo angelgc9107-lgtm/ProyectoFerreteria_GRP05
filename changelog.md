@@ -13,6 +13,9 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 - [feature/tester-qa-specs] Tester QA: spec-tester-qa (sección BEFORE: plan de testing, herramientas, coordinación y criterios de aceptación) PR: [#146](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/146) — Issue: [#145](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/145) — @alandox1 (Coordinador / DevOps + Tester QA)
 
+- [feature/dev-eventos-dom] Desarrollador Eventos de JavaScript + DOM Spec (sección BEFORE: Eventos y flujos de control, decisiones de arquitecturas y criterios de aceptación) PR: [#140](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/140) — Issue: [#139](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/139) — @angelgc9107-lgtm (Desarrollador JavaScript Eventos + DOM)
+
+
 
 ## [Actividad N°3] - 2026-11-02
 
