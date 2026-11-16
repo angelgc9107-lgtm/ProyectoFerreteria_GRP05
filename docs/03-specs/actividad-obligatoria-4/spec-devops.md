@@ -6,7 +6,7 @@ Este spec se commitea **antes** de cualquier otra tarea de coordinación de la e
 
 ---
 
-## ANTES — Planificación
+## BEFORE — Planificación
 
 ### Plan de coordinación
 
@@ -55,11 +55,11 @@ Criterio de aprobación de una PR hacia `develop`:
 
 ---
 
-## AL CERRAR — Evidencia del proceso
+## AT CLOSE — Evidencia del proceso
 
 > Se completa al terminar la tarea, con lo que realmente se hizo.
 
-### Prompts usados en Copilot Agent para cada code review
+### Prompts usados en cada code review
 
 (Pendiente: un bloque de código por review, indicando qué archivos del diff se adjuntaron como contexto.)
 
