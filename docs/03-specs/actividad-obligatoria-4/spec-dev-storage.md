@@ -158,14 +158,14 @@ Decisión de diseño: `actualizar()` no crea claves (difiere de `guardar()`), pa
 
 ## 6. Criterios de aceptación
 
-- [ ] `js/utils/storage.js` implementa `guardar`, `obtener`, `actualizar`, `eliminar`, `listar` y `limpiar` con la firma definida.
-- [ ] Todas las operaciones tienen manejo de errores con `try/catch` y no lanzan excepciones.
-- [ ] Serialización y deserialización automática de JSON.
-- [ ] Manejo de storage lleno y de datos corruptos con logs informativos.
-- [ ] Integración con las clases de `js/models/` mediante `toJSON()` / `fromJSON()` coordinada con el Desarrollador JS POO.
-- [ ] `docs/06-storage/storage-doc.md` documenta qué se guarda, estructura de claves, schemas JSON, diferencia local vs session y ejemplos de uso.
-- [ ] Código documentado con JSDoc y comentarios.
-- [ ] Sin `prompt()`, `alert()` ni `console.log` innecesarios en el módulo.
+- [X] `js/utils/storage.js` implementa `guardar`, `obtener`, `actualizar`, `eliminar`, `listar` y `limpiar` con la firma definida.
+- [X] Todas las operaciones tienen manejo de errores con `try/catch` y no lanzan excepciones.
+- [X] Serialización y deserialización automática de JSON.
+- [X] Manejo de storage lleno y de datos corruptos con logs informativos.
+- [X] Integración con las clases de `js/models/` mediante `toJSON()` / `fromJSON()` coordinada con el Desarrollador JS POO.
+- [X] `docs/06-storage/storage-doc.md` documenta qué se guarda, estructura de claves, schemas JSON, diferencia local vs session y ejemplos de uso.
+- [X] Código documentado con JSDoc y comentarios.
+- [X] Sin `prompt()`, `alert()` ni `console.log` innecesarios en el módulo.
 - [ ] Rama `feature/dev-storage`, al menos un commit relevante, issue asociada, PR hacia `develop` con aprobación de otro integrante y entrada en `changelog.md`.
 
 ## 7. Herramientas y coordinación
@@ -185,24 +185,106 @@ _Esta sección se completa **después** de usar Claude Code, con el contenido re
 
 ## 1. Prompt exacto utilizado en Claude Code
 
-Archivos adjuntados como contexto: <!-- COMPLETAR: lista real de archivos de js/models/ y spec-dev-storage.md -->
+Archivos adjuntados como contexto: `js/models/Producto.js`, `js/models/Catalogo.js`, `js/models/Carrito.js`, `js/models/Pago.js`, `js/models/Pedido.js` y `docs/03-specs/actividad-obligatoria-4/spec-dev-storage.md`.
 
 ```text
-<!-- COMPLETAR: pegar el prompt exacto -->
+Actuá como un senior JavaScript developer. Necesito implementar el módulo js/utils/storage.js de un proyecto web de ferretería (HTML + JavaScript ES6, sin frameworks), siguiendo la especificación de docs/03-specs/actividad-obligatoria-4/spec-dev-storage.md (adjunta) y las clases de js/models/ (adjuntas: Producto.js, Catalogo.js, Carrito.js, Pago.js, Pedido.js).
+
+Requisitos:
+
+1. Módulo ES6 que exporta `StorageUtil` (también como default), `CLAVES` (objeto congelado) y `PREFIJO_APP = 'app:'`.
+
+2. `CLAVES` con exactamente las claves de la sección 2 del spec (formato app:<dominio>:<recurso>): CARRITO, PEDIDOS, SECUENCIA_PEDIDOS, PREFERENCIAS, CACHE_CATALOGO (local) y BORRADOR_CHECKOUT, FILTROS_CATALOGO, BIENVENIDA_VISTA (session).
+
+3. Funciones de `StorageUtil`, todas con el parámetro `tipo` ('local' por defecto o 'session'):
+   - guardar(clave, valor, tipo) -> boolean (serializa con JSON.stringify; rechaza valores no serializables como undefined o referencias circulares)
+   - obtener(clave, tipo) -> valor deserializado o null
+   - actualizar(clave, valor, tipo) -> boolean (solo si la clave ya existe)
+   - eliminar(clave, tipo) -> boolean (idempotente)
+   - listar(prefijo, tipo) -> string[] ordenado
+   - limpiar(tipo, soloApp = true) -> boolean (por defecto borra solo las claves con prefijo "app:")
+   - existe(clave, tipo) y estaDisponible(tipo) -> boolean (esta última prueba una escritura real)
+   - guardarInstancia(clave, instancia, tipo), cargarInstancia(clave, Clase, tipo), guardarLista(clave, instancias, tipo), cargarLista(clave, Clase, tipo): integración con las clases de js/models/ usando instancia.toJSON() y Clase.fromJSON(datos). Revisá los archivos adjuntos para respetar sus contratos.
+
+4. Manejo de errores:
+   - Todo va dentro de try/catch y el módulo NUNCA lanza excepciones hacia afuera: devuelve false, null o [] según corresponda y registra con console.error.
+   - Detectar storage lleno (QuotaExceededError y variantes de otros navegadores) con un mensaje claro.
+   - Datos corruptos (JSON inválido) -> obtener() devuelve null.
+   - Datos con JSON válido pero que fromJSON() rechaza -> cargarInstancia devuelve null y cargarLista devuelve [].
+   - Clave vacía o no string, y tipo distinto de 'local'/'session' -> error registrado y valor de fallo.
+   - Storage inaccesible (SecurityError): no acceder a localStorage/sessionStorage al cargar el módulo, resolverlos en cada llamada para poder simularlos en los tests.
+
+5. Estilo: JSDoc en cada función exportada y comentarios breves donde haga falta, sin prompt(), alert() ni console.log innecesarios, sin dependencias externas, sin usar window directamente (usar globalThis).
+
+Devolvé solo el código completo de js/utils/storage.js. No modifiques ningún otro archivo.
 ```
 
 ## 2. Output generado por Claude Code (fragmento de al menos una función CRUD)
 
+Claude Code escribió `js/utils/storage.js` completo (513 líneas) directamente en el repositorio. Fragmento de `guardar()` y `obtener()`, sin modificar:
+
 ```javascript
-// COMPLETAR: pegar el fragmento generado por Claude Code, sin modificar
+/**
+ * Crea o reemplaza un dato serializándolo a JSON.
+ * @param {string} clave Clave (preferentemente una de CLAVES).
+ * @param {*} valor Valor serializable con JSON.stringify (no undefined, funciones ni ciclos).
+ * @param {"local"|"session"} [tipo="local"] Storage destino.
+ * @returns {boolean} true si se guardó.
+ * @example StorageUtil.guardar(CLAVES.PREFERENCIAS, { categoriaFavorita: "Herramientas" });
+ */
+function guardar(clave, valor, tipo = "local") {
+    try {
+        const storage = prepararOperacion(clave, tipo);
+        if (!storage) return false;
+        const texto = serializar(valor, clave);
+        if (texto === null) return false;
+        return escribir(storage, clave, texto, tipo);
+    } catch (error) {
+        registrarError(`Error inesperado al guardar "${String(clave)}".`, error);
+        return false;
+    }
+}
+
+/**
+ * Recupera y deserializa un dato.
+ * @param {string} clave Clave a leer.
+ * @param {"local"|"session"} [tipo="local"] Storage origen.
+ * @returns {*} Valor deserializado, o null si no existe, está corrupto o hubo un error.
+ * @example const filtros = StorageUtil.obtener(CLAVES.FILTROS_CATALOGO, "session");
+ */
+function obtener(clave, tipo = "local") {
+    try {
+        const storage = prepararOperacion(clave, tipo);
+        if (!storage) return null;
+        const texto = storage.getItem(clave);
+        if (texto === null) return null;
+        try {
+            return JSON.parse(texto);
+        } catch (error) {
+            registrarError(`Datos corruptos en "${clave}" (${TIPOS[tipo]}): no es JSON válido.`, error);
+            return null;
+        }
+    } catch (error) {
+        registrarError(`No se pudo leer "${String(clave)}".`, error);
+        return null;
+    }
+}
 ```
 
 ## 3. Ajustes manuales realizados y justificación
 
 | Ajuste | Justificación |
 |---|---|
-| <!-- COMPLETAR --> | <!-- COMPLETAR --> |
+| Sin cambios sobre `js/utils/storage.js`: se conservó tal como lo generó Claude Code. | Se revisó el código completo y se contrastó con la API del spec (firmas, retornos, claves y manejo de errores) y con los contratos reales de `toJSON()` / `fromJSON()` de `js/models/`; no se encontraron diferencias que justificaran modificarlo. |
+| `storage-doc.md`: `listar()` sin prefijo lista solo las claves `app:*` (con `''` lista todas). | Claude Code definió ese valor por defecto por su cuenta; se documentó para que la doc refleje el comportamiento real. |
+| `storage-doc.md`: aclarados los límites de `JSON.stringify` (una función dentro de un objeto se descarta y `NaN` se guarda como `null`) y que un `null` guardado se lee igual que una clave inexistente (usar `existe()`). | Son comportamientos reales del módulo que no estaban descriptos. |
+| `storage-doc.md`: `guardarLista` rechaza elementos sin `toJSON()` y `cargarLista` es todo o nada. | Evita datos parciales o mezclados en el historial de pedidos. |
+| Spec (sección BEFORE): schemas y estrategia alineados con los campos reales de `js/models/` y alta de la clave `SECUENCIA_PEDIDOS`. | Los schemas iniciales eran preliminares; al estar disponible la PR del Desarrollador JS POO se confirmaron con su `toJSON()`. |
 
 ## 4. Decisiones finales
 
-<!-- COMPLETAR: estrategia de storage definitiva y cómo se coordinó con el Desarrollador JS POO la serialización de instancias. -->
+- **Estrategia definitiva:** 8 claves con formato `app:<dominio>:<recurso>`: carrito, historial de pedidos, secuencia de pedidos, preferencias y caché del catálogo en `localStorage`; borrador del checkout, filtros del catálogo y mensaje de bienvenida en `sessionStorage`. `limpiar()` borra solo las claves `app:*` porque en GitHub Pages el origen se comparte entre repositorios del mismo usuario.
+- **Serialización de instancias:** se tomó el contrato de las clases de la PR del Desarrollador JS POO. `Carrito` se guarda con `toJSON()` (`{items: [...]}`) y se restaura con `Carrito.fromJSON()`; los pedidos se guardan como lista de `Pedido.toJSON()`. Como `fromJSON()` valida los datos, un dato alterado se descarta y la aplicación puede arrancar con un carrito vacío.
+- **Decisiones que tomó Claude Code y se aceptaron:** `listar()` sin prefijo usa `app:`; `cargarLista()` es todo o nada; solo se rechazan los valores de primer nivel no serializables; un `null` guardado equivale a clave inexistente (se distingue con `existe()`).
+- **Verificación:** además de la revisión manual, el módulo se contrastó con una implementación de referencia y un conjunto de pruebas con `Storage` simulado y con las clases reales, elaborados en una conversación aparte con Claude (claude.ai). El módulo entregado es el generado por Claude Code. Queda pendiente la cobertura formal de `storage.spec.js` a cargo del Tester QA.
+- **Integración pendiente:** el Desarrollador JS Eventos + DOM todavía no usa `StorageUtil` en `script.js`; los puntos de integración están descriptos en `docs/06-storage/storage-doc.md`.
