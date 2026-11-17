@@ -13,6 +13,8 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 - [feature/tester-qa-specs] Tester QA: spec-tester-qa (sección BEFORE: plan de testing, herramientas, coordinación y criterios de aceptación) PR: [#146](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/146) — Issue: [#145](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/145) — @alandox1 (Coordinador / DevOps + Tester QA)
 
+- [feature/dev-storage] Desarrollador JS Storage: `js/utils/storage.js` (`StorageUtil` con guardar, obtener, actualizar, eliminar, listar y limpiar, manejo de errores e integración con `js/models/` vía `toJSON()`/`fromJSON()`), `storage-doc.md` y spec-dev-storage (schemas alineados y sección AT CLOSE). PR:[#157](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/157) — Issue: [#158](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/158) — @Piastrellini (Desarrollador JS Local y Session Storage)
+
 
 ## [Actividad N°3] - 2026-11-02
 
