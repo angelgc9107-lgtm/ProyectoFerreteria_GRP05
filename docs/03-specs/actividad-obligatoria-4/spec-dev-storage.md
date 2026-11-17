@@ -24,10 +24,11 @@ El criterio es la vida útil del dato: si debe sobrevivir al cierre del navegado
 |---|---|---|
 | Carrito de compras | `localStorage` | El cliente espera encontrar su carrito al volver otro día. |
 | Historial de pedidos confirmados | `localStorage` | Es información que el usuario consulta entre sesiones. |
+| Número correlativo del próximo pedido | `localStorage` | Sin esto la numeración vuelve a 1 al recargar la página. |
 | Preferencias del usuario (categoría favorita, método de pago preferido) | `localStorage` | Preferencias que se mantienen entre visitas. |
 | Caché del catálogo de productos (con marca de tiempo) | `localStorage` | Evita reconstruir el catálogo en cada visita; se invalida por antigüedad. |
-| Borrador del formulario de checkout (dirección, método de pago, cuotas) | `sessionStorage` | Dato sensible y temporal: no debe quedar guardado al cerrar la pestaña. |
-| Filtros activos del catálogo (categoría, precio máximo, orden) | `sessionStorage` | Estado de navegación de la visita actual. |
+| Borrador del formulario de checkout (datos del cliente, método de pago, cuotas) | `sessionStorage` | Dato sensible y temporal: no debe quedar guardado al cerrar la pestaña. |
+| Filtros activos del catálogo (texto, categoría, precio máximo, orden) | `sessionStorage` | Estado de navegación de la visita actual. |
 | Indicador de mensaje de bienvenida ya mostrado | `sessionStorage` | Se vuelve a mostrar en cada visita nueva, una sola vez por sesión. |
 
 Regla general: **nunca** se guardan datos de tarjeta ni información que no sea necesaria para reconstruir la interfaz.
@@ -40,6 +41,7 @@ Formato: `app:<dominio>:<recurso>` — minúsculas, palabras separadas por guion
 |---|---|---|
 | `CARRITO` | `app:carrito:items` | local |
 | `PEDIDOS` | `app:pedidos:historial` | local |
+| `SECUENCIA_PEDIDOS` | `app:pedidos:secuencia` | local |
 | `PREFERENCIAS` | `app:usuario:preferencias` | local |
 | `CACHE_CATALOGO` | `app:catalogo:cache` | local |
 | `BORRADOR_CHECKOUT` | `app:checkout:borrador` | session |
@@ -48,69 +50,78 @@ Formato: `app:<dominio>:<recurso>` — minúsculas, palabras separadas por guion
 
 El prefijo `app:` es obligatorio: permite listar y limpiar solo los datos de este proyecto. En GitHub Pages todos los repositorios del mismo usuario comparten el origen (`usuario.github.io`), así que un `clear()` total podría borrar datos de otros sitios.
 
-## 3. Estructura de datos (schemas JSON preliminares)
+## 3. Estructura de datos (schemas JSON)
 
-Todos los valores se guardan serializados con `JSON.stringify`. Los nombres de campos se confirman con el Desarrollador JS POO antes de cerrar (ver sección 7).
+Todos los valores se guardan serializados con `JSON.stringify`. Los campos del carrito, los pedidos y los productos son los que devuelven `toJSON()` en `js/models/` (confirmados con el código del Desarrollador JS POO); el resto lo define este módulo.
 
-`Cada schema se muestra en su propio bloque, con la clave asociada indicada antes del bloque.
-
-**`app:carrito:items`** (local)
+**`app:carrito:items`** — `Carrito.toJSON()`. No se guardan subtotales: los recalcula `resumir()`.
 
 ```json
-[
-  { "productoId": 12, "nombre": "Martillo Grande", "precio": 1000, "cantidad": 2 }
-]
+{
+  "items": [
+    { "codigo": "MARTILLO-001", "nombre": "Martillo", "categoria": "Herramientas", "precio": 1000, "cantidad": 2 }
+  ]
+}
 ```
 
-**`app:pedidos:historial`** (local)
+**`app:pedidos:historial`** — array de `Pedido.toJSON()`.
 
 ```json
 [
   {
-    "id": "P-1730000000000",
-    "fecha": "2026-11-10T14:30:00.000Z",
-    "items": [
-      { "productoId": 12, "nombre": "Martillo Grande", "precio": 1000, "cantidad": 2 }
+    "cliente": { "nombre": "Ana", "correo": "ana@mail.com", "direccion": "Calle 123" },
+    "productos": [
+      { "codigo": "MARTILLO-001", "nombre": "Martillo", "categoria": "Herramientas", "precio": 1000, "cantidad": 2, "subtotal": 2000 }
     ],
-    "totalOriginal": 2000,
-    "metodoPago": "tarjeta",
-    "cuotas": 3,
-    "recargoPorcentaje": 10,
-    "totalFinanciado": 2200,
-    "valorCuota": 733.33,
-    "direccionEnvio": "Calle 123"
+    "total": 2000,
+    "pago": {
+      "valido": true, "error": null, "metodoPago": "tarjeta", "cuotas": 3,
+      "porcentajeRecargo": 10, "totalOriginal": 2000, "interes": 200,
+      "totalFinanciado": 2200, "valorCuota": 733.33
+    },
+    "numero": "FL-1730000000000-0001"
   }
 ]
 ```
 
-**`app:usuario:preferencias`** (local)
+**`app:pedidos:secuencia`** — próximo número correlativo de pedido.
+
+```json
+4
+```
+
+**`app:usuario:preferencias`**
 
 ```json
 { "categoriaFavorita": "Herramientas", "metodoPagoPreferido": "tarjeta" }
 ```
 
-**`app:catalogo:cache`** (local)
+**`app:catalogo:cache`** — productos con `Producto.toJSON()`; válida mientras `Date.now() - guardadoEn < ttlMs`.
 
 ```json
 {
   "guardadoEn": 1730000000000,
   "ttlMs": 3600000,
   "productos": [
-    { "id": 12, "nombre": "Martillo Grande", "precio": 1000, "categoria": "Herramientas" }
+    { "codigo": "MARTILLO-001", "nombre": "Martillo", "categoria": "Herramientas", "descripcion": "Martillo de acero", "precio": 1000 }
   ]
 }
 ```
 
-**`app:checkout:borrador`** (session)
+**`app:checkout:borrador`** (session) — sin datos de tarjeta.
 
 ```json
-{ "metodoPago": "tarjeta", "cuotas": 3, "direccionEnvio": "Calle 123" }
+{
+  "cliente": { "nombre": "Ana", "correo": "ana@mail.com", "direccion": "Calle 123" },
+  "metodoPago": "tarjeta",
+  "cuotas": 3
+}
 ```
 
-**`app:catalogo:filtros`** (session)
+**`app:catalogo:filtros`** (session) — mismos campos que el formulario de búsqueda (`orden`: `asc` o `desc`).
 
 ```json
-{ "categoria": "Herramientas", "precioMaximo": 5000, "orden": "precio-asc" }
+{ "texto": "martillo", "categoria": "Herramientas", "precioMaximo": 5000, "orden": "asc" }
 ```
 
 **`app:ui:bienvenida-vista`** (session)
@@ -159,7 +170,7 @@ Decisión de diseño: `actualizar()` no crea claves (difiere de `guardar()`), pa
 
 ## 7. Herramientas y coordinación
 
-**Herramienta:** Claude Code (agente de IA de Anthropic), en lugar de GitHub Copilot en modo Agente, con las clases de `js/models/` y este archivo como contexto. Motivo: Sin tokens en GitHub Copilot Agent Mode. Se deja constancia de que esto difiere de lo que pide la consigna (§2.2.9).
+**Herramienta:** Claude Code (agente de IA de Anthropic), en lugar de GitHub Copilot en modo Agente, con las clases de `js/models/` y este archivo como contexto. Motivo: no se dispone de tokens en GitHub Copilot Agent Mode. Se deja constancia de que esto difiere de lo que pide la consigna (§2.2.9).
 
 **Coordinación:**
 - Con el **Desarrollador JS POO**: confirmar qué clases se persisten (carrito, pedido, producto) y que implementen `toJSON()` / `fromJSON()`.
