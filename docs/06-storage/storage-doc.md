@@ -134,14 +134,14 @@ Todas las funciones reciben `tipo` como último parámetro (`'local'` por defect
 
 | Función | Retorno | Comportamiento |
 |---|---|---|
-| `guardar(clave, valor, tipo)` | `boolean` | Crea o reemplaza el dato. `false` si el storage está lleno, el valor no es serializable o hay otro error. |
+| `guardar(clave, valor, tipo)` | `boolean` | Crea o reemplaza el dato. `false` si el storage está lleno, el valor contiene datos no serializables (en cualquier nivel) o hay otro error. |
 | `obtener(clave, tipo)` | valor \| `null` | `null` si la clave no existe, el dato está corrupto o hay error. Un `null` guardado a propósito se lee igual que una clave inexistente: para distinguirlos se usa `existe()`. |
 | `actualizar(clave, valor, tipo)` | `boolean` | Solo actualiza si la clave existe; si no, devuelve `false` (usar `guardar`). |
 | `eliminar(clave, tipo)` | `boolean` | Idempotente: eliminar una clave inexistente devuelve `true`. |
 | `listar(prefijo = 'app:', tipo)` | `string[]` | Claves que empiezan con el prefijo, ordenadas. Sin prefijo lista solo las claves de la aplicación; con `''` lista todas. `[]` si no hay. |
 | `limpiar(tipo, soloApp = true)` | `boolean` | Borra las claves `app:*`. Con `soloApp = false` ejecuta `Storage.clear()` completo. |
 | `existe(clave, tipo)` | `boolean` | Indica si la clave existe. |
-| `estaDisponible(tipo)` | `boolean` | Prueba una escritura real con una clave temporal (`app:__prueba-disponibilidad__`) que siempre se borra; `false` en modo privado estricto, con cookies bloqueadas o storage lleno. |
+| `estaDisponible(tipo)` | `boolean` | Prueba una escritura real con una clave temporal única en cada llamada (`app:__prueba-disponibilidad__-<id>`), que nunca pisa datos existentes y se verifica como borrada; `false` en modo privado estricto, con cookies bloqueadas, storage lleno o si no se pudo borrar la clave de prueba. |
 | `guardarInstancia(clave, instancia, tipo)` | `boolean` | Guarda `instancia.toJSON()`. |
 | `cargarInstancia(clave, Clase, tipo)` | instancia \| `null` | Reconstruye con `Clase.fromJSON()`. |
 | `guardarLista(clave, instancias, tipo)` | `boolean` | Guarda un array de instancias con `toJSON()`; si algún elemento no lo tiene, devuelve `false` y no guarda nada. |
@@ -156,9 +156,9 @@ Todas las funciones reciben `tipo` como último parámetro (`'local'` por defect
 | Storage inaccesible (`SecurityError`) | `console.error`; devuelve el valor de fallo (`false`, `null` o `[]`). |
 | Clave vacía o no string | `console.error`; devuelve el valor de fallo. |
 | Tipo distinto de `'local'` / `'session'` | `console.error`; devuelve el valor de fallo. |
-| Valor `undefined`, función, símbolo o referencia circular | `console.error`; `guardar` devuelve `false` (no se guarda `"undefined"`). |
+| Valor con `undefined`, función, símbolo, BigInt o referencia circular, **en cualquier nivel** | `console.error`; `guardar` devuelve `false` y no guarda nada (tampoco se guarda `"undefined"`). |
 
-Límites de `JSON.stringify`: solo se rechazan los valores de primer nivel que no se pueden serializar. Dentro de un objeto, una función se descarta sin aviso y `NaN` o `Infinity` se guardan como `null`.
+Antes de serializar, el módulo recorre todo el valor (objetos y arrays anidados, respetando `toJSON()`) para que `JSON.stringify` no descarte datos sin avisar. Único límite que se mantiene: `NaN` e `Infinity` se guardan como `null`, porque JSON no puede representarlos.
 
 La interfaz decide qué mostrar al usuario cuando una operación devuelve `false` o `null`; el módulo solo informa por consola.
 
