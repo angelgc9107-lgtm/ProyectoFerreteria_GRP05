@@ -35,8 +35,8 @@ export const CLAVES = Object.freeze({
 /** Tipos de storage admitidos y la propiedad global que les corresponde. */
 const TIPOS = Object.freeze({ local: "localStorage", session: "sessionStorage" });
 
-/** Clave temporal usada por estaDisponible() para probar una escritura real. */
-const CLAVE_PRUEBA = `${PREFIJO_APP}__prueba-disponibilidad__`;
+/** Prefijo de las claves temporales de estaDisponible(); a cada prueba se le suma un sufijo único. */
+const PREFIJO_PRUEBA = `${PREFIJO_APP}__prueba-disponibilidad__-`;
 
 /**
  * Registra un error con un prefijo común para identificar el módulo.
@@ -122,6 +122,31 @@ function prepararOperacion(clave, tipo) {
 }
 
 /**
+ * Recorre un valor en profundidad y detecta lo que no se puede guardar en JSON:
+ * undefined, funciones, símbolos, BigInt y referencias circulares, en cualquier nivel.
+ * Respeta toJSON(): si un objeto lo define, se revisa lo que ese método devuelve.
+ * @param {unknown} valor Valor a revisar.
+ * @param {Set<object>} [ancestros] Objetos del camino actual (para detectar ciclos).
+ * @returns {boolean} true si todo el valor es serializable.
+ */
+function esEstructuraSerializable(valor, ancestros = new Set()) {
+    if (valor === null) return true;
+    const tipo = typeof valor;
+    if (tipo === "undefined" || tipo === "function" || tipo === "symbol" || tipo === "bigint") return false;
+    if (tipo !== "object") return true; // string, number, boolean
+    if (ancestros.has(valor)) return false; // referencia circular
+    ancestros.add(valor);
+    try {
+        const contenido = typeof valor.toJSON === "function" ? valor.toJSON() : valor;
+        if (contenido !== valor) return esEstructuraSerializable(contenido, ancestros);
+        const elementos = Array.isArray(contenido) ? contenido : Object.values(contenido);
+        return elementos.every((elemento) => esEstructuraSerializable(elemento, ancestros));
+    } finally {
+        ancestros.delete(valor); // un mismo objeto repetido en ramas distintas no es un ciclo
+    }
+}
+
+/**
  * Serializa un valor a JSON rechazando lo que no se puede guardar.
  * @param {unknown} valor Valor a serializar.
  * @param {string} clave Clave (solo para el mensaje de error).
@@ -129,6 +154,11 @@ function prepararOperacion(clave, tipo) {
  */
 function serializar(valor, clave) {
     try {
+        if (!esEstructuraSerializable(valor)) {
+            registrarError(`El valor para "${clave}" contiene datos no serializables ` +
+                "(undefined, funciones, símbolos o referencias circulares).");
+            return null;
+        }
         const texto = JSON.stringify(valor);
         // JSON.stringify devuelve undefined para undefined, funciones y símbolos.
         if (typeof texto !== "string") {
@@ -357,18 +387,28 @@ function existe(clave, tipo = "local") {
 }
 
 /**
- * Comprueba si el storage se puede usar realizando una escritura y un borrado reales.
+ * Comprueba si el storage se puede usar realizando una escritura y un borrado reales,
+ * con una clave temporal única que se verifica como eliminada.
  * Útil para avisar al usuario cuando el navegador bloquea el almacenamiento.
  * @param {"local"|"session"} [tipo="local"] Storage.
  * @returns {boolean} true si se puede escribir y borrar.
  */
 function estaDisponible(tipo = "local") {
     let storage = null;
+    let clavePrueba = null;
     try {
         if (!tipoValido(tipo)) return false;
         storage = resolverStorage(tipo);
         if (!storage) return false;
-        storage.setItem(CLAVE_PRUEBA, "1");
+        // Clave única en cada prueba: nunca pisa ni borra datos que ya existan.
+        // No se usa crypto.randomUUID() porque solo existe en contextos seguros (HTTPS).
+        clavePrueba = `${PREFIJO_PRUEBA}${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        storage.setItem(clavePrueba, "1");
+        storage.removeItem(clavePrueba);
+        if (storage.getItem(clavePrueba) !== null) {
+            registrarError(`${TIPOS[tipo]}: no se pudo borrar la clave de prueba; se considera no disponible.`);
+            return false;
+        }
         return true;
     } catch (error) {
         if (esErrorDeCuota(error)) {
@@ -379,7 +419,7 @@ function estaDisponible(tipo = "local") {
         return false;
     } finally {
         try {
-            storage?.removeItem(CLAVE_PRUEBA);
+            if (storage && clavePrueba) storage.removeItem(clavePrueba);
         } catch {
             // Si no se pudo borrar la clave de prueba no hay nada más que hacer.
         }
