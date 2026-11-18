@@ -121,26 +121,62 @@ function prepararOperacion(clave, tipo) {
     return resolverStorage(tipo);
 }
 
+/** Marca interna: el valor (o algo dentro de él) no se puede guardar en JSON. */
+const NO_SERIALIZABLE = Symbol("no-serializable");
+
 /**
- * Recorre un valor en profundidad y detecta lo que no se puede guardar en JSON:
- * undefined, funciones, símbolos, BigInt y referencias circulares, en cualquier nivel.
- * Respeta toJSON(): si un objeto lo define, se revisa lo que ese método devuelve.
- * @param {unknown} valor Valor a revisar.
- * @param {Set<object>} [ancestros] Objetos del camino actual (para detectar ciclos).
- * @returns {boolean} true si todo el valor es serializable.
+ * Aplica toJSON() a un valor, si lo define, y normaliza el resultado.
+ * Igual que JSON.stringify, toJSON() se ejecuta UNA sola vez por valor y recibe
+ * la clave de la propiedad; sobre lo que devuelve no se vuelve a aplicar toJSON().
+ * @param {unknown} valor Valor a normalizar.
+ * @param {string} clave Clave o índice del valor dentro de su contenedor ("" en la raíz).
+ * @param {Set<object>} ancestros Objetos del camino actual (para detectar ciclos).
+ * @returns {unknown} Copia plana lista para JSON.stringify, o NO_SERIALIZABLE.
  */
-function esEstructuraSerializable(valor, ancestros = new Set()) {
-    if (valor === null) return true;
+function normalizarParaJSON(valor, clave, ancestros) {
+    if (valor !== null && typeof valor === "object" && typeof valor.toJSON === "function") {
+        if (ancestros.has(valor)) return NO_SERIALIZABLE; // referencia circular
+        ancestros.add(valor);
+        try {
+            return normalizarValor(valor.toJSON(clave), ancestros);
+        } finally {
+            ancestros.delete(valor);
+        }
+    }
+    return normalizarValor(valor, ancestros);
+}
+
+/**
+ * Valida un valor ya resuelto (sin toJSON pendiente) y arma su copia plana.
+ * Rechaza undefined, funciones, símbolos, BigInt y referencias circulares en cualquier nivel.
+ * @param {unknown} valor Valor a normalizar.
+ * @param {Set<object>} ancestros Objetos del camino actual (para detectar ciclos).
+ * @returns {unknown} Copia plana o NO_SERIALIZABLE.
+ */
+function normalizarValor(valor, ancestros) {
+    if (valor === null) return null;
     const tipo = typeof valor;
-    if (tipo === "undefined" || tipo === "function" || tipo === "symbol" || tipo === "bigint") return false;
-    if (tipo !== "object") return true; // string, number, boolean
-    if (ancestros.has(valor)) return false; // referencia circular
+    if (tipo === "string" || tipo === "number" || tipo === "boolean") return valor;
+    if (tipo !== "object") return NO_SERIALIZABLE; // undefined, function, symbol, bigint
+    if (ancestros.has(valor)) return NO_SERIALIZABLE; // referencia circular
     ancestros.add(valor);
     try {
-        const contenido = typeof valor.toJSON === "function" ? valor.toJSON() : valor;
-        if (contenido !== valor) return esEstructuraSerializable(contenido, ancestros);
-        const elementos = Array.isArray(contenido) ? contenido : Object.values(contenido);
-        return elementos.every((elemento) => esEstructuraSerializable(elemento, ancestros));
+        if (Array.isArray(valor)) {
+            const copia = [];
+            for (let i = 0; i < valor.length; i++) {
+                const elemento = normalizarParaJSON(valor[i], String(i), ancestros);
+                if (elemento === NO_SERIALIZABLE) return NO_SERIALIZABLE;
+                copia.push(elemento);
+            }
+            return copia;
+        }
+        const copia = {};
+        for (const [propiedad, contenido] of Object.entries(valor)) {
+            const normalizado = normalizarParaJSON(contenido, propiedad, ancestros);
+            if (normalizado === NO_SERIALIZABLE) return NO_SERIALIZABLE;
+            copia[propiedad] = normalizado;
+        }
+        return copia;
     } finally {
         ancestros.delete(valor); // un mismo objeto repetido en ramas distintas no es un ciclo
     }
@@ -148,26 +184,24 @@ function esEstructuraSerializable(valor, ancestros = new Set()) {
 
 /**
  * Serializa un valor a JSON rechazando lo que no se puede guardar.
+ * Valida y serializa sobre la MISMA copia: cada toJSON() corre una sola vez, así que
+ * lo que se valida es exactamente lo que se guarda.
  * @param {unknown} valor Valor a serializar.
  * @param {string} clave Clave (solo para el mensaje de error).
  * @returns {string|null} Texto JSON o null si no es serializable.
  */
 function serializar(valor, clave) {
     try {
-        if (!esEstructuraSerializable(valor)) {
+        const normalizado = normalizarParaJSON(valor, "", new Set());
+        if (normalizado === NO_SERIALIZABLE) {
             registrarError(`El valor para "${clave}" contiene datos no serializables ` +
-                "(undefined, funciones, símbolos o referencias circulares).");
+                "(undefined, funciones, símbolos, BigInt o referencias circulares).");
             return null;
         }
-        const texto = JSON.stringify(valor);
-        // JSON.stringify devuelve undefined para undefined, funciones y símbolos.
-        if (typeof texto !== "string") {
-            registrarError(`El valor para "${clave}" no es serializable (${typeof valor}).`);
-            return null;
-        }
-        return texto;
+        // La copia es un objeto plano sin toJSON(): JSON.stringify no lo vuelve a ejecutar.
+        return JSON.stringify(normalizado);
     } catch (error) {
-        // Referencias circulares, BigInt o un toJSON() que lanza.
+        // Un toJSON() que lanza, o una estructura demasiado profunda.
         registrarError(`No se pudo serializar el valor para "${clave}".`, error);
         return null;
     }
