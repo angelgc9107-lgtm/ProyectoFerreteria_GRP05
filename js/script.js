@@ -22,18 +22,22 @@ let pagoActual = null;
 let pedidoPendiente = null;
 let secuenciaPedidos = 1;
 
-const elemento = (selector) => {
+// Obtiene elementos del DOM y permite distinguir
+// entre controles obligatorios y opcionales.
+const elemento = (selector, obligatorio = true) => {
     const encontrado = document.querySelector(selector);
-    if (!encontrado) {
-        throw new Error(`No se encontro el elemento requerido: ${selector}`);
+
+    if (!encontrado && obligatorio) {
+        console.error(`No se encontró el elemento requerido: ${selector}`);
     }
+
     return encontrado;
 };
 
 const elementos = {
     busqueda: elemento("#busqueda"),
     formBusqueda: elemento("#form-busqueda"),
-    estadoAplicacion: elemento("#estado-aplicacion"),
+    estadoAplicacion: elemento("#estado-aplicacion", false),
     categoria: elemento("#categoria"),
     orden: elemento("#orden"),
     activarPrecio: elemento("#activar-filtro-precio"),
@@ -55,8 +59,26 @@ const elementos = {
     seccionConfirmacion: elemento("#confirmacion"),
     formPedido: elemento("#form-pedido"),
     pedidoMensaje: elemento("#pedido-mensaje"),
-    resumenPedido: elemento("#resumen-pedido")
+    resumenPedido: elemento("#resumen-pedido"),
+    seccionCatalogo: elemento("#catalogo"),
+    panelCarrito: elemento("#carrito"),
+    seccionOfertas: elemento("#ofertas"),
+    navegacionPrincipal: elemento('nav[aria-label="Navegacion principal"]')
 };
+
+// Verifica que existan los elementos obligatorios
+// antes de inicializar los eventos de la aplicación.
+const elementosFaltantes = Object.entries(elementos)
+    .filter(([nombre, control]) =>
+        nombre !== "estadoAplicacion" && control === null
+    )
+    .map(([nombre]) => nombre);
+
+if (elementosFaltantes.length > 0) {
+    throw new Error(
+        `Faltan elementos obligatorios: ${elementosFaltantes.join(", ")}`
+    );
+}
 
 const tarjetasCatalogo = new Map(
     Array.from(elementos.resultados.querySelectorAll("article[data-product-code]"))
@@ -72,14 +94,41 @@ function formatearMoneda(importe) {
     }).format(importe);
 }
 
+// Muestra mensajes informativos, de éxito, error o carga,
+// aplicando las clases CSS correspondientes a cada estado.
 function mostrarMensaje(destino, mensaje, tipo = "info") {
+    if (!destino) return;
+    
+    destino.replaceChildren();
+
+    destino.classList.remove(
+        "text-danger",
+        "text-success",
+        "text-muted",
+        "text-info",
+        "is-loading"
+    );
+
+    if (tipo === "loading") {
+        destino.classList.add("text-info", "is-loading");
+
+        const spinner = document.createElement("span");
+        spinner.className = "spinner-border spinner-border-sm me-2";
+        spinner.setAttribute("aria-hidden", "true");
+
+        destino.append(spinner, document.createTextNode(mensaje));
+        return;
+    }
+
     destino.textContent = mensaje;
-    destino.classList.remove("text-danger", "text-success", "text-muted");
+
     if (tipo === "error") destino.classList.add("text-danger");
     if (tipo === "success") destino.classList.add("text-success");
     if (tipo === "info") destino.classList.add("text-muted");
 }
 
+// Aplica validación visual a los controles del formulario
+// y actualiza los mensajes de error asociados.
 function marcarControl(control, valido, mensaje = "") {
     control.classList.toggle("is-invalid", !valido);
     control.classList.toggle("is-valid", valido);
@@ -94,9 +143,21 @@ function marcarControl(control, valido, mensaje = "") {
     }
 }
 
+// Elimina las clases y mensajes de validación para restablecer
+// el estado visual inicial de un control.
 function limpiarEstadoControl(control) {
     control.classList.remove("is-invalid", "is-valid");
     control.removeAttribute("aria-invalid");
+    const mensajeId = control.getAttribute("aria-describedby");
+
+    if (mensajeId) {
+        const salida = document.getElementById(mensajeId);
+
+        if (salida) {
+            salida.textContent = "";
+            salida.classList.remove("text-danger");
+        }
+    }
 }
 
 function buscarYMostrarCatalogo() {
@@ -142,6 +203,8 @@ function buscarYMostrarCatalogo() {
     );
 }
 
+// Actualiza visualmente los productos, cantidades y totales del carrito
+// utilizando la información proporcionada por la clase Carrito.
 function renderizarCarrito() {
     const resumen = carrito.resumir();
     elementos.carritoItems.replaceChildren();
@@ -196,6 +259,8 @@ function renderizarCarrito() {
     });
 }
 
+// Oculta las secciones de pago y confirmación,
+// limpiando los resultados y estados que ya no son válidos.
 function ocultarFlujosPosteriores() {
     elementos.seccionPago.hidden = true;
     elementos.seccionConfirmacion.hidden = true;
@@ -205,6 +270,8 @@ function ocultarFlujosPosteriores() {
     pedidoPendiente = null;
 }
 
+// Genera dinámicamente el resumen de las condiciones de pago
+// utilizando los resultados calculados por la clase Pago.
 function renderizarCondiciones(condiciones) {
     elementos.condicionesPago.replaceChildren();
     const lista = document.createElement("dl");
@@ -263,6 +330,8 @@ function obtenerCondicionesPago() {
     }
 }
 
+// Captura los datos ingresados en el formulario del cliente
+// y los organiza en un objeto para la clase Pedido.
 function clienteDesdeFormulario() {
     return {
         nombre: elementos.formPedido.elements.nombre.value,
@@ -273,22 +342,26 @@ function clienteDesdeFormulario() {
 
 function validarCampoPedido(control) {
     if (!carrito.resumir().items.length || !pagoActual) return;
-    const cliente = {
-        nombre: "Cliente",
-        correo: "cliente@ferrolab.com",
-        direccion: "Direccion de prueba"
-    };
-    cliente[control.name] = control.value;
+
     try {
-        new Pedido(carrito, pagoActual, cliente);
+        new Pedido(carrito, pagoActual, clienteDesdeFormulario());
+
         marcarControl(control, true);
+
     } catch (error) {
-        if (!(error instanceof TypeError || error instanceof RangeError)) throw error;
-        if (error.campo !== control.name) throw error;
-        marcarControl(control, false, error.message);
+        if (!(error instanceof TypeError || error instanceof RangeError)) {
+            throw error;
+        }
+        if (error.campo === control.name) {
+            marcarControl(control, false, error.message);
+        } else {
+            limpiarEstadoControl(control);
+        }
     }
 }
 
+// Construye los elementos HTML del resumen del pedido
+// incluyendo productos, datos del cliente y condiciones de pago.
 function agregarDatosResumen(contenedor, resumen) {
     const titulo = document.createElement("h3");
     titulo.textContent = "Resumen del pedido";
@@ -310,44 +383,56 @@ function agregarDatosResumen(contenedor, resumen) {
     contenedor.append(titulo, productos, cliente, condiciones, boton);
 }
 
-function invalidarPagoSiCambioTotal(totalAnterior, totalNuevo) {
-    if (totalAnterior === totalNuevo) return false;
+ function invalidarPagoPorCambioCarrito() {
     const habiaPago = pagoActual !== null;
-    pagoActual = null;
-    ocultarFlujosPosteriores();
-    if (habiaPago) {
-        mostrarMensaje(elementos.pagoMensaje, "El total cambio. Debes volver a elegir el metodo de pago y las cuotas.", "info");
-    }
-    return habiaPago;
-}
+    const habiaPedido = pedidoPendiente !== null;
 
-function procesarOperacionCarrito(operacion, codigoCantidad = null) {
-    const totalAnterior = carrito.resumir().total;
+    pagoActual = null;
+
+    ocultarFlujosPosteriores();
+
+    return habiaPago || habiaPedido;
+}
+ function procesarOperacionCarrito(operacion, codigoCantidad = null) {
     const resultado = operacion();
+
     if (!resultado.exito) {
         renderizarCarrito();
+
         mostrarMensaje(elementos.carritoMensaje, resultado.error, "error");
         mostrarMensaje(elementos.estadoAplicacion, resultado.error, "error");
+
         if (codigoCantidad) {
-            const control = Array.from(elementos.carritoItems.querySelectorAll('[data-action="cambiar-cantidad"]'))
-                .find((entrada) => entrada.dataset.productCode === codigoCantidad);
-            if (control) marcarControl(control, false, resultado.error);
+            const control = Array.from(
+                elementos.carritoItems.querySelectorAll('[data-action="cambiar-cantidad"]')
+            ).find((entrada) => entrada.dataset.productCode === codigoCantidad);
+
+            if (control) {
+                marcarControl(control, false, resultado.error);
+            }
         }
+
         return false;
     }
-    const totalNuevo = carrito.resumir().total;
-    const pagoInvalidado = invalidarPagoSiCambioTotal(totalAnterior, totalNuevo);
+
+    const pagoInvalidado = invalidarPagoPorCambioCarrito();
+
     renderizarCarrito();
+
     if (pagoInvalidado) {
         const mensaje = "Carrito actualizado; el pago debe seleccionarse nuevamente.";
+
         mostrarMensaje(elementos.carritoMensaje, mensaje, "info");
         mostrarMensaje(elementos.estadoAplicacion, mensaje, "info");
     } else {
         mostrarMensaje(elementos.estadoAplicacion, "Carrito actualizado.", "success");
     }
+
     return true;
 }
 
+// Prepara la interfaz de pago, reinicia los estados anteriores
+// y espera el cierre del Offcanvas antes de desplazarse a la sección de pago.
 function iniciarPago() {
     if (!carrito.resumir().items.length) {
         mostrarMensaje(elementos.carritoMensaje, "No se puede comprar con el carrito vacio.", "error");
@@ -366,9 +451,68 @@ function iniciarPago() {
     elementos.seccionConfirmacion.hidden = true;
     elementos.seccionPago.hidden = false;
     mostrarMensaje(elementos.pagoMensaje, "Selecciona el metodo de pago.", "info");
-    elementos.seccionPago.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    // Muestra el indicador de carga durante el cierre del carrito.
+    mostrarMensaje(
+        elementos.estadoAplicacion ?? elementos.carritoMensaje,
+        "Preparando el pago...",
+        "loading"
+    );
+    if (elementos.estadoAplicacion) {
+        elementos.estadoAplicacion.classList.add(
+        "position-fixed",
+        "top-0",
+        "start-50",
+        "translate-middle-x",
+        "mt-3",
+        "p-3",
+        "bg-body",
+        "rounded",
+        "shadow"
+    );
+    elementos.estadoAplicacion.style.zIndex = "1100";
 }
 
+const panelCarrito = elementos.panelCarrito;
+panelCarrito.addEventListener("hidden.bs.offcanvas", () => {
+    renderizarCarrito();
+    requestAnimationFrame(() => {
+        elementos.seccionPago.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    });
+
+    // Mantiene visible el indicador de carga antes de mostrar el mensaje de éxito.
+    setTimeout(() => {
+        if (elementos.estadoAplicacion) {
+            elementos.estadoAplicacion.classList.remove(
+                "position-fixed",
+                "top-0",
+                "start-50",
+                "translate-middle-x",
+                "mt-3",
+                "p-3",
+                "bg-body",
+                "rounded",
+                "shadow"
+            );
+
+            elementos.estadoAplicacion.style.removeProperty("z-index");
+        }
+
+        mostrarMensaje(
+            elementos.estadoAplicacion,
+            "Pago listo para completar.",
+            "success"
+        );
+    }, 900);
+
+}, { once: true });
+}
+
+// Cancela el proceso de pago y restablece la interfaz,
+// conservando los productos agregados al carrito.
 function cancelarPago() {
     pagoActual = null;
     ocultarFlujosPosteriores();
@@ -403,6 +547,8 @@ function confirmarPedido() {
     }
 }
 
+// Cancela la confirmación del pedido y limpia el formulario,
+// conservando el carrito y las condiciones de pago.
 function cancelarPedido() {
     pedidoPendiente = null;
     elementos.resumenPedido.replaceChildren();
@@ -420,7 +566,7 @@ function inicializarEventos() {
     elementos.formBusqueda.addEventListener("submit", (evento) => {
         evento.preventDefault();
         buscarYMostrarCatalogo();
-        elemento("#catalogo").scrollIntoView({ behavior: "smooth", block: "start" });
+        elementos.seccionCatalogo.scrollIntoView({ behavior: "smooth", block: "start" });
     });
     elementos.busqueda.addEventListener("input", buscarYMostrarCatalogo);
     elementos.categoria.addEventListener("change", buscarYMostrarCatalogo);
@@ -437,43 +583,129 @@ function inicializarEventos() {
         buscarYMostrarCatalogo();
     });
 
-    document.addEventListener("click", (evento) => {
-        const accion = evento.target.closest("[data-action]");
-        if (!accion) {
-            const filtroCategoria = evento.target.closest("[data-categoria]");
-            if (filtroCategoria) {
-                evento.preventDefault();
-                elementos.categoria.value = filtroCategoria.dataset.categoria;
-                buscarYMostrarCatalogo();
-                elemento("#catalogo").scrollIntoView({ behavior: "smooth", block: "start" });
-            }
-            return;
-        }
+    // CATÁLOGO Y OFERTAS
+    // Delega la acción de agregar productos al carrito.
+    function manejarAgregarCarrito(evento) {
+        const accion = evento.target.closest('[data-action="agregar-carrito"]');
+
+        if (!accion || !evento.currentTarget.contains(accion)) return;
+
         const codigo = accion.dataset.productCode;
+
+        procesarOperacionCarrito(
+            () => carrito.agregar(catalogo, codigo, 1)
+        );
+    }
+
+    elementos.seccionCatalogo.addEventListener("click", manejarAgregarCarrito);
+    elementos.seccionOfertas.addEventListener("click", manejarAgregarCarrito);
+
+
+    // NAVEGACIÓN
+    // Delega el filtrado de productos desde el menú de categorías.
+    elementos.navegacionPrincipal.addEventListener("click", (evento) => {
+        const filtroCategoria = evento.target.closest("[data-categoria]");
+
+        if (!filtroCategoria ||
+            !elementos.navegacionPrincipal.contains(filtroCategoria)) return;
+
+        evento.preventDefault();
+
+        elementos.busqueda.value = "";
+        elementos.categoria.value = filtroCategoria.dataset.categoria;
+        elementos.activarPrecio.checked = false;
+        elementos.precio.disabled = true;
+        elementos.precio.value = elementos.precio.max;
+        elementos.precioValor.textContent = "Sin limite";
+
+        buscarYMostrarCatalogo();
+
+        elementos.seccionCatalogo.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    });
+
+
+    // CARRITO
+    // Delega la eliminación de productos y el inicio de compra.
+    elementos.panelCarrito.addEventListener("click", (evento) => {
+        const accion = evento.target.closest("[data-action]");
+
+        if (!accion || !elementos.panelCarrito.contains(accion)) return;
+
+        const codigo = accion.dataset.productCode;
+
         switch (accion.dataset.action) {
-            case "agregar-carrito":
-                procesarOperacionCarrito(() => carrito.agregar(catalogo, codigo, 1));
-                break;
             case "eliminar-carrito":
-                procesarOperacionCarrito(() => carrito.eliminar(codigo));
+                procesarOperacionCarrito(
+                    () => carrito.eliminar(codigo)
+                );
                 break;
+
             case "iniciar-compra":
                 iniciarPago();
                 break;
-            case "cancelar-pago":
-                cancelarPago();
-                break;
-            case "cancelar-pedido":
-                cancelarPedido();
-                break;
-            case "confirmar-pedido":
-                confirmarPedido();
-                break;
+
             default:
                 break;
         }
     });
 
+
+    // PAGO
+    // Delega la cancelación del proceso de pago.
+    elementos.seccionPago.addEventListener("click", (evento) => {
+        const accion = evento.target.closest('[data-action="cancelar-pago"]');
+
+        if (!accion || !elementos.seccionPago.contains(accion)) return;
+
+        cancelarPago();
+    });
+
+
+    // CONFIRMACIÓN
+    // Delega las acciones de cancelar y confirmar el pedido.
+    elementos.seccionConfirmacion.addEventListener("click", (evento) => {
+        const accion = evento.target.closest("[data-action]");
+
+        if (!accion || !elementos.seccionConfirmacion.contains(accion)) return;
+
+        switch (accion.dataset.action) {
+            case "cancelar-pedido":
+                cancelarPedido();
+                break;
+
+            case "confirmar-pedido":
+                confirmarPedido();
+                break;
+
+            default:
+                break;
+        }
+    });
+    
+    // Valida inmediatamente la cantidad ingresada sin modificar el carrito.
+    elementos.carritoItems.addEventListener("input", (evento) => {
+        const control = evento.target.closest('[data-action="cambiar-cantidad"]');
+        if (!control) return;
+        const valor = control.value.trim();
+        const valido =
+        valor !== "" &&
+        control.validity.valid &&
+        Number.isSafeInteger(Number(valor));
+        if (valido) {
+            marcarControl(control, true);
+        } else {
+            marcarControl(
+                control,
+                false,
+                "La cantidad debe ser un número entero mayor o igual a 1."
+            );
+        }
+    });
+
+    // Actualiza la cantidad mediante la clase Carrito cuando se confirma el cambio.
     elementos.carritoItems.addEventListener("change", (evento) => {
         const control = evento.target.closest('[data-action="cambiar-cantidad"]');
         if (!control) return;
@@ -494,7 +726,22 @@ function inicializarEventos() {
         elementos.resumenPedido.replaceChildren();
         if (elementos.metodoPago.value) obtenerCondicionesPago();
     });
-    elementos.cuotas.addEventListener("change", obtenerCondicionesPago);
+    elementos.cuotas.addEventListener("change", () => {
+
+    pedidoPendiente = null;
+
+    elementos.resumenPedido.replaceChildren();
+
+    elementos.seccionConfirmacion.hidden = true;
+
+    obtenerCondicionesPago();
+
+    mostrarMensaje(
+        elementos.pagoMensaje,
+        "Cambiaste las cuotas. Revisá las condiciones y continuá nuevamente.",
+        "info"
+    );
+});
     elementos.formPago.addEventListener("submit", (evento) => {
         evento.preventDefault();
         if (!obtenerCondicionesPago()) return;
@@ -504,11 +751,23 @@ function inicializarEventos() {
         mostrarMensaje(elementos.pedidoMensaje, "Completa tus datos para revisar el pedido.", "info");
         elementos.seccionConfirmacion.scrollIntoView({ behavior: "smooth", block: "start" });
     });
-
     elementos.formPedido.addEventListener("input", (evento) => {
-        const control = evento.target.closest("input");
-        if (control) validarCampoPedido(control);
-    });
+    const control = evento.target.closest("input");
+    if (!control) return;
+
+    if (pedidoPendiente !== null) {
+        pedidoPendiente = null;
+
+        elementos.resumenPedido.replaceChildren();
+
+        mostrarMensaje(
+            elementos.pedidoMensaje,
+            "Los datos del cliente cambiaron. Revisá nuevamente el resumen antes de confirmar.",
+            "info"
+        );
+    }
+    validarCampoPedido(control);
+});
     elementos.formPedido.addEventListener("submit", (evento) => {
         evento.preventDefault();
         elementos.formPedido.querySelectorAll("input").forEach(validarCampoPedido);
