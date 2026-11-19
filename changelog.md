@@ -16,6 +16,8 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 - [feature/dev-eventos-dom] Desarrollador Eventos de JavaScript + DOM Spec (sección BEFORE: Eventos y flujos de control, decisiones de arquitecturas y criterios de aceptación) PR: [#140](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/140) — Issue: [#139](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/139) — @angelgc9107-lgtm (Desarrollador JavaScript Eventos + DOM)
 
 
+- [feature/dev-eventos-dom] Implementación de eventos y manipulación del DOM, AT Close del spec PR: [#156](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/156) — Issue: [#155](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/155) — @angelgc9107-lgtm (Desarrollador JavaScript Eventos + DOM)
+
 ## [Actividad N°3] - 2026-11-02
 
 ### Added
