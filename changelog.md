@@ -8,6 +8,10 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 - [feature/coord-devops-cuarta-entrega] [A4] Coordinador / DevOps + Tester QA - Spec PR: [#138](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/138) — @alandox1 (Coordinador / DevOps + Tester QA)
 
+
+### Changed
+
+- [feature/coord-devops-cuarta-entrega] [A4] Coordinador / DevOps: ajustar nombres de secciones del spec PR: [#154](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/154) - Issue: [#137](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/137) - @alandox1 (Coordinador / DevOps + TesterQA)
 - [feature/dev-poo-logica-negocio] [A4] Desarrollador JS POO (Lógica de Negocio) - Spec PR: [#144](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/144) - Issue: [#143](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/143) - @LucianoBarrionuevo (Desarrollador JS POO)
 - [feature/dev-storage] Desarrollador JS Storage: spec-dev-storage (sección BEFORE: estrategia local vs session, convención de claves, schemas y criterios de aceptación): [#141](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/141) — Issue: [#142](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/142) — @Piastrellini (Desarrollador JS Local y Session Storage)
 
