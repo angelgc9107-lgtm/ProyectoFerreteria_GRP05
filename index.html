@@ -32,7 +32,51 @@
         <span>Iniciar sesion</span>
 
         <nav aria-label="Navegacion principal">
-            <a href="#catalogo">Catalogo</a>
+            <div class="dropdown">
+                <button
+                    class="btn dropdown-toggle"
+                    type="button"
+                    id="catalogo-dropdown"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    Catálogo
+                </button>
+                
+                <ul class="dropdown-menu" aria-labelledby="catalogo-dropdown">
+                    <li>
+                        <a class="dropdown-item" href="#catalogo" data-categoria="">
+                            Todos los productos
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="#catalogo" data-categoria="Herramientas manuales">
+                            Herramientas manuales
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="#catalogo" data-categoria="Herramientas electricas">
+                            Herramientas eléctricas
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="#catalogo" data-categoria="Electricidad">
+                            Electricidad
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="dropdown-item" href="#catalogo" data-categoria="Jardineria">
+                            Jardinería
+                    </a>
+                </li>
+                
+                <li>
+                    <a class="dropdown-item" href="#catalogo" data-categoria="Accesorios">
+                        Accesorios
+                    </a>
+                </li>
+            </ul>
+        </div>
             <a href="#inicio">Inicio</a>
             <a href="#ofertas">Ofertas</a>
             <a href="#ubicacion">Donde estamos</a>
