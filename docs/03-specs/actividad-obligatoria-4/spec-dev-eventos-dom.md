@@ -66,35 +66,425 @@ Los cuatro flujos actualizarán regiones identificables del DOM. Los mensajes de
 
 ## Criterios de aceptación
 
-- [ ] Dado que se carga la interfaz de la Actividad 4, cuando se usan los cuatro flujos, entonces `js/script.js` no invoca `prompt()` ni `alert()` y la interacción ocurre mediante controles HTML y mensajes en el DOM.
-- [ ] Dado cada formulario y control interactivo de los cuatro flujos, cuando se inicializa la aplicación, entonces su evento relevante queda atendido mediante `addEventListener()` sin listeners duplicados.
-- [ ] Dada una búsqueda, cuando se envía el formulario o se cambia un filtro, entonces el controlador captura los valores de inputs y selects y muestra los resultados sin recargar la página.
-- [ ] Dado un filtro inválido, cuando se valida, entonces el usuario ve el error junto al control correspondiente y los resultados/estado no se actualizan con datos inválidos.
-- [ ] Dado un campo del formulario de pedido, cuando el usuario lo edita o abandona, entonces la validación muestra feedback visual y accesible sin esperar al envío final.
-- [ ] Dada una acción sobre un producto o ítem del carrito, cuando se agrega, actualiza o elimina, entonces los elementos, subtotales, total y contador correspondientes se crean, actualizan o eliminan dinámicamente del DOM.
-- [ ] Dado un resultado de validación o una operación exitosa, cuando cambia su estado, entonces el control y mensaje aplican las clases visuales de error o éxito definidas para la interfaz.
-- [ ] Dado un cambio de flujo, cuando corresponde continuar, volver o finalizar, entonces las regiones de búsqueda, pago y confirmación pertinentes se muestran u ocultan sin perder estado que deba conservarse.
-- [ ] Dado un carrito vacío, datos incompletos o un método de pago que no admite cuotas, cuando se actualiza la interfaz, entonces las acciones no disponibles quedan deshabilitadas y las disponibles reflejan el estado actual.
-- [ ] Dado el catálogo, cuando se busca o filtra desde la interfaz, entonces se muestran resultados acordes a los criterios y reglas del dominio.
-- [ ] Dado el carrito, cuando se modifican productos o cantidades desde la interfaz, entonces se actualizan los importes y se invalida el pago si cambió el total.
-- [ ] Dado un carrito con productos, cuando se eligen método y cuotas, entonces se ven las condiciones calculadas antes de confirmar la compra.
-- [ ] Dado un carrito con condiciones de pago, cuando se completan y confirman los datos del pedido, entonces la interfaz muestra el resultado del pedido y refleja el vaciado del carrito y del pago.
-- [ ] Dado que el usuario cancela el pago o rechaza/cancela el pedido, cuando vuelve al flujo correspondiente, entonces se conserva el estado que establecen los diagramas.
-- [ ] Dado el controlador, cuando se revisa su responsabilidad, entonces solo coordina eventos, entradas, llamadas al dominio y actualizaciones del DOM; los cálculos y reglas de negocio pertenecen a `js/models/`.
-- [ ] Dada la integración con el dominio, cuando el controlador procesa una acción, entonces utiliza únicamente clases y operaciones efectivamente definidas y acordadas con el Desarrollador JS POO.
+- [X] Dado que se carga la interfaz de la Actividad 4, cuando se usan los cuatro flujos, entonces `js/script.js` no invoca `prompt()` ni `alert()` y la interacción ocurre mediante controles HTML y mensajes en el DOM.
+- [X] Dado cada formulario y control interactivo de los cuatro flujos, cuando se inicializa la aplicación, entonces su evento relevante queda atendido mediante `addEventListener()` sin listeners duplicados.
+- [X] Dada una búsqueda, cuando se envía el formulario o se cambia un filtro, entonces el controlador captura los valores de inputs y selects y muestra los resultados sin recargar la página.
+- [X] Dado un filtro inválido, cuando se valida, entonces el usuario ve el error junto al control correspondiente y los resultados/estado no se actualizan con datos inválidos.
+- [X] Dado un campo del formulario de pedido, cuando el usuario lo edita o abandona, entonces la validación muestra feedback visual y accesible sin esperar al envío final.
+- [X] Dada una acción sobre un producto o ítem del carrito, cuando se agrega, actualiza o elimina, entonces los elementos, subtotales, total y contador correspondientes se crean, actualizan o eliminan dinámicamente del DOM.
+- [X] Dado un resultado de validación o una operación exitosa, cuando cambia su estado, entonces el control y mensaje aplican las clases visuales de error o éxito definidas para la interfaz.
+- [X] Dado un cambio de flujo, cuando corresponde continuar, volver o finalizar, entonces las regiones de búsqueda, pago y confirmación pertinentes se muestran u ocultan sin perder estado que deba conservarse.
+- [X] Dado un carrito vacío, datos incompletos o un método de pago que no admite cuotas, cuando se actualiza la interfaz, entonces las acciones no disponibles quedan deshabilitadas y las disponibles reflejan el estado actual.
+- [X] Dado el catálogo, cuando se busca o filtra desde la interfaz, entonces se muestran resultados acordes a los criterios y reglas del dominio.
+- [X] Dado el carrito, cuando se modifican productos o cantidades desde la interfaz, entonces se actualizan los importes y se invalida el pago si cambió el total.
+- [X] Dado un carrito con productos, cuando se eligen método y cuotas, entonces se ven las condiciones calculadas antes de confirmar la compra.
+- [X] Dado un carrito con condiciones de pago, cuando se completan y confirman los datos del pedido, entonces la interfaz muestra el resultado del pedido y refleja el vaciado del carrito y del pago.
+- [X] Dado que el usuario cancela el pago o rechaza/cancela el pedido, cuando vuelve al flujo correspondiente, entonces se conserva el estado que establecen los diagramas.
+- [X] Dado el controlador, cuando se revisa su responsabilidad, entonces solo coordina eventos, entradas, llamadas al dominio y actualizaciones del DOM; los cálculos y reglas de negocio pertenecen a `js/models/`.
+- [X] Dada la integración con el dominio, cuando el controlador procesa una acción, entonces utiliza únicamente clases y operaciones efectivamente definidas y acordadas con el Desarrollador JS POO.
+
 
 ## AT CLOSE — Evidencia de implementación
+**Prompt exacto de GitHub Copilot Agent Mode para refactorizar el archivo Js/script.js :**
+```
+Actuá como Desarrollador JavaScript especializado en manejo de eventos, manipulación del DOM e integración con programación orientada a objetos.
+Tui rol es Desarrollador JavaScript Eventos + DOM.
+Refactorizar js/script.js para convertirlo en el controlador principal de la aplicación, integrándolo con las clases del dominio ya implementadas.
+1. Archivos de contexto
+Antes de comenzar, analizá los siguientes archivos y directorios:
+•	plan.md
+•	index.html
+•	js/script.js
+•	js/models/
+•	docs/03-specs/actividad-obligatoria-4/spec-dev-eventos-dom.md
+•	docs/03-specs/actividad-obligatoria-4/spec-dev-poo.md
+•	docs/05-diagramas/
+Verificá las rutas reales de los archivos.
+Tomá como referencia principal el spec de mi rol, los diagramas de actividades y los contratos públicos implementados en js/models/.
+Identificá las clases, sus responsabilidades, métodos, parámetros y valores de retorno directamente desde el código existente.
+2. Objetivo de la implementación
+Transformá js/script.js en un controlador encargado exclusivamente de:
+•	Gestionar eventos e interacciones del usuario.
+•	Capturar entradas desde formularios y controles HTML.
+•	Invocar los métodos correspondientes de las clases del dominio.
+•	Coordinar los cuatro flujos de la aplicación.
+•	Actualizar dinámicamente el DOM.
+•	Gestionar estados de interfaz, validaciones visuales y mensajes.
+Eliminá toda lógica de negocio que corresponda a las clases del dominio.
+No dupliques reglas de negocio, validaciones, cálculos ni operaciones que ya estén implementadas en js/models/.
+3. Sistema de eventos
+Implementá un sistema homogéneo de manejo de eventos que incluya:
+•	Event listeners para todos los controles relevantes.
+•	Eventos click, submit, input y change, según corresponda.
+•	Delegación de eventos cuando los elementos se generen dinámicamente.
+•	Prevención de comportamientos predeterminados cuando sea necesario.
+•	Organización del código para evitar duplicaciones y facilitar el mantenimiento.
+4. Manipulación del DOM
+Implementá las funcionalidades necesarias para:
+•	Capturar entradas del usuario.
+•	Mostrar validaciones en tiempo real con feedback visual.
+•	Mostrar resultados dinámicamente.
+•	Crear, actualizar y eliminar elementos HTML según cada flujo.
+•	Mostrar y ocultar secciones según el contexto.
+•	Habilitar y deshabilitar controles.
+•	Mostrar mensajes de error y éxito.
+•	Aplicar clases CSS para representar estados como loading, error y success, respetando los estilos existentes.
+5. Implementación de los cuatro flujos
+Implementá las interacciones necesarias para los cuatro flujos definidos en el proyecto:
+1.	Búsqueda y filtrado del catálogo.
+2.	Gestión del carrito de compras.
+3.	Selección de pago y cuotas.
+4.	Resumen y confirmación del pedido.
+Respetá las decisiones, condiciones, validaciones y ciclos establecidos en los diagramas de actividades.
+Utilizá exclusivamente los métodos públicos disponibles en las clases del dominio para ejecutar las operaciones de negocio.
+El controlador debe encargarse de la interacción con el usuario y la representación visual de los resultados.
+6. Eliminación de prompt() y alert()
+Eliminá las llamadas a prompt() y alert() utilizadas en los flujos de la aplicación.
+Reemplazalas por interacciones mediante formularios, inputs, botones y mensajes HTML.
+Los cuatro flujos deben poder ejecutarse desde la interfaz de la página.
+7. Integración con HTML
+Verificá que index.html contenga los controles necesarios para ejecutar los cuatro flujos.
+Si faltan controles indispensables, incorporá únicamente los elementos HTML necesarios para la implementación.
+Respetá la estructura existente, los componentes Bootstrap y los estilos CSS del proyecto.
+No modifiques el diseño visual ni las reglas responsive correspondientes a otros roles.
+8. Separación de responsabilidades
+Respetá estrictamente las responsabilidades del proyecto:
+•	JS POO: lógica de negocio y clases del dominio.
+•	Eventos + DOM: eventos, interacción con el usuario, manipulación del DOM y coordinación de los flujos.
+•	Storage: persistencia y recuperación de información.
+•	Responsive Design y Frontend: estilos, diseño visual y adaptación a dispositivos.
+No modifiques las clases del dominio ni implementes funcionalidades correspondientes a otros roles.
+Si detectás dependencias pendientes, informalas sin inventar implementaciones alternativas.
+9. Criterios de aceptación
+Verificá que:
+•	js/script.js funcione exclusivamente como controlador.
+•	No exista lógica de negocio duplicada.
+•	Se utilicen correctamente las clases existentes en js/models/.
+•	Los cuatro flujos funcionen mediante controles HTML.
+•	No existan llamadas a prompt() ni alert().
+•	Todos los eventos relevantes tengan sus listeners.
+•	Se aplique delegación de eventos cuando corresponda.
+•	Las validaciones proporcionen feedback visual.
+•	Los resultados se actualicen dinámicamente en el DOM.
+•	Los estados de interfaz se gestionen correctamente.
+•	Se respeten los contratos públicos de las clases del dominio.
+10. Resultado esperado
+Realizá la implementación respetando el spec del rol y los archivos de contexto.
+Al finalizar, presentá:
+1.	Archivos creados o modificados.
+2.	Resumen de los cambios realizados.
+3.	Eventos implementados.
+4.	Funciones de manipulación del DOM incorporadas.
+5.	Integración realizada con las clases del dominio.
+6.	Pruebas efectuadas y resultados.
+7.	Dependencias o problemas pendientes.
+Restricciones
+•	No modificar js/models/.
+•	No implementar lógica de negocio dentro de js/script.js.
+•	No modificar los specs ni los diagramas de actividades.
+•	No completar la sección AT CLOSE.
+•	No realizar commits, push ni pull requests.
+•	No modificar estilos CSS ni responsabilidades de otros roles.
+•	No inventar métodos o contratos inexistentes.
+Antes de modificar archivos, analizá el contexto disponible e identificá posibles incompatibilidades. Si encontrás un impedimento bloqueante, informalo antes de continuar.
+Implementá únicamente lo correspondiente al rol Desarrollador JavaScript Eventos + DOM.
+```
+**Respuesta exacta de GitHub Copilot Agent Mode:**
+```
+Implementación
+1.	Archivos modificados: js/script.js y index.html. No modifiqué modelos, specs, diagramas ni CSS.
+2.	Cambios: script.js ahora coordina eventos, estado de interfaz y llamadas al dominio. Se agregaron controles para filtros, carrito, pago y confirmación; también se quitaron el menú automático y el listener inline.
+3.	Eventos: submit e input para búsqueda; change para filtros, cantidades, método y cuotas; input y submit para los datos del pedido. Las acciones de productos, carrito y pedido usan delegación de clics.
+4.	DOM: renderizado de carrito, subtotales, totales, condiciones de pago y resumen; filtros y orden de productos; estados visuales y mensajes accesibles; secciones y controles habilitados según el flujo.
+5.	Dominio: se integraron Producto, Catalogo, Carrito, Pago y Pedido mediante sus contratos públicos. El controlador no reproduce sus cálculos ni validaciones.
+Verificación y pendientes
+•	Probé en navegador los filtros, agregar y cambiar cantidades, feedback de cantidad inválida, pago en cuotas, confirmación y vaciado del carrito. También verifiqué cancelaciones, invalidación del pago al cambiar el total y el inicio de una compra sucesiva.
+•	No hubo errores de consola; git diff --check pasó y no hay llamadas a prompt() ni alert() en el controlador.
+•	npm run test:qa terminó con código 0, pero solo imprime instrucciones: no ejecuta pruebas. El runner Jasmine existente carga el script como clásico y prueba funciones de negocio retiradas; necesitará adaptación por QA.
+•	Los archivos de js/models/ ya estaban presentes pero figuran sin seguimiento en Git; no los modifiqué. La persistencia sigue pendiente para el rol Storage.
+No realicé commits ni operaciones remotas.
+```
+**Capturas de prompt:**
 
-Pendiente de completar al finalizar el desarrollo. Registrar:
+**Prompt a Copilot en modo agente para refactorizar js/script.js**
 
-- **Prompt exacto de GitHub Copilot Agent Mode:**
-  ```text
-  [Pendiente: pegar el prompt exacto utilizado.]
-  ```
-- **Archivos adjuntados como contexto:** `plan.md`, `index.html`, `js/script.js`, los cuatro diagramas de actividades `.puml`, las clases que existan en `js/models/` al momento de la implementación y este `spec-dev-eventos-dom.md`.
-- **Fragmento generado por Copilot:**
-  ```javascript
-  // Pendiente: incluir un fragmento real de al menos un event listener.
-  ```
-- **Ajustes manuales y justificación:** pendiente de documentar durante la implementación.
-- **Decisiones finales sobre el controlador y su integración con las clases del dominio:** pendientes de documentar una vez acordados e implementados.
+![Prompt a Copilot en modo agente para refactorizar js/script.js](../../../assets/images/prompt1-dev-eventos-dom.png)
+
+**Respuesta del prompt a copilot en modo agente para refacturizar el js/script.js**
+
+![Respuesta del prompt a copilot en modo agente para refacturizar el js/script.js](../../../assets\images\prompt2-dev-eventos-dom.png)
+
+**Archivos adjuntados como contexto:** `plan.md`, `index.html`, `js/script.js`, los cuatro diagramas de actividades `.puml`, las clases que existan en `js/models/` y el `spec-dev-eventos-dom.md`.
+**Fragmento generado por Copilot:**
+```
+  function inicializarEventos() {
+    buscarYMostrarCatalogo();
+    renderizarCarrito();
+
+    elementos.formBusqueda.addEventListener("submit", (evento) => {
+        evento.preventDefault();
+        buscarYMostrarCatalogo();
+        elemento("#catalogo").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    elementos.busqueda.addEventListener("input", buscarYMostrarCatalogo);
+    elementos.categoria.addEventListener("change", buscarYMostrarCatalogo);
+    elementos.orden.addEventListener("change", buscarYMostrarCatalogo);
+    elementos.activarPrecio.addEventListener("change", () => {
+        elementos.precio.disabled = !elementos.activarPrecio.checked;
+        elementos.precioValor.textContent = elementos.activarPrecio.checked
+            ? formatearMoneda(Number(elementos.precio.value))
+            : "Sin limite";
+        buscarYMostrarCatalogo();
+    });
+    elementos.precio.addEventListener("input", () => {
+        elementos.precioValor.textContent = formatearMoneda(Number(elementos.precio.value));
+        buscarYMostrarCatalogo();
+    });
+
+    document.addEventListener("click", (evento) => {
+        const accion = evento.target.closest("[data-action]");
+        if (!accion) {
+            const filtroCategoria = evento.target.closest("[data-categoria]");
+            if (filtroCategoria) {
+            evento.preventDefault();
+            elementos.busqueda.value = "";
+            elementos.categoria.value = filtroCategoria.dataset.categoria;
+            elementos.activarPrecio.checked = false;
+            elementos.precio.disabled = true;
+            elementos.precio.value = elementos.precio.max;
+            elementos.precioValor.textContent = "Sin limite";
+            buscarYMostrarCatalogo();
+            elemento("#catalogo").scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }
+            return;
+        }
+        const codigo = accion.dataset.productCode;
+        switch (accion.dataset.action) {
+            case "agregar-carrito":
+                procesarOperacionCarrito(() => carrito.agregar(catalogo, codigo, 1));
+                break;
+            case "eliminar-carrito":
+                procesarOperacionCarrito(() => carrito.eliminar(codigo));
+                break;
+            case "iniciar-compra":
+                iniciarPago();
+                break;
+            case "cancelar-pago":
+                cancelarPago();
+                break;
+            case "cancelar-pedido":
+                cancelarPedido();
+                break;
+            case "confirmar-pedido":
+                confirmarPedido();
+                break;
+            default:
+                break;
+        }
+    });
+    elementos.carritoItems.addEventListener("input", (evento) => {
+        const control = evento.target.closest('[data-action="cambiar-cantidad"]');
+        if (!control) return;
+        const valor = control.value.trim();
+        const valido =
+        valor !== "" &&
+        control.validity.valid &&
+        Number.isSafeInteger(Number(valor));
+        if (valido) {
+            marcarControl(control, true);
+        } else {
+            marcarControl(
+                control,
+                false,
+                "La cantidad debe ser un número entero mayor o igual a 1."
+            );
+        }
+    });
+
+    elementos.carritoItems.addEventListener("change", (evento) => {
+        const control = evento.target.closest('[data-action="cambiar-cantidad"]');
+        if (!control) return;
+        procesarOperacionCarrito(
+            () => carrito.cambiarCantidad(control.dataset.productCode, control.value),
+            control.dataset.productCode
+        );
+    });
+
+    elementos.metodoPago.addEventListener("change", () => {
+        const tarjeta = elementos.metodoPago.value === "tarjeta";
+        elementos.cuotas.disabled = !tarjeta;
+        if (!tarjeta) elementos.cuotas.value = "1";
+        elementos.condicionesPago.replaceChildren();
+        pagoActual = null;
+        pedidoPendiente = null;
+        elementos.seccionConfirmacion.hidden = true;
+        elementos.resumenPedido.replaceChildren();
+        if (elementos.metodoPago.value) obtenerCondicionesPago();
+    });
+    elementos.cuotas.addEventListener("change", () => {
+
+    pedidoPendiente = null;
+
+    elementos.resumenPedido.replaceChildren();
+
+    elementos.seccionConfirmacion.hidden = true;
+
+    obtenerCondicionesPago();
+
+    mostrarMensaje(
+        elementos.pagoMensaje,
+        "Cambiaste las cuotas. Revisá las condiciones y continuá nuevamente.",
+        "info"
+    );
+});
+    elementos.formPago.addEventListener("submit", (evento) => {
+        evento.preventDefault();
+        if (!obtenerCondicionesPago()) return;
+        elementos.seccionConfirmacion.hidden = false;
+        elementos.resumenPedido.replaceChildren();
+        pedidoPendiente = null;
+        mostrarMensaje(elementos.pedidoMensaje, "Completa tus datos para revisar el pedido.", "info");
+        elementos.seccionConfirmacion.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    elementos.formPedido.addEventListener("input", (evento) => {
+    const control = evento.target.closest("input");
+    if (!control) return;
+
+    if (pedidoPendiente !== null) {
+        pedidoPendiente = null;
+
+        elementos.resumenPedido.replaceChildren();
+
+        mostrarMensaje(
+            elementos.pedidoMensaje,
+            "Los datos del cliente cambiaron. Revisá nuevamente el resumen antes de confirmar.",
+            "info"
+        );
+    }
+    validarCampoPedido(control);
+});
+    elementos.formPedido.addEventListener("submit", (evento) => {
+        evento.preventDefault();
+        elementos.formPedido.querySelectorAll("input").forEach(validarCampoPedido);
+        try {
+            pedidoPendiente = new Pedido(carrito, pagoActual, clienteDesdeFormulario());
+            const resumen = pedidoPendiente.resumir();
+            elementos.resumenPedido.replaceChildren();
+            agregarDatosResumen(elementos.resumenPedido, resumen);
+            mostrarMensaje(elementos.pedidoMensaje, "Revisa el resumen y confirma o cancela el pedido.", "success");
+        } catch (error) {
+            if (!(error instanceof TypeError || error instanceof RangeError)) throw error;
+            pedidoPendiente = null;
+            const campo = error.campo && elementos.formPedido.elements[error.campo];
+            if (campo) {
+                marcarControl(campo, false, error.message);
+                campo.focus();
+            }
+            mostrarMensaje(elementos.pedidoMensaje, error.message, "error");
+        }
+    });
+}
+```
+
+**Ajustes manuales:**
+
+1. **index.html — Navegación del catálogo**
+- Problema: La opción «Catálogo» solamente desplazaba la página hacia los productos, sin mostrar opciones de navegación.
+- Corrección: Se reemplazó el enlace por un menú desplegable de Bootstrap con las distintas categorías y la opción «Todos los productos».
+-	Mejora adicional: Se eliminó el menú «Categorías» duplicado, unificando la navegación.
+-	Resultado obtenido: El usuario puede seleccionar una categoría desde el menú principal y acceder directamente a sus productos.
+2. **css/components.css — Organización de filtros**
+-	Problema: Los controles «Ordenar por» y «Categorías» se superponían dentro del panel de filtros.
+-	Corrección: Se reemplazó la distribución basada en Grid por Flexbox, organizando los controles verticalmente.
+-	Mejora adicional: Se ajustó la alineación del checkbox «Aplicar precio máximo».
+-	Resultado obtenido: Los filtros se muestran separados, ordenados y correctamente identificados.
+3. **js/script.js — Eventos y lógica de interfaz**
+
+**3.1. Navegación por categorías**
+-	Problema: Al seleccionar una categoría podían mantenerse búsquedas y filtros anteriores, generando resultados inesperados.
+-	Corrección: Se actualizó el evento de selección para limpiar la búsqueda anterior, restablecer el filtro de precio y mostrar los productos correspondientes.
+-	Resultado obtenido: La navegación por categorías funciona correctamente.
+
+**3.2. Actualización de datos del cliente**
+-	Problema: Al modificar nombre, correo o dirección después de generar el resumen, el pedido conservaba los datos anteriores.
+-	Corrección: Se modificó el evento input para invalidar el pedido pendiente y eliminar el resumen anterior.
+-	Resultado obtenido: El usuario debe revisar nuevamente los datos antes de confirmar.
+
+**3.3. Actualización de cuotas**
+-	Problema: Al cambiar las cuotas podían conservarse condiciones de financiación anteriores.
+-	Corrección: Se actualizó el evento change para invalidar el pedido pendiente, recalcular las cuotas y ocultar la confirmación anterior.
+-	Resultado obtenido: El usuario debe continuar nuevamente con las condiciones actualizadas.
+
+**3.4. Modificaciones del carrito**
+-	Problema: El pago se invalidaba únicamente cuando cambiaba el importe total, aunque se modificaran los productos.
+-	Corrección: Se reemplazó invalidarPagoSiCambioTotal() por invalidarPagoPorCambioCarrito(), invalidando el pago y el pedido ante modificaciones exitosas del carrito.
+-	Resultado obtenido: Cualquier cambio de productos o cantidades exige revisar nuevamente el pago.
+
+**3.5. Desplazamiento al iniciar la compra**
+-	Problema: Al seleccionar «Iniciar compra», la página bajaba hacia el pago y luego volvía a subir.
+-	Corrección: Se incorporó el evento hidden.bs.offcanvas para esperar el cierre del carrito antes de ejecutar scrollIntoView().
+-	Resultado obtenido: La página permanece posicionada en «Método de pago y cuotas».
+
+4. **Validación de cantidades en tiempo real**
+-	Problema detectado: Las cantidades inválidas del carrito solamente mostraban errores cuando el usuario abandonaba el campo.
+-	Corrección realizada: Se incorporó un evento input para validar inmediatamente los valores y mostrar feedback visual mediante marcarControl().
+-	Archivo modificado: js/script.js.
+-	Resultado obtenido: El usuario recibe mensajes de error mientras escribe, sin necesidad de salir del campo. El evento change continúa actualizando las cantidades y los totales.
+
+5. **Incorporación del estado `loading` al iniciar la compra**
+- Problema detectado: El controlador no contemplaba un estado visual `loading` para informar al usuario cuando se estaba procesando una transición de la interfaz.
+- Corrección realizada: Se modificó `mostrarMensaje()` para admitir el estado `loading`, incorporando un spinner de Bootstrap y el mensaje «Preparando el pago...». Además, se actualizó `iniciarPago()` para mostrar el indicador durante el cierre del carrito y eliminarlo mediante `renderizarCarrito()` al finalizar el evento `hidden.bs.offcanvas`.
+- Archivo modificado: `js/script.js`.
+- Resultado obtenido: Al seleccionar «Iniciar compra», se muestra brevemente un indicador de procesamiento que desaparece cuando termina de cerrarse el carrito, permitiendo continuar hacia la sección de pago.
+
+6. **Centralización y validación de elementos del DOM**
+- Problema detectado: La obtención de elementos HTML no contemplaba una diferenciación clara entre elementos obligatorios y opcionales, lo que podía generar errores durante la ejecución.
+- Corrección realizada: Se implementó la función `elemento()` con un parámetro para identificar controles obligatorios y opcionales. Se centralizaron las referencias en el objeto `elementos` y se incorporó una verificación de elementos obligatorios antes de inicializar los eventos.
+- Archivo modificado: `js/script.js`.
+- Resultado obtenido: El controlador identifica los elementos faltantes y permite manejar controles opcionales sin detener innecesariamente la aplicación.
+
+7. **Validación de campos del formulario con datos reales**
+- Problema detectado: La función `validarCampoPedido()` utilizaba datos ficticios para validar individualmente los campos del cliente.
+- Corrección realizada: Se modificó `validarCampoPedido()` para construir el cliente completo mediante `clienteDesdeFormulario()` y delegar la validación a la clase `Pedido`, procesando únicamente los errores asociados al campo evaluado.
+- Archivo modificado: `js/script.js`.
+- Resultado obtenido: La validación utiliza los datos reales ingresados por el usuario y mantiene las reglas de negocio dentro de la clase `Pedido`.
+
+8. **Limpieza de estados y mensajes de validación**
+- Problema detectado: La función `limpiarEstadoControl()` eliminaba las clases visuales de validación, pero podía conservar mensajes de error anteriores.
+- Corrección realizada: Se amplió `limpiarEstadoControl()` para eliminar las clases `is-valid` e `is-invalid`, restablecer el atributo `aria-invalid` y limpiar los mensajes de error asociados mediante `aria-describedby`.
+- Archivo modificado: `js/script.js`.
+- Resultado obtenido: Los campos recuperan correctamente su estado visual inicial, evitando que permanezcan mensajes de error desactualizados.
+
+9. **Delegación de eventos dentro de contenedores específicos**
+- Problema detectado: El controlador utilizaba un único listener global sobre `document` para gestionar las acciones del catálogo, carrito, pago y confirmación, concentrando eventos de diferentes secciones.
+- Corrección realizada: Se eliminó el listener global de eventos `click` y se implementaron listeners específicos para catálogo, ofertas, navegación principal, carrito, pago y confirmación. Se incorporaron las referencias `seccionOfertas` y `navegacionPrincipal` al objeto `elementos`, conservando las funciones existentes de cada flujo.
+- Archivo modificado: `js/script.js`.
+- Resultado obtenido: Los eventos se gestionan dentro de sus respectivos contenedores, mejorando la organización del controlador. Se verificó manualmente el funcionamiento de los cuatro flujos después de la modificación.
+
+10. **Ajuste de visibilidad del indicador de carga**
+- Problema detectado: El mensaje «Preparando el pago...» se reemplazaba demasiado rápido por «Pago listo para completar», impidiendo que el usuario visualizara correctamente el spinner.
+- Corrección realizada: Se ajustó el evento `hidden.bs.offcanvas` dentro de `iniciarPago()` para mantener visible el indicador durante 900 milisegundos adicionales antes de reemplazarlo por el mensaje de éxito, sin retrasar la preparación del pago.
+- Archivo modificado: `js/script.js`.
+- Resultado obtenido: Se comprobó que el mensaje «Preparando el pago...» y el spinner de Bootstrap se visualizan correctamente durante la transición hacia el pago.
+
+
+**Justificación:**
+
+- [Commit - Primer commit con el contenido del spec rol Desarrollador JavaScript Eventos + DOM, falta detallar las clases y el contenido de la sección At CLose](199981e6ad13d8cd373030089c73b30e34c5fec4)
+- [Commit - Corrección al spec solicitada por el coordinador](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/140/changes/73f4c9474fe4f392cd38ea447cde25991cf639cd)
+- [[A4] Spec Desarrollador JavaScript Eventos + DOM](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/140)
+- [[A4][Eventos + DOM] Implementación de eventos y manipulación del DOM](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/156)
+- [[A4][Eventos + DOM] Análisis de integración con las clases del dominio POO](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/147)
+
+
+**Decisiones finales sobre el controlador y su integración con las clases del dominio:**
+- Catálogo: Se utiliza Catalogo.buscar() para realizar búsquedas, filtrar por categorías y precio máximo, y ordenar los productos. Cuando el filtro de precio está desactivado, el controlador envía null.
+- Producto: El controlador utiliza los datos proporcionados por las clases del dominio para generar dinámicamente las tarjetas de productos, manteniendo separada la representación visual de la lógica de negocio.
+- Carrito: El controlador invoca los métodos de Carrito para agregar, eliminar y modificar cantidades. Utiliza resumir() para actualizar la información visual y muestra los errores devueltos por las operaciones.
+- Pago: El controlador captura el método de pago y las cuotas seleccionadas, delegando el cálculo de recargos y condiciones de financiación a la clase Pago. Los resultados y errores se muestran en la interfaz.
+- Pedido: El controlador captura y valida visualmente los datos del cliente, utiliza la clase Pedido para generar y confirmar el pedido e invalida el resumen cuando se modifican los datos, el carrito o las condiciones de pago.
+- Integración: Se utilizan módulos ES6 para importar las clases de js/models/. El archivo js/script.js funciona como controlador principal, centralizando los eventos, la manipulación del DOM y la comunicación con las clases del dominio, sin duplicar sus reglas de negocio.
+- Estructura de eventos: Se centralizó el registro de eventos en inicializarEventos(), utilizando addEventListener(), delegación de eventos y funciones reutilizables para actualizar la interfaz, mostrar mensajes y gestionar estados visuales.
