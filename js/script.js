@@ -1,864 +1,885 @@
-var catalogoProductos = [
-    {
-        codigo: "GUANTES-001",
-        nombre: "Guantes moteados multiuso maxima calidad",
-        categoria: "Herramientas manuales",
-        descripcion: "Proteccion multiuso para trabajos de ferreteria y mantenimiento.",
-        precio: 4401
-    },
-    {
-        codigo: "DESTORNILLADOR-001",
-        nombre: "Destornillador punta plana Black Jack 8 x 200 mm",
-        categoria: "Herramientas manuales",
-        descripcion: "Destornillador con punta plana para tareas de ajuste y reparacion.",
-        precio: 6026
-    },
-    {
-        codigo: "PINZA-001",
-        nombre: "Pinza punta curva mini 5 pulgadas ideal electronica",
-        categoria: "Herramientas manuales",
-        descripcion: "Pinza compacta para trabajos de precision en electronica.",
-        precio: 6426
-    },
-    {
-        codigo: "ENCHUFE-001",
-        nombre: "Enchufe adaptador cubo 5 tomas 3 patas 10 amp",
-        categoria: "Electricidad",
-        descripcion: "Adaptador electrico con cinco tomas para conectar herramientas y equipos.",
-        precio: 10282
-    },
-    {
-        codigo: "MARTILLO-001",
-        nombre: "Martillo galponero mango de fibra acero forjado Black Jack",
-        categoria: "Herramientas manuales",
-        descripcion: "Martillo robusto para tareas de obra, reparacion y mantenimiento.",
-        precio: 16000
-    },
-    {
-        codigo: "PALA-001",
-        nombre: "Pala de punta chapa acero estampada cabo metalico",
-        categoria: "Jardineria",
-        descripcion: "Herramienta de punta para tareas de jardineria y movimiento de tierra.",
-        precio: 21329
-    },
-    {
-        codigo: "AMOLADORA-001",
-        nombre: "Amoladora angular inalambrica DeWalt Flexvolt DCG416B",
-        categoria: "Herramientas electricas",
-        descripcion: "Amoladora inalambrica para cortar, desbastar y trabajar distintos materiales.",
-        precio: 50000
-    },
-    {
-        codigo: "KIT-TAPONES-001",
-        nombre: "Kit juego tapones para cano de termofusion",
-        categoria: "Accesorios",
-        descripcion: "Juego de tapones y obturadores para instalaciones de agua.",
-        precio: 55000
-    },
-    {
-        codigo: "TALADRO-001",
-        nombre: "Taladro atornillador inalambrico 10 mm 20 V",
-        categoria: "Herramientas electricas",
-        descripcion: "Atornillador inalambrico para perforar y ajustar en distintos proyectos.",
-        precio: 79999
-    }
+import { Producto } from "./models/Producto.js";
+import { Catalogo } from "./models/Catalogo.js";
+import { Carrito } from "./models/Carrito.js";
+import { Pago } from "./models/Pago.js";
+import { Pedido } from "./models/Pedido.js";
+
+const productosIniciales = [
+    { codigo: "GUANTES-001", nombre: "Guantes moteados multiuso maxima calidad", categoria: "Herramientas manuales", descripcion: "Proteccion multiuso para trabajos de ferreteria y mantenimiento.", precio: 4401 },
+    { codigo: "DESTORNILLADOR-001", nombre: "Destornillador punta plana Black Jack 8 x 200 mm", categoria: "Herramientas manuales", descripcion: "Destornillador con punta plana para tareas de ajuste y reparacion.", precio: 6026 },
+    { codigo: "PINZA-001", nombre: "Pinza punta curva mini 5 pulgadas ideal electronica", categoria: "Herramientas manuales", descripcion: "Pinza compacta para trabajos de precision en electronica.", precio: 6426 },
+    { codigo: "ENCHUFE-001", nombre: "Enchufe adaptador cubo 5 tomas 3 patas 10 amp", categoria: "Electricidad", descripcion: "Adaptador electrico con cinco tomas para conectar herramientas y equipos.", precio: 10282 },
+    { codigo: "MARTILLO-001", nombre: "Martillo galponero mango de fibra acero forjado Black Jack", categoria: "Herramientas manuales", descripcion: "Martillo robusto para tareas de obra, reparacion y mantenimiento.", precio: 16000 },
+    { codigo: "PALA-001", nombre: "Pala de punta chapa acero estampada cabo metalico", categoria: "Jardineria", descripcion: "Herramienta de punta para tareas de jardineria y movimiento de tierra.", precio: 21329 },
+    { codigo: "AMOLADORA-001", nombre: "Amoladora angular inalambrica DeWalt Flexvolt DCG416B", categoria: "Herramientas electricas", descripcion: "Amoladora inalambrica para cortar, desbastar y trabajar distintos materiales.", precio: 50000 },
+    { codigo: "KIT-TAPONES-001", nombre: "Kit juego tapones para cano de termofusion", categoria: "Accesorios", descripcion: "Juego de tapones y obturadores para instalaciones de agua.", precio: 55000 },
+    { codigo: "TALADRO-001", nombre: "Taladro atornillador inalambrico 10 mm 20 V", categoria: "Herramientas electricas", descripcion: "Atornillador inalambrico para perforar y ajustar en distintos proyectos.", precio: 79999 }
 ];
 
-var opcionesCuotas = {
-    1: 0,
-    3: 10,
-    6: 20
+const catalogo = new Catalogo(productosIniciales.map((datos) => new Producto(datos)));
+const carrito = new Carrito();
+let pagoActual = null;
+let pedidoPendiente = null;
+let secuenciaPedidos = 1;
+let esperandoCierreCarrito = false;
+
+// Obtiene elementos del DOM y permite distinguir
+// entre controles obligatorios y opcionales.
+const elemento = (selector, obligatorio = true) => {
+    const encontrado = document.querySelector(selector);
+
+    if (!encontrado && obligatorio) {
+        console.error(`No se encontró el elemento requerido: ${selector}`);
+    }
+
+    return encontrado;
 };
 
-var carritoActual = [];
-var condicionesPagoActuales = null;
-var secuenciaPedidos = 1;
+const elementos = {
+    busqueda: elemento("#busqueda"),
+    formBusqueda: elemento("#form-busqueda"),
+    estadoAplicacion: elemento("#estado-aplicacion", false),
+    categoria: elemento("#categoria"),
+    orden: elemento("#orden"),
+    activarPrecio: elemento("#activar-filtro-precio"),
+    precio: elemento("#precio-hasta"),
+    precioValor: elemento("#precio-hasta-valor"),
+    resultados: elemento("#resultados-catalogo"),
+    catalogoMensaje: elemento("#catalogo-mensaje"),
+    carritoItems: elemento("#carrito-items"),
+    carritoMensaje: elemento("#carrito-mensaje"),
+    carritoTotal: elemento("#carrito-total"),
+    contadorCarrito: elemento("#contador-carrito"),
+    botonIniciarCompra: elemento('[data-action="iniciar-compra"]'),
+    seccionPago: elemento("#pago"),
+    formPago: elemento("#form-pago"),
+    metodoPago: elemento("#metodo-pago"),
+    cuotas: elemento("#cuotas"),
+    condicionesPago: elemento("#condiciones-pago"),
+    pagoMensaje: elemento("#pago-mensaje"),
+    seccionConfirmacion: elemento("#confirmacion"),
+    formPedido: elemento("#form-pedido"),
+    pedidoMensaje: elemento("#pedido-mensaje"),
+    resumenPedido: elemento("#resumen-pedido"),
+    seccionCatalogo: elemento("#catalogo"),
+    panelCarrito: elemento("#carrito"),
+    seccionOfertas: elemento("#ofertas"),
+    navegacionPrincipal: elemento('nav[aria-label="Navegacion principal"]')
+};
 
-/**
- * Normaliza texto para comparar búsquedas sin distinguir mayúsculas ni tildes.
- * @param {string} texto Texto que se desea normalizar.
- * @returns {string} Texto recortado, en minúsculas y sin diacríticos.
- */
-function normalizarTexto(texto) {
-    return String(texto || "")
-        .trim()
-        .toLocaleLowerCase("es")
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
+// Verifica que existan los elementos obligatorios
+// antes de inicializar los eventos de la aplicación.
+const elementosFaltantes = Object.entries(elementos)
+    .filter(([nombre, control]) =>
+        nombre !== "estadoAplicacion" && control === null
+    )
+    .map(([nombre]) => nombre);
+
+if (elementosFaltantes.length > 0) {
+    throw new Error(
+        `Faltan elementos obligatorios: ${elementosFaltantes.join(", ")}`
+    );
 }
 
-/**
- * Comprueba que el precio máximo ingresado sea un número mayor o igual a cero.
- * @param {string|number|null|undefined} valor Precio máximo ingresado.
- * @returns {{valido: boolean, valor: number|null, error?: string}} Resultado de la validación.
- */
-function validarPrecioMaximo(valor) {
-    if (valor === null || valor === undefined || String(valor).trim() === "") {
-        return {
-            valido: true,
-            valor: null,
-        };
-    }
+const tarjetasCatalogo = new Map(
+    Array.from(elementos.resultados.querySelectorAll("article[data-product-code]"))
+        .map((tarjeta) => [tarjeta.dataset.productCode, tarjeta.parentElement])
+);
 
-    var precioMaximo = Number(valor);
-    if (!Number.isFinite(precioMaximo) || precioMaximo < 0) {
-        return {
-            valido: false,
-            valor: null,
-            error: "El precio maximo debe ser un numero mayor o igual a cero."
-        };
-    }
-
-    return { valido: true, valor: precioMaximo };
+function formatearMoneda(importe) {
+    return new Intl.NumberFormat("es-AR", {
+        style: "currency",
+        currency: "ARS",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(importe);
 }
 
-/**
- * Filtra productos por texto, categoría y precio máximo y los ordena por precio ascendente.
- * @param {Array<Object>} productos Catálogo de productos a revisar.
- * @param {{texto?: string, categoria?: string, precioMaximo: string|number}} criterios Criterios de búsqueda.
- * @returns {{valido: boolean, error: string|null, resultados: Array<Object>}} Estado de búsqueda y productos coincidentes.
- */
-function buscarProductos(productos, criterios) {
-    var filtros = criterios || {};
-    var precioValidado = validarPrecioMaximo(filtros.precioMaximo);
-    if (!precioValidado.valido) {
-        return {
-            valido: false,
-            error: precioValidado.error,
-            resultados: []
-        };
+// Muestra mensajes informativos, de éxito, error o carga,
+// aplicando las clases CSS correspondientes a cada estado.
+function mostrarMensaje(destino, mensaje, tipo = "info") {
+    if (!destino) return;
+    
+    destino.replaceChildren();
+
+    destino.classList.remove(
+        "text-danger",
+        "text-success",
+        "text-muted",
+        "text-info",
+        "is-loading"
+    );
+
+    if (tipo === "loading") {
+        destino.classList.add("text-info", "is-loading");
+
+        const spinner = document.createElement("span");
+        spinner.className = "spinner-border spinner-border-sm me-2";
+        spinner.setAttribute("aria-hidden", "true");
+
+        destino.append(spinner, document.createTextNode(mensaje));
+        return;
     }
 
-    var texto = normalizarTexto(filtros.texto);
-    var categoria = normalizarTexto(filtros.categoria);
-    var resultados = [];
+    destino.textContent = mensaje;
 
-    for (var indice = 0; indice < productos.length; indice += 1) {
-        var producto = productos[indice];
-        var coincideTexto = !texto ||
-            normalizarTexto(producto.nombre + " " + producto.descripcion).includes(texto);
-        var coincideCategoria = !categoria ||
-            normalizarTexto(producto.categoria) === categoria;
-        var coincidePrecio = precioValidado.valor === null ||
-            producto.precio <= precioValidado.valor;
+    if (tipo === "error") destino.classList.add("text-danger");
+    if (tipo === "success") destino.classList.add("text-success");
+    if (tipo === "info") destino.classList.add("text-muted");
+}
 
-        if (coincideTexto && coincideCategoria && coincidePrecio) {
-            resultados.push(producto);
+// Aplica validación visual a los controles del formulario
+// y actualiza los mensajes de error asociados.
+function marcarControl(control, valido, mensaje = "") {
+    control.classList.toggle("is-invalid", !valido);
+    control.classList.toggle("is-valid", valido);
+    control.setAttribute("aria-invalid", String(!valido));
+    const mensajeId = control.getAttribute("aria-describedby");
+    if (mensajeId) {
+        const salida = document.getElementById(mensajeId);
+        if (salida) {
+            salida.textContent = mensaje;
+            salida.classList.toggle("text-danger", !valido && Boolean(mensaje));
         }
     }
-
-    resultados.sort(function (productoA, productoB) {
-        return productoA.precio - productoB.precio;
-    });
-
-    return { valido: true, error: null, resultados: resultados };
 }
 
-/**
- * Verifica que una cantidad represente un entero positivo.
- * @param {string|number|null|undefined} cantidad Cantidad que se desea validar.
- * @returns {boolean} `true` si la cantidad es un entero mayor o igual a uno.
- */
-function validarCantidad(cantidad) {
-    if (cantidad === null || cantidad === undefined || String(cantidad).trim() === "") {
+// Elimina las clases y mensajes de validación para restablecer
+// el estado visual inicial de un control.
+function limpiarEstadoControl(control) {
+    control.classList.remove("is-invalid", "is-valid");
+    control.removeAttribute("aria-invalid");
+    const mensajeId = control.getAttribute("aria-describedby");
+
+    if (mensajeId) {
+        const salida = document.getElementById(mensajeId);
+
+        if (salida) {
+            salida.textContent = "";
+            salida.classList.remove("text-danger");
+        }
+    }
+}
+
+function buscarYMostrarCatalogo() {
+    const criterios = {
+        texto: elementos.busqueda.value,
+        categoria: elementos.categoria.value,
+        precioMaximo: elementos.activarPrecio.checked ? elementos.precio.value : null,
+        orden: elementos.orden.value
+    };
+    const resultado = catalogo.buscar(criterios);
+
+    if (!resultado.valido) {
+        marcarControl(elementos.precio, false, resultado.error);
+        mostrarMensaje(elementos.catalogoMensaje, resultado.error, "error");
+        return;
+    }
+
+    if (elementos.activarPrecio.checked) {
+        marcarControl(elementos.precio, true);
+    } else {
+        limpiarEstadoControl(elementos.precio);
+    }
+    resultado.resultados.forEach((producto) => {
+        const tarjeta = tarjetasCatalogo.get(producto.codigo);
+        if (!tarjeta) {
+            throw new Error(`No hay una tarjeta HTML para el producto ${producto.codigo}.`);
+        }
+        elementos.resultados.append(tarjeta);
+        tarjeta.hidden = false;
+    });
+
+    const codigosVisibles = new Set(resultado.resultados.map((producto) => producto.codigo));
+    tarjetasCatalogo.forEach((tarjeta, codigo) => {
+        tarjeta.hidden = !codigosVisibles.has(codigo);
+    });
+
+    mostrarMensaje(
+        elementos.catalogoMensaje,
+        resultado.resultados.length
+            ? `${resultado.resultados.length} producto(s) encontrado(s).`
+            : "Sin coincidencias.",
+        resultado.resultados.length ? "success" : "info"
+    );
+}
+
+// Actualiza visualmente los productos, cantidades y totales del carrito
+// utilizando la información proporcionada por la clase Carrito.
+function renderizarCarrito() {
+    const resumen = carrito.resumir();
+    elementos.carritoItems.replaceChildren();
+    elementos.contadorCarrito.textContent = String(resumen.cantidadItems);
+    elementos.carritoTotal.textContent = formatearMoneda(resumen.total);
+    elementos.botonIniciarCompra.disabled = resumen.items.length === 0;
+    mostrarMensaje(
+        elementos.carritoMensaje,
+        resumen.items.length ? `${resumen.cantidadItems} producto(s) en el carrito.` : "El carrito esta vacio.",
+        resumen.items.length ? "success" : "info"
+    );
+
+    resumen.items.forEach((item) => {
+        const articulo = document.createElement("article");
+        articulo.dataset.productCode = item.codigo;
+
+        const titulo = document.createElement("h3");
+        titulo.textContent = item.nombre;
+        const precio = document.createElement("p");
+        precio.textContent = `Precio unitario: ${formatearMoneda(item.precio)}`;
+
+        const label = document.createElement("label");
+        const cantidadId = `cantidad-${item.codigo.toLocaleLowerCase("es")}`;
+        label.htmlFor = cantidadId;
+        label.textContent = "Cantidad";
+
+        const cantidad = document.createElement("input");
+        cantidad.id = cantidadId;
+        cantidad.type = "number";
+        cantidad.min = "1";
+        cantidad.step = "1";
+        cantidad.value = String(item.cantidad);
+        cantidad.dataset.action = "cambiar-cantidad";
+        cantidad.dataset.productCode = item.codigo;
+        cantidad.setAttribute("aria-label", `Cantidad de ${item.nombre}`);
+        const errorCantidad = document.createElement("span");
+        errorCantidad.id = `error-${cantidadId}`;
+        errorCantidad.className = "field-error";
+        errorCantidad.setAttribute("aria-live", "polite");
+        cantidad.setAttribute("aria-describedby", errorCantidad.id);
+
+        const subtotal = document.createElement("p");
+        subtotal.textContent = `Subtotal: ${formatearMoneda(item.subtotal)}`;
+        const eliminar = document.createElement("button");
+        eliminar.type = "button";
+        eliminar.dataset.action = "eliminar-carrito";
+        eliminar.dataset.productCode = item.codigo;
+        eliminar.textContent = "Eliminar";
+
+        articulo.append(titulo, precio, label, cantidad, errorCantidad, subtotal, eliminar);
+        elementos.carritoItems.append(articulo);
+    });
+}
+
+// Oculta las secciones de pago y confirmación,
+// limpiando los resultados y estados que ya no son válidos.
+function ocultarFlujosPosteriores() {
+    elementos.seccionPago.hidden = true;
+    elementos.seccionConfirmacion.hidden = true;
+    elementos.condicionesPago.replaceChildren();
+    elementos.resumenPedido.replaceChildren();
+    elementos.formPedido.hidden = false;
+    pedidoPendiente = null;
+}
+
+// Genera dinámicamente el resumen de las condiciones de pago
+// utilizando los resultados calculados por la clase Pago.
+function renderizarCondiciones(condiciones) {
+    elementos.condicionesPago.replaceChildren();
+    const lista = document.createElement("dl");
+    const datos = [
+        ["Total original", formatearMoneda(condiciones.totalOriginal)],
+        ["Cuotas", String(condiciones.cuotas)],
+        ["Interes / recargo", `${condiciones.porcentajeRecargo}% (${formatearMoneda(condiciones.interes)})`],
+        ["Total financiado", formatearMoneda(condiciones.totalFinanciado)],
+        ["Valor de cada cuota", formatearMoneda(condiciones.valorCuota)]
+    ];
+    datos.forEach(([etiqueta, valor]) => {
+        const termino = document.createElement("dt");
+        termino.textContent = etiqueta;
+        const detalle = document.createElement("dd");
+        detalle.textContent = valor;
+        lista.append(termino, detalle);
+    });
+    elementos.condicionesPago.append(lista);
+}
+
+function obtenerCondicionesPago() {
+    const resumen = carrito.resumir();
+    if (!resumen.items.length) {
+        mostrarMensaje(elementos.pagoMensaje, "No hay productos para pagar.", "error");
+        return null;
+    }
+    if (!elementos.metodoPago.value) {
+        mostrarMensaje(elementos.pagoMensaje, "Selecciona un metodo de pago.", "error");
+        marcarControl(elementos.metodoPago, false);
+        return null;
+    }
+
+    try {
+        const pago = new Pago(
+            resumen.total,
+            elementos.metodoPago.value,
+            elementos.metodoPago.value === "tarjeta" ? elementos.cuotas.value : 1
+        );
+        const condiciones = pago.calcular();
+        marcarControl(elementos.metodoPago, true);
+        marcarControl(elementos.cuotas, true);
+        renderizarCondiciones(condiciones);
+        pagoActual = pago;
+        mostrarMensaje(elementos.pagoMensaje, "Condiciones calculadas. Revisa el resumen antes de continuar.", "success");
+        return condiciones;
+    } catch (error) {
+        if (!(error instanceof TypeError || error instanceof RangeError)) throw error;
+        pagoActual = null;
+        mostrarMensaje(elementos.pagoMensaje, error.message, "error");
+        marcarControl(
+            elementos.metodoPago.value === "tarjeta" ? elementos.cuotas : elementos.metodoPago,
+            false,
+            error.message
+        );
+        return null;
+    }
+}
+
+// Captura los datos ingresados en el formulario del cliente
+// y los organiza en un objeto para la clase Pedido.
+function clienteDesdeFormulario() {
+    return {
+        nombre: elementos.formPedido.elements.nombre.value,
+        correo: elementos.formPedido.elements.correo.value,
+        direccion: elementos.formPedido.elements.direccion.value
+    };
+}
+
+// Valida individualmente los campos del formulario.
+// La validación definitiva del pedido permanece en la clase Pedido.
+function validarCampoPedido(control) {
+    if (!carrito.resumir().items.length || !pagoActual) {
+        limpiarEstadoControl(control);
         return false;
     }
 
-    var valor = Number(cantidad);
-    return Number.isSafeInteger(valor) && valor >= 1;
-}
+    const mensajes = {
+        nombre: "Ingresá un nombre válido.",
+        correo: "Ingresá un correo electrónico válido.",
+        direccion: "Ingresá una dirección de envío."
+    };
 
-/**
- * Agrega un producto al carrito o suma su cantidad si ya estaba incluido.
- * @param {Array<Object>} carrito Carrito actual, que no se modifica.
- * @param {Array<Object>} productos Catálogo donde se busca el producto.
- * @param {string} codigo Código del producto que se agregará.
- * @param {string|number} cantidad Cantidad que se agregará.
- * @returns {{exito: boolean, carrito: Array<Object>, error: string|null}} Resultado y carrito actualizado.
- */
-function agregarProductoAlCarrito(carrito, productos, codigo, cantidad) {
-    var producto = productos.find(function (item) {
-        return item.codigo.toLocaleLowerCase("es") === String(codigo || "").trim().toLocaleLowerCase("es");
-    });
+    const valido =
+        control.value.trim() !== "" &&
+        control.checkValidity();
 
-    if (!producto) {
-        return { exito: false, carrito: carrito, error: "El producto no existe en el catalogo." };
-    }
-    if (!validarCantidad(cantidad)) {
-        return { exito: false, carrito: carrito, error: "La cantidad debe ser un entero mayor o igual a uno." };
-    }
-
-    var nuevaCantidad = Number(cantidad);
-    var indiceExistente = carrito.findIndex(function (item) {
-        return item.codigo === producto.codigo;
-    });
-    var nuevoCarrito = carrito.map(function (item) {
-        return Object.assign({}, item);
-    });
-
-    if (indiceExistente >= 0) {
-        var cantidadTotal = nuevoCarrito[indiceExistente].cantidad + nuevaCantidad;
-
-        if (!Number.isSafeInteger(cantidadTotal)) {
-            return {
-                exito: false,
-                carrito: carrito,
-            error: "La cantidad total supera el limite permitido."
-        };
-    }
-
-    nuevoCarrito[indiceExistente].cantidad = cantidadTotal;
-} else {
-    nuevoCarrito.push({
-        codigo: producto.codigo,
-        nombre: producto.nombre,
-        categoria: producto.categoria,
-        precio: producto.precio,
-        cantidad: nuevaCantidad
-    });
-}
-
-    return { exito: true, carrito: nuevoCarrito, error: null };
-}
-
-/**
- * Reemplaza la cantidad de un producto que ya está en el carrito.
- * @param {Array<Object>} carrito Carrito actual, que no se modifica.
- * @param {string} codigo Código del producto por actualizar.
- * @param {string|number} nuevaCantidad Cantidad que se establecerá.
- * @returns {{exito: boolean, carrito: Array<Object>, error: string|null}} Resultado y carrito actualizado.
- */
-function cambiarCantidadCarrito(carrito, codigo, nuevaCantidad) {
-    if (!validarCantidad(nuevaCantidad)) {
-        return { exito: false, carrito: carrito, error: "La cantidad debe ser un entero mayor o igual a uno." };
-    }
-
-    var encontrado = carrito.some(function (item) {
-        return item.codigo.toLocaleLowerCase("es") === String(codigo || "").trim().toLocaleLowerCase("es");
-    });
-    if (!encontrado) {
-        return { exito: false, carrito: carrito, error: "El producto no esta en el carrito." };
-    }
-
-    var nuevoCarrito = carrito.map(function (item) {
-        var copia = Object.assign({}, item);
-        if (copia.codigo.toLocaleLowerCase("es") === String(codigo).trim().toLocaleLowerCase("es")) {
-            copia.cantidad = Number(nuevaCantidad);
-        }
-        return copia;
-    });
-
-    return { exito: true, carrito: nuevoCarrito, error: null };
-}
-
-/**
- * Quita del carrito el producto identificado por su código.
- * @param {Array<Object>} carrito Carrito actual, que no se modifica.
- * @param {string} codigo Código del producto que se eliminará.
- * @returns {{exito: boolean, carrito: Array<Object>, error: string|null}} Resultado y carrito actualizado.
- */
-function eliminarProductoDelCarrito(carrito, codigo) {
-    var nuevoCarrito = carrito.filter(function (item) {
-        return item.codigo.toLocaleLowerCase("es") !== String(codigo || "").trim().toLocaleLowerCase("es");
-    });
-
-    if (nuevoCarrito.length === carrito.length) {
-        return { exito: false, carrito: carrito, error: "El producto no esta en el carrito." };
-    }
-    return { exito: true, carrito: nuevoCarrito, error: null };
-}
-
-/**
- * Calcula el subtotal de cada producto y el total general del carrito.
- * @param {Array<Object>} carrito Productos y cantidades que se resumirán.
- * @returns {{items: Array<Object>, total: number, cantidadItems: number}} Ítems con subtotal y total acumulado.
- */
-function calcularResumenCarrito(carrito) {
-    var total = 0;
-    var items = carrito.map(function (item) {
-        var subtotal = item.precio * item.cantidad;
-        total += subtotal;
-        return Object.assign({}, item, { subtotal: subtotal });
-    });
-
-    return { items: items, total: total, cantidadItems: items.length };
-}
-
-/**
- * Calcula interés, total financiado y valor de cuota según el método de pago.
- * @param {number} total Total original de la compra.
- * @param {"efectivo-transferencia"|"tarjeta"} metodoPago Método elegido.
- * @param {number} [cantidadCuotas] Cuotas disponibles para tarjeta; no aplica a efectivo o transferencia.
- * @returns {{valido: boolean, error?: string, metodoPago?: string, cuotas?: number, porcentajeRecargo?: number, totalOriginal?: number, interes?: number, totalFinanciado?: number, valorCuota?: number}} Condiciones calculadas o error de validación.
- */
-function calcularCondicionesPago(total, metodoPago, cantidadCuotas) {
-    if (!Number.isFinite(Number(total)) || Number(total) <= 0) {
-        return { valido: false, error: "El total debe ser mayor que cero." };
-    }
-
-    var cuotas;
-    var recargo;
-    if (metodoPago === "efectivo-transferencia") {
-        cuotas = 1;
-        recargo = 0;
-    } else if (metodoPago === "tarjeta") {
-        cuotas = Number(cantidadCuotas);
-        if (!Object.prototype.hasOwnProperty.call(opcionesCuotas, cuotas)) {
-            return { valido: false, error: "La cantidad de cuotas no esta disponible." };
-        }
-        recargo = opcionesCuotas[cuotas];
+    if (valido) {
+        marcarControl(control, true);
     } else {
-        return { valido: false, error: "El metodo de pago no es valido." };
+        marcarControl(
+            control,
+            false,
+            mensajes[control.name] ?? "El campo ingresado no es válido."
+        );
     }
 
-    var totalOriginal = Math.round(Number(total) * 100) / 100;
-    var interes = Math.round(totalOriginal * recargo) / 100;
-    var totalFinanciado = Math.round((totalOriginal + interes) * 100) / 100;
-
-    return {
-        valido: true,
-        error: null,
-        metodoPago: metodoPago,
-        cuotas: cuotas,
-        porcentajeRecargo: recargo,
-        totalOriginal: totalOriginal,
-        interes: interes,
-        totalFinanciado: totalFinanciado,
-        valorCuota: Math.round((totalFinanciado / cuotas) * 100) / 100
-    };
+    return valido;
 }
 
-/**
- * Valida que el nombre no esté vacío ni esté compuesto solo por un número.
- * @param {string} nombre Nombre ingresado por el cliente.
- * @returns {boolean} `true` si el nombre cumple la validación.
- */
-function validarNombre(nombre) {
-    var valor = String(nombre || "").trim();
-    return valor !== "" && !/^\d+(?:[.,]\d+)?$/.test(valor);
+// Construye los elementos HTML del resumen del pedido
+// incluyendo productos, datos del cliente y condiciones de pago.
+function agregarDatosResumen(contenedor, resumen) {
+    const titulo = document.createElement("h3");
+    titulo.textContent = "Resumen del pedido";
+    const productos = document.createElement("ul");
+    resumen.productos.forEach((item) => {
+        const linea = document.createElement("li");
+        linea.textContent = `${item.nombre} | ${item.cantidad} x ${formatearMoneda(item.precio)} = ${formatearMoneda(item.subtotal)}`;
+        productos.append(linea);
+    });
+
+    const cliente = document.createElement("p");
+    cliente.textContent = `Cliente: ${resumen.cliente.nombre} · ${resumen.cliente.correo} · Envio a: ${resumen.cliente.direccion}`;
+    const condiciones = document.createElement("p");
+    condiciones.textContent = `Total original: ${formatearMoneda(resumen.pago.totalOriginal)} · Metodo: ${resumen.pago.metodoPago} · ${resumen.pago.cuotas} cuota(s) · Recargo: ${resumen.pago.porcentajeRecargo}% · Total financiado: ${formatearMoneda(resumen.pago.totalFinanciado)} · Valor de cuota: ${formatearMoneda(resumen.pago.valorCuota)}`;
+    const boton = document.createElement("button");
+    boton.type = "button";
+    boton.dataset.action = "confirmar-pedido";
+    boton.textContent = "Confirmar pedido";
+    contenedor.append(titulo, productos, cliente, condiciones, boton);
 }
 
-/**
- * Comprueba que el correo tenga usuario, arroba y dominio.
- * @param {string} correo Correo electrónico ingresado.
- * @returns {boolean} `true` si el correo tiene un formato válido.
- */
-function validarCorreo(correo) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(correo || "").trim());
+ function invalidarPagoPorCambioCarrito() {
+    const habiaPago = pagoActual !== null;
+    const habiaPedido = pedidoPendiente !== null;
+
+    pagoActual = null;
+
+    ocultarFlujosPosteriores();
+
+    return habiaPago || habiaPedido;
+}
+ function procesarOperacionCarrito(operacion, codigoCantidad = null) {
+    const resultado = operacion();
+
+    if (!resultado.exito) {
+        renderizarCarrito();
+
+        mostrarMensaje(elementos.carritoMensaje, resultado.error, "error");
+        mostrarMensaje(elementos.estadoAplicacion, resultado.error, "error");
+
+        if (codigoCantidad) {
+            const control = Array.from(
+                elementos.carritoItems.querySelectorAll('[data-action="cambiar-cantidad"]')
+            ).find((entrada) => entrada.dataset.productCode === codigoCantidad);
+
+            if (control) {
+                marcarControl(control, false, resultado.error);
+            }
+        }
+
+        return false;
+    }
+
+    const pagoInvalidado = invalidarPagoPorCambioCarrito();
+
+    renderizarCarrito();
+
+    if (pagoInvalidado) {
+        const mensaje = "Carrito actualizado; el pago debe seleccionarse nuevamente.";
+
+        mostrarMensaje(elementos.carritoMensaje, mensaje, "info");
+        mostrarMensaje(elementos.estadoAplicacion, mensaje, "info");
+    } else {
+        mostrarMensaje(elementos.estadoAplicacion, "Carrito actualizado.", "success");
+    }
+
+    return true;
 }
 
-/**
- * Comprueba que la dirección de envío no esté vacía.
- * @param {string} direccion Dirección ingresada por el cliente.
- * @returns {boolean} `true` si la dirección contiene texto.
- */
-function validarDireccion(direccion) {
-    return String(direccion || "").trim() !== "";
-}
+// Prepara la interfaz de pago, reinicia los estados anteriores
+// y espera el cierre del Offcanvas antes de desplazarse a la sección de pago.
+function iniciarPago() {
+    if (esperandoCierreCarrito) return;
+    
+    if (!carrito.resumir().items.length) {
+        mostrarMensaje(elementos.carritoMensaje, "No se puede comprar con el carrito vacio.", "error");
+        return;
+    }
+    esperandoCierreCarrito = true;
+    pagoActual = null;
+    pedidoPendiente = null;
 
-/**
- * Valida conjuntamente los datos de contacto y envío del cliente.
- * @param {{nombre: string, correo: string, direccion: string}} cliente Datos del cliente.
- * @returns {boolean} `true` si nombre, correo y dirección son válidos.
- */
-function validarDatosCliente(cliente) {
-    return Boolean(
-        cliente &&
-        validarNombre(cliente.nombre) &&
-        validarCorreo(cliente.correo) &&
-        validarDireccion(cliente.direccion)
+    elementos.formPedido.hidden = false;
+    elementos.formPedido.reset();
+    elementos.formPedido.querySelectorAll("input").forEach(limpiarEstadoControl);
+    elementos.resumenPedido.replaceChildren();
+    elementos.metodoPago.value = "";
+    elementos.cuotas.value = "1";
+    elementos.cuotas.disabled = true;
+    elementos.condicionesPago.replaceChildren();
+    elementos.seccionConfirmacion.hidden = true;
+    elementos.seccionPago.hidden = false;
+    mostrarMensaje(elementos.pagoMensaje, "Selecciona el metodo de pago.", "info");
+
+    // Muestra el indicador de carga durante el cierre del carrito.
+    mostrarMensaje(
+        elementos.estadoAplicacion ?? elementos.carritoMensaje,
+        "Preparando el pago...",
+        "loading"
     );
+    if (elementos.estadoAplicacion) {
+        elementos.estadoAplicacion.classList.add(
+        "position-fixed",
+        "top-0",
+        "start-50",
+        "translate-middle-x",
+        "mt-3",
+        "p-3",
+        "bg-body",
+        "rounded",
+        "shadow"
+    );
+    elementos.estadoAplicacion.style.zIndex = "1100";
 }
 
-/**
- * Construye un resumen de pedido si hay productos, condiciones de pago y cliente válidos.
- * @param {Array<Object>} carrito Productos y cantidades del pedido.
- * @param {Object} condicionesPago Condiciones válidas generadas por `calcularCondicionesPago`.
- * @param {{nombre: string, correo: string, direccion: string}} cliente Datos validados del cliente.
- * @returns {{valido: boolean, error?: string, cliente?: Object, productos?: Array<Object>, total?: number, pago?: Object}} Resumen del pedido o descripción del error.
- */
-function crearResumenPedido(carrito, condicionesPago, cliente) {
-    if (!carrito.length || !condicionesPago || !condicionesPago.valido ||
-        !validarDatosCliente(cliente)) {
-        return { valido: false, error: "Faltan productos, pago o datos del cliente validos." };
+}
+
+// Cancela el proceso de pago y restablece la interfaz,
+// conservando los productos agregados al carrito.
+function cancelarPago() {
+    esperandoCierreCarrito = false;
+    pagoActual = null;
+    ocultarFlujosPosteriores();
+    mostrarMensaje(elementos.carritoMensaje, "Pago cancelado. El carrito se conserva.", "info");
+}
+
+function confirmarPedido() {
+    if (!pedidoPendiente) {
+        mostrarMensaje(elementos.pedidoMensaje, "Revisa los datos y genera el resumen antes de confirmar.", "error");
+        return;
     }
-
-    var resumenCarrito = calcularResumenCarrito(carrito);
-    return {
-        valido: true,
-        cliente: {
-            nombre: cliente.nombre.trim(),
-            correo: cliente.correo.trim(),
-            direccion: cliente.direccion.trim()
-        },
-        productos: resumenCarrito.items,
-        total: resumenCarrito.total,
-        pago: Object.assign({}, condicionesPago)
-    };
-}
-
-/**
- * Genera un identificador de pedido a partir del momento y la secuencia.
- * @param {number} fechaEnMilisegundos Marca temporal del pedido.
- * @param {number} secuencia Número secuencial del pedido.
- * @returns {string} Identificador con formato `FL-tiempo-secuencia`.
- */
-function crearNumeroPedido(fechaEnMilisegundos, secuencia) {
-    return "FL-" + fechaEnMilisegundos + "-" + String(secuencia).padStart(4, "0");
-}
-
-/**
- * Formatea un importe como moneda argentina.
- * @param {number} importe Importe que se mostrará.
- * @returns {string} Importe con símbolo monetario y dos decimales.
- */
-function formatearMoneda(importe) {
-    return "$" + Number(importe).toLocaleString("es-AR", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    });
-}
-
-/**
- * Convierte el contenido y total del carrito en texto legible.
- * @param {{items: Array<Object>, total: number}} resumen Resumen calculado del carrito.
- * @returns {string} Líneas de productos y total, o aviso si está vacío.
- */
-function formatearResumenCarrito(resumen) {
-    if (!resumen.items.length) {
-        return "El carrito esta vacio.";
-    }
-
-    var lineas = resumen.items.map(function (item) {
-        return item.nombre + " | " + item.cantidad + " x " +
-            formatearMoneda(item.precio) + " = " + formatearMoneda(item.subtotal);
-    });
-    lineas.push("Total: " + formatearMoneda(resumen.total));
-    return lineas.join("\n");
-}
-
-/**
- * Convierte productos, cliente y condiciones de pago en el texto del pedido.
- * @param {{productos: Array<Object>, pago: Object, cliente: Object}} resumen Resumen validado del pedido.
- * @returns {string} Detalle textual de productos, importes, pago y envío.
- */
-function formatearResumenPedido(resumen) {
-    var lineas = resumen.productos.map(function (item) {
-        return item.nombre + " | " + item.cantidad + " x " +
-            formatearMoneda(item.precio) + " = " + formatearMoneda(item.subtotal);
-    });
-    lineas.push("Total original: " + formatearMoneda(resumen.pago.totalOriginal));
-    lineas.push("Metodo: " + (resumen.pago.metodoPago === "tarjeta" ? "Tarjeta de credito" : "Efectivo / transferencia"));
-    lineas.push("Cuotas: " + resumen.pago.cuotas);
-    lineas.push("Recargo: " + resumen.pago.porcentajeRecargo + "% (" + formatearMoneda(resumen.pago.interes) + ")");
-    lineas.push("Total financiado: " + formatearMoneda(resumen.pago.totalFinanciado));
-    lineas.push("Valor de cada cuota: " + formatearMoneda(resumen.pago.valorCuota));
-    lineas.push("Envio a: " + resumen.cliente.direccion);
-    return lineas.join("\n");
-}
-
-/**
- * Solicita un dato hasta que sea válido o el usuario cancele.
- * @param {string} mensaje Texto de la solicitud.
- * @param {(respuesta: string) => boolean} validador Función que determina si la respuesta es válida.
- * @param {string} mensajeError Aviso que se muestra cuando falla la validación.
- * @returns {string|null} Respuesta recortada o `null` si se cancela.
- */
-function solicitarDatoValido(mensaje, validador, mensajeError) {
-    while (true) {
-        var respuesta = prompt(mensaje);
-        if (respuesta === null) {
-            return null;
-        }
-        if (validador(respuesta)) {
-            return respuesta.trim();
-        }
-        alert(mensajeError);
+    try {
+        const numero = pedidoPendiente.confirmar(Date.now(), secuenciaPedidos);
+        secuenciaPedidos += 1;
+        const resumen = pedidoPendiente.resumir();
+        elementos.resumenPedido.replaceChildren();
+        const mensaje = document.createElement("p");
+        mensaje.textContent = `Pedido confirmado: ${numero}`;
+        elementos.resumenPedido.append(mensaje);
+        agregarDatosResumen(elementos.resumenPedido, resumen);
+        elementos.resumenPedido.querySelector('[data-action="confirmar-pedido"]').remove();
+        elementos.formPedido.hidden = true;
+        carrito.vaciar();
+        pagoActual = null;
+        pedidoPendiente = null;
+        renderizarCarrito();
+        elementos.seccionPago.hidden = true;
+        mostrarMensaje(elementos.pedidoMensaje, "La operacion se realizo correctamente.", "success");
+    } catch (error) {
+        if (!(error instanceof TypeError || error instanceof RangeError)) throw error;
+        mostrarMensaje(elementos.pedidoMensaje, error.message, "error");
     }
 }
 
-/**
- * Solicita una respuesta afirmativa o negativa, aceptando también su forma abreviada.
- * @param {string} mensaje Texto de la pregunta.
- * @returns {boolean|null} `true` para sí, `false` para no o `null` si se cancela.
- */
-function preguntarSiNo(mensaje) {
-    while (true) {
-        var respuesta = prompt(mensaje);
-        if (respuesta === null) {
-            return null;
-        }
-        var opcion = normalizarTexto(respuesta);
-        if (opcion === "si" || opcion === "s") {
-            return true;
-        }
-        if (opcion === "no" || opcion === "n") {
-            return false;
-        }
-        alert("Ingresa SI o NO. Cancela el cuadro para volver al menu.");
-    }
+// Cancela la confirmación del pedido y limpia el formulario,
+// conservando el carrito y las condiciones de pago.
+function cancelarPedido() {
+    pedidoPendiente = null;
+    elementos.resumenPedido.replaceChildren();
+    elementos.seccionConfirmacion.hidden = true;
+    elementos.formPedido.reset();
+    elementos.formPedido.querySelectorAll("input").forEach(limpiarEstadoControl);
+    mostrarMensaje(elementos.pedidoMensaje, "Pedido cancelado. Se conservaron el carrito y las condiciones de pago.", "info");
+    elementos.seccionPago.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-/**
- * Ejecuta el flujo interactivo de búsqueda, filtrado y repetición de consultas.
- * @returns {void}
- */
-function ejecutarBusquedaYFiltrado() {
-    var repetir = true;
-    while (repetir) {
-        var texto = prompt("Texto de busqueda (vacio para omitir):");
-        if (texto === null) {
-            return;
-        }
-        var categoria = prompt("Categoria (vacia para omitir):");
-        if (categoria === null) {
-            return;
-        }
-        var precioMaximo = prompt("Precio maximo (vacio para omitir, o numero mayor o igual a cero):");
-        if (precioMaximo === null) {
-            return;
-        }
+function inicializarEventos() {
+    buscarYMostrarCatalogo();
+    renderizarCarrito();
+    // Gestiona el cierre del Offcanvas una sola vez.
+    // La transición al pago se ejecuta únicamente
+    // cuando fue solicitada mediante "Iniciar compra".
+    elementos.panelCarrito.addEventListener("hidden.bs.offcanvas", () => {
+        if (!esperandoCierreCarrito) return;
 
-        var resultado = buscarProductos(catalogoProductos, {
-            texto: texto,
-            categoria: categoria,
-            precioMaximo: precioMaximo
+        esperandoCierreCarrito = false;
+
+        renderizarCarrito();
+
+        requestAnimationFrame(() => {
+            elementos.seccionPago.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
         });
 
-        if (!resultado.valido) {
-            alert(resultado.error);
-        } else if (!resultado.resultados.length) {
-            alert("Sin coincidencias.");
-        } else {
-            console.log("Productos encontrados:", resultado.resultados);
-            alert("Resultados ordenados por precio:\n" + resultado.resultados.map(function (producto) {
-                return producto.nombre + " — " + formatearMoneda(producto.precio);
-            }).join("\n"));
-        }
+        // Mantiene visible el indicador de carga durante 900 ms.
+        setTimeout(() => {
+            if (elementos.estadoAplicacion) {
+                elementos.estadoAplicacion.classList.remove(
+                    "position-fixed",
+                    "top-0",
+                    "start-50",
+                    "translate-middle-x",
+                    "mt-3",
+                    "p-3",
+                    "bg-body",
+                    "rounded",
+                    "shadow"
+                );
 
-        repetir = preguntarSiNo("¿Filtrar de nuevo? (SI / NO)") === true;
-    }
-}
-
-/**
- * Muestra el contenido actual del carrito y su total.
- * @returns {void}
- */
-function mostrarCarrito() {
-    var resumen = calcularResumenCarrito(carritoActual);
-    var mensaje = formatearResumenCarrito(resumen);
-    console.log("Carrito:", resumen);
-    alert(mensaje);
-}
-
-/**
- * Aplica al estado compartido un resultado de operación del carrito e invalida el pago anterior.
- * @param {{exito: boolean, carrito: Array<Object>, error: string|null}} resultado Resultado de una operación del carrito.
- * @returns {void}
- */
-function actualizarCarrito(resultado) {
-    if (resultado.exito) {
-        var totalAnterior = calcularResumenCarrito(carritoActual).total;
-        var totalNuevo = calcularResumenCarrito(resultado.carrito).total;
-
-        carritoActual = resultado.carrito;
-
-        if (totalAnterior !== totalNuevo) {
-            condicionesPagoActuales = null;
-            alert("Carrito actualizado. Debes seleccionar nuevamente el metodo de pago y las cuotas.");
-        } else {
-            alert("Carrito actualizado.");
-        }
-    } else {
-        alert(resultado.error);
-    }
-}
-
-/**
- * Ejecuta el menú interactivo para agregar, actualizar o eliminar productos del carrito.
- * La opción "Comprar" (solo con ítems) sale del menú y continúa en el flujo de pago.
- * @returns {void}
- */
-function ejecutarGestionCarrito() {
-    var salir = false;
-    var irAPago = false;
-    while (!salir) {
-        var opcion = prompt(
-            "GESTIONAR CARRITO\n1. Agregar\n2. Cambiar cantidad\n3. Eliminar\n4. Comprar\n0. Volver al menu"
-        );
-        if (opcion === null || opcion.trim() === "0") {
-            salir = true;
-        } else if (opcion.trim() === "1") {
-            var codigosDisponibles = catalogoProductos.map(function (producto) {
-                return producto.codigo + " - " + producto.nombre;
-            }).join("\n");
-            var codigoNuevo = prompt("Codigo de producto:\n" + codigosDisponibles);
-            if (codigoNuevo === null) {
-                continue;
+                elementos.estadoAplicacion.style.removeProperty("z-index");
             }
-            var cantidadNueva = prompt("Cantidad (entero mayor o igual a 1):");
-            if (cantidadNueva === null) {
-                continue;
-            }
-            actualizarCarrito(agregarProductoAlCarrito(
-                carritoActual,
-                catalogoProductos,
-                codigoNuevo,
-                cantidadNueva
-            ));
-        } else if (opcion.trim() === "2") {
-            var codigoActualizar = prompt("Codigo del producto en el carrito:");
-            if (codigoActualizar === null) {
-                continue;
-            }
-            var cantidadActualizar = prompt("Nueva cantidad (entero mayor o igual a 1):");
-            if (cantidadActualizar === null) {
-                continue;
-            }
-            actualizarCarrito(cambiarCantidadCarrito(
-                carritoActual,
-                codigoActualizar,
-                cantidadActualizar
-            ));
-        } else if (opcion.trim() === "3") {
-            var codigoEliminar = prompt("Codigo del producto a eliminar:");
-            if (codigoEliminar === null) {
-                continue;
-            }
-            actualizarCarrito(eliminarProductoDelCarrito(carritoActual, codigoEliminar));
-        } else if (opcion.trim() === "4") {
-            if (carritoActual.length) {
-                irAPago = true;
-                salir = true;
-            } else {
-                alert("No se puede comprar con el carrito vacio.");
-            }
-        } else {
-            alert("Opcion invalida.");
-        }
 
-        mostrarCarrito();
-    }
-
-    if (irAPago) {
-        ejecutarPago();
-    }
-}
-
-/**
- * Ejecuta la selección de método de pago y, si corresponde, de cuotas.
- * @returns {void}
- */
-function ejecutarPago() {
-    condicionesPagoActuales = null;
-    var resumen = calcularResumenCarrito(carritoActual);
-    if (!resumen.items.length) {
-        alert("No hay productos para pagar.");
-        return;
-    }
-
-    var metodoPago;
-    while (!metodoPago) {
-        var opcionMetodo = prompt("Metodo de pago:\n1. Efectivo / transferencia\n2. Tarjeta de credito");
-        if (opcionMetodo === null) {
-            return;
-        }
-        if (opcionMetodo.trim() === "1") {
-            metodoPago = "efectivo-transferencia";
-        } else if (opcionMetodo.trim() === "2") {
-            metodoPago = "tarjeta";
-        } else {
-            alert("Opcion de pago invalida.");
-        }
-    }
-
-var cuotas = 1;
-
-if (metodoPago === "tarjeta") {
-    while (true) {
-        var entradaCuotas = prompt("Cuotas disponibles: 1 (0%), 3 (10%), 6 (20%).");
-
-        if (entradaCuotas === null) {
-            return;
-        }
-
-        var opcionCuotas = entradaCuotas.trim();
-
-        if (Object.prototype.hasOwnProperty.call(opcionesCuotas, opcionCuotas)) {
-            cuotas = Number(opcionCuotas);
-            break;
-        }
-
-        alert("Selecciona 1, 3 o 6 cuotas.");
-    }
-}
-
-    var condiciones = calcularCondicionesPago(resumen.total, metodoPago, cuotas);
-    if (!condiciones.valido) {
-        alert(condiciones.error);
-        return;
-    }
-
-    alert(
-        "Condiciones de pago\n" +
-        "Total original: " + formatearMoneda(condiciones.totalOriginal) + "\n" +
-        "Cuotas: " + condiciones.cuotas + "\n" +
-        "Interes: " + formatearMoneda(condiciones.interes) + "\n" +
-        "Total financiado: " + formatearMoneda(condiciones.totalFinanciado) + "\n" +
-        "Valor de cada cuota: " + formatearMoneda(condiciones.valorCuota)
-    );
-    condicionesPagoActuales = condiciones;
-}
-
-/**
- * Avisa que el pedido se canceló; el carrito y las condiciones de pago no se modifican.
- * @returns {void}
- */
-function informarPedidoCancelado() {
-    alert("Pedido cancelado. Se conservaron el carrito y las condiciones de pago.");
-}
-
-/**
- * Solicita los datos del cliente, muestra el resumen y procesa la confirmación del pedido.
- * @returns {void}
- */
-function ejecutarConfirmacionPedido() {
-    if (!carritoActual.length || !condicionesPagoActuales) {
-        alert("Falta completar el carrito o elegir un metodo de pago.");
-        return;
-    }
-
-    var nombre = solicitarDatoValido(
-        "Nombre y apellido:",
-        validarNombre,
-        "El nombre no puede estar vacio ni ser unicamente numerico."
-    );
-    if (nombre === null) {
-        informarPedidoCancelado();
-        return;
-    }
-
-    var correo = solicitarDatoValido(
-        "Correo electronico:",
-        validarCorreo,
-        "Ingresa un correo valido con usuario y dominio."
-    );
-    if (correo === null) {
-        informarPedidoCancelado();
-        return;
-    }
-
-    var direccion = solicitarDatoValido(
-        "Direccion de envio:",
-        validarDireccion,
-        "La direccion no puede estar vacia."
-    );
-    if (direccion === null) {
-        informarPedidoCancelado();
-        return;
-    }
-
-    var resumen = crearResumenPedido(carritoActual, condicionesPagoActuales, {
-        nombre: nombre,
-        correo: correo,
-        direccion: direccion
+            mostrarMensaje(
+                elementos.estadoAplicacion,
+                "Pago listo para completar.",
+                "success"
+            );
+        }, 900);
     });
-    if (!resumen.valido) {
-        alert(resumen.error);
-        return;
-    }
 
-    alert(
-        "Resumen del pedido para " + resumen.cliente.nombre + "\n" +
-        formatearResumenPedido(resumen) +
-        "\nCorreo: " + resumen.cliente.correo
-    );
 
-    var confirmar = preguntarSiNo("¿Confirmas el pedido? (SI / NO)");
-    if (confirmar === null || !confirmar) {
-        informarPedidoCancelado();
-        return;
-    }
+    elementos.formBusqueda.addEventListener("submit", (evento) => {
+        evento.preventDefault();
+        buscarYMostrarCatalogo();
+        elementos.seccionCatalogo.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    elementos.busqueda.addEventListener("input", buscarYMostrarCatalogo);
+    elementos.categoria.addEventListener("change", buscarYMostrarCatalogo);
+    elementos.orden.addEventListener("change", buscarYMostrarCatalogo);
+    elementos.activarPrecio.addEventListener("change", () => {
+        elementos.precio.disabled = !elementos.activarPrecio.checked;
+        elementos.precioValor.textContent = elementos.activarPrecio.checked
+            ? formatearMoneda(Number(elementos.precio.value))
+            : "Sin limite";
+        buscarYMostrarCatalogo();
+    });
+    elementos.precio.addEventListener("input", () => {
+        elementos.precioValor.textContent = formatearMoneda(Number(elementos.precio.value));
+        buscarYMostrarCatalogo();
+    });
 
-    var numeroPedido = crearNumeroPedido(Date.now(), secuenciaPedidos);
-    secuenciaPedidos += 1;
-    alert(
-        "Pedido confirmado: " + numeroPedido + "\n" +
-        formatearResumenPedido(resumen)
-    );
-    carritoActual = [];
-    condicionesPagoActuales = null;
-}
+    // CATÁLOGO Y OFERTAS
+    // Delega la acción de agregar productos al carrito.
+    function manejarAgregarCarrito(evento) {
+        const accion = evento.target.closest('[data-action="agregar-carrito"]');
 
-/**
- * Presenta el menú principal y despacha los cuatro flujos hasta que el usuario salga.
- * @returns {void}
- */
-function iniciarMenuPrincipal() {
-    var salir = false;
-    while (!salir) {
-        var opcion = prompt(
-            "FERROLAB — MENU PRINCIPAL\n\n" +
-            "1. Buscar y filtrar productos\n" +
-            "2. Gestionar carrito\n" +
-            "3. Pagar y calcular cuotas\n" +
-            "4. Confirmar pedido\n" +
-            "0. Salir"
+        if (!accion || !evento.currentTarget.contains(accion)) return;
+
+        const codigo = accion.dataset.productCode;
+
+        procesarOperacionCarrito(
+            () => carrito.agregar(catalogo, codigo, 1)
         );
-
-        if (opcion === null || opcion.trim() === "0") {
-            salir = true;
-        } else if (opcion.trim() === "1") {
-            ejecutarBusquedaYFiltrado();
-        } else if (opcion.trim() === "2") {
-            ejecutarGestionCarrito();
-        } else if (opcion.trim() === "3") {
-            ejecutarPago();
-        } else if (opcion.trim() === "4") {
-            ejecutarConfirmacionPedido();
-        } else {
-            alert("Opcion invalida.");
-        }
     }
+
+    elementos.seccionCatalogo.addEventListener("click", manejarAgregarCarrito);
+    elementos.seccionOfertas.addEventListener("click", manejarAgregarCarrito);
+
+
+    // NAVEGACIÓN
+    // Delega el filtrado de productos desde el menú de categorías.
+    elementos.navegacionPrincipal.addEventListener("click", (evento) => {
+        const filtroCategoria = evento.target.closest("[data-categoria]");
+
+        if (!filtroCategoria ||
+            !elementos.navegacionPrincipal.contains(filtroCategoria)) return;
+
+        evento.preventDefault();
+
+        elementos.busqueda.value = "";
+        elementos.categoria.value = filtroCategoria.dataset.categoria;
+        elementos.activarPrecio.checked = false;
+        elementos.precio.disabled = true;
+        elementos.precio.value = elementos.precio.max;
+        elementos.precioValor.textContent = "Sin limite";
+
+        buscarYMostrarCatalogo();
+
+        elementos.seccionCatalogo.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    });
+
+
+    // CARRITO
+    // Delega la eliminación de productos y el inicio de compra.
+    elementos.panelCarrito.addEventListener("click", (evento) => {
+        const accion = evento.target.closest("[data-action]");
+
+        if (!accion || !elementos.panelCarrito.contains(accion)) return;
+
+        const codigo = accion.dataset.productCode;
+
+        switch (accion.dataset.action) {
+            case "eliminar-carrito":
+                procesarOperacionCarrito(
+                    () => carrito.eliminar(codigo)
+                );
+                break;
+
+            case "iniciar-compra":
+                iniciarPago();
+                break;
+
+            default:
+                break;
+        }
+    });
+
+
+    // PAGO
+    // Delega la cancelación del proceso de pago.
+    elementos.seccionPago.addEventListener("click", (evento) => {
+        const accion = evento.target.closest('[data-action="cancelar-pago"]');
+
+        if (!accion || !elementos.seccionPago.contains(accion)) return;
+
+        cancelarPago();
+    });
+
+
+    // CONFIRMACIÓN
+    // Delega las acciones de cancelar y confirmar el pedido.
+    elementos.seccionConfirmacion.addEventListener("click", (evento) => {
+        const accion = evento.target.closest("[data-action]");
+
+        if (!accion || !elementos.seccionConfirmacion.contains(accion)) return;
+
+        switch (accion.dataset.action) {
+            case "cancelar-pedido":
+                cancelarPedido();
+                break;
+
+            case "confirmar-pedido":
+                confirmarPedido();
+                break;
+
+            default:
+                break;
+        }
+    });
+    
+    // Valida inmediatamente la cantidad ingresada sin modificar el carrito.
+    elementos.carritoItems.addEventListener("input", (evento) => {
+        const control = evento.target.closest('[data-action="cambiar-cantidad"]');
+        if (!control) return;
+        const valor = control.value.trim();
+        const valido =
+            valor !== "" &&
+            control.validity.valid &&
+            Number.isSafeInteger(Number(valor));
+        if (valido) {
+            marcarControl(control, true);
+        } else {
+            marcarControl(
+                control,
+                false,
+                "La cantidad debe ser un número entero mayor o igual a 1."
+            );
+        }
+    });
+
+    // Actualiza la cantidad mediante la clase Carrito cuando se confirma el cambio.
+    elementos.carritoItems.addEventListener("change", (evento) => {
+        const control = evento.target.closest('[data-action="cambiar-cantidad"]');
+        if (!control) return;
+        procesarOperacionCarrito(
+            () => carrito.cambiarCantidad(control.dataset.productCode, control.value),
+            control.dataset.productCode
+        );
+    });
+
+    elementos.metodoPago.addEventListener("change", () => {
+        const tarjeta = elementos.metodoPago.value === "tarjeta";
+        elementos.cuotas.disabled = !tarjeta;
+        if (!tarjeta) elementos.cuotas.value = "1";
+        elementos.condicionesPago.replaceChildren();
+        pagoActual = null;
+        pedidoPendiente = null;
+        elementos.seccionConfirmacion.hidden = true;
+        elementos.resumenPedido.replaceChildren();
+        if (elementos.metodoPago.value) obtenerCondicionesPago();
+    });
+
+    elementos.cuotas.addEventListener("change", () => {
+        pedidoPendiente = null;
+        elementos.resumenPedido.replaceChildren();
+
+        elementos.seccionConfirmacion.hidden = true;
+
+        obtenerCondicionesPago();
+        mostrarMensaje(
+            elementos.pagoMensaje,
+            "Cambiaste las cuotas. Revisá las condiciones y continuá nuevamente.",
+            "info"
+        );
+    });
+
+    elementos.formPago.addEventListener("submit", (evento) => {
+        evento.preventDefault();
+        if (!obtenerCondicionesPago()) return;
+        elementos.seccionConfirmacion.hidden = false;
+        elementos.resumenPedido.replaceChildren();
+        pedidoPendiente = null;
+        mostrarMensaje(elementos.pedidoMensaje, "Completa tus datos para revisar el pedido.", "info");
+        elementos.seccionConfirmacion.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    // Valida inmediatamente el campo mientras el usuario escribe.
+    elementos.formPedido.addEventListener("input", (evento) => {
+        const control = evento.target.closest("input");
+        if (!control) return;
+        if (pedidoPendiente !== null) {
+            pedidoPendiente = null;
+            elementos.resumenPedido.replaceChildren();
+
+            mostrarMensaje(
+                elementos.pedidoMensaje,
+                "Los datos del cliente cambiaron. Revisá nuevamente el resumen antes de confirmar.",
+                "info"
+            );
+        }
+            
+        validarCampoPedido(control);
+    });
+    
+    // Valida nuevamente el campo cuando el usuario lo abandona.
+    elementos.formPedido.addEventListener("focusout", (evento) => {
+        const control = evento.target.closest("input");
+
+        if (!control) return;
+
+        validarCampoPedido(control);
+    });
+
+    // Valida todos los campos antes de generar el resumen del pedido.
+    elementos.formPedido.addEventListener("submit", (evento) => {
+        evento.preventDefault();
+
+        const controles = Array.from(
+            elementos.formPedido.querySelectorAll("input")
+        );
+        // Valida cada campo de manera independiente.
+        const resultados = controles.map(validarCampoPedido);
+
+        const primerInvalido = resultados.findIndex(
+            (valido) => !valido
+        );
+        if (primerInvalido !== -1) {
+            pedidoPendiente = null;
+
+            elementos.resumenPedido.replaceChildren();
+
+            mostrarMensaje(
+                elementos.pedidoMensaje,
+                "Revisá los datos del cliente antes de continuar.",
+                "error"
+            );
+            
+            controles[primerInvalido].focus();
+            
+            return;
+        }
+        
+        try {
+            // Validación definitiva mediante la clase Pedido.
+            pedidoPendiente = new Pedido(
+                carrito,
+                pagoActual,
+                clienteDesdeFormulario()
+            );
+            
+            const resumen = pedidoPendiente.resumir();
+            
+            elementos.resumenPedido.replaceChildren();
+            
+            agregarDatosResumen(
+                elementos.resumenPedido,
+                resumen
+            );
+            
+            mostrarMensaje(
+                elementos.pedidoMensaje,
+                "Revisa el resumen y confirma o cancela el pedido.",
+                "success"
+            );
+        
+        } catch (error) {
+            
+            if (!(error instanceof TypeError || error instanceof RangeError)) {
+                throw error;
+            }
+
+            pedidoPendiente = null;
+
+            const campo = error.campo && elementos.formPedido.elements[error.campo];
+
+            if (campo) {
+                marcarControl(campo, false, error.message);
+                campo.focus();
+            }
+            mostrarMensaje(
+                elementos.pedidoMensaje,
+                error.message,
+                "error"
+            );
+        }
+    });
+
 }
 
-// Arranque automático: solo en las páginas que lo piden con el atributo
-// data-iniciar-menu en <body> (index.html). test-runner.html no lo tiene,
-// así que al correr los tests no se abre el menú.
-if (typeof document !== "undefined" && document.body &&
-        document.body.hasAttribute("data-iniciar-menu")) {
-    iniciarMenuPrincipal();
-}
-
-if (typeof module !== "undefined" && module.exports) {
-    module.exports = {
-        catalogoProductos: catalogoProductos,
-        opcionesCuotas: opcionesCuotas,
-        normalizarTexto: normalizarTexto,
-        validarPrecioMaximo: validarPrecioMaximo,
-        buscarProductos: buscarProductos,
-        validarCantidad: validarCantidad,
-        agregarProductoAlCarrito: agregarProductoAlCarrito,
-        cambiarCantidadCarrito: cambiarCantidadCarrito,
-        eliminarProductoDelCarrito: eliminarProductoDelCarrito,
-        calcularResumenCarrito: calcularResumenCarrito,
-        calcularCondicionesPago: calcularCondicionesPago,
-        validarNombre: validarNombre,
-        validarCorreo: validarCorreo,
-        validarDireccion: validarDireccion,
-        validarDatosCliente: validarDatosCliente,
-        crearResumenPedido: crearResumenPedido,
-        crearNumeroPedido: crearNumeroPedido,
-        formatearMoneda: formatearMoneda,
-        formatearResumenCarrito: formatearResumenCarrito,
-        formatearResumenPedido: formatearResumenPedido,
-        solicitarDatoValido: solicitarDatoValido,
-        preguntarSiNo: preguntarSiNo,
-        ejecutarBusquedaYFiltrado: ejecutarBusquedaYFiltrado,
-        mostrarCarrito: mostrarCarrito,
-        ejecutarGestionCarrito: ejecutarGestionCarrito,
-        ejecutarPago: ejecutarPago,
-        ejecutarConfirmacionPedido: ejecutarConfirmacionPedido,
-        iniciarMenuPrincipal: iniciarMenuPrincipal
-    };
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", inicializarEventos, { once: true });
+} else {
+    inicializarEventos();
 }
