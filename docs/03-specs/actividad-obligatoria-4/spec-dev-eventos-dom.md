@@ -215,7 +215,7 @@ No realicé commits ni operaciones remotas.
 ![Respuesta del prompt a copilot en modo agente para refacturizar el js/script.js](../../../assets\images\prompt2-dev-eventos-dom.png)
 
 **Archivos adjuntados como contexto:** `plan.md`, `index.html`, `js/script.js`, los cuatro diagramas de actividades `.puml`, las clases que existan en `js/models/` y el `spec-dev-eventos-dom.md`.
-**Fragmento generado por Copilot:**
+**Fragmento generado por Copilot (versión original):**
 ```
   function inicializarEventos() {
     buscarYMostrarCatalogo();
@@ -470,6 +470,39 @@ No realicé commits ni operaciones remotas.
 - Archivo modificado: `js/script.js`.
 - Resultado obtenido: Se comprobó que el mensaje «Preparando el pago...» y el spinner de Bootstrap se visualizan correctamente durante la transición hacia el pago.
 
+11. **Corrección realizada Validación del formulario de pedido**
+- **Problema:** Los campos del formulario no contaban con todas las restricciones necesarias para identificar individualmente datos inválidos.
+- **Corrección:** Se incorporaron restricciones HTML para validar el nombre y el formato del correo electrónico.
+- **Mejora adicional:** Se conservaron los atributos `required` y `aria-describedby`, junto con los elementos destinados a mostrar mensajes de error.
+- **Resultado obtenido:** Los controles permiten comprobar individualmente los datos ingresados y mostrar los mensajes de validación correspondientes.
+
+12. **Corrección realizada: validación individual del pedido**
+- **Problema:** `validarCampoPedido()` construía un objeto `Pedido` completo y recibía solamente el primer error. Esto impedía mostrar errores en otros campos mientras existieran datos inválidos anteriores.
+- **Corrección:** Se modificó `validarCampoPedido()` para comprobar cada control de manera independiente utilizando `checkValidity()`, sin depender del orden de validación del constructor de `Pedido`.
+- **Mejora adicional:** Se incorporó el evento `focusout`, se ajustó el evento `submit` para verificar todos los campos antes de generar el resumen y se corrigió la limpieza de estados al iniciar o cancelar un pedido.
+- **Resultado obtenido:** Los campos pueden mostrar errores independientemente mediante los eventos `input` y `focusout`, mientras que la validación definitiva continúa realizándose mediante la clase `Pedido`.
+
+13. **Corrección realizada:** Se incorporaron las clases `form-control` y `form-select` de Bootstrap en los controles de los formularios de pedido y pago.Esto permite que las clases `is-valid` e `is-invalid`, aplicadas desde `js/script.js`, se reflejen visualmente mediante bordes verdes y rojos.
+- **Archivo modificado:** `index.html`.
+- **Pruebas realizadas:** Verificación manual de los estados visuales de validación en el navegador.
+- **Resultado obtenido:** Los controles muestran correctamente los estilos correspondientes a estados válidos e inválidos.
+
+14. **Corrección realizada:** Se trasladó el listener `hidden.bs.offcanvas` desde `iniciarPago()` hacia `inicializarEventos()`, evitando registrar múltiples listeners durante el inicio de la compra. Se incorporó la bandera `esperandoCierreCarrito` para controlar la transición y prevenir ejecuciones duplicadas ante clics repetidos.
+- **Eventos afectados:** `click` y `hidden.bs.offcanvas`.
+- **Archivo modificado:** `js/script.js`.
+- **Pruebas realizadas:** Inicio de compra, doble clic, cierre manual del carrito, reapertura y verificación del indicador de carga.
+- **Resultado obtenido:** El cierre del carrito y la transición al pago se ejecutan una sola vez, conservando el comportamiento del spinner y el desplazamiento hacia la sección de pago.
+
+15. ### Corrección del hallazgo #7 — Menú «Categorías» duplicado
+
+**Problema detectado:** En `index.html` existían dos menús desplegables, «Catálogo» y «Categorías», que permitían filtrar por las mismas categorías. Esta duplicación generaba redundancia en la navegación y contradecía lo documentado en el apartado AT CLOSE de `spec-dev-eventos-dom.md`.
+**Corrección realizada:** Se eliminó el menú desplegable «Categorías» (`id="categorias-dropdown"`), conservando el menú «Catálogo» (`id="catalogo-dropdown"`), que ya incluye las cinco categorías y la opción «Todos los productos».
+- **Justificación:** Se unificó la navegación para evitar opciones duplicadas. El controlador continúa utilizando la delegación de eventos mediante el atributo `data-categoria`, sin necesidad de modificar la lógica de filtrado.
+- **Archivos modificados:** `index.html`.
+- **Archivos verificados sin modificaciones:** `js/script.js`, `css/components.css`, `css/bootstrap-overrides.css`, `css/responsive.css` y `css/styles.css`.
+- **Resultado obtenido:** La navegación presenta un único menú desplegable para acceder a las categorías, conservando las funcionalidades de búsqueda y filtrado del catálogo.
+
+
 
 **Justificación:**
 
@@ -482,7 +515,7 @@ No realicé commits ni operaciones remotas.
 
 **Decisiones finales sobre el controlador y su integración con las clases del dominio:**
 - Catálogo: Se utiliza Catalogo.buscar() para realizar búsquedas, filtrar por categorías y precio máximo, y ordenar los productos. Cuando el filtro de precio está desactivado, el controlador envía null.
-- Producto: El controlador utiliza los datos proporcionados por las clases del dominio para generar dinámicamente las tarjetas de productos, manteniendo separada la representación visual de la lógica de negocio.
+- Producto: Las tarjetas de productos están definidas en index.html. El controlador js/script.js utiliza los resultados de Catalogo.buscar() para mostrar, ocultar y reordenar las tarjetas existentes, manteniendo separada la representación visual de la lógica de negocio. Como limitación conocida, los datos de los productos se encuentran duplicados entre productosIniciales y index.html, por lo que deben mantenerse sincronizados para evitar inconsistencias.
 - Carrito: El controlador invoca los métodos de Carrito para agregar, eliminar y modificar cantidades. Utiliza resumir() para actualizar la información visual y muestra los errores devueltos por las operaciones.
 - Pago: El controlador captura el método de pago y las cuotas seleccionadas, delegando el cálculo de recargos y condiciones de financiación a la clase Pago. Los resultados y errores se muestran en la interfaz.
 - Pedido: El controlador captura y valida visualmente los datos del cliente, utiliza la clase Pedido para generar y confirmar el pedido e invalida el resumen cuando se modifican los datos, el carrito o las condiciones de pago.
