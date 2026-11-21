@@ -262,6 +262,19 @@ describe("Pago", function () {
         expect(new Pago(100, "tarjeta", 6).calcular().porcentajeRecargo).toBe(20);
     });
 
+    it("calcula intereses y cuotas para importes con centavos", function () {
+        for (const [total, cuotas, porcentajeRecargo, interes, totalFinanciado, valorCuota] of [
+            [10.01, 1, 0, 0, 10.01, 10.01],
+            [100.15, 3, 10, 10.02, 110.17, 36.72],
+            [0.35, 3, 10, 0.04, 0.39, 0.13],
+            [125.49, 6, 20, 25.1, 150.59, 25.1]
+        ]) {
+            expect(new Pago(total, "tarjeta", cuotas).calcular()).toEqual(jasmine.objectContaining({
+                totalOriginal: total, cuotas, porcentajeRecargo, interes, totalFinanciado, valorCuota
+            }));
+        }
+    });
+
     it("rechaza totales, métodos y cuotas inválidos", function () {
         for (const total of [0, -1, NaN, Infinity, "", null]) {
             expect(() => new Pago(total, "tarjeta", 3)).toThrow();
@@ -355,6 +368,93 @@ describe("Pedido", function () {
         const confirmado = Pedido.fromJSON(pendiente.toJSON());
         expect(confirmado.toJSON()).toEqual(pendiente.toJSON());
         expect(() => Pedido.fromJSON({})).toThrowError(TypeError);
+    });
+
+    it("restaura importes equivalentes con diferencias de representación binaria", function () {
+        const carrito = new Carrito([{
+            codigo: "A", nombre: "A", categoria: "Prueba", precio: 0.1, cantidad: 3
+        }]);
+        const pedido = new Pedido(carrito, new Pago(carrito.resumir().total, "tarjeta", 3), {
+            nombre: "Ana", correo: "ana@example.com", direccion: "Calle 1"
+        });
+        const datos = pedido.toJSON();
+        datos.total = 0.3;
+        datos.productos[0].subtotal = 0.3;
+        datos.pago.totalOriginal = 0.1 + 0.2;
+        datos.pago.interes = 0.01 + 0.02;
+        expect(Pedido.fromJSON(JSON.parse(JSON.stringify(datos))).toJSON()).toEqual(pedido.toJSON());
+    });
+
+    it("conserva los subtotales sin redondear del carrito al restaurar", function () {
+        const carrito = new Carrito([{
+            codigo: "A", nombre: "A", categoria: "Prueba", precio: 1.234, cantidad: 1
+        }]);
+        const pedido = new Pedido(carrito, new Pago(carrito.resumir().total, "tarjeta", 3), {
+            nombre: "Ana", correo: "ana@example.com", direccion: "Calle 1"
+        });
+        const datos = JSON.parse(JSON.stringify(pedido.toJSON()));
+        expect(datos.productos[0].subtotal).toBe(1.234);
+        expect(Pedido.fromJSON(datos).toJSON()).toEqual(datos);
+        datos.productos[0].subtotal = 1.23;
+        expect(() => Pedido.fromJSON(datos)).toThrowError(RangeError);
+    });
+
+    it("rechaza datos obligatorios ausentes, de tipo incorrecto o no finitos", function () {
+        const datos = crearPedido().pedido.toJSON();
+        for (const campo of ["valido", "error", "metodoPago", "cuotas", "porcentajeRecargo",
+            "totalOriginal", "interes", "totalFinanciado", "valorCuota"]) {
+            const pago = { ...datos.pago };
+            delete pago[campo];
+            expect(() => Pedido.fromJSON({ ...datos, pago })).toThrowError(TypeError);
+        }
+        expect(() => Pedido.fromJSON({ ...datos, total: "200.3" })).toThrowError(TypeError);
+        expect(() => Pedido.fromJSON({ ...datos, numero: 1 })).toThrowError(TypeError);
+        expect(() => Pedido.fromJSON({ ...datos, cliente: null })).toThrowError(TypeError);
+        for (const valor of [NaN, Infinity, -Infinity]) {
+            expect(() => Pedido.fromJSON({ ...datos, total: valor })).toThrowError(RangeError);
+            expect(() => Pedido.fromJSON({
+                ...datos, productos: [{ ...datos.productos[0], subtotal: valor }]
+            })).toThrowError(RangeError);
+            expect(() => Pedido.fromJSON({
+                ...datos, pago: { ...datos.pago, interes: valor }
+            })).toThrowError(RangeError);
+        }
+    });
+
+    it("rechaza alteraciones monetarias y cambios en condiciones no monetarias", function () {
+        const datos = crearPedido().pedido.toJSON();
+        for (const cambio of [0.01, 0.001]) {
+            expect(() => Pedido.fromJSON({ ...datos, total: datos.total + cambio }))
+                .toThrowError(RangeError);
+            expect(() => Pedido.fromJSON({
+                ...datos, productos: [{ ...datos.productos[0], subtotal: datos.productos[0].subtotal + cambio }]
+            })).toThrowError(RangeError);
+            for (const campo of ["totalOriginal", "interes", "totalFinanciado", "valorCuota"]) {
+                expect(() => Pedido.fromJSON({
+                    ...datos, pago: { ...datos.pago, [campo]: datos.pago[campo] + cambio }
+                })).toThrowError(RangeError);
+            }
+        }
+        for (const [campo, valor] of [
+            ["valido", false], ["error", "error"], ["metodoPago", "efectivo-transferencia"],
+            ["cuotas", 6], ["porcentajeRecargo", 10 + 1e-14]
+        ]) {
+            expect(() => Pedido.fromJSON({
+                ...datos, pago: { ...datos.pago, [campo]: valor }
+            })).toThrowError(RangeError);
+        }
+    });
+
+    it("rechaza diferencias monetarias representables incluso con importes grandes", function () {
+        const carrito = new Carrito([{
+            codigo: "A", nombre: "A", categoria: "Prueba", precio: 1e15, cantidad: 1
+        }]);
+        const pedido = new Pedido(carrito, new Pago(1e15, "tarjeta", 1), {
+            nombre: "Ana", correo: "ana@example.com", direccion: "Calle 1"
+        });
+        const datos = pedido.toJSON();
+        expect(() => Pedido.fromJSON({ ...datos, total: datos.total + 0.125 }))
+            .toThrowError(RangeError);
     });
 
     it("rechaza importes, subtotales, pagos y números de pedido inconsistentes", function () {

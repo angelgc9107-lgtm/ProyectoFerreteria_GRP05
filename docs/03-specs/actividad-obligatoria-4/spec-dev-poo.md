@@ -199,6 +199,11 @@ inválida se rechaza.
   efectivo/transferencia deben indicar exactamente una cuota. Storage debe
   coordinar cualquier cambio futuro de esas reglas antes de leer datos antiguos.
 
+La política existente usa `Math.round` sobre números binarios de JavaScript.
+Por ejemplo, `1.005` como total original se calcula como `1`, no como `1.01`.
+Una política de redondeo decimal diferente requiere coordinación porque también
+afecta la comparación del total del carrito en `Pedido`.
+
 ### 4.5 `Pedido` — implementado
 
 **Responsabilidad:** validar los datos de contacto y envío, generar una
@@ -240,9 +245,14 @@ no referencias mutables al carrito o a los datos del cliente.
 
 `Pedido.fromJSON()` requiere los productos con sus subtotales serializados,
 comprueba subtotales y total contra el resumen recalculado, reconstruye las
-condiciones de pago y rechaza cualquier campo de pago inconsistente. El número
-puede ser `null` o un identificador `FL-<fecha>-<secuencia>` válido; al
-restaurarlo conserva el estado confirmado.
+condiciones de pago y rechaza cualquier campo de pago inconsistente. Para
+importes finitos admite únicamente diferencias de representación binaria de
+hasta `Number.EPSILON` relativo, con límite absoluto de `1e-9`; no redondea
+los subtotales ni el total del carrito, que pueden tener más de dos decimales.
+Los demás campos se comparan estrictamente. Esta tolerancia no distingue un
+cambio deliberado tan pequeño del ruido de representación. El número puede ser
+`null` o un identificador `FL-<fecha>-<secuencia>` válido; al restaurarlo
+conserva el estado confirmado.
 
 **Errores de construcción y restauración:** los constructores y métodos
 `fromJSON()` validan antes de devolver instancias. Los métodos de búsqueda y
@@ -311,12 +321,12 @@ integrar la interfaz con los contratos anteriores sin trasladar
   objetos planos con `toJSON()` y restaurarlos mediante `fromJSON()`.
   Ausencia de datos, JSON corrupto, fallo de almacenamiento y error de
   validación deben distinguirse. Los modelos no acceden al navegador.
-- **Tester QA — suite escrita, ejecución pendiente:** existe
+- **Tester QA — suite ejecutada:** existe
   `js/test/models.spec.js` con casos Jasmine de las cinco clases y un runner
-  autónomo `js/test/models-test-runner.html`. A la fecha de esta actualización
-  no se registra aquí una ejecución verificada ni un resultado PASS/FAIL.
-  `docs/04-testing/pruebas-modelos-poo.md` contiene instrucciones y el estado
-  de ejecución. La invalidación/cancelación del flujo integrado y Storage
+  autónomo `js/test/models-test-runner.html`. Resultado verificado: 35 specs,
+  0 failures (ver AT CLOSE, sección 12).
+  `docs/04-testing/pruebas-modelos-poo.md` contiene instrucciones y el
+  resultado de ejecución. La invalidación/cancelación del flujo integrado y Storage
   quedan fuera de esta suite de modelos.
 
 ## 9. Diagrama UML: estado actual
@@ -337,8 +347,8 @@ Los tres entregables UML se encuentran en
 | `docs/03-specs/actividad-obligatoria-4/spec-dev-poo.md` | Actualizado para reflejar los contratos observados en los modelos; no implica integración. |
 | `js/models/Producto.js`, `Catalogo.js`, `Carrito.js` | Implementados; conforman las clases principales. |
 | `js/models/Pago.js`, `Pedido.js` | Implementados como clases adicionales de pago y pedido. |
-| `js/test/models.spec.js` | Suite Jasmine creada para las cinco clases; ejecución pendiente de verificar. |
-| `js/test/models-test-runner.html` | Runner autónomo nuevo para cargar Jasmine y los módulos ES. |
+| `js/test/models.spec.js` | Suite Jasmine para las cinco clases; ejecutada: 35 specs, 0 failures. |
+| `js/test/models-test-runner.html` | Runner autónomo que inicializa Jasmine, importa la suite y luego la ejecuta. |
 | `docs/04-testing/pruebas-modelos-poo.md` | Instrucciones y estado de ejecución de la suite. |
 | `docs/05-diagramas/02-diagrama-de-clases/diagrama-clases.puml` | Archivo presente en el repositorio. |
 | `docs/05-diagramas/02-diagrama-de-clases/diagrama-clases.png` | Archivo presente en el repositorio. |
@@ -357,10 +367,29 @@ Los tres entregables UML se encuentran en
 | Serialización y restauración (`toJSON()`/`fromJSON()`). | Implementado en los cinco modelos. |
 | Diagrama PlantUML, exportación PNG y documentación UML. | Los tres archivos existen; revisar su alineación cuando cambien contratos. |
 | Contratos para Eventos + DOM y Storage. | Documentados; integración pendiente. |
-| Suite para QA de modelos. | Jasmine escrito; ejecución y resultado PASS/FAIL pendientes de verificación. |
+| Suite para QA de modelos. | Jasmine ejecutado: 35 specs, 0 failures (PASS). |
 | Evidencia de uso/generación mediante Copilot. | Pendiente de evidencia verificable; no se atribuye generación sin el prompt y contexto reales. |
 
-## 12. Evidencias de GitHub Copilot Agent Mode — pendientes
+## 12. AT CLOSE — Evidencias
+
+### Resultado de pruebas Jasmine (verificado)
+
+- Revisión de hallazgos #2 y #3: 35 ejecutadas, 35 aprobadas y 0 fallidas;
+  salida `35 specs, 0 failures, randomized with seed 92645`. Evidencia:
+  `docs/04-testing/captura-jasmine-modelos-poo-hallazgos-2-3.png`.
+- Ejecución anterior para los hallazgos #1 y #4:
+- Runner: `js/test/models-test-runner.html` (Jasmine 5.10.0), servido por HTTP
+  local y abierto en navegador.
+- Ejecutadas: 29. Aprobadas: 29. Fallidas: 0. Pendientes/omitidas: 0.
+- Salida de Jasmine: `29 specs, 0 failures, randomized with seed 13609`.
+- Corrección del hallazgo #1: el runner ya no usa `boot1.min.js` (que ejecuta
+  la suite en `window.onload`); inicializa el reporter, importa
+  `models.spec.js` con `await import()` y recién entonces llama a
+  `env.execute()`.
+- Evidencia: `docs/04-testing/captura-jasmine-modelos-poo.png` y
+  `docs/04-testing/pruebas-modelos-poo.md`.
+
+## 12.1 Evidencias de GitHub Copilot Agent Mode — pendientes
 
 No se atribuye todavía generación de clases, ajustes manuales ni resultados
 de implementación a Copilot. Registrar únicamente evidencia real:
@@ -533,15 +562,56 @@ Contexto previsto: los cuatro diagramas de actividades `.puml` de
 
 ### Fragmento de código generado
 
-Pendiente: incorporar un fragmento real generado por Copilot de al menos una
-clase, identificando archivo y versión.
+### Fragmento de código generado
+
+Como evidencia de la implementación realizada con GitHub Copilot Agent Mode, seleccioné un fragmento del método `buscar()` de la clase `Catalogo`.
+
+**Archivo:** `js/models/Catalogo.js`
+
+Este método permite filtrar los productos y ordenarlos por precio de manera ascendente o descendente, manteniendo la lógica de negocio separada del DOM.
+
+```javascript
+const filtros = {
+    texto: normalizarTexto(texto),
+    categoria: normalizarTexto(categoria),
+    precioMaximo: precio
+};
+
+const resultados = this.#productos.filter((producto) =>
+    producto.coincide(filtros)
+);
+
+resultados.sort((a, b) =>
+    orden === "asc" ? a.precio - b.precio : b.precio - a.precio
+);
+
+return { valido: true, error: null, resultados };
+```
+
+Este fragmento demuestra cómo utilicé programación orientada a objetos para realizar las búsquedas del catálogo, aprovechando el método `coincide()` de la clase `Producto` y devolviendo un resultado estructurado.
 
 ### Ajustes manuales
 
-Pendiente: describir cambios efectivamente realizados para mejorar el
-encapsulamiento o la testabilidad y por qué fueron necesarios.
+Durante la revisión de la implementación identifiqué problemas relacionados con la validación de arreglos con posiciones vacías, el manejo de errores y los límites seguros de cantidades.
+
+Estas situaciones fueron corregidas con asistencia de GitHub Copilot Agent Mode, manteniendo los contratos definidos para las clases.
+
+También realicé comprobaciones posteriores para verificar el funcionamiento de los modelos.
 
 ### Decisiones finales y coordinación
 
-Pendiente: registrar decisiones de arquitectura efectivamente adoptadas,
-contratos acordados con Storage y casos/resultados coordinados con Tester QA.
+Decidí mantener la lógica de negocio separada del DOM y de Storage, utilizando clases ES6 y métodos `toJSON()` y `fromJSON()` para permitir la serialización y restauración de objetos.
+
+Además, incorporé:
+
+- Ordenamiento ascendente y descendente en `Catalogo.buscar()`.
+- Validaciones para las operaciones del carrito.
+- Cálculo de cantidades, subtotales y totales.
+- Reglas para métodos de pago, cuotas y recargos.
+- Validaciones de clientes y confirmación de pedidos.
+
+La integración definitiva con Eventos + DOM y Storage continúa pendiente de coordinación con los responsables de esos roles.
+
+Las pruebas automatizadas de los modelos se encuentran en `js/test/models.spec.js`, utilizando un runner independiente para no modificar las pruebas existentes de Tester QA.
+
+Los resultados definitivos de Jasmine se documentarán una vez completada su ejecución y verificación.

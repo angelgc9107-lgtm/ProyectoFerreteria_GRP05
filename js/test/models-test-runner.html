@@ -11,9 +11,29 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/5.10.0/jasmine.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/5.10.0/jasmine-html.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/5.10.0/boot0.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/5.10.0/boot1.min.js"></script>
+  <!-- boot1 se reemplaza por una inicialización manual: boot1 ejecuta la suite en window.onload,
+       antes de que los specs (módulos ES) terminen de registrarse. -->
 </head>
 <body>
-  <script type="module" src="./models.spec.js"></script>
+  <script type="module">
+    const env = jasmine.getEnv();
+    const htmlReporter = new jasmine.HtmlReporter({
+      env,
+      navigateWithNewParam: (key, value) => new jasmine.QueryString({ getWindowLocation: () => window.location }).navigateWithNewParam(key, value),
+      addToExistingQueryString: (key, value) => new jasmine.QueryString({ getWindowLocation: () => window.location }).fullStringWithNewParam(key, value),
+      getContainer: () => document.body,
+      createElement: (...args) => document.createElement(...args),
+      createTextNode: (...args) => document.createTextNode(...args),
+      timer: new jasmine.Timer()
+    });
+    env.addReporter(globalThis.jsApiReporter);
+    env.addReporter(htmlReporter);
+    htmlReporter.initialize();
+
+    await import("./models.spec.js");
+    window.jasmineExecutionStarted = true;
+    await env.execute();
+    window.jasmineDone = true;
+  </script>
 </body>
 </html>

@@ -38,6 +38,14 @@ function numeroValido(numero) {
         numero === `FL-${fecha}-${String(secuencia).padStart(4, "0")}`;
 }
 
+function importesIguales(actual, esperado) {
+    if (!Number.isFinite(actual) || !Number.isFinite(esperado)) return false;
+    if (actual === esperado) return true;
+    // Solo admite ruido binario, nunca una diferencia monetaria de centavos.
+    const tolerancia = Math.min(1e-9, Number.EPSILON * Math.max(Math.abs(actual), Math.abs(esperado)));
+    return Math.abs(actual - esperado) <= tolerancia;
+}
+
 export class Pedido {
     #cliente;
     #productos;
@@ -125,8 +133,8 @@ export class Pedido {
         if (datos.productos.some((producto) => typeof producto.subtotal !== "number")) {
             throw new TypeError("Los subtotales deben ser numeros.");
         }
-        if (datos.total !== resumen.total || datos.productos.some((producto, indice) =>
-            producto.subtotal !== resumen.items[indice].subtotal)) {
+        if (!importesIguales(datos.total, resumen.total) || datos.productos.some((producto, indice) =>
+            !importesIguales(producto.subtotal, resumen.items[indice].subtotal))) {
             throw new RangeError("Los importes del pedido son inconsistentes.");
         }
         const camposNumericos = ["cuotas", "porcentajeRecargo", "totalOriginal", "interes", "totalFinanciado", "valorCuota"];
@@ -138,7 +146,10 @@ export class Pedido {
         }
         const pago = new Pago(resumen.total, datos.pago.metodoPago, datos.pago.cuotas);
         const condiciones = pago.calcular();
-        if (Object.keys(condiciones).some((campo) => datos.pago[campo] !== condiciones[campo])) {
+        const importesPago = ["totalOriginal", "interes", "totalFinanciado", "valorCuota"];
+        if (Object.keys(condiciones).some((campo) => importesPago.includes(campo)
+            ? !importesIguales(datos.pago[campo], condiciones[campo])
+            : datos.pago[campo] !== condiciones[campo])) {
             throw new RangeError("Las condiciones de pago son inconsistentes.");
         }
         if (datos.numero !== null && !numeroValido(datos.numero)) {
