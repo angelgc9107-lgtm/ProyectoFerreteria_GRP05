@@ -21,6 +21,7 @@ const carrito = new Carrito();
 let pagoActual = null;
 let pedidoPendiente = null;
 let secuenciaPedidos = 1;
+let esperandoCierreCarrito = false;
 
 // Obtiene elementos del DOM y permite distinguir
 // entre controles obligatorios y opcionales.
@@ -445,12 +446,16 @@ function agregarDatosResumen(contenedor, resumen) {
 // Prepara la interfaz de pago, reinicia los estados anteriores
 // y espera el cierre del Offcanvas antes de desplazarse a la sección de pago.
 function iniciarPago() {
+    if (esperandoCierreCarrito) return;
+    
     if (!carrito.resumir().items.length) {
         mostrarMensaje(elementos.carritoMensaje, "No se puede comprar con el carrito vacio.", "error");
         return;
     }
+    esperandoCierreCarrito = true;
     pagoActual = null;
     pedidoPendiente = null;
+
     elementos.formPedido.hidden = false;
     elementos.formPedido.reset();
     elementos.formPedido.querySelectorAll("input").forEach(limpiarEstadoControl);
@@ -484,47 +489,12 @@ function iniciarPago() {
     elementos.estadoAplicacion.style.zIndex = "1100";
 }
 
-const panelCarrito = elementos.panelCarrito;
-panelCarrito.addEventListener("hidden.bs.offcanvas", () => {
-    renderizarCarrito();
-    requestAnimationFrame(() => {
-        elementos.seccionPago.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
-    });
-
-    // Mantiene visible el indicador de carga antes de mostrar el mensaje de éxito.
-    setTimeout(() => {
-        if (elementos.estadoAplicacion) {
-            elementos.estadoAplicacion.classList.remove(
-                "position-fixed",
-                "top-0",
-                "start-50",
-                "translate-middle-x",
-                "mt-3",
-                "p-3",
-                "bg-body",
-                "rounded",
-                "shadow"
-            );
-
-            elementos.estadoAplicacion.style.removeProperty("z-index");
-        }
-
-        mostrarMensaje(
-            elementos.estadoAplicacion,
-            "Pago listo para completar.",
-            "success"
-        );
-    }, 900);
-
-}, { once: true });
 }
 
 // Cancela el proceso de pago y restablece la interfaz,
 // conservando los productos agregados al carrito.
 function cancelarPago() {
+    esperandoCierreCarrito = false;
     pagoActual = null;
     ocultarFlujosPosteriores();
     mostrarMensaje(elementos.carritoMensaje, "Pago cancelado. El carrito se conserva.", "info");
@@ -573,6 +543,49 @@ function cancelarPedido() {
 function inicializarEventos() {
     buscarYMostrarCatalogo();
     renderizarCarrito();
+    // Gestiona el cierre del Offcanvas una sola vez.
+    // La transición al pago se ejecuta únicamente
+    // cuando fue solicitada mediante "Iniciar compra".
+    elementos.panelCarrito.addEventListener("hidden.bs.offcanvas", () => {
+        if (!esperandoCierreCarrito) return;
+
+        esperandoCierreCarrito = false;
+
+        renderizarCarrito();
+
+        requestAnimationFrame(() => {
+            elementos.seccionPago.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        });
+
+        // Mantiene visible el indicador de carga durante 900 ms.
+        setTimeout(() => {
+            if (elementos.estadoAplicacion) {
+                elementos.estadoAplicacion.classList.remove(
+                    "position-fixed",
+                    "top-0",
+                    "start-50",
+                    "translate-middle-x",
+                    "mt-3",
+                    "p-3",
+                    "bg-body",
+                    "rounded",
+                    "shadow"
+                );
+
+                elementos.estadoAplicacion.style.removeProperty("z-index");
+            }
+
+            mostrarMensaje(
+                elementos.estadoAplicacion,
+                "Pago listo para completar.",
+                "success"
+            );
+        }, 900);
+    });
+
 
     elementos.formBusqueda.addEventListener("submit", (evento) => {
         evento.preventDefault();
