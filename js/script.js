@@ -340,24 +340,35 @@ function clienteDesdeFormulario() {
     };
 }
 
+// Valida individualmente los campos del formulario.
+// La validación definitiva del pedido permanece en la clase Pedido.
 function validarCampoPedido(control) {
-    if (!carrito.resumir().items.length || !pagoActual) return;
-
-    try {
-        new Pedido(carrito, pagoActual, clienteDesdeFormulario());
-
-        marcarControl(control, true);
-
-    } catch (error) {
-        if (!(error instanceof TypeError || error instanceof RangeError)) {
-            throw error;
-        }
-        if (error.campo === control.name) {
-            marcarControl(control, false, error.message);
-        } else {
-            limpiarEstadoControl(control);
-        }
+    if (!carrito.resumir().items.length || !pagoActual) {
+        limpiarEstadoControl(control);
+        return false;
     }
+
+    const mensajes = {
+        nombre: "Ingresá un nombre válido.",
+        correo: "Ingresá un correo electrónico válido.",
+        direccion: "Ingresá una dirección de envío."
+    };
+
+    const valido =
+        control.value.trim() !== "" &&
+        control.checkValidity();
+
+    if (valido) {
+        marcarControl(control, true);
+    } else {
+        marcarControl(
+            control,
+            false,
+            mensajes[control.name] ?? "El campo ingresado no es válido."
+        );
+    }
+
+    return valido;
 }
 
 // Construye los elementos HTML del resumen del pedido
@@ -442,7 +453,7 @@ function iniciarPago() {
     pedidoPendiente = null;
     elementos.formPedido.hidden = false;
     elementos.formPedido.reset();
-    elementos.formPedido.querySelectorAll("input").forEach((control) => marcarControl(control, true));
+    elementos.formPedido.querySelectorAll("input").forEach(limpiarEstadoControl);
     elementos.resumenPedido.replaceChildren();
     elementos.metodoPago.value = "";
     elementos.cuotas.value = "1";
@@ -554,7 +565,7 @@ function cancelarPedido() {
     elementos.resumenPedido.replaceChildren();
     elementos.seccionConfirmacion.hidden = true;
     elementos.formPedido.reset();
-    elementos.formPedido.querySelectorAll("input").forEach((control) => marcarControl(control, true));
+    elementos.formPedido.querySelectorAll("input").forEach(limpiarEstadoControl);
     mostrarMensaje(elementos.pedidoMensaje, "Pedido cancelado. Se conservaron el carrito y las condiciones de pago.", "info");
     elementos.seccionPago.scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -751,43 +762,109 @@ function inicializarEventos() {
         mostrarMensaje(elementos.pedidoMensaje, "Completa tus datos para revisar el pedido.", "info");
         elementos.seccionConfirmacion.scrollIntoView({ behavior: "smooth", block: "start" });
     });
+    // Valida inmediatamente el campo mientras el usuario escribe.
     elementos.formPedido.addEventListener("input", (evento) => {
+        const control = evento.target.closest("input");
+        if (!control) return;
+        if (pedidoPendiente !== null) {
+            pedidoPendiente = null;
+            elementos.resumenPedido.replaceChildren();
+
+            mostrarMensaje(
+                elementos.pedidoMensaje,
+                "Los datos del cliente cambiaron. Revisá nuevamente el resumen antes de confirmar.",
+                "info"
+            );
+        }
+        
+        validarCampoPedido(control);
+    });
+
+// Valida nuevamente el campo cuando el usuario lo abandona.
+elementos.formPedido.addEventListener("focusout", (evento) => {
     const control = evento.target.closest("input");
+
     if (!control) return;
 
-    if (pedidoPendiente !== null) {
+    validarCampoPedido(control);
+});
+
+// Valida todos los campos antes de generar el resumen del pedido.
+elementos.formPedido.addEventListener("submit", (evento) => {
+    evento.preventDefault();
+
+    const controles = Array.from(
+        elementos.formPedido.querySelectorAll("input")
+    );
+
+    // Valida cada campo de manera independiente.
+    const resultados = controles.map(validarCampoPedido);
+
+    const primerInvalido = resultados.findIndex(
+        (valido) => !valido
+    );
+
+    if (primerInvalido !== -1) {
         pedidoPendiente = null;
 
         elementos.resumenPedido.replaceChildren();
 
         mostrarMensaje(
             elementos.pedidoMensaje,
-            "Los datos del cliente cambiaron. Revisá nuevamente el resumen antes de confirmar.",
-            "info"
+            "Revisá los datos del cliente antes de continuar.",
+            "error"
+        );
+
+        controles[primerInvalido].focus();
+        return;
+    }
+
+    try {
+        // Validación definitiva mediante la clase Pedido.
+        pedidoPendiente = new Pedido(
+            carrito,
+            pagoActual,
+            clienteDesdeFormulario()
+        );
+
+        const resumen = pedidoPendiente.resumir();
+
+        elementos.resumenPedido.replaceChildren();
+
+        agregarDatosResumen(
+            elementos.resumenPedido,
+            resumen
+        );
+
+        mostrarMensaje(
+            elementos.pedidoMensaje,
+            "Revisa el resumen y confirma o cancela el pedido.",
+            "success"
+        );
+
+    } catch (error) {
+        if (!(error instanceof TypeError || error instanceof RangeError)) {
+            throw error;
+        }
+
+        pedidoPendiente = null;
+
+        const campo = error.campo &&
+            elementos.formPedido.elements[error.campo];
+
+        if (campo) {
+            marcarControl(campo, false, error.message);
+            campo.focus();
+        }
+
+        mostrarMensaje(
+            elementos.pedidoMensaje,
+            error.message,
+            "error"
         );
     }
-    validarCampoPedido(control);
 });
-    elementos.formPedido.addEventListener("submit", (evento) => {
-        evento.preventDefault();
-        elementos.formPedido.querySelectorAll("input").forEach(validarCampoPedido);
-        try {
-            pedidoPendiente = new Pedido(carrito, pagoActual, clienteDesdeFormulario());
-            const resumen = pedidoPendiente.resumir();
-            elementos.resumenPedido.replaceChildren();
-            agregarDatosResumen(elementos.resumenPedido, resumen);
-            mostrarMensaje(elementos.pedidoMensaje, "Revisa el resumen y confirma o cancela el pedido.", "success");
-        } catch (error) {
-            if (!(error instanceof TypeError || error instanceof RangeError)) throw error;
-            pedidoPendiente = null;
-            const campo = error.campo && elementos.formPedido.elements[error.campo];
-            if (campo) {
-                marcarControl(campo, false, error.message);
-                campo.focus();
-            }
-            mostrarMensaje(elementos.pedidoMensaje, error.message, "error");
-        }
-    });
+
 }
 
 if (document.readyState === "loading") {
