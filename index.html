@@ -289,7 +289,7 @@
             <form id="form-pago" novalidate>
                 <p>
                     <label for="metodo-pago">Metodo de pago</label>
-                    <select id="metodo-pago" name="metodo-pago" required>
+                    <select id="metodo-pago" name="metodo-pago" class="form-select required>
                         <option value="">Selecciona un metodo</option>
                         <option value="efectivo-transferencia">Efectivo / transferencia</option>
                         <option value="tarjeta">Tarjeta de credito</option>
@@ -297,7 +297,7 @@
                 </p>
                 <p>
                     <label for="cuotas">Cuotas</label>
-                    <select id="cuotas" name="cuotas" required disabled>
+                    <select id="cuotas" name="cuotas" class="form-select" required disabled>
                         <option value="1">1 cuota (0%)</option>
                         <option value="3">3 cuotas (10%)</option>
                         <option value="6">6 cuotas (20%)</option>
@@ -317,6 +317,7 @@
                     <label for="pedido-nombre">Nombre y apellido</label>
                     <input 
                         type="text"
+                        class="form-control"
                         id="pedido-nombre"
                         name="nombre"
                         required
@@ -329,6 +330,7 @@
                     <label for="pedido-correo">Correo electronico</label>
                     <input
                         type="email"
+                        class="form-control"
                         id="pedido-correo"
                         name="correo"
                         required
@@ -339,7 +341,7 @@
                 </p>
                 <p>
                     <label for="pedido-direccion">Direccion de envio</label>
-                    <input type="text" id="pedido-direccion" name="direccion" required aria-describedby="error-pedido-direccion">
+                    <input type="text" class="form-control" id="pedido-direccion" name="direccion" required aria-describedby="error-pedido-direccion">
                     <span id="error-pedido-direccion" class="field-error" aria-live="polite"></span>
                 </p>
                 <button type="submit">Revisar resumen del pedido</button>
