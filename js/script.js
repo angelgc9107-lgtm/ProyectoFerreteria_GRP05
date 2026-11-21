@@ -715,9 +715,9 @@ function inicializarEventos() {
         if (!control) return;
         const valor = control.value.trim();
         const valido =
-        valor !== "" &&
-        control.validity.valid &&
-        Number.isSafeInteger(Number(valor));
+            valor !== "" &&
+            control.validity.valid &&
+            Number.isSafeInteger(Number(valor));
         if (valido) {
             marcarControl(control, true);
         } else {
@@ -750,22 +750,21 @@ function inicializarEventos() {
         elementos.resumenPedido.replaceChildren();
         if (elementos.metodoPago.value) obtenerCondicionesPago();
     });
+
     elementos.cuotas.addEventListener("change", () => {
+        pedidoPendiente = null;
+        elementos.resumenPedido.replaceChildren();
 
-    pedidoPendiente = null;
+        elementos.seccionConfirmacion.hidden = true;
 
-    elementos.resumenPedido.replaceChildren();
+        obtenerCondicionesPago();
+        mostrarMensaje(
+            elementos.pagoMensaje,
+            "Cambiaste las cuotas. Revisá las condiciones y continuá nuevamente.",
+            "info"
+        );
+    });
 
-    elementos.seccionConfirmacion.hidden = true;
-
-    obtenerCondicionesPago();
-
-    mostrarMensaje(
-        elementos.pagoMensaje,
-        "Cambiaste las cuotas. Revisá las condiciones y continuá nuevamente.",
-        "info"
-    );
-});
     elementos.formPago.addEventListener("submit", (evento) => {
         evento.preventDefault();
         if (!obtenerCondicionesPago()) return;
@@ -775,6 +774,7 @@ function inicializarEventos() {
         mostrarMensaje(elementos.pedidoMensaje, "Completa tus datos para revisar el pedido.", "info");
         elementos.seccionConfirmacion.scrollIntoView({ behavior: "smooth", block: "start" });
     });
+
     // Valida inmediatamente el campo mientras el usuario escribe.
     elementos.formPedido.addEventListener("input", (evento) => {
         const control = evento.target.closest("input");
@@ -789,94 +789,92 @@ function inicializarEventos() {
                 "info"
             );
         }
-        
+            
+        validarCampoPedido(control);
+    });
+    
+    // Valida nuevamente el campo cuando el usuario lo abandona.
+    elementos.formPedido.addEventListener("focusout", (evento) => {
+        const control = evento.target.closest("input");
+
+        if (!control) return;
+
         validarCampoPedido(control);
     });
 
-// Valida nuevamente el campo cuando el usuario lo abandona.
-elementos.formPedido.addEventListener("focusout", (evento) => {
-    const control = evento.target.closest("input");
+    // Valida todos los campos antes de generar el resumen del pedido.
+    elementos.formPedido.addEventListener("submit", (evento) => {
+        evento.preventDefault();
 
-    if (!control) return;
-
-    validarCampoPedido(control);
-});
-
-// Valida todos los campos antes de generar el resumen del pedido.
-elementos.formPedido.addEventListener("submit", (evento) => {
-    evento.preventDefault();
-
-    const controles = Array.from(
-        elementos.formPedido.querySelectorAll("input")
-    );
-
-    // Valida cada campo de manera independiente.
-    const resultados = controles.map(validarCampoPedido);
-
-    const primerInvalido = resultados.findIndex(
-        (valido) => !valido
-    );
-
-    if (primerInvalido !== -1) {
-        pedidoPendiente = null;
-
-        elementos.resumenPedido.replaceChildren();
-
-        mostrarMensaje(
-            elementos.pedidoMensaje,
-            "Revisá los datos del cliente antes de continuar.",
-            "error"
+        const controles = Array.from(
+            elementos.formPedido.querySelectorAll("input")
         );
+        // Valida cada campo de manera independiente.
+        const resultados = controles.map(validarCampoPedido);
 
-        controles[primerInvalido].focus();
-        return;
-    }
-
-    try {
-        // Validación definitiva mediante la clase Pedido.
-        pedidoPendiente = new Pedido(
-            carrito,
-            pagoActual,
-            clienteDesdeFormulario()
+        const primerInvalido = resultados.findIndex(
+            (valido) => !valido
         );
+        if (primerInvalido !== -1) {
+            pedidoPendiente = null;
 
-        const resumen = pedidoPendiente.resumir();
+            elementos.resumenPedido.replaceChildren();
 
-        elementos.resumenPedido.replaceChildren();
-
-        agregarDatosResumen(
-            elementos.resumenPedido,
-            resumen
-        );
-
-        mostrarMensaje(
-            elementos.pedidoMensaje,
-            "Revisa el resumen y confirma o cancela el pedido.",
-            "success"
-        );
-
-    } catch (error) {
-        if (!(error instanceof TypeError || error instanceof RangeError)) {
-            throw error;
+            mostrarMensaje(
+                elementos.pedidoMensaje,
+                "Revisá los datos del cliente antes de continuar.",
+                "error"
+            );
+            
+            controles[primerInvalido].focus();
+            
+            return;
         }
+        
+        try {
+            // Validación definitiva mediante la clase Pedido.
+            pedidoPendiente = new Pedido(
+                carrito,
+                pagoActual,
+                clienteDesdeFormulario()
+            );
+            
+            const resumen = pedidoPendiente.resumir();
+            
+            elementos.resumenPedido.replaceChildren();
+            
+            agregarDatosResumen(
+                elementos.resumenPedido,
+                resumen
+            );
+            
+            mostrarMensaje(
+                elementos.pedidoMensaje,
+                "Revisa el resumen y confirma o cancela el pedido.",
+                "success"
+            );
+        
+        } catch (error) {
+            
+            if (!(error instanceof TypeError || error instanceof RangeError)) {
+                throw error;
+            }
 
-        pedidoPendiente = null;
+            pedidoPendiente = null;
 
-        const campo = error.campo &&
-            elementos.formPedido.elements[error.campo];
+            const campo = error.campo && elementos.formPedido.elements[error.campo];
 
-        if (campo) {
-            marcarControl(campo, false, error.message);
-            campo.focus();
+            if (campo) {
+                marcarControl(campo, false, error.message);
+                campo.focus();
+            }
+            mostrarMensaje(
+                elementos.pedidoMensaje,
+                error.message,
+                "error"
+            );
         }
-
-        mostrarMensaje(
-            elementos.pedidoMensaje,
-            error.message,
-            "error"
-        );
-    }
-});
+    });
 
 }
 
