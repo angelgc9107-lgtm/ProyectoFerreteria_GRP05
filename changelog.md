@@ -7,16 +7,15 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 ### Added
 
 - [feature/coord-devops-cuarta-entrega] [A4] Coordinador / DevOps + Tester QA - Spec PR: [#138](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/138) — @alandox1 (Coordinador / DevOps + Tester QA)
-
+- [feature/dev-eventos-dom] Desarrollador Eventos de JavaScript + DOM Spec (sección BEFORE: Eventos y flujos de control, decisiones de arquitecturas y criterios de aceptación) PR: [#140](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/140) — Issue: [#139](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/139) — @angelgc9107-lgtm (Desarrollador JavaScript Eventos + DOM)
 
 ### Changed
 
 - [feature/coord-devops-cuarta-entrega] [A4] Coordinador / DevOps: ajustar nombres de secciones del spec PR: [#154](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/154) - Issue: [#137](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/137) - @alandox1 (Coordinador / DevOps + TesterQA)
 - [feature/dev-poo-logica-negocio] [A4] Desarrollador JS POO (Lógica de Negocio) - Spec PR: [#144](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/144) - Issue: [#143](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/143) - @LucianoBarrionuevo (Desarrollador JS POO)
 - [feature/dev-storage] Desarrollador JS Storage: spec-dev-storage (sección BEFORE: estrategia local vs session, convención de claves, schemas y criterios de aceptación): [#141](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/141) — Issue: [#142](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/142) — @Piastrellini (Desarrollador JS Local y Session Storage)
-
 - [feature/tester-qa-specs] Tester QA: spec-tester-qa (sección BEFORE: plan de testing, herramientas, coordinación y criterios de aceptación) PR: [#146](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/146) — Issue: [#145](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/145) — @alandox1 (Coordinador / DevOps + Tester QA)
-
+- [feature/dev-eventos-dom] Implementación de eventos y manipulación del DOM, AT Close del spec PR: [#156](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/156) — Issue: [#155](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/155) — @angelgc9107-lgtm (Desarrollador JavaScript Eventos + DOM)
 - [feature/dev-storage] Desarrollador JS Storage: `js/utils/storage.js` (`StorageUtil` con guardar, obtener, actualizar, eliminar, listar y limpiar, manejo de errores e integración con `js/models/` vía `toJSON()`/`fromJSON()`), `storage-doc.md` y spec-dev-storage (schemas alineados y sección AT CLOSE). PR:[#157](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/157) — Issue: [#158](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/158) — @Piastrellini (Desarrollador JS Local y Session Storage)
 
 
