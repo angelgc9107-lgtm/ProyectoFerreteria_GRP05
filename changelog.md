@@ -8,6 +8,7 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 - [feature/coord-devops-cuarta-entrega] [A4] Coordinador / DevOps + Tester QA - Spec PR: [#138](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/138) — @alandox1 (Coordinador / DevOps + Tester QA)
 - [feature/dev-eventos-dom] Desarrollador Eventos de JavaScript + DOM Spec (sección BEFORE: Eventos y flujos de control, decisiones de arquitecturas y criterios de aceptación) PR: [#140](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/140) — Issue: [#139](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/139) — @angelgc9107-lgtm (Desarrollador JavaScript Eventos + DOM)
+- [docs/storage-spec-review-aprobada] Desarrollador JS Storage: tildo en spec-dev-storage el criterio de PR revisada y mergeada: [#161](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/161) — Issue: [#160](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/160) — @Piastrellini (Desarrollador JS Local y Session Storage)
 
 ### Changed
 

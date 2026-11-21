@@ -166,7 +166,7 @@ Decisión de diseño: `actualizar()` no crea claves (difiere de `guardar()`), pa
 - [X] `docs/06-storage/storage-doc.md` documenta qué se guarda, estructura de claves, schemas JSON, diferencia local vs session y ejemplos de uso.
 - [X] Código documentado con JSDoc y comentarios.
 - [X] Sin `prompt()`, `alert()` ni `console.log` innecesarios en el módulo.
-- [ ] Rama `feature/dev-storage`, al menos un commit relevante, issue asociada, PR hacia `develop` con aprobación de otro integrante y entrada en `changelog.md`.
+- [X] Rama `feature/dev-storage`, al menos un commit relevante, issue asociada, PR hacia `develop` con aprobación de otro integrante y entrada en `changelog.md`.
 
 ## 7. Herramientas y coordinación
 
