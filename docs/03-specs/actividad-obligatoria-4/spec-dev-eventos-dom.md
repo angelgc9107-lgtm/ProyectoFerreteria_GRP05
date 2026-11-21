@@ -403,27 +403,27 @@ No realicé commits ni operaciones remotas.
 -	Resultado obtenido: Los filtros se muestran separados, ordenados y correctamente identificados.
 3. **js/script.js — Eventos y lógica de interfaz**
 
-**3.1. Navegación por categorías**
+- **3.1. Navegación por categorías**
 -	Problema: Al seleccionar una categoría podían mantenerse búsquedas y filtros anteriores, generando resultados inesperados.
 -	Corrección: Se actualizó el evento de selección para limpiar la búsqueda anterior, restablecer el filtro de precio y mostrar los productos correspondientes.
 -	Resultado obtenido: La navegación por categorías funciona correctamente.
 
-**3.2. Actualización de datos del cliente**
+- **3.2. Actualización de datos del cliente**
 -	Problema: Al modificar nombre, correo o dirección después de generar el resumen, el pedido conservaba los datos anteriores.
 -	Corrección: Se modificó el evento input para invalidar el pedido pendiente y eliminar el resumen anterior.
 -	Resultado obtenido: El usuario debe revisar nuevamente los datos antes de confirmar.
 
-**3.3. Actualización de cuotas**
+- **3.3. Actualización de cuotas**
 -	Problema: Al cambiar las cuotas podían conservarse condiciones de financiación anteriores.
 -	Corrección: Se actualizó el evento change para invalidar el pedido pendiente, recalcular las cuotas y ocultar la confirmación anterior.
 -	Resultado obtenido: El usuario debe continuar nuevamente con las condiciones actualizadas.
 
-**3.4. Modificaciones del carrito**
+- **3.4. Modificaciones del carrito**
 -	Problema: El pago se invalidaba únicamente cuando cambiaba el importe total, aunque se modificaran los productos.
 -	Corrección: Se reemplazó invalidarPagoSiCambioTotal() por invalidarPagoPorCambioCarrito(), invalidando el pago y el pedido ante modificaciones exitosas del carrito.
 -	Resultado obtenido: Cualquier cambio de productos o cantidades exige revisar nuevamente el pago.
 
-**3.5. Desplazamiento al iniciar la compra**
+- **3.5. Desplazamiento al iniciar la compra**
 -	Problema: Al seleccionar «Iniciar compra», la página bajaba hacia el pago y luego volvía a subir.
 -	Corrección: Se incorporó el evento hidden.bs.offcanvas para esperar el cierre del carrito antes de ejecutar scrollIntoView().
 -	Resultado obtenido: La página permanece posicionada en «Método de pago y cuotas».
@@ -470,37 +470,41 @@ No realicé commits ni operaciones remotas.
 - Archivo modificado: `js/script.js`.
 - Resultado obtenido: Se comprobó que el mensaje «Preparando el pago...» y el spinner de Bootstrap se visualizan correctamente durante la transición hacia el pago.
 
-11. **Corrección realizada Validación del formulario de pedido**
-- **Problema:** Los campos del formulario no contaban con todas las restricciones necesarias para identificar individualmente datos inválidos.
-- **Corrección:** Se incorporaron restricciones HTML para validar el nombre y el formato del correo electrónico.
-- **Mejora adicional:** Se conservaron los atributos `required` y `aria-describedby`, junto con los elementos destinados a mostrar mensajes de error.
-- **Resultado obtenido:** Los controles permiten comprobar individualmente los datos ingresados y mostrar los mensajes de validación correspondientes.
+11. **Validación del formulario de pedido**
+- Problema detectado: Los campos del formulario de pedido no contaban con todas las restricciones necesarias para identificar individualmente los datos inválidos.
+- Corrección realizada: Se incorporaron restricciones HTML mediante el atributo `pattern` para validar el nombre y el formato del correo electrónico, conservando `required` y `aria-describedby` para mantener la obligatoriedad de los campos y la asociación con sus mensajes de error.
+- Archivo modificado: `index.html`.
+- Resultado obtenido: Los controles permiten comprobar individualmente los datos ingresados y mostrar los mensajes de validación correspondientes.
 
-12. **Corrección realizada: validación individual del pedido**
-- **Problema:** `validarCampoPedido()` construía un objeto `Pedido` completo y recibía solamente el primer error. Esto impedía mostrar errores en otros campos mientras existieran datos inválidos anteriores.
-- **Corrección:** Se modificó `validarCampoPedido()` para comprobar cada control de manera independiente utilizando `checkValidity()`, sin depender del orden de validación del constructor de `Pedido`.
-- **Mejora adicional:** Se incorporó el evento `focusout`, se ajustó el evento `submit` para verificar todos los campos antes de generar el resumen y se corrigió la limpieza de estados al iniciar o cancelar un pedido.
-- **Resultado obtenido:** Los campos pueden mostrar errores independientemente mediante los eventos `input` y `focusout`, mientras que la validación definitiva continúa realizándose mediante la clase `Pedido`.
+12. **Validación individual de los campos del pedido**
+- Problema detectado: La función `validarCampoPedido()` construía un objeto `Pedido` completo y recibía únicamente el primer error detectado, impidiendo validar correctamente los demás campos de manera independiente.
+- Corrección realizada: Se modificó `validarCampoPedido()` para utilizar `checkValidity()` y comprobar cada control individualmente. Se incorporó el evento `focusout` y se ajustó `submit` para validar todos los campos antes de generar el resumen.
+- Archivo modificado: `js/script.js`.
+- Resultado obtenido: Los campos muestran sus errores independientemente mediante los eventos `input` y `focusout`. Además, se restablecen correctamente los estados visuales al iniciar o cancelar un pedido, manteniendo la validación definitiva mediante la clase `Pedido`.
 
-13. **Corrección realizada:** Se incorporaron las clases `form-control` y `form-select` de Bootstrap en los controles de los formularios de pedido y pago.Esto permite que las clases `is-valid` e `is-invalid`, aplicadas desde `js/script.js`, se reflejen visualmente mediante bordes verdes y rojos.
-- **Archivo modificado:** `index.html`.
-- **Pruebas realizadas:** Verificación manual de los estados visuales de validación en el navegador.
-- **Resultado obtenido:** Los controles muestran correctamente los estilos correspondientes a estados válidos e inválidos.
+13. **Corrección de los estilos visuales de validación**
+- Problema detectado: Los controles de los formularios de pedido y pago no mostraban correctamente los bordes de validación, aunque JavaScript aplicaba las clases `is-valid` e `is-invalid`.
+- Corrección realizada: Se incorporaron las clases `form-control` y `form-select` de Bootstrap en los campos correspondientes para habilitar los estilos visuales de validación.
+- Archivo modificado: `index.html`.
+- Resultado obtenido: Se comprobó mediante pruebas manuales que los controles muestran correctamente los bordes verdes para valores válidos y rojos para valores inválidos.
 
-14. **Corrección realizada:** Se trasladó el listener `hidden.bs.offcanvas` desde `iniciarPago()` hacia `inicializarEventos()`, evitando registrar múltiples listeners durante el inicio de la compra. Se incorporó la bandera `esperandoCierreCarrito` para controlar la transición y prevenir ejecuciones duplicadas ante clics repetidos.
-- **Eventos afectados:** `click` y `hidden.bs.offcanvas`.
-- **Archivo modificado:** `js/script.js`.
-- **Pruebas realizadas:** Inicio de compra, doble clic, cierre manual del carrito, reapertura y verificación del indicador de carga.
-- **Resultado obtenido:** El cierre del carrito y la transición al pago se ejecutan una sola vez, conservando el comportamiento del spinner y el desplazamiento hacia la sección de pago.
+14. **Corrección de listeners duplicados al iniciar la compra**
+- Problema detectado: La función `iniciarPago()` registraba un nuevo listener `hidden.bs.offcanvas` en cada ejecución, permitiendo acumular eventos y provocar transiciones duplicadas ante clics repetidos.
+- Corrección realizada: Se trasladó el listener a `inicializarEventos()` para registrarlo una sola vez y se incorporó la bandera `esperandoCierreCarrito` para controlar la transición y prevenir ejecuciones duplicadas.
+- Archivo modificado: `js/script.js`.
+- Resultado obtenido: Se verificó mediante pruebas manuales que el inicio de compra, el doble clic, el cierre manual y la reapertura del carrito funcionan correctamente, conservando el indicador de carga durante la transición y el desplazamiento hacia la sección de pago.
 
-15. ### Corrección del hallazgo #7 — Menú «Categorías» duplicado
+15. **Eliminación del menú de categorías duplicado**
+- Problema detectado: En `index.html` existían dos menús desplegables, «Catálogo» y «Categorías», que permitían filtrar por las mismas categorías, generando redundancia en la navegación y contradiciendo lo documentado en el AT CLOSE de `spec-dev-eventos-dom.md`.
+- Corrección realizada: Se eliminó el menú «Categorías» (`id="categorias-dropdown"`), conservando el menú «Catálogo» (`id="catalogo-dropdown"`), que contiene las cinco categorías y la opción «Todos los productos».
+- Archivo modificado: `index.html`.
+- Resultado obtenido: Se unificó la navegación en un único menú desplegable, manteniendo las opciones de filtrado y la delegación de eventos mediante `data-categoria`, sin necesidad de modificar `js/script.js` ni los archivos CSS.
 
-**Problema detectado:** En `index.html` existían dos menús desplegables, «Catálogo» y «Categorías», que permitían filtrar por las mismas categorías. Esta duplicación generaba redundancia en la navegación y contradecía lo documentado en el apartado AT CLOSE de `spec-dev-eventos-dom.md`.
-**Corrección realizada:** Se eliminó el menú desplegable «Categorías» (`id="categorias-dropdown"`), conservando el menú «Catálogo» (`id="catalogo-dropdown"`), que ya incluye las cinco categorías y la opción «Todos los productos».
-- **Justificación:** Se unificó la navegación para evitar opciones duplicadas. El controlador continúa utilizando la delegación de eventos mediante el atributo `data-categoria`, sin necesidad de modificar la lógica de filtrado.
-- **Archivos modificados:** `index.html`.
-- **Archivos verificados sin modificaciones:** `js/script.js`, `css/components.css`, `css/bootstrap-overrides.css`, `css/responsive.css` y `css/styles.css`.
-- **Resultado obtenido:** La navegación presenta un único menú desplegable para acceder a las categorías, conservando las funcionalidades de búsqueda y filtrado del catálogo.
+16. **Corrección de validación del correo electrónico en el formulario de pedido**
+- Problema detectado: El campo de correo electrónico utilizaba `type="email"`, que aplicaba restricciones adicionales del navegador y rechazaba direcciones con caracteres como `ñ`, aunque fueran aceptadas por la clase `Pedido`, generando una inconsistencia entre la interfaz y la lógica de negocio.
+- Corrección realizada: Se reemplazó `type="email"` por `type="text"` y se incorporaron los atributos `inputmode="email"` y `autocomplete="email"`, conservando `required` y `pattern` para mantener la validación del formato. La duplicación de reglas entre el HTML y el dominio queda documentada como limitación conocida.
+- Archivo modificado: `index.html`.
+- Resultado obtenido: Se eliminó la restricción adicional de `type="email"`, manteniendo la validación visual mediante Bootstrap y la validación definitiva mediante la clase `Pedido`, sin modificar la lógica de negocio. Queda pendiente comprobar el comportamiento mediante pruebas manuales.
 
 
 
