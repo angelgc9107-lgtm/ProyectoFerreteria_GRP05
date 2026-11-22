@@ -566,10 +566,12 @@ Al finalizar, explicame:
 
 ### Archivos utilizados como contexto
 
-Pendiente de confirmar y registrar los archivos efectivamente utilizados.
-Contexto previsto: los cuatro diagramas de actividades `.puml` de
-`docs/05-diagramas/01-diagrama-de-actividades/`, `index.html` y este
-`spec-dev-poo.md`. Agregar cualquier otro archivo realmente utilizado.
+Según el prompt anterior, se indicó a GitHub Copilot Agent Mode que revisara:
+
+- `docs/03-specs/actividad-obligatoria-4/spec-dev-poo.md` (especificación aprobada).
+- `plan.md` y los requerimientos funcionales.
+- Los specs de Eventos + DOM y de Storage de la Actividad N.º 4.
+- Los archivos existentes en `js/` y la estructura del proyecto.
 
 ### Fragmento de código generado
 
