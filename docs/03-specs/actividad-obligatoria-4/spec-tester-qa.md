@@ -191,7 +191,8 @@ Tomadas con Playwright (Chromium) sobre `js/test/test-runner.html` y sobre un ru
 |---|---|---|
 | Ejecución en `test-runner.html` con Playwright MCP y recorrido manual de los 4 flujos con MCP | **No cumplido** | Se usó Playwright (Chromium) por script. Las capturas muestran resultados del runner, pero no prueban el uso de MCP |
 | Evidencia de los prompts utilizados | **No cumplido** | No se conservan los prompts exactos; no se presenta ningún mensaje como evidencia de generación de las suites |
-| Bugs encontrados reportados como issues | **Cumplido** | Issue #164 de seguimiento de `script.js` / `StorageUtil` |
+| Prueba de persistencia del carrito (comprar, recargar, restaurar) | **Pendiente** | No existe todavía: `script.js` no integra `StorageUtil`. El caso está propuesto en la issue #164 y se agrega y ejecuta cuando se implemente la integración. Mientras tanto no se afirma que la persistencia esté cubierta |
+| Bugs encontrados reportados como issues | **Cumplido** | Issue #164 de seguimiento de `script.js` / `StorageUtil`: severidad media, etiqueta `bug`, rol responsable Desarrollador JS Eventos + DOM (asignada), pasos para reproducir y test propuesto |
 | PR con aprobación de otro integrante | **Pendiente** | La aprobación y el merge se completan después de esta entrega |
 
 ### Resumen de resultados
@@ -216,4 +217,4 @@ Tomadas con Playwright (Chromium) sobre `js/test/test-runner.html` y sobre un ru
 - **Storage:** `storage.spec.js` reemplaza temporalmente `localStorage`/`sessionStorage` por un `Storage` simulado para forzar errores; un bloque usa los modelos reales y el último usa el storage real y limpia sus claves.
 - **Runner:** `test-runner.html` ya no carga `../script.js` ni el spec anterior; carga los tres specs como módulos ES.
 - **Ajustes a los tests escritos:** se corrigieron a mano dos specs de `script.spec.js` en la primera corrida (una búsqueda con tilde y una compra con tarjeta que sumaba dos unidades), y se comprobó con tres cambios deliberados en el código que los specs fallan cuando deben.
-- **Revisión de la PR #163:** se corrigió el test de storage del controlador (ahora compara el estado antes y después, en lugar de exigir que no haya claves `app:*`), se agregaron los round trips con modelos reales y el script reproducible de cobertura, y se ajustó la documentación de prompts y de herramientas.
+- **Revisión de la PR #163:** se corrigió el test de storage del controlador (ahora compara el estado antes y después, en lugar de exigir que no haya claves `app:*`), se agregaron los round trips con modelos reales y el script reproducible de cobertura, y se ajustó la documentación de prompts y de herramientas. En la segunda revisión se declararon como no cumplidos la ejecución con Playwright MCP y la evidencia de prompts, y como pendiente la prueba de persistencia; se completaron los metadatos de la issue #164.
