@@ -1,327 +1,171 @@
 # Documentación de Testing - Suite Jasmine
 
-Proyecto FerroLab - Actividad Obligatoria N°3 - Programación Web I
-Archivo testeado: `js/script.js` | Framework: Jasmine 5.10.0 (CDN)
+Proyecto FerroLab - Actividad Obligatoria N°4 - Programación Web I
+Módulos testeados: `js/models/*.js`, `js/utils/storage.js` y `js/script.js` | Framework: Jasmine 5.10.0 (CDN)
 
 ## Índice
-1. [Ejecución de Tests](#ejecución-de-tests)
-2. [Suites de Tests](#suites-de-tests)
-3. [Métricas de Cobertura](#métricas-de-cobertura)
-4. [Capturas de Pantalla](#capturas-de-pantalla)
-5. [Issues Conocidos](#issues-conocidos)
+1. [Estructura de la suite](#estructura-de-la-suite)
+2. [Ejecución de Tests](#ejecución-de-tests)
+3. [Suites de Tests](#suites-de-tests)
+4. [Métricas de Cobertura](#métricas-de-cobertura)
+5. [Capturas de Pantalla](#capturas-de-pantalla)
+6. [Hallazgos e Issues](#hallazgos-e-issues)
+7. [Limitaciones del Testing](#limitaciones-del-testing)
+8. [Historial: tercera entrega](#historial-tercera-entrega)
 
 ---
+
+## Estructura de la suite
+
+En la tercera entrega `js/script.js` tenía la lógica y usaba `prompt()`/`alert()`. En la cuarta entrega se separó en tres capas y hay un archivo spec por cada una:
+
+| Módulo | Qué contiene | Spec | Specs |
+|---|---|---|---|
+| `js/models/` (`Producto`, `Catalogo`, `Carrito`, `Pago`, `Pedido`) | Lógica de negocio con clases, sin DOM ni Storage | `js/test/models.spec.js` | 42 |
+| `js/utils/storage.js` (`StorageUtil`) | Capa de abstracción de `localStorage`/`sessionStorage` | `js/test/storage.spec.js` | 104 |
+| `js/script.js` | Controlador: eventos y DOM | `js/test/script.spec.js` | 53 |
+| | | **Total** | **199** |
+
+`js/test/test-runner.html` carga los tres specs como módulos ES. `js/test/models-test-runner.html` es el runner independiente que armó el Desarrollador JS POO para sus modelos y se conserva.
 
 ## Ejecución de Tests
 
 ### Pasos para Ejecutar
-1. Servir la carpeta del proyecto por HTTP desde la raíz del repo (con Node instalado):
+1. Servir el proyecto por HTTP **desde la raíz del repo**. Los specs usan módulos ES, que el navegador bloquea al abrir el archivo con doble clic (`file://`):
    ```bash
-   npx serve . -l 3000
+   python -m http.server 8000
    ```
-   También sirve la extensión Live Preview de VS Code.
-2. Abrir `js/test/test-runner.html` en el navegador:
+   También sirven `npx serve .` o la extensión Live Preview de VS Code.
+2. Abrir el runner:
    ```text
-   http://127.0.0.1:3000/js/test/test-runner.html
+   http://localhost:8000/js/test/test-runner.html
    ```
-   Agregando `?random=false` al final, Jasmine ejecuta las suites en orden (Flujo 1 a 4). Sin ese parámetro el orden es aleatorio y cambia el `seed` en cada corrida.
-3. Los tests se ejecutan automáticamente al cargar la página.
-4. Verificar resultados en la interfaz de Jasmine (la barra superior muestra el total de specs y fallos).
+3. Los tests se ejecutan al cargar la página. La barra superior de Jasmine muestra el total de specs y los fallos.
+4. Para correr una sola suite se filtra por nombre con el parámetro `spec`: `?spec=StorageUtil`, `?spec=Controlador`, `?spec=Pedido`. Con `?random=false` el orden es fijo.
 
-`test-runner.html` carga `js/script.js` (código a testear) y `js/test/script.spec.js` (tests). Requiere conexión a internet porque Jasmine se carga desde `cdnjs.cloudflare.com`.
+Requiere conexión a internet: Jasmine se carga desde `cdnjs.cloudflare.com` y `index.html` (que `script.spec.js` abre en un iframe) carga Bootstrap desde `cdn.jsdelivr.net`.
 
-### Interpretación de Resultados
-- **Verde**: Tests pasando ✅
-- **Rojo**: Tests fallando ❌
-- **Amarillo**: Tests pendientes ⚠️
+### Cómo funciona cada spec
+- **`models.spec.js`** importa las clases (`import { Carrito } from "../models/Carrito.js"`) y las prueba de forma aislada.
+- **`storage.spec.js`** importa `StorageUtil` y reemplaza `localStorage`/`sessionStorage` por un `Storage` simulado en memoria (`StorageFalso`), para forzar errores (cuota llena, `SecurityError`) sin tocar el almacenamiento real. Un último bloque usa el Web Storage real del navegador y borra sus propias claves al terminar.
+- **`script.spec.js`**: `script.js` ya no exporta funciones, solo registra eventos sobre `index.html`. Por eso, para cada test se abre una copia nueva de `index.html` en un `<iframe>` del mismo origen, se disparan eventos reales (`click`, `input`, `change`, `submit`) y se comprueba el DOM resultante. Cada copia empieza con el carrito, el pago y el pedido en blanco. Antes de cada test se reemplazan `alert`, `prompt`, `confirm`, `console.log` y `console.error` del iframe por espías.
 
 ---
 
 ## Suites de Tests
 
-Hay dos tipos de suites por cada flujo:
+### `models.spec.js` (42 specs)
 
-- **Lógica pura** (73 tests): funciones que reciben parámetros y devuelven un resultado.
-- **Interacción** (70 tests): funciones que usan `prompt()` y `alert()` (`ejecutarBusquedaYFiltrado`, `ejecutarGestionCarrito`, `ejecutarPago`, `ejecutarConfirmacionPedido`, `solicitarDatoValido`, `preguntarSiNo`, `mostrarCarrito` e `iniciarMenuPrincipal`). Se reemplazan `prompt()` y `alert()` con espías de Jasmine (`spyOn(window, "prompt")` con `and.callFake`, y `spyOn(window, "alert")`), de modo que no se abre ningún cuadro real. Los tests verifican los argumentos y la cantidad de llamadas, el orden de interacción, los mensajes mostrados y el estado final (carrito y condiciones de pago).
+| Suite | Specs | Qué se prueba |
+|---|---|---|
+| `Producto` | 5 | Constructor, getters, `coincide()` por texto, categoría y precio; validaciones |
+| `Catalogo` | 6 | `buscar()` con filtros y orden, copias independientes, códigos duplicados, errores |
+| `Carrito` | 7 | `agregar`, `cambiarCantidad`, `eliminar`, `vaciar`, `resumir()`, desbordes, estado intacto ante errores |
+| `Pago` | 6 | Efectivo/transferencia, tarjeta en 1/3/6 cuotas (0/10/20 %), redondeo, entradas inválidas |
+| `Pedido` | 15 | Validación de cliente, coherencia con el pago, `confirmar()` determinista, `toJSON()`/`fromJSON()` |
+| `Cadenas numéricas estrictas` | 3 | `"0x10"`, `"1e2"` y `"1e3"` se rechazan en `Carrito`, `Catalogo` y `Pago`; se aceptan dígitos con espacios |
 
-### Suite 1: Flujo 1 - Búsqueda y filtrado
+### `storage.spec.js` (104 specs)
 
-**Funciones testeadas:**
+| Suite | Specs | Qué se prueba |
+|---|---|---|
+| Nombres de clave (`CLAVES`) | 3 | Convención `app:<dominio>:<dato>` |
+| `guardar()` y `obtener()` | 9 | Ida y vuelta en `localStorage` y `sessionStorage`, valores `null`, anidados, clave inexistente |
+| `guardar()`: errores | 15 | Cuota llena, valor no serializable, referencia circular, clave o tipo inválidos |
+| Datos corruptos | 4 | JSON inválido: devuelve `null` y registra el error sin lanzar |
+| `actualizar()` | 6 | Actualiza claves existentes; no crea las inexistentes |
+| `eliminar()` | 6 | Elimina; es idempotente |
+| `listar()` | 7 | Claves con prefijo, ordenadas; sin coincidencias |
+| `limpiar()` | 5 | Borra solo `app:*`; `limpiar(tipo, false)` borra todo |
+| `existe()` | 4 | Refleja el estado real |
+| `estaDisponible()` | 9 | Storage deshabilitado o inaccesible |
+| Storage inaccesible (`SecurityError`) | 3 | Ninguna operación lanza |
+| Storage no disponible en el entorno | 1 | Entorno sin Web Storage |
+| `guardarInstancia()` y `cargarInstancia()` | 8 | Integración con modelos mediante `toJSON()` / `fromJSON()` |
+| `guardarLista()` y `cargarLista()` | 9 | Listas de instancias, lista vacía, datos que ya no cumplen las reglas del modelo |
+| Ninguna operación lanza excepciones hacia afuera | 12 | Se verifica para cada operación |
+| Web Storage real del navegador | 3 | Ciclo completo sin dejar claves |
 
-- `normalizarTexto()` - Pasa a minúsculas, quita tildes y recorta espacios
-- `validarPrecioMaximo()` - Valida el precio máximo: número ≥ 0, u omitido (vacío, `null` o `undefined`)
-- `buscarProductos()` - Filtra por texto, categoría y precio máximo (opcional) y ordena por precio
+### `script.spec.js` (53 specs)
 
-**Casos de prueba:**
-
-| # | Descripción | Tipo |
-|---|-------------|------|
-| 1 | Pasa a minúsculas, quita tildes y recorta espacios | Happy Path |
-| 2 | Devuelve string vacío para null, undefined y vacío | Validación de Errores |
-| 3 | Acepta números y strings numéricos mayores o iguales a cero | Happy Path |
-| 4 | Acepta el valor límite 0 | Caso Borde |
-| 5 | Rechaza negativos, texto e infinito | Validación de Errores |
-| 6 | Permite omitir el precio máximo (vacío, espacios, null o undefined) | Caso Borde |
-| 7 | Informa mensaje de error y valor null cuando el precio es inválido | Validación de Errores |
-| 8 | Filtra por texto sin distinguir mayúsculas ni tildes | Happy Path |
-| 9 | Filtra por categoría | Happy Path |
-| 10 | Ordena los resultados por precio ascendente | Operaciones Arrays/Objetos |
-| 11 | Incluye un producto cuyo precio es exactamente el máximo | Caso Borde |
-| 12 | Devuelve lista vacía válida cuando nada coincide | Caso Borde |
-| 13 | Con precio máximo 0 no devuelve productos | Caso Borde |
-| 14 | Informa error cuando el precio máximo es inválido | Validación de Errores |
-| 15 | Con criterios null o undefined no falla y devuelve todo el catálogo | Caso Borde |
-| 16 | Sin precio máximo no filtra por precio | Happy Path |
-| 17 | Lanza error si el catálogo es null | Validación de Errores |
-| 18 | No modifica el catálogo original | Operaciones Arrays/Objetos |
-
-**Total de la suite:** 18 tests
-
----
-
-### Suite 2: Flujo 2 - Gestión del carrito
-
-**Funciones testeadas:**
-
-- `validarCantidad()` - Valida enteros ≥ 1
-- `agregarProductoAlCarrito()` - Agrega un producto o suma su cantidad
-- `cambiarCantidadCarrito()` - Reemplaza la cantidad de un producto del carrito
-- `eliminarProductoDelCarrito()` - Quita un producto del carrito
-- `calcularResumenCarrito()` - Calcula subtotales y total
-- `formatearMoneda()` - Da formato de moneda argentina (`$1.234,50`)
-- `formatearResumenCarrito()` - Convierte el resumen del carrito en texto con una línea por producto y el total
-
-**Casos de prueba:**
-
-| # | Descripción | Tipo |
-|---|-------------|------|
-| 1 | Acepta enteros mayores o iguales a 1, también como string | Happy Path |
-| 2 | Rechaza 0, negativos y decimales | Caso Borde |
-| 3 | Rechaza null, undefined, vacío, texto y números fuera de rango seguro | Validación de Errores |
-| 4 | Agrega un producto nuevo con su cantidad | Happy Path |
-| 5 | Suma la cantidad si el producto ya estaba en el carrito | Operaciones Arrays/Objetos |
-| 6 | Reconoce el código sin importar mayúsculas ni espacios | Caso Borde |
-| 7 | No modifica el carrito original al agregar (inmutabilidad) | Operaciones Arrays/Objetos |
-| 8 | Falla si el producto no existe en el catálogo | Validación de Errores |
-| 9 | Falla con código null o undefined al agregar | Validación de Errores |
-| 10 | Falla con cantidad 0, negativa, decimal o inválida al agregar | Validación de Errores |
-| 11 | Falla si la cantidad total supera el límite entero seguro | Caso Borde |
-| 12 | Reemplaza la cantidad de un producto del carrito | Happy Path |
-| 13 | No modifica el carrito original al cambiar la cantidad | Operaciones Arrays/Objetos |
-| 14 | Falla al cambiar la cantidad si el producto no está en el carrito | Validación de Errores |
-| 15 | Falla al cambiar la cantidad con valor inválido (0, negativa, null) | Validación de Errores |
-| 16 | Quita el producto indicado del carrito | Operaciones Arrays/Objetos |
-| 17 | Falla al eliminar si el producto no está o el carrito está vacío | Validación de Errores |
-| 18 | Falla al eliminar con código null o undefined | Validación de Errores |
-| 19 | Calcula subtotales y total | Happy Path |
-| 20 | Devuelve total 0 y sin ítems para un carrito vacío | Caso Borde |
-| 21 | No modifica los ítems del carrito original al calcular el resumen | Operaciones Arrays/Objetos |
-| 22 | Formatea con símbolo $, separador de miles y dos decimales (es-AR) | Happy Path |
-| 23 | Formatea el cero y acepta strings numéricos | Caso Borde |
-| 24 | Avisa que el carrito está vacío | Caso Borde |
-| 25 | Arma una línea por producto y el total | Happy Path |
-
-**Total de la suite:** 25 tests
+| Suite | Specs | Qué se prueba |
+|---|---|---|
+| Carga inicial | 4 | 9 productos visibles, carrito vacío, botón deshabilitado, pago y confirmación ocultos |
+| Flujo 1: búsqueda y filtrado | 10 | Texto, tildes y mayúsculas, «Sin coincidencias.», envío del formulario (`preventDefault`), categoría, orden asc/desc, rango de precio, menú de categorías |
+| Flujo 2: carrito | 10 | Agregar desde catálogo y ofertas, sumar cantidades, cambiar cantidad, cantidad inválida (`0`, `1.5`, `1e2`), eliminar |
+| Flujo 3: pago y cuotas | 11 | Indicador de carga, efectivo, tarjeta en 3 y 6 cuotas con importes, método faltante, un cambio del carrito descarta el pago, cancelar pago |
+| Flujo 4: confirmación del pedido | 11 | Validación en tiempo real (nombre, correo con `ñ`, dirección), resumen previo, confirmar (`FL-<ms>-0001`), segunda compra (`0002`), cancelar pedido |
+| Requisitos transversales | 7 | Sin `alert`/`prompt`/`confirm`, sin `console.log`/`error`, sin datos en Web Storage, eventos sin manejadores en línea, regiones `role="status"`, `aria-invalid` y `aria-describedby` |
 
 ---
 
-### Suite 3: Flujo 3 - Pago y cálculo de cuotas
-
-**Funciones testeadas:**
-
-- `calcularCondicionesPago()` - Calcula interés, total financiado y valor de cuota según método y cuotas
-
-**Casos de prueba:**
-
-| # | Descripción | Tipo |
-|---|-------------|------|
-| 1 | Efectivo/transferencia: 1 cuota y 0 % de recargo | Happy Path |
-| 2 | Tarjeta en 3 cuotas aplica 10 % de recargo | Happy Path |
-| 3 | Tarjeta en 6 cuotas aplica 20 % de recargo | Happy Path |
-| 4 | Tarjeta en 1 cuota no tiene recargo | Caso Borde |
-| 5 | Acepta cuotas indicadas como string | Caso Borde |
-| 6 | Redondea a dos decimales | Caso Borde |
-| 7 | Funciona con totales muy grandes | Caso Borde |
-| 8 | Rechaza total 0, negativo, null, undefined o no numérico | Validación de Errores |
-| 9 | Rechaza un método de pago inválido, null o undefined | Validación de Errores |
-| 10 | Rechaza cantidades de cuotas no ofrecidas con tarjeta | Validación de Errores |
-| 11 | La tabla opcionesCuotas ofrece 1, 3 y 6 cuotas | Operaciones Arrays/Objetos |
-
-**Total de la suite:** 11 tests
-
----
-
-### Suite 4: Flujo 4 - Confirmación del pedido
-
-**Funciones testeadas:**
-
-- `validarNombre()` - Nombre no vacío ni solo numérico
-- `validarCorreo()` - Correo con usuario, arroba y dominio
-- `validarDireccion()` - Dirección no vacía
-- `validarDatosCliente()` - Valida nombre, correo y dirección en conjunto
-- `crearResumenPedido()` - Arma el resumen del pedido
-- `crearNumeroPedido()` - Genera el número `FL-tiempo-secuencia`
-- `formatearResumenPedido()` - Convierte el pedido en texto con productos, pago, cuotas, recargo y envío
-
-**Casos de prueba:**
-
-| # | Descripción | Tipo |
-|---|-------------|------|
-| 1 | validarNombre acepta nombres con letras | Happy Path |
-| 2 | validarNombre rechaza vacío, solo espacios y solo números | Validación de Errores |
-| 3 | validarNombre rechaza null y undefined | Validación de Errores |
-| 4 | validarCorreo acepta un correo con usuario, arroba y dominio | Happy Path |
-| 5 | validarCorreo rechaza formatos inválidos, null y undefined | Validación de Errores |
-| 6 | validarDireccion acepta texto y rechaza vacío, espacios, null y undefined | Validación de Errores |
-| 7 | validarDatosCliente exige nombre, correo y dirección válidos | Happy Path |
-| 8 | validarDatosCliente rechaza null, undefined y objeto vacío | Validación de Errores |
-| 9 | Arma el resumen con productos, total y pago | Operaciones Arrays/Objetos |
-| 10 | Recorta los espacios de los datos del cliente | Caso Borde |
-| 11 | Resumen inválido con carrito vacío | Validación de Errores |
-| 12 | Resumen inválido sin condiciones de pago válidas | Validación de Errores |
-| 13 | Resumen inválido con datos de cliente incompletos o null | Validación de Errores |
-| 14 | No comparte la referencia del objeto de pago | Operaciones Arrays/Objetos |
-| 15 | Genera el formato FL-tiempo-secuencia con 4 dígitos | Happy Path |
-| 16 | No recorta secuencias de más de 4 dígitos | Caso Borde |
-| 17 | Genera números distintos para secuencias distintas | Happy Path |
-| 18 | Detalla productos, pago en tarjeta, cuotas, recargo y envío | Happy Path |
-| 19 | Indica efectivo / transferencia, 1 cuota y 0 % de recargo | Caso Borde |
-
-**Total de la suite:** 19 tests
-
-### Suites de interacción (prompt/alert con espías)
-
-Cada una cubre cancelaciones, entradas inválidas con reintento, despacho y mensajes esperados del flujo, según los diagramas de actividades.
-
-| Suite | Tests | Qué verifica |
-|-------|-------|--------------|
-| Flujo 1 - Búsqueda y filtrado (interacción) | 19 | `preguntarSiNo` y `solicitarDatoValido` (SI/NO, cancelación, reintento); `ejecutarBusquedaYFiltrado`: búsqueda por texto, por categoría y por precio máximo con orden por precio, filtros vacíos, "Sin coincidencias", precio inválido con reintento, repetición con SI y cancelación en cada `prompt` |
-| Flujo 2 - Gestión del carrito (interacción) | 21 | `mostrarCarrito` (vacío y con ítems); `ejecutarGestionCarrito`: agregar válido e inválido, sumar cantidades, cambiar cantidad, eliminar, opción inválida, cancelar cada entrada, salir con 0 o cancelando el menú, descarte del pago cuando cambia el total, y la opción «Comprar» (carrito vacío: informa y permanece; con ítems: sale y continúa en el pago) |
-| Flujo 3 - Pago y cálculo de cuotas (interacción) | 11 | `ejecutarPago`: carrito vacío, efectivo/transferencia, tarjeta en 1, 3 y 6 cuotas con recargo, método y cuotas inválidos con reintento, cancelación en cada paso sin dejar condiciones guardadas y resumen mostrado |
-| Flujo 4 - Confirmación del pedido (interacción) | 15 | `ejecutarConfirmacionPedido`: carrito vacío o sin pago, nombre/correo/dirección inválidos con reintento, resumen mostrado, número de pedido, vaciado de carrito y pago al confirmar, NO y cancelación en cada dato conservando el estado |
-| Menú principal - integración de los flujos | 4 | `iniciarMenuPrincipal`: salir, opción inválida, despacho de cada opción y recorrido completo carrito → Comprar → pago → confirmación |
-
-**Total de las suites de interacción:** 70 tests
-
----
 ## Métricas de Cobertura
 
-### Resumen General
-| Métrica | Valor |
-|---------|-------|
-| Total de Tests | 143 (73 de lógica pura + 70 de interacción) |
-| Tests Pasando | 143 ✅ |
-| Tests Fallando | 0 ❌ |
-| Porcentaje de Éxito | 100% |
+Corrida completa de `test-runner.html`: **199 specs, 0 failures**.
 
-Resultado de la corrida en Chromium (Playwright, por script) sobre `test-runner.html?random=false`: `143 specs, 0 failures`, sin abrirse ningún cuadro de diálogo real. La misma suite también se corrió en Node con `jasmine` 5 (`143 specs, 0 failures`).
+Cobertura de **líneas ejecutables**, medida con la cobertura de código de V8 (Chromium, vía Playwright) durante esa misma corrida. No cuentan líneas en blanco, comentarios ni llaves de cierre.
 
-### Cobertura por Tipo de Test
-Cada test de lógica pura (los 73 originales) se clasificó según su propósito principal. Los 70 tests de interacción no se clasifican por tipo: se agrupan por flujo en la tabla de suites de interacción.
+| Archivo | Líneas ejecutables | Cubiertas | Cobertura |
+|---|---|---|---|
+| `js/models/Producto.js` | 44 | 44 | 100,0 % |
+| `js/models/Catalogo.js` | 46 | 46 | 100,0 % |
+| `js/models/Carrito.js` | 92 | 90 | 97,8 % |
+| `js/models/Pago.js` | 47 | 46 | 97,9 % |
+| `js/models/Pedido.js` | 110 | 110 | 100,0 % |
+| `js/utils/storage.js` | 283 | 267 | 94,3 % |
+| `js/script.js` | 611 | 562 | 92,0 % |
+| **Total** | **1233** | **1165** | **94,5 %** |
 
-| Tipo | Cantidad | Porcentaje |
-|------|----------|------------|
-| Happy Path | 20 | 27,4% |
-| Casos Borde | 19 | 26,0% |
-| Validación de Errores | 24 | 32,9% |
-| Operaciones Arrays/Objetos | 10 | 13,7% |
-
-### Análisis de Cobertura de Código
-**Metodología:** Se ejecutó la suite completa (`script.spec.js`, 143 specs) contra `js/script.js` en Node.js con `jasmine` 5 (`jasmine-core` 5.10.0) y se midió la cobertura con la herramienta `c8` (cobertura de V8). `script.js` se carga como script clásico, igual que en el navegador, y `prompt()`/`alert()` se reemplazan con espías. La medición se hizo fuera del repositorio y no forma parte de la ejecución en el navegador. Las "líneas ejecutables" son las líneas con sentencias según `c8`, sin líneas en blanco ni comentarios.
-
-**Resultado de `c8` sobre todo el archivo `js/script.js`:**
-
-| Métrica | Valor |
-|---------|-------|
-| Funciones | 100 % (28/28) |
-| Ramas | 96,27 % (207/215) |
-| Líneas | 95,48 % (825/864) |
-
-**Cobertura por función** (las 28 funciones tienen tests; incluye las funciones con `prompt()`/`alert()`):
-
-| Función | Líneas Ejecutables | Líneas Cubiertas | Cobertura |
-|---------|--------------------|------------------|-----------|
-| `normalizarTexto()` | 7 | 7 | 100% |
-| `validarPrecioMaximo()` | 19 | 19 | 100% |
-| `buscarProductos()` | 35 | 35 | 100% |
-| `validarCantidad()` | 8 | 8 | 100% |
-| `agregarProductoAlCarrito()` | 44 | 44 | 100% |
-| `cambiarCantidadCarrito()` | 22 | 22 | 100% |
-| `eliminarProductoDelCarrito()` | 10 | 10 | 100% |
-| `calcularResumenCarrito()` | 10 | 10 | 100% |
-| `calcularCondicionesPago()` | 36 | 36 | 100% |
-| `validarNombre()` | 4 | 4 | 100% |
-| `validarCorreo()` | 3 | 3 | 100% |
-| `validarDireccion()` | 3 | 3 | 100% |
-| `validarDatosCliente()` | 8 | 8 | 100% |
-| `crearResumenPedido()` | 19 | 19 | 100% |
-| `crearNumeroPedido()` | 3 | 3 | 100% |
-| `formatearMoneda()` | 6 | 6 | 100% |
-| `formatearResumenCarrito()` | 12 | 12 | 100% |
-| `formatearResumenPedido()` | 14 | 14 | 100% |
-| `solicitarDatoValido()` | 12 | 12 | 100% |
-| `preguntarSiNo()` | 16 | 16 | 100% |
-| `ejecutarBusquedaYFiltrado()` | 36 | 36 | 100% |
-| `mostrarCarrito()` | 6 | 6 | 100% |
-| `actualizarCarrito()` | 17 | 17 | 100% |
-| `ejecutarGestionCarrito()` | 65 | 65 | 100% |
-| `ejecutarPago()` | 60 | 57 | 95% |
-| `informarPedidoCancelado()` | 3 | 3 | 100% |
-| `ejecutarConfirmacionPedido()` | 67 | 64 | 96% |
-| `iniciarMenuPrincipal()` | 27 | 27 | 100% |
-
-**Cobertura de las 28 funciones:** 98,95 % (566/572 líneas ejecutables).
-
-#### Líneas NO Cubiertas
-- `script.js:698-700` - En `ejecutarPago()`, la comprobación `if (!condiciones.valido)`. Es una guarda defensiva: el flujo solo llega ahí con un total mayor que cero y con un método y cuotas ya validados, por lo que `calcularCondicionesPago()` no puede devolver un error.
-- `script.js:767-769` - En `ejecutarConfirmacionPedido()`, la comprobación `if (!resumen.valido)`. Es una guarda defensiva por el mismo motivo: el carrito, el pago y los datos ya se validaron antes.
-- `script.js:830-831` - Arranque automático del menú (`data-iniciar-menu`): solo se ejecuta en `index.html`; `test-runner.html` no lo activa a propósito. Se comprobó a mano en Chromium que `index.html` abre el menú principal.
-- `script.js:834-864` - Bloque `module.exports`: se carga como script clásico, así que no se ejecuta; existe para poder usar el archivo desde Node.
-- Ramas no cubiertas (8 de 215): las condiciones del arranque automático y de `module.exports` (líneas 828-833), las dos guardas defensivas (líneas 697 y 766) y la rama `codigo || ""` de `cambiarCantidadCarrito()` (línea 237) cuando el código es `null` o `undefined`, que ningún test ejecuta.
+La medición no queda dentro del repositorio: se hace fuera, con una herramienta aparte (en la tercera entrega se usó `c8` en Node). Es una medición por líneas; no mide ramas.
 
 ---
 
 ## Capturas de Pantalla
 
-### Tests Pasando
-![Tests Exitosos](./capturas/captura-vista-general.png)
-*Todos los tests ejecutándose correctamente (143 specs, 0 failures)*
+Una captura por suite y una de la corrida completa, tomadas con Playwright (Chromium) sobre el runner:
 
-### Vista Detallada de Suites
-![Flujo 1](./capturas/captura-flujo-1.png)
-*Suite Flujo 1 - Búsqueda y filtrado (lógica pura)*
+![Corrida completa](./capturas/captura-runner-completo.png)
+*Runner completo: 199 specs, 0 failures*
 
-![Flujo 1 - interacción](./capturas/captura-flujo-1-interaccion.png)
-*Suite Flujo 1 - Búsqueda y filtrado (interacción)*
+![Modelos](./capturas/captura-models-spec.png)
+*`models.spec.js`: 42 specs, 0 failures*
 
-![Flujo 2](./capturas/captura-flujo-2.png)
-*Suite Flujo 2 - Gestión del carrito (lógica pura)*
+![Storage](./capturas/captura-storage-spec.png)
+*`storage.spec.js`: 104 specs, 0 failures*
 
-![Flujo 2 - interacción](./capturas/captura-flujo-2-interaccion.png)
-*Suite Flujo 2 - Gestión del carrito (interacción, incluye la transición Comprar → Pago)*
+![Controlador](./capturas/captura-script-spec.png)
+*`script.spec.js`: 53 specs, 0 failures*
 
-![Flujo 3](./capturas/captura-flujo-3.png)
-*Suite Flujo 3 - Pago y cálculo de cuotas (lógica pura)*
-
-![Flujo 3 - interacción](./capturas/captura-flujo-3-interaccion.png)
-*Suite Flujo 3 - Pago y cálculo de cuotas (interacción)*
-
-![Flujo 4](./capturas/captura-flujo-4.png)
-*Suite Flujo 4 - Confirmación del pedido (lógica pura)*
-
-![Flujo 4 - interacción](./capturas/captura-flujo-4-interaccion.png)
-*Suite Flujo 4 - Confirmación del pedido (interacción)*
-
-![Menú principal](./capturas/captura-menu-principal.png)
-*Suite Menú principal - integración de los flujos*
-
-Las capturas se tomaron en Chromium con Playwright (por script) sobre `test-runner.html?random=false`. No hay capturas de tests fallando porque la corrida final no tuvo fallos; la evidencia de tests que fallan está en el Issue #127.
+No hay capturas de tests fallando porque la corrida final no tuvo fallos. Para comprobar que los specs detectan errores se hizo una prueba de mutación manual: se quitó `preventDefault()` del envío de búsqueda, se cambió el contador del carrito para que cuente unidades en vez de ítems y se cambió el recargo de 3 cuotas de 10 % a 15 %. Esos tres cambios hicieron fallar tres specs de `script.spec.js`.
 
 ---
 
-## Issues Conocidos
+## Hallazgos e Issues
 
-No hubo tests fallando en la corrida final. Se registra un bug detectado por revisión del código, ya resuelto, y se documenta con pasos de reproducción y con el test que falla contra la versión anterior.
+En la corrida final no hay tests fallando contra `develop`. Durante la revisión se registró lo siguiente:
+
+- **`script.js` todavía no usa `StorageUtil`.** El plan de testing preveía probar que «el carrito persiste vía storage». Como la persistencia no está conectada en la página, ese caso no se pudo escribir y `script.spec.js` comprueba lo contrario: que la página no deja claves `app:*` en el storage. Cuando se conecte, hay que sumar esos tests. La integración figura como pendiente en `spec-dev-storage.md` y `spec-dev-poo.md`.
+- **Cadenas numéricas (`"0x10"`, `"1e2"`).** Detectado en la revisión de la PR #150 y corregido en la misma PR. El caso queda cubierto en `models.spec.js` y, desde la interfaz, en `script.spec.js` (cantidad `1e2`).
+- **Correo con caracteres no ASCII (`ñandú@correo.com`).** Detectado en la revisión de la PR #156 y corregido por el Desarrollador de Eventos + DOM. Queda cubierto en `script.spec.js`.
+
+No hay issues nuevas abiertas por este trabajo.
+
+---
+
+## Limitaciones del Testing
+
+- `script.spec.js` prueba la página real en un iframe, por lo que es más lento que los otros dos (cada test carga `index.html`; la suite completa tarda unos 12 segundos) y depende de los CDN de Bootstrap.
+- El cierre del carrito (`offcanvas`) de Bootstrap se simula con el evento `hidden.bs.offcanvas`; no se prueba la animación real.
+- Los desplazamientos (`scrollIntoView`) no se verifican.
+- La cobertura es por líneas, medida fuera del repo con V8; no mide ramas.
+- No hay tests de integración con persistencia, porque `script.js` aún no usa `StorageUtil` (ver Hallazgos).
+- El mapa de Google de `index.html` no se carga ni se prueba.
+
+---
+
+## Historial: tercera entrega
+
+La suite de la tercera entrega (143 tests sobre funciones con `prompt()` y `alert()`) quedó obsoleta al reemplazarse esa lógica por clases, storage y eventos. Sus capturas (`capturas/captura-flujo-*.png`) se conservan solo como referencia histórica. El bug documentado en esa etapa fue:
 
 ### Issue #127: Omitir el precio máximo devolvía error y la condición `valor === null` era inalcanzable
 - **Severidad:** Baja
@@ -347,18 +191,5 @@ No hubo tests fallando en la corrida final. Se registra un bug detectado por rev
 
 ---
 
-## Limitaciones del Testing
-
-- Tests síncronos únicamente (sin Promises/async-await).
-- Sin cobertura automatizada dentro del repositorio: la cobertura se midió en Node con `c8`, fuera del repo.
-- Requiere conexión a internet (CDN de Jasmine).
-- No hay tests de integración con el DOM; las funciones con `prompt()`/`alert()` se testean con espías, no con cuadros de diálogo reales.
-- Quedan sin cubrir las dos guardas defensivas de `ejecutarPago()` y `ejecutarConfirmacionPedido()`, el arranque automático de `index.html` y el bloque `module.exports` (ver "Líneas NO Cubiertas").
-- Los casos que el spec del Desarrollador JavaScript deja sin definir (búsqueda con texto o categoría vacíos, cancelación de los `prompt`) se cubren según las reglas acordadas en los diagramas de actividades.
-- La clasificación por tipo de test es manual y solo cubre los 73 tests de lógica pura.
-
----
-
-**Última Actualización:** 2026-11-05 (correcciones de la revisión del profesor)
-**Tester/QA Engineer:** Thiago Piastrellini (@Piastrellini)
-**Colaboración con:** Desarrollador JavaScript - @angelgc9107-lgtm
+**Última Actualización:** 2026-11-22 (cuarta entrega)
+**Tester/QA Engineer:** Alan Diaz (@alandox1)
