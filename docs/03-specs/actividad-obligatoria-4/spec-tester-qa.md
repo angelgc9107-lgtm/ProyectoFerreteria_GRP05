@@ -135,17 +135,17 @@ Para que el código sea probable, se acuerda con los demás roles antes de escri
 
 ### Criterios de aceptación
 
-- [ ] Existe `js/test/models.spec.js` con tests de constructores, métodos de negocio, validaciones y serialización/deserialización de `Producto`, `Catalogo`, `Carrito`, `Pago` y `Pedido`.
-- [ ] Existe `js/test/storage.spec.js` con tests de las operaciones CRUD y del manejo de errores (storage lleno, datos corruptos, storage inaccesible, valores no serializables).
-- [ ] Hay un archivo spec por cada módulo JavaScript del proyecto.
-- [ ] `js/test/script.spec.js` está refactorizado para la nueva arquitectura, sin espías de `prompt`/`alert` como mecanismo de prueba.
-- [ ] Cada módulo tiene casos happy path, casos borde y casos de error, según el plan de este spec.
-- [ ] `js/test/test-runner.html` carga todos los módulos y specs correctamente.
+- [x] Existe `js/test/models.spec.js` con tests de constructores, métodos de negocio, validaciones y serialización/deserialización de `Producto`, `Catalogo`, `Carrito`, `Pago` y `Pedido`.
+- [x] Existe `js/test/storage.spec.js` con tests de las operaciones CRUD y del manejo de errores (storage lleno, datos corruptos, storage inaccesible, valores no serializables).
+- [x] Hay un archivo spec por cada módulo JavaScript del proyecto.
+- [x] `js/test/script.spec.js` está refactorizado para la nueva arquitectura, sin espías de `prompt`/`alert` como mecanismo de prueba.
+- [x] Cada módulo tiene casos happy path, casos borde y casos de error, según el plan de este spec.
+- [x] `js/test/test-runner.html` carga todos los módulos y specs correctamente.
 - [ ] Todos los tests se ejecutan en `test-runner.html` con Playwright MCP en un navegador real.
-- [ ] Hay capturas del test runner con los resultados PASS/FAIL de cada suite.
+- [x] Hay capturas del test runner con los resultados PASS/FAIL de cada suite.
 - [ ] Los bugs encontrados están reportados como issues, con pasos para reproducir, el test que falla y asignación al rol correspondiente.
-- [ ] `js/test/testing-doc.md` documenta la nueva estructura de testing, las instrucciones para ejecutar cada módulo, las métricas de cobertura actualizadas y las capturas.
-- [ ] Los tests no dejan datos en el storage real entre ejecuciones.
+- [x] `js/test/testing-doc.md` documenta la nueva estructura de testing, las instrucciones para ejecutar cada módulo, las métricas de cobertura actualizadas y las capturas.
+- [x] Los tests no dejan datos en el storage real entre ejecuciones.
 - [ ] Rama `feature/tester-qa-specs`, este spec commiteado antes que cualquier archivo spec de testing, al menos un commit relevante, issue asociada, PR hacia `develop` con aprobación de otro integrante y entrada en `changelog.md`.
 
 ---
@@ -156,11 +156,17 @@ Para que el código sea probable, se acuerda con los demás roles antes de escri
 
 ### Herramienta realmente utilizada
 
-(Pendiente: indicar si se usó GitHub Copilot en modo Agente, otra herramienta o ambas, y por qué.)
+- **Claude (Claude Code, de Anthropic)**, en una sesión de conversación con acceso al repositorio. Con él se escribieron `storage.spec.js` y `script.spec.js`, y se armaron `test-runner.html` y `testing-doc.md`. **No se usó GitHub Copilot en modo Agente para generar los tests**, aunque el BEFORE lo preveía: la generación se hizo con Claude.
+- **Playwright (Chromium) ejecutado por script**, no el servidor Playwright MCP (`@playwright/mcp`) previsto en el BEFORE. El script abre `test-runner.html` en un navegador real, espera el resultado de Jasmine, captura la pantalla y mide la cobertura de V8. Es el mismo navegador que usaría el MCP, pero la consigna pide MCP: queda como desvío declarado.
+- **Jasmine 5.10.0** (CDN), igual que en las entregas anteriores.
+- **Cobertura de V8** (la que expone Chromium), en lugar de `c8` en Node, porque el controlador necesita un navegador real. Se mide fuera del repo.
 
 ### Prompt exacto utilizado para generar `models.spec.js` y `storage.spec.js`
 
-(Pendiente: prompt en bloque de código, indicando los archivos del dominio adjuntados como contexto.)
+- `models.spec.js` **no lo generó el rol de Tester QA**: lo escribió el Desarrollador JS POO (Luciano) junto con sus clases, en la PR #150, con su propio runner (`models-test-runner.html`). Tester QA lo incorporó al runner común. Durante la revisión de esa PR se le agregaron 3 specs de cadenas numéricas (`"0x10"`, `"1e2"`).
+- `storage.spec.js` se pidió en la conversación con Claude.
+
+(Completar: pegar acá, en el bloque, el mensaje original con el que se pidió `storage.spec.js` e indicar los archivos que se dieron como contexto.)
 
 ```text
 
@@ -168,29 +174,47 @@ Para que el código sea probable, se acuerda con los demás roles antes de escri
 
 ### Prompt utilizado para refactorizar `script.spec.js`
 
-(Pendiente.)
+Pedido de la conversación con Claude, textual:
 
 ```text
-
+traigo todos los cambios de develop a mi rama de tester qa y ahi hago todo,no? asi que pasame el zip con todo lo que tengoq hacer de mi rol asi lo mando a pr
 ```
 
-### Capturas del test runner con Playwright MCP
+Contexto usado: `index.html`, `js/script.js`, `js/models/*.js`, `docs/03-specs/actividad-obligatoria-4/spec-tester-qa.md` (plan de testing) y el `script.spec.js` anterior (143 tests, que se descartó).
 
-(Pendiente: una captura por suite, con los resultados PASS/FAIL.)
+### Capturas del test runner
+
+Tomadas con Playwright (Chromium) sobre `js/test/test-runner.html` y sobre un runner de una sola suite. Están en `js/test/capturas/`:
+
+| Captura | Resultado |
+|---|---|
+| `captura-runner-completo.png` | 199 specs, 0 failures |
+| `captura-models-spec.png` | 42 specs, 0 failures |
+| `captura-storage-spec.png` | 104 specs, 0 failures |
+| `captura-script-spec.png` | 53 specs, 0 failures |
 
 ### Resumen de resultados
 
 | Métrica | Valor |
 |---|---|
-| Tests que pasaron | (pendiente) |
-| Tests que fallaron | (pendiente) |
-| Bugs reportados como issues | (pendiente) |
-| Cobertura | (pendiente) |
+| Tests que pasaron | 199 (42 modelos + 104 storage + 53 controlador) |
+| Tests que fallaron | 0 |
+| Bugs reportados como issues | 0 nuevos (los hallazgos de las PRs #150 y #156 se corrigieron dentro de esas PRs) |
+| Cobertura | 94,5 % de líneas ejecutables (1165 de 1233), medida con V8 en Chromium; detalle por archivo en `testing-doc.md` |
 
 ### Issues reportadas
 
-(Pendiente: lista con enlace, rol asignado y test que falla.)
+No se abrieron issues nuevas. Se encontró y corrigió durante la revisión:
+
+- PR #150: las cadenas `"0x10"` y `"1e2"` se aceptaban como cantidades o importes. Corregido en la PR; cubierto en `models.spec.js` y en `script.spec.js`.
+- PR #156: un correo con caracteres no ASCII (`ñandú@correo.com`) era rechazado por la interfaz y aceptado por `Pedido`. Corregido en la PR; cubierto en `script.spec.js`.
+
+Pendiente de la integración, sin issue propia: `script.js` no usa `StorageUtil`, por lo que no se pudo probar que «el carrito persiste vía storage» (ver `testing-doc.md`, sección «Hallazgos e Issues»).
 
 ### Ajustes manuales y coordinación con los desarrolladores
 
-(Pendiente: qué se cambió a mano en los tests generados y qué se acordó con POO, Storage y Eventos + DOM para mejorar la testabilidad.)
+- **Cómo se prueba el controlador:** `script.js` no exporta funciones y registra sus eventos al cargarse. En lugar de importarlo, `script.spec.js` abre `index.html` real en un iframe por test, dispara eventos y comprueba el DOM. Así cada test empieza con el estado en blanco.
+- **Testabilidad acordada y verificada en el código:** `index.html` tiene identificadores estables en los controles y regiones de mensajes; `Pedido.confirmar(fecha, secuencia)` recibe el tiempo y la secuencia, lo que permite resultados deterministas; el orden descendente quedó implementado en `Catalogo.buscar()`.
+- **Storage:** `storage.spec.js` reemplaza temporalmente `localStorage`/`sessionStorage` por un `Storage` simulado para forzar errores; un último bloque usa el storage real y limpia sus claves.
+- **Runner:** `test-runner.html` ya no carga `../script.js` ni el spec anterior; carga los tres specs como módulos ES.
+- **Ajustes a los tests escritos:** se corrigieron a mano dos specs de `script.spec.js` en la primera corrida (una búsqueda con tilde y una compra con tarjeta que sumaba dos unidades), y se comprobó con tres cambios deliberados en el código que los specs fallan cuando deben.
