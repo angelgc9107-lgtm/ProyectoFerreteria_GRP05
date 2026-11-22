@@ -40,18 +40,18 @@ Criterio de aprobación de una PR hacia `develop`:
 
 ### Criterios de aceptación
 
-- [ ] Correcciones de la Actividad Obligatoria N°3 aplicadas con PRs `fix/` contra `release/tercera-entrega` y documentadas en `[Fixed]`
-- [ ] Backport realizado (`backport/release-tercera-entrega` → `develop`) y documentado
+- [x] Correcciones de la Actividad Obligatoria N°3 aplicadas con PRs `fix/` contra `release/tercera-entrega` y documentadas en `[Fixed]`
+- [x] Backport realizado (`backport/release-tercera-entrega` → `develop`) y documentado
 - [x] Al menos 4 code reviews con `CHANGES_REQUESTED` documentados
 - [x] Todas las ramas feature integradas en `develop` con revisión y aprobación
-- [ ] `release/cuarta-entrega` creada desde `develop`
-- [ ] GitHub Pages activo sobre `release/cuarta-entrega`
-- [ ] `README.md` actualizado con la información de la cuarta entrega y los enlaces a la documentación
-- [ ] `changelog.md` con las contribuciones de cada integrante, con link a su PR y su issue
-- [ ] Issues administradas en GitHub Projects (Kanban)
-- [ ] Ramas innecesarias eliminadas (quedan `master`, `develop`, `release/tercera-entrega` y `release/cuarta-entrega`; la rama de la tercera entrega se conserva porque es la base de las correcciones `[Fixed]` y del backport)
-- [ ] Release `v1.2-cuarta-entrega` publicada con el extracto del changelog
-- [ ] PR de la release publicada en Slack y enlaces subidos al campus (PR y GitHub Pages)
+- [x] `release/cuarta-entrega` creada desde `develop`
+- [x] GitHub Pages activo sobre `release/cuarta-entrega`
+- [x] `README.md` actualizado con la información de la cuarta entrega y los enlaces a la documentación
+- [x] `changelog.md` con las contribuciones de cada integrante, con link a su PR y su issue
+- [x] Issues administradas en GitHub Projects (Kanban)
+- [x] Ramas innecesarias eliminadas (quedan `master`, `develop`, `release/tercera-entrega` y `release/cuarta-entrega`; la rama de la tercera entrega se conserva porque es la base de las correcciones `[Fixed]` y del backport)
+- [x] Release `v1.2-cuarta-entrega` publicada con el extracto del changelog
+- [x] PR de la release publicada en Slack y enlaces subidos al campus (PR y GitHub Pages)
 
 ---
 
