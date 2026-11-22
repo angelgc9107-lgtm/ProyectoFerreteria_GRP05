@@ -12,7 +12,7 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 - [docs/storage-spec-review-aprobada] Desarrollador JS Storage: tildo en spec-dev-storage el criterio de PR revisada y mergeada: [#161](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/161) — Issue: [#160](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/160) — @Piastrellini (Desarrollador JS Local y Session Storage)
 
 
-- [feature/tester-qa-specs] [A4] Tester QA: `storage.spec.js`, `script.spec.js` nuevo para el controlador, `test-runner.html` con los tres specs, `testing-doc.md` actualizado y AT CLOSE de spec-tester-qa (199 specs, 0 failures) PR: [#162](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/162) — Issue: [#145](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/145) — @alandox1 (Coordinador / DevOps + TesterQA)
+- [feature/tester-qa-specs] [A4] Tester QA: `storage.spec.js`, `script.spec.js` nuevo para el controlador, `test-runner.html` con los tres specs, script de cobertura, `testing-doc.md` actualizado y AT CLOSE de spec-tester-qa (208 specs, 0 failures) PR: [#163](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/163) — Issue: [#145](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/145) — @alandox1 (Tester QA)
 
 ### Changed
 
