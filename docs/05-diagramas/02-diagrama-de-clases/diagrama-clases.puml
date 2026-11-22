@@ -1,0 +1,108 @@
+@startuml diagrama-clases
+title FerroLab - Clases de lógica de negocio
+
+left to right direction
+scale 1.4
+skinparam defaultFontName Arial
+skinparam classAttributeIconSize 0
+skinparam classBackgroundColor #FFF9F7
+skinparam classBorderColor #C0392B
+skinparam classHeaderBackgroundColor #FDECEA
+skinparam arrowColor #444444
+skinparam noteBackgroundColor #FFFDF5
+skinparam noteBorderColor #B3A58A
+
+class Producto {
+  - #codigo : string
+  - #nombre : string
+  - #categoria : string
+  - #descripcion : string
+  - #precio : number
+  --
+  + constructor(datos : object)
+  + get codigo() : string
+  + get nombre() : string
+  + get categoria() : string
+  + get descripcion() : string
+  + get precio() : number
+  + coincide(criterios : object = {}) : boolean
+  + toJSON() : object
+  + {static} fromJSON(datos : object) : Producto
+}
+
+class Catalogo {
+  - #productos : Producto[]
+  --
+  + constructor(productos : Producto[] = [])
+  + obtenerProductos() : Producto[]
+  + obtenerPorCodigo(codigo : string) : Producto | null
+  + buscar(criterios : object = {}) : object
+  + toJSON() : object
+  + {static} fromJSON(datos : object) : Catalogo
+}
+
+class Carrito {
+  - #items : object[]
+  --
+  + constructor(items : object[] = [])
+  - #actualizar(items : object[]) : object
+  + agregar(catalogo : Catalogo, codigo : string, cantidad : number | string) : object
+  + cambiarCantidad(codigo : string, cantidad : number | string) : object
+  + eliminar(codigo : string) : object
+  + resumir() : object
+  + vaciar() : void
+  + toJSON() : object
+  + {static} fromJSON(datos : object) : Carrito
+}
+
+class Pago {
+  - #totalOriginal : number
+  - #metodoPago : string
+  - #cuotas : number
+  - #porcentajeRecargo : number
+  --
+  + constructor(total : number | string, metodoPago : string, cantidadCuotas : number | string = undefined)
+  + calcular() : object
+  + toJSON() : object
+  + {static} fromJSON(datos : object) : Pago
+}
+
+class Pedido {
+  - #cliente : object
+  - #productos : object[]
+  - #total : number
+  - #pago : object
+  - #numero : string | null
+  --
+  + constructor(carrito : Carrito, pago : Pago, cliente : object)
+  + resumir() : object
+  + confirmar(fechaEnMilisegundos : number, secuencia : number) : string
+  + toJSON() : object
+  + {static} fromJSON(datos : object) : Pedido
+}
+
+Catalogo "0..*" o-- "0..*" Producto : contiene
+Carrito ..> Catalogo : consulta al agregar
+Carrito ..> Producto : copia datos al agregar
+Pedido ..> Carrito : usa al construir y restaurar
+Pedido ..> Pago : usa al construir y restaurar
+
+note bottom of Carrito
+  Cada carrito contiene 0..* ítems
+  propios: objetos con código, nombre,
+  categoría, precio y cantidad.
+  Son copias, no instancias de Producto.
+end note
+
+note bottom of Pedido
+  Conserva copias del cliente, ítems
+  con subtotal y condiciones de pago;
+  no retiene el carrito ni el Pago.
+end note
+
+legend bottom
+  + público   - privado   <u>subrayado</u> estático
+  El prefijo # indica un miembro privado de JavaScript.
+  object representa un objeto plano, no una clase adicional.
+endlegend
+@enduml
