@@ -11,6 +11,11 @@
  * Se carga como módulo ES desde test-runner.html (<script type="module">).
  */
 import { StorageUtil, CLAVES, PREFIJO_APP } from "../utils/storage.js";
+import { Producto } from "../models/Producto.js";
+import { Catalogo } from "../models/Catalogo.js";
+import { Carrito } from "../models/Carrito.js";
+import { Pago } from "../models/Pago.js";
+import { Pedido } from "../models/Pedido.js";
 
 /* ------------------------------------------------------------------ */
 /* Dobles de prueba                                                    */
@@ -88,6 +93,36 @@ function restaurarStorageReal() {
 
 function errorDeCuota() {
     return new DOMException("Cuota excedida", "QuotaExceededError");
+}
+
+/** Catálogo, carrito y pedido reales de js/models/, para los round trips con StorageUtil. */
+function crearCatalogoReal() {
+    return new Catalogo([
+        new Producto({
+            codigo: "MAR-01", nombre: "Martillo", categoria: "Herramientas manuales",
+            descripcion: "Martillo de acero", precio: 16000
+        }),
+        new Producto({
+            codigo: "PAL-01", nombre: "Pala", categoria: "Jardineria",
+            descripcion: "Pala de punta", precio: 21329.5
+        })
+    ]);
+}
+
+function crearCarritoReal() {
+    const carrito = new Carrito();
+    const catalogo = crearCatalogoReal();
+    carrito.agregar(catalogo, "MAR-01", 2);
+    carrito.agregar(catalogo, "PAL-01", 1);
+    return carrito;
+}
+
+function crearPedidoReal() {
+    const carrito = crearCarritoReal();
+    const pago = new Pago(carrito.resumir().total, "tarjeta", 3);
+    return new Pedido(carrito, pago, {
+        nombre: "Ana Pérez", correo: "ana@correo.com", direccion: "Calle Falsa 123"
+    });
 }
 
 /* ------------------------------------------------------------------ */
@@ -743,6 +778,87 @@ describe("StorageUtil (js/utils/storage.js)", () => {
                 expect(() => StorageUtil.guardarLista("app:test:k", [new Modelo("a"), rota])).not.toThrow();
                 expect(StorageUtil.guardarLista("app:test:k", [new Modelo("a"), rota])).toBeFalse();
             });
+        });
+    });
+
+    /* ---------------- integración con los modelos reales ---------------- */
+
+    describe("Integración con los modelos reales de js/models/", () => {
+        it("Carrito: guardarInstancia + cargarInstancia reproduce el mismo carrito", () => {
+            const original = crearCarritoReal();
+            expect(StorageUtil.guardarInstancia(CLAVES.CARRITO, original)).toBeTrue();
+            const restaurado = StorageUtil.cargarInstancia(CLAVES.CARRITO, Carrito);
+            expect(restaurado instanceof Carrito).toBeTrue();
+            expect(restaurado.toJSON()).toEqual(original.toJSON());
+            expect(restaurado.resumir()).toEqual(original.resumir());
+        });
+
+        it("Carrito: el restaurado es independiente del original", () => {
+            const original = crearCarritoReal();
+            StorageUtil.guardarInstancia(CLAVES.CARRITO, original);
+            const restaurado = StorageUtil.cargarInstancia(CLAVES.CARRITO, Carrito);
+            restaurado.vaciar();
+            expect(original.resumir().cantidadItems).toBe(2);
+        });
+
+        it("Catalogo: guardarInstancia + cargarInstancia conserva los productos", () => {
+            const original = crearCatalogoReal();
+            expect(StorageUtil.guardarInstancia(CLAVES.CACHE_CATALOGO, original)).toBeTrue();
+            const restaurado = StorageUtil.cargarInstancia(CLAVES.CACHE_CATALOGO, Catalogo);
+            expect(restaurado instanceof Catalogo).toBeTrue();
+            expect(restaurado.toJSON()).toEqual(original.toJSON());
+            expect(restaurado.buscar({ texto: "pala" }).resultados.map((p) => p.codigo)).toEqual(["PAL-01"]);
+        });
+
+        it("Producto: guardarLista + cargarLista conserva cada producto", () => {
+            const productos = crearCatalogoReal().buscar({}).resultados;
+            expect(StorageUtil.guardarLista("app:test:productos", productos)).toBeTrue();
+            const restaurados = StorageUtil.cargarLista("app:test:productos", Producto);
+            expect(restaurados.every((p) => p instanceof Producto)).toBeTrue();
+            expect(restaurados.map((p) => p.toJSON())).toEqual(productos.map((p) => p.toJSON()));
+        });
+
+        it("Pedido sin confirmar: round trip completo (cliente, productos, pago)", () => {
+            const original = crearPedidoReal();
+            expect(StorageUtil.guardarInstancia("app:test:pedido", original)).toBeTrue();
+            const restaurado = StorageUtil.cargarInstancia("app:test:pedido", Pedido);
+            expect(restaurado instanceof Pedido).toBeTrue();
+            expect(restaurado.resumir()).toEqual(original.resumir());
+            expect(restaurado.resumir().pago.cuotas).toBe(3);
+        });
+
+        it("Pedido confirmado: el historial guardado con guardarLista conserva el número", () => {
+            const confirmado = crearPedidoReal();
+            const numero = confirmado.confirmar(1700000000000, 1);
+            expect(numero).toBe("FL-1700000000000-0001");
+            expect(StorageUtil.guardarLista(CLAVES.PEDIDOS, [confirmado, crearPedidoReal()])).toBeTrue();
+            const historial = StorageUtil.cargarLista(CLAVES.PEDIDOS, Pedido);
+            expect(historial.length).toBe(2);
+            expect(historial[0].toJSON().numero).toBe(numero);
+            expect(historial[1].toJSON().numero).toBeNull();
+        });
+
+        it("Carrito guardado con una cantidad inválida: devuelve null y no un carrito parcial", () => {
+            const datos = crearCarritoReal().toJSON();
+            datos.items[0].cantidad = -3;
+            StorageUtil.guardar(CLAVES.CARRITO, datos);
+            expect(StorageUtil.cargarInstancia(CLAVES.CARRITO, Carrito)).toBeNull();
+            expect(console.error).toHaveBeenCalled();
+        });
+
+        it("Pedido guardado con un importe alterado: devuelve null", () => {
+            const datos = crearPedidoReal().toJSON();
+            datos.pago.totalFinanciado += 1;
+            StorageUtil.guardar("app:test:pedido", datos);
+            expect(StorageUtil.cargarInstancia("app:test:pedido", Pedido)).toBeNull();
+        });
+
+        it("Historial con un pedido dañado: cargarLista devuelve [] (todo o nada)", () => {
+            const bueno = crearPedidoReal().toJSON();
+            const danado = crearPedidoReal().toJSON();
+            danado.cliente.correo = "no-es-un-correo";
+            StorageUtil.guardar(CLAVES.PEDIDOS, [bueno, danado]);
+            expect(StorageUtil.cargarLista(CLAVES.PEDIDOS, Pedido)).toEqual([]);
         });
     });
 

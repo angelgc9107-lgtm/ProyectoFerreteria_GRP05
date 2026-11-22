@@ -22,9 +22,9 @@ En la tercera entrega `js/script.js` tenía la lógica y usaba `prompt()`/`alert
 | Módulo | Qué contiene | Spec | Specs |
 |---|---|---|---|
 | `js/models/` (`Producto`, `Catalogo`, `Carrito`, `Pago`, `Pedido`) | Lógica de negocio con clases, sin DOM ni Storage | `js/test/models.spec.js` | 42 |
-| `js/utils/storage.js` (`StorageUtil`) | Capa de abstracción de `localStorage`/`sessionStorage` | `js/test/storage.spec.js` | 104 |
+| `js/utils/storage.js` (`StorageUtil`) | Capa de abstracción de `localStorage`/`sessionStorage` | `js/test/storage.spec.js` | 113 |
 | `js/script.js` | Controlador: eventos y DOM | `js/test/script.spec.js` | 53 |
-| | | **Total** | **199** |
+| | | **Total** | **208** |
 
 `js/test/test-runner.html` carga los tres specs como módulos ES. `js/test/models-test-runner.html` es el runner independiente que armó el Desarrollador JS POO para sus modelos y se conserva.
 
@@ -47,7 +47,7 @@ Requiere conexión a internet: Jasmine se carga desde `cdnjs.cloudflare.com` y `
 
 ### Cómo funciona cada spec
 - **`models.spec.js`** importa las clases (`import { Carrito } from "../models/Carrito.js"`) y las prueba de forma aislada.
-- **`storage.spec.js`** importa `StorageUtil` y reemplaza `localStorage`/`sessionStorage` por un `Storage` simulado en memoria (`StorageFalso`), para forzar errores (cuota llena, `SecurityError`) sin tocar el almacenamiento real. Un último bloque usa el Web Storage real del navegador y borra sus propias claves al terminar.
+- **`storage.spec.js`** importa `StorageUtil` y reemplaza `localStorage`/`sessionStorage` por un `Storage` simulado en memoria (`StorageFalso`), para forzar errores (cuota llena, `SecurityError`) sin tocar el almacenamiento real. Un bloque usa los modelos reales de `js/models/` (`Carrito`, `Catalogo`, `Producto`, `Pedido`) para comprobar los round trips con `toJSON()` / `fromJSON()`. El último bloque usa el Web Storage real del navegador y borra sus propias claves al terminar.
 - **`script.spec.js`**: `script.js` ya no exporta funciones, solo registra eventos sobre `index.html`. Por eso, para cada test se abre una copia nueva de `index.html` en un `<iframe>` del mismo origen, se disparan eventos reales (`click`, `input`, `change`, `submit`) y se comprueba el DOM resultante. Cada copia empieza con el carrito, el pago y el pedido en blanco. Antes de cada test se reemplazan `alert`, `prompt`, `confirm`, `console.log` y `console.error` del iframe por espías.
 
 ---
@@ -65,7 +65,7 @@ Requiere conexión a internet: Jasmine se carga desde `cdnjs.cloudflare.com` y `
 | `Pedido` | 15 | Validación de cliente, coherencia con el pago, `confirmar()` determinista, `toJSON()`/`fromJSON()` |
 | `Cadenas numéricas estrictas` | 3 | `"0x10"`, `"1e2"` y `"1e3"` se rechazan en `Carrito`, `Catalogo` y `Pago`; se aceptan dígitos con espacios |
 
-### `storage.spec.js` (104 specs)
+### `storage.spec.js` (113 specs)
 
 | Suite | Specs | Qué se prueba |
 |---|---|---|
@@ -81,8 +81,9 @@ Requiere conexión a internet: Jasmine se carga desde `cdnjs.cloudflare.com` y `
 | `estaDisponible()` | 9 | Storage deshabilitado o inaccesible |
 | Storage inaccesible (`SecurityError`) | 3 | Ninguna operación lanza |
 | Storage no disponible en el entorno | 1 | Entorno sin Web Storage |
-| `guardarInstancia()` y `cargarInstancia()` | 8 | Integración con modelos mediante `toJSON()` / `fromJSON()` |
-| `guardarLista()` y `cargarLista()` | 9 | Listas de instancias, lista vacía, datos que ya no cumplen las reglas del modelo |
+| `guardarInstancia()` y `cargarInstancia()` | 8 | Contrato genérico con una clase auxiliar `Modelo` (`toJSON()` / `fromJSON()`) |
+| `guardarLista()` y `cargarLista()` | 9 | Contrato genérico con `Modelo`: listas, lista vacía, datos que ya no cumplen las reglas |
+| Integración con los modelos reales de `js/models/` | 9 | Round trip de `Carrito`, `Catalogo`, `Producto` y `Pedido` (sin confirmar y confirmado); datos alterados (cantidad negativa, importe modificado, correo inválido) devuelven `null` o `[]`, sin objetos parciales |
 | Ninguna operación lanza excepciones hacia afuera | 12 | Se verifica para cada operación |
 | Web Storage real del navegador | 3 | Ciclo completo sin dejar claves |
 
@@ -101,22 +102,35 @@ Requiere conexión a internet: Jasmine se carga desde `cdnjs.cloudflare.com` y `
 
 ## Métricas de Cobertura
 
-Corrida completa de `test-runner.html`: **199 specs, 0 failures**.
+Corrida completa de `test-runner.html`: **208 specs, 0 failures**.
 
-Cobertura de **líneas ejecutables**, medida con la cobertura de código de V8 (Chromium, vía Playwright) durante esa misma corrida. No cuentan líneas en blanco, comentarios ni llaves de cierre.
+Cobertura de **líneas ejecutables**, medida con la cobertura de código de V8 (Chromium, vía Playwright) durante esa misma corrida. No cuentan líneas en blanco, comentarios ni llaves de cierre. Es cobertura de líneas: no mide ramas.
 
 | Archivo | Líneas ejecutables | Cubiertas | Cobertura |
 |---|---|---|---|
 | `js/models/Producto.js` | 44 | 44 | 100,0 % |
 | `js/models/Catalogo.js` | 46 | 46 | 100,0 % |
-| `js/models/Carrito.js` | 92 | 90 | 97,8 % |
+| `js/models/Carrito.js` | 92 | 87 | 94,6 % |
 | `js/models/Pago.js` | 47 | 46 | 97,9 % |
 | `js/models/Pedido.js` | 110 | 110 | 100,0 % |
 | `js/utils/storage.js` | 283 | 267 | 94,3 % |
 | `js/script.js` | 611 | 562 | 92,0 % |
-| **Total** | **1233** | **1165** | **94,5 %** |
+| **Total** | **1233** | **1162** | **94,2 %** |
 
-La medición no queda dentro del repositorio: se hace fuera, con una herramienta aparte (en la tercera entrega se usó `c8` en Node). Es una medición por líneas; no mide ramas.
+Las líneas sin cubrir son sobre todo guardas defensivas que ningún test puede alcanzar (por ejemplo, `throw error` para errores que no son `TypeError`/`RangeError`, y el control de elementos obligatorios ausentes al cargar `script.js`).
+
+### Cómo reproducir la medición
+
+La tabla sale del script `js/test/herramientas/cobertura-v8.js`, que está en el repositorio. No es parte de la aplicación ni de los tests: solo mide.
+
+```bash
+# desde la raíz del repo, con Node 18 o superior
+npm install --no-save playwright
+npx playwright install chromium
+node js/test/herramientas/cobertura-v8.js
+```
+
+El script levanta un servidor HTTP temporal sobre el repo, abre `js/test/test-runner.html` en Chromium, toma la cobertura de V8 mientras corre la suite completa y, al terminar, imprime el resultado de Jasmine y la tabla de arriba en Markdown. Termina con código 1 si algún spec falla. Necesita internet (Jasmine y Bootstrap vienen de CDN). El resultado es el mismo en corridas sucesivas; si cambian los tests o el código, cambia la tabla.
 
 ---
 
@@ -125,13 +139,13 @@ La medición no queda dentro del repositorio: se hace fuera, con una herramienta
 Una captura por suite y una de la corrida completa, tomadas con Playwright (Chromium) sobre el runner:
 
 ![Corrida completa](./capturas/captura-runner-completo.png)
-*Runner completo: 199 specs, 0 failures*
+*Runner completo: 208 specs, 0 failures*
 
 ![Modelos](./capturas/captura-models-spec.png)
 *`models.spec.js`: 42 specs, 0 failures*
 
 ![Storage](./capturas/captura-storage-spec.png)
-*`storage.spec.js`: 104 specs, 0 failures*
+*`storage.spec.js`: 113 specs, 0 failures*
 
 ![Controlador](./capturas/captura-script-spec.png)
 *`script.spec.js`: 53 specs, 0 failures*
@@ -144,11 +158,11 @@ No hay capturas de tests fallando porque la corrida final no tuvo fallos. Para c
 
 En la corrida final no hay tests fallando contra `develop`. Durante la revisión se registró lo siguiente:
 
-- **`script.js` todavía no usa `StorageUtil`.** El plan de testing preveía probar que «el carrito persiste vía storage». Como la persistencia no está conectada en la página, ese caso no se pudo escribir y `script.spec.js` comprueba lo contrario: que la página no deja claves `app:*` en el storage. Cuando se conecte, hay que sumar esos tests. La integración figura como pendiente en `spec-dev-storage.md` y `spec-dev-poo.md`.
+- **`script.js` todavía no usa `StorageUtil`.** El plan de testing preveía probar que «el carrito persiste vía storage». Como la persistencia no está conectada en la página, ese caso no se pudo escribir y `script.spec.js` comprueba lo contrario: que una compra completa no modifica `localStorage` ni `sessionStorage` (compara el contenido antes y después, así que no depende de claves previas del navegador). Se da seguimiento con una issue asignada al Desarrollador JS Eventos + DOM. Cuando se conecte la persistencia hay que sumar la prueba: agregar productos, recargar la página y comprobar que el carrito se restaura, con storage aislado. La integración figura como pendiente en `spec-dev-storage.md` y `spec-dev-poo.md`.
 - **Cadenas numéricas (`"0x10"`, `"1e2"`).** Detectado en la revisión de la PR #150 y corregido en la misma PR. El caso queda cubierto en `models.spec.js` y, desde la interfaz, en `script.spec.js` (cantidad `1e2`).
 - **Correo con caracteres no ASCII (`ñandú@correo.com`).** Detectado en la revisión de la PR #156 y corregido por el Desarrollador de Eventos + DOM. Queda cubierto en `script.spec.js`.
 
-No hay issues nuevas abiertas por este trabajo.
+Los hallazgos de las PRs #150 y #156 se corrigieron en esas PRs; la falta de persistencia queda como seguimiento en la issue mencionada.
 
 ---
 
@@ -157,8 +171,8 @@ No hay issues nuevas abiertas por este trabajo.
 - `script.spec.js` prueba la página real en un iframe, por lo que es más lento que los otros dos (cada test carga `index.html`; la suite completa tarda unos 12 segundos) y depende de los CDN de Bootstrap.
 - El cierre del carrito (`offcanvas`) de Bootstrap se simula con el evento `hidden.bs.offcanvas`; no se prueba la animación real.
 - Los desplazamientos (`scrollIntoView`) no se verifican.
-- La cobertura es por líneas, medida fuera del repo con V8; no mide ramas.
-- No hay tests de integración con persistencia, porque `script.js` aún no usa `StorageUtil` (ver Hallazgos).
+- La cobertura es por líneas, con V8; no mide ramas. El script que la mide está en `js/test/herramientas/` y requiere instalar Playwright aparte (no se agrega como dependencia del proyecto).
+- No hay tests de integración de la página con persistencia, porque `script.js` aún no usa `StorageUtil` (ver Hallazgos). Sí hay round trips de `StorageUtil` con los modelos reales, fuera de la página.
 - El mapa de Google de `index.html` no se carga ni se prueba.
 
 ---

@@ -23,6 +23,7 @@ let espiaPrompt;
 let espiaConfirm;
 let espiaConsoleLog;
 let espiaConsoleError;
+let storageAntes;
 
 // ---------------------------------------------------------------------------
 // Utilidades
@@ -96,6 +97,15 @@ function iniciarCompra() {
     clic(q('[data-action="iniciar-compra"]'));
 }
 
+/** Copia el contenido de un Web Storage para compararlo después. */
+function instantanea(almacen) {
+    return Object.fromEntries(
+        Array.from({ length: almacen.length }, (_, i) => almacen.key(i))
+            .filter((clave) => clave !== null)
+            .map((clave) => [clave, almacen.getItem(clave)])
+    );
+}
+
 function irAlPago(codigo = "GUANTES-001") {
     agregarAlCarrito(codigo);
     iniciarCompra();
@@ -139,6 +149,9 @@ beforeEach(async function () {
     win.confirm = espiaConfirm;
     espiaConsoleLog = spyOn(win.console, "log");
     espiaConsoleError = spyOn(win.console, "error");
+    // El iframe comparte origen con el runner: se toma el estado previo del storage
+    // para que el test no dependa de claves que haya dejado otro uso del sitio.
+    storageAntes = { local: instantanea(win.localStorage), session: instantanea(win.sessionStorage) };
 }, TIEMPO_CARGA_MS);
 
 afterEach(function () {
@@ -618,12 +631,11 @@ describe("Controlador - requisitos transversales", function () {
         expect(espiaConsoleError).not.toHaveBeenCalled();
     });
 
-    it("no deja datos propios en localStorage ni sessionStorage", function () {
+    it("no modifica localStorage ni sessionStorage durante una compra completa", function () {
         llegarAlResumen();
         clic(q('[data-action="confirmar-pedido"]'));
-        const propias = (almacen) => Object.keys(almacen).filter((clave) => clave.startsWith("app:"));
-        expect(propias(win.localStorage)).toEqual([]);
-        expect(propias(win.sessionStorage)).toEqual([]);
+        expect(instantanea(win.localStorage)).toEqual(storageAntes.local);
+        expect(instantanea(win.sessionStorage)).toEqual(storageAntes.session);
     });
 
     it("los eventos se registran con addEventListener, sin manejadores en línea", function () {
