@@ -141,9 +141,9 @@ Para que el código sea probable, se acuerda con los demás roles antes de escri
 - [x] `js/test/script.spec.js` está refactorizado para la nueva arquitectura, sin espías de `prompt`/`alert` como mecanismo de prueba.
 - [x] Cada módulo tiene casos happy path, casos borde y casos de error, según el plan de este spec.
 - [x] `js/test/test-runner.html` carga todos los módulos y specs correctamente.
-- [ ] Todos los tests se ejecutan en `test-runner.html` con Playwright MCP en un navegador real.
+- [ ] Todos los tests se ejecutan en `test-runner.html` con Playwright MCP en un navegador real. **NO CUMPLIDO:** se ejecutaron con Playwright (Chromium) por script, no con el servidor MCP (ver AT CLOSE).
 - [x] Hay capturas del test runner con los resultados PASS/FAIL de cada suite.
-- [ ] Los bugs encontrados están reportados como issues, con pasos para reproducir, el test que falla y asignación al rol correspondiente.
+- [x] Los bugs encontrados están reportados como issues, con pasos para reproducir, el test que falla y asignación al rol correspondiente.
 - [x] `js/test/testing-doc.md` documenta la nueva estructura de testing, las instrucciones para ejecutar cada módulo, las métricas de cobertura actualizadas y las capturas.
 - [x] Los tests no dejan datos en el storage real entre ejecuciones.
 - [ ] Rama `feature/tester-qa-specs`, este spec commiteado antes que cualquier archivo spec de testing, al menos un commit relevante, issue asociada, PR hacia `develop` con aprobación de otro integrante y entrada en `changelog.md`.
@@ -163,18 +163,14 @@ Para que el código sea probable, se acuerda con los demás roles antes de escri
 
 ### Prompt exacto utilizado para generar `models.spec.js` y `storage.spec.js`
 
+**Evidencia de prompts: no cumplida.** No se conservan los prompts exactos de estas suites, por lo que no se pueden auditar.
+
 - `models.spec.js` **no lo generó el rol de Tester QA**: lo escribió el Desarrollador JS POO (Luciano) junto con sus clases, en la PR #150, con su propio runner (`models-test-runner.html`). Tester QA lo incorporó al runner común. Durante la revisión de esa PR se le agregaron 3 specs de cadenas numéricas (`"0x10"`, `"1e2"`).
 - `storage.spec.js`: **no se conserva el texto exacto del pedido** hecho en la conversación con Claude. Se escribió a partir de la tabla de `storage.spec.js` del plan de testing (sección BEFORE de este spec) y del código de `js/utils/storage.js`. Después de la revisión de la PR #163 se le agregó el bloque de round trips con los modelos reales de `js/models/`.
 
 ### Prompt utilizado para refactorizar `script.spec.js`
 
-No hubo un único prompt: el trabajo se hizo en una conversación con Claude. La suite sigue la tabla de `script.spec.js` del plan de testing (BEFORE): los cuatro flujos más los requisitos transversales. El enfoque (abrir `index.html` en un iframe por test, porque `script.js` no exporta funciones) lo propuso Claude durante esa conversación.
-
-El pedido que dio inicio a la escritura de la suite fue este mensaje, textual:
-
-```text
-traigo todos los cambios de develop a mi rama de tester qa y ahi hago todo,no? asi que pasame el zip con todo lo que tengoq hacer de mi rol asi lo mando a pr
-```
+**Evidencia de prompts: no cumplida.** No hubo un único prompt: el trabajo se hizo en una conversación con Claude y no se conserva el pedido que originó la suite, por lo que no se puede auditar. Lo que sí se puede verificar es el plan que la suite sigue: la tabla de `script.spec.js` del plan de testing (BEFORE), con los cuatro flujos y los requisitos transversales. El enfoque (abrir `index.html` en un iframe por test, porque `script.js` no exporta funciones) lo propuso Claude durante esa conversación.
 
 Contexto usado: `index.html`, `js/script.js`, `js/models/*.js`, el plan de este spec y el `script.spec.js` anterior (143 tests, que se descartó).
 
@@ -189,18 +185,27 @@ Tomadas con Playwright (Chromium) sobre `js/test/test-runner.html` y sobre un ru
 | `captura-storage-spec.png` | 113 specs, 0 failures |
 | `captura-script-spec.png` | 53 specs, 0 failures |
 
+### Criterios no cumplidos (declaración explícita)
+
+| Criterio | Estado | Motivo |
+|---|---|---|
+| Ejecución en `test-runner.html` con Playwright MCP y recorrido manual de los 4 flujos con MCP | **No cumplido** | Se usó Playwright (Chromium) por script. Las capturas muestran resultados del runner, pero no prueban el uso de MCP |
+| Evidencia de los prompts utilizados | **No cumplido** | No se conservan los prompts exactos; no se presenta ningún mensaje como evidencia de generación de las suites |
+| Bugs encontrados reportados como issues | **Cumplido** | Issue #164 de seguimiento de `script.js` / `StorageUtil` |
+| PR con aprobación de otro integrante | **Pendiente** | La aprobación y el merge se completan después de esta entrega |
+
 ### Resumen de resultados
 
 | Métrica | Valor |
 |---|---|
 | Tests que pasaron | 208 (42 modelos + 113 storage + 53 controlador) |
 | Tests que fallaron | 0 |
-| Bugs reportados como issues | 1 de seguimiento: `script.js` no usa `StorageUtil` (issue: completar número). Los hallazgos de las PRs #150 y #156 se corrigieron dentro de esas PRs |
+| Bugs reportados como issues | 1 de seguimiento: `script.js` no usa `StorageUtil` (issue: #164). Los hallazgos de las PRs #150 y #156 se corrigieron dentro de esas PRs |
 | Cobertura | 94,2 % de líneas ejecutables (1162 de 1233). Se reproduce con `node js/test/herramientas/cobertura-v8.js`; detalle por archivo en `testing-doc.md` |
 
 ### Issues reportadas
 
-- **Seguimiento abierto:** `script.js` no usa `StorageUtil`, por lo que no se pudo probar que «el carrito persiste vía storage». Asignada al Desarrollador JS Eventos + DOM. Cuando se integre, se agrega la prueba de persistencia (ver `testing-doc.md`, «Hallazgos e Issues»). Issue: completar número.
+- **Seguimiento abierto:** `script.js` no usa `StorageUtil`, por lo que no se pudo probar que «el carrito persiste vía storage». Asignada al Desarrollador JS Eventos + DOM. Cuando se integre, se agrega la prueba de persistencia (ver `testing-doc.md`, «Hallazgos e Issues»). Issue: #164.
 - **Corregido durante la revisión de la PR #150:** las cadenas `"0x10"` y `"1e2"` se aceptaban como cantidades o importes. Cubierto en `models.spec.js` y en `script.spec.js`.
 - **Corregido durante la revisión de la PR #156:** un correo con caracteres no ASCII (`ñandú@correo.com`) era rechazado por la interfaz y aceptado por `Pedido`. Cubierto en `script.spec.js`.
 
