@@ -2,8 +2,10 @@ import { Catalogo } from "./Catalogo.js";
 import { normalizarCodigo } from "./Producto.js";
 
 function cantidadValida(valor) {
-    return (typeof valor === "number" || (typeof valor === "string" && valor.trim() !== "")) &&
-        Number.isSafeInteger(Number(valor)) && Number(valor) >= 1;
+    // Las cadenas solo pueden contener dígitos: Number() aceptaría "0x10" o "1e2".
+    const formatoValido = typeof valor === "number" ||
+        (typeof valor === "string" && /^\s*\d+\s*$/.test(valor));
+    return formatoValido && Number.isSafeInteger(Number(valor)) && Number(valor) >= 1;
 }
 
 function calcularResumen(items) {

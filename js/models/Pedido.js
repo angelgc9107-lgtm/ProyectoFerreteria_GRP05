@@ -41,9 +41,12 @@ function numeroValido(numero) {
 function importesIguales(actual, esperado) {
     if (!Number.isFinite(actual) || !Number.isFinite(esperado)) return false;
     if (actual === esperado) return true;
-    // Solo admite ruido binario, nunca una diferencia monetaria de centavos.
-    const tolerancia = Math.min(1e-9, Number.EPSILON * Math.max(Math.abs(actual), Math.abs(esperado)));
-    return Math.abs(actual - esperado) <= tolerancia;
+    const tolerancia = Math.min(1e-12, Number.EPSILON * Math.max(Math.abs(actual), Math.abs(esperado)));
+    if (Math.abs(actual - esperado) > tolerancia) return false;
+    // Exige un valor decimal de referencia, sin truncar dos importes de alta precisión.
+    const normalizado = Number(esperado.toPrecision(15));
+    return (actual === normalizado || esperado === normalizado) &&
+        Number(actual.toPrecision(15)) === normalizado;
 }
 
 export class Pedido {
@@ -66,7 +69,7 @@ export class Pedido {
         const resumen = carrito.resumir();
         if (!resumen.items.length) throw new RangeError("El carrito no puede estar vacio.");
         const condiciones = pago.calcular();
-        if (condiciones.totalOriginal !== Math.round(resumen.total * 100) / 100) {
+        if (!importesIguales(condiciones.totalOriginal, Math.round(resumen.total * 100) / 100)) {
             throw new RangeError("El pago no corresponde al total del carrito.");
         }
         this.#cliente = validarCliente(cliente);

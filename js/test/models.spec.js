@@ -263,16 +263,32 @@ describe("Pago", function () {
     });
 
     it("calcula intereses y cuotas para importes con centavos", function () {
-        for (const [total, cuotas, porcentajeRecargo, interes, totalFinanciado, valorCuota] of [
-            [10.01, 1, 0, 0, 10.01, 10.01],
-            [100.15, 3, 10, 10.02, 110.17, 36.72],
-            [0.35, 3, 10, 0.04, 0.39, 0.13],
-            [125.49, 6, 20, 25.1, 150.59, 25.1]
-        ]) {
-            expect(new Pago(total, "tarjeta", cuotas).calcular()).toEqual(jasmine.objectContaining({
-                totalOriginal: total, cuotas, porcentajeRecargo, interes, totalFinanciado, valorCuota
+        const casos = [
+            { total: 10.01, cuotas: 1, recargo: 0, interes: 0, financiado: 10.01, cuota: 10.01 },
+            { total: 100.15, cuotas: 3, recargo: 10, interes: 10.02, financiado: 110.17, cuota: 36.72 },
+            { total: 0.35, cuotas: 3, recargo: 10, interes: 0.04, financiado: 0.39, cuota: 0.13 },
+            { total: 125.49, cuotas: 6, recargo: 20, interes: 25.1, financiado: 150.59, cuota: 25.1 }
+        ];
+        for (const caso of casos) {
+            expect(new Pago(caso.total, "tarjeta", caso.cuotas).calcular()).toEqual(jasmine.objectContaining({
+                totalOriginal: caso.total, cuotas: caso.cuotas, porcentajeRecargo: caso.recargo,
+                interes: caso.interes, totalFinanciado: caso.financiado, valorCuota: caso.cuota
             }));
         }
+    });
+
+    it("calcula el recargo sobre el total redondeado, no sobre la entrada sin redondear", function () {
+        const totalSinRedondear = 100.149;
+        const totalRedondeado = 100.15;
+        const recargo = 10;
+        const interesEsperado = 10.02;
+        const totalFinanciadoEsperado = 110.17;
+        const cuotaEsperada = 36.72;
+        expect(new Pago(totalSinRedondear, "tarjeta", 3).calcular()).toEqual(jasmine.objectContaining({
+            totalOriginal: totalRedondeado, porcentajeRecargo: recargo, interes: interesEsperado,
+            totalFinanciado: totalFinanciadoEsperado, valorCuota: cuotaEsperada
+        }));
+        expect(Math.round(totalSinRedondear * recargo) / 100).toBe(10.01);
     });
 
     it("rechaza totales, métodos y cuotas inválidos", function () {
@@ -320,6 +336,25 @@ describe("Pedido", function () {
         expect(() => new Pedido(
             {}, new Pago(1, "efectivo-transferencia"), {}
         )).toThrowError(TypeError);
+    });
+
+    it("compara el total del pago con el carrito redondeado y admite solo ruido binario", function () {
+        const totalCarrito = 0.3;
+        const totalConRuidoBinario = 0.1 + 0.2;
+        const diferenciaReal = 0.01;
+        const carrito = new Carrito([{
+            codigo: "A", nombre: "A", categoria: "Prueba", precio: totalCarrito, cantidad: 1
+        }]);
+        const cliente = { nombre: "Ana", correo: "ana@example.com", direccion: "Calle 1" };
+        class PagoConTotalCalculado extends Pago {
+            calcular() {
+                return { ...super.calcular(), totalOriginal: totalConRuidoBinario };
+            }
+        }
+        expect(() => new Pedido(carrito, new PagoConTotalCalculado(totalCarrito, "tarjeta", 1), cliente))
+            .not.toThrow();
+        expect(() => new Pedido(carrito, new Pago(totalCarrito + diferenciaReal, "tarjeta", 1), cliente))
+            .toThrowError(RangeError);
     });
 
     it("valida cada dato del cliente e indica el campo inválido", function () {
@@ -457,6 +492,42 @@ describe("Pedido", function () {
             .toThrowError(RangeError);
     });
 
+    it("rechaza diferencias arbitrarias pequeñas antes admitidas por la tolerancia absoluta", function () {
+        const totalOriginal = 1000000;
+        const cambioRepresentable = 1e-10;
+        const carrito = new Carrito([{
+            codigo: "A", nombre: "A", categoria: "Prueba", precio: totalOriginal, cantidad: 1
+        }]);
+        const pedido = new Pedido(carrito, new Pago(totalOriginal, "tarjeta", 1), {
+            nombre: "Ana", correo: "ana@example.com", direccion: "Calle 1"
+        });
+        const datos = pedido.toJSON();
+        const totalAlterado = datos.total + cambioRepresentable;
+        expect(totalAlterado).not.toBe(datos.total);
+        expect(() => Pedido.fromJSON({ ...datos, total: totalAlterado })).toThrowError(RangeError);
+        expect(() => Pedido.fromJSON({
+            ...datos, productos: [{ ...datos.productos[0], subtotal: totalAlterado }]
+        })).toThrowError(RangeError);
+        expect(() => Pedido.fromJSON({
+            ...datos, pago: { ...datos.pago, totalOriginal: totalAlterado }
+        })).toThrowError(RangeError);
+    });
+
+    it("no normaliza dos subtotales distintos con precisión decimal mayor a 15 cifras", function () {
+        const subtotalOriginal = 1.234567890123456;
+        const subtotalAlterado = 1.2345678901234562;
+        const carrito = new Carrito([{
+            codigo: "A", nombre: "A", categoria: "Prueba", precio: subtotalOriginal, cantidad: 1
+        }]);
+        const pedido = new Pedido(carrito, new Pago(subtotalOriginal, "tarjeta", 1), {
+            nombre: "Ana", correo: "ana@example.com", direccion: "Calle 1"
+        });
+        const datos = pedido.toJSON();
+        expect(() => Pedido.fromJSON({
+            ...datos, productos: [{ ...datos.productos[0], subtotal: subtotalAlterado }]
+        })).toThrowError(RangeError);
+    });
+
     it("rechaza importes, subtotales, pagos y números de pedido inconsistentes", function () {
         const datos = crearPedido().pedido.toJSON();
         expect(() => Pedido.fromJSON({ ...datos, total: datos.total + 1 }))
@@ -472,5 +543,37 @@ describe("Pedido", function () {
         })).toThrowError(RangeError);
         expect(() => Pedido.fromJSON({ ...datos, numero: "pedido-1" }))
             .toThrowError(RangeError);
+    });
+});
+
+describe("Cadenas numéricas estrictas", function () {
+    it("Carrito rechaza cantidades hexadecimales o exponenciales y acepta dígitos con espacios", function () {
+        const carrito = new Carrito();
+        for (const cantidad of ["0x10", "1e2", "1_0", "+3", "-3"]) {
+            expect(carrito.agregar(crearCatalogo(), "TAL-01", cantidad).exito).toBeFalse();
+        }
+        expect(carrito.resumir().cantidadUnidades).toBe(0);
+        expect(carrito.agregar(crearCatalogo(), "TAL-01", " 3 ").exito).toBeTrue();
+        expect(carrito.resumir().cantidadUnidades).toBe(3);
+    });
+
+    it("Catalogo rechaza precios máximos hexadecimales o exponenciales y acepta decimales simples", function () {
+        const catalogo = crearCatalogo();
+        for (const precioMaximo of ["0x10", "1e3", "Infinity", "-5"]) {
+            expect(catalogo.buscar({ precioMaximo }).valido).toBeFalse();
+        }
+        const resultado = catalogo.buscar({ precioMaximo: " 50.5 " });
+        expect(resultado.valido).toBeTrue();
+        expect(resultado.resultados.map((p) => p.codigo)).toEqual(["MAR-02", "PIN-03"]);
+    });
+
+    it("Pago rechaza totales y cuotas hexadecimales o exponenciales", function () {
+        for (const total of ["0x10", "1e2", "-5"]) {
+            expect(() => new Pago(total, "efectivo-transferencia")).toThrow();
+        }
+        for (const cuotas of ["0x3", "3e0"]) {
+            expect(() => new Pago(100, "tarjeta", cuotas)).toThrow();
+        }
+        expect(new Pago(" 100.5 ", "tarjeta", " 3 ").calcular().cuotas).toBe(3);
     });
 });
