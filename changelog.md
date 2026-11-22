@@ -14,8 +14,6 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 - [feature/tester-qa-specs] [A4] Tester QA: `storage.spec.js`, `script.spec.js` nuevo para el controlador, `test-runner.html` con los tres specs, script de cobertura, `testing-doc.md` actualizado y AT CLOSE de spec-tester-qa (208 specs, 0 failures) PR: [#163](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/163) — Issue: [#145](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/145) — @alandox1 (Tester QA)
 
-- [feature/coord-devops-at-close] [A4] Coordinador / DevOps: completar AT CLOSE de spec-devops (reviews de #140, #141, #144, #150, #156 y #157, estado y obstáculos) PR: [#165](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/165) — Issue: [#137](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/137) — @alandox1 (Coordinador / DevOps)
-
 ### Changed
 
 - [feature/coord-devops-cuarta-entrega] [A4] Coordinador / DevOps: ajustar nombres de secciones del spec PR: [#154](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/154) - Issue: [#137](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/137) - @alandox1 (Coordinador / DevOps + TesterQA)
@@ -24,6 +22,14 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 - [feature/tester-qa-specs] Tester QA: spec-tester-qa (sección BEFORE: plan de testing, herramientas, coordinación y criterios de aceptación) PR: [#146](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/146) — Issue: [#145](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/145) — @alandox1 (Coordinador / DevOps + Tester QA)
 - [feature/dev-eventos-dom] Implementación de eventos y manipulación del DOM, AT Close del spec PR: [#156](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/156) — Issue: [#155](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/155) — @angelgc9107-lgtm (Desarrollador JavaScript Eventos + DOM)
 - [feature/dev-storage] Desarrollador JS Storage: `js/utils/storage.js` (`StorageUtil` con guardar, obtener, actualizar, eliminar, listar y limpiar, manejo de errores e integración con `js/models/` vía `toJSON()`/`fromJSON()`), `storage-doc.md` y spec-dev-storage (schemas alineados y sección AT CLOSE). PR:[#157](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/157) — Issue: [#158](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/158) — @Piastrellini (Desarrollador JS Local y Session Storage)
+- [backport/tercera-entrega] [GRUPO N°5] [Backport Tercera Entrega] Sincronización de master hacia develop PR: [#136](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/136) — @alandox1 (Coordinador / DevOps)
+- [feature/coord-devops-at-close] [A4] Coordinador / DevOps: completar AT CLOSE de spec-devops (reviews de #140, #141, #144, #150, #156 y #157, estado en GitHub y obstáculos) PR: [#165](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/165) — Issue: [#137](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/137) — @alandox1 (Coordinador / DevOps)
+
+### Fixed
+
+- [fix/arq-diagramas-tercera-entrega] [A3] Corrección de la revisión del profesor en los diagramas de actividades: único `stop` por flujo y `end` en las salidas alternativas (RC1-RC3), con los `.puml`, los `.png` y `diagramas-doc.md` actualizados PR: [#134](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/134) — @alandox1 (Arquitecto de Diagramas de Actividades)
+- [fix/dev-js-menu-carrito-y-tester-cobertura] [A3] Correcciones de la revisión del profesor: ajustes de menú y carrito en `index.html` y `js/script.js`, `script.spec.js` ampliado con tests de interacción, capturas nuevas y `testing-doc.md` con la cobertura medida PR: [#135](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/135) — @alandox1 (Desarrollador JavaScript y Tester)
+
 
 
 ## [Actividad N°3] - 2026-11-02
