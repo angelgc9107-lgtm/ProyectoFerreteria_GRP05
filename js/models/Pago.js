@@ -41,7 +41,8 @@ export class Pago {
     }
 
     /**
-     * Calcula el interés y los importes redondeados a dos decimales.
+     * Calcula el interés sobre el total original ya redondeado a dos decimales.
+     * Redondea también el interés, el total financiado y el valor de cuota.
      * @returns {{valido: boolean, error: null, metodoPago: string, cuotas: number, porcentajeRecargo: number, totalOriginal: number, interes: number, totalFinanciado: number, valorCuota: number}} Condiciones de pago.
      * @throws {RangeError} Si algún importe no es finito.
      */

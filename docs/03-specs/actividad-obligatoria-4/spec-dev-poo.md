@@ -9,11 +9,10 @@
 - **Rama prevista:** `feature/dev-poo-logica-negocio`.
 - **Integración prevista:** Pull Request hacia `develop`.
 - **Estado:** las cinco clases de dominio están implementadas en `js/models/`.
-  La suite de modelos está escrita, pero su ejecución no está verificada en
-  esta actualización. La integración con Eventos + DOM y Storage sigue pendiente.
+  La suite de modelos fue ejecutada; la integración con Eventos + DOM y
+  Storage sigue pendiente.
 - **Implementado:** modelos, validaciones y serialización/restauración.
-- **Pruebas:** los casos automatizados están escritos; no se consigna una
-  ejecución aprobada sin resultado verificable.
+- **Pruebas:** Jasmine ejecutó 39 casos, con 0 fallos (sección 12).
 - **Pendiente de integración:** flujos de interfaz y persistencia.
 
 ## 2. Objetivo y responsabilidades
@@ -187,7 +186,8 @@ inválida se rechaza.
 
 - `calcular() -> { valido, error, metodoPago, cuotas, porcentajeRecargo, totalOriginal, interes, totalFinanciado, valorCuota }`:
   devuelve `valido: true` y `error: null`. Redondea el total original a dos
-  decimales; calcula `interes = Math.round(totalOriginal * porcentajeRecargo) / 100`;
+  decimales; usa ese **total ya redondeado**, no la entrada sin redondear, en
+  `interes = Math.round(totalOriginal * porcentajeRecargo) / 100`;
   redondea el total financiado y el valor unitario de cuota a dos decimales.
   No distribuye diferencias de redondeo entre cuotas. Si un importe calculado
   no es finito, lanza `RangeError`.
@@ -201,6 +201,8 @@ inválida se rechaza.
 
 La política existente usa `Math.round` sobre números binarios de JavaScript.
 Por ejemplo, `1.005` como total original se calcula como `1`, no como `1.01`.
+Con entrada `100.149` y recargo del 10 %, la base es `100.15` y el interés
+es `10.02`; calcular sobre la entrada sin redondear produciría `10.01`.
 Una política de redondeo decimal diferente requiere coordinación porque también
 afecta la comparación del total del carrito en `Pedido`.
 
@@ -224,7 +226,8 @@ puede estar vacío ni consistir exclusivamente en un número según
 `/^\d+(?:[.,]\d+)?$/`; el correo recortado debe cumplir
 `/^[^\s@]+@[^\s@]+\.[^\s@]+$/`; la dirección recortada no puede estar vacía.
 El total del pago debe coincidir con el total del carrito redondeado a dos
-decimales, para evitar confirmar condiciones desactualizadas. Guarda copias,
+decimales, usando la misma comparación de importes que en la restauración,
+para evitar confirmar condiciones desactualizadas. Guarda copias,
 no referencias mutables al carrito o a los datos del cliente.
 
 **Métodos públicos:**
@@ -246,11 +249,15 @@ no referencias mutables al carrito o a los datos del cliente.
 `Pedido.fromJSON()` requiere los productos con sus subtotales serializados,
 comprueba subtotales y total contra el resumen recalculado, reconstruye las
 condiciones de pago y rechaza cualquier campo de pago inconsistente. Para
-importes finitos admite únicamente diferencias de representación binaria de
-hasta `Number.EPSILON` relativo, con límite absoluto de `1e-9`; no redondea
-los subtotales ni el total del carrito, que pueden tener más de dos decimales.
-Los demás campos se comparan estrictamente. Esta tolerancia no distingue un
-cambio deliberado tan pequeño del ruido de representación. El número puede ser
+importes finitos acepta la igualdad exacta y, si difieren, exige que la
+diferencia no exceda `Number.EPSILON * max(abs(actual), abs(esperado))` ni
+`1e-12`. Además, ambos deben dar el mismo número al redondearse a 15 cifras
+significativas y al menos uno debe ser exactamente ese número. Esta regla
+restringe la tolerancia anterior y rechaza diferencias de centavos y de
+subcentavos como `0.001`; no redondea los subtotales ni el total del carrito,
+que pueden tener más de dos decimales. No puede distinguir un cambio
+intencional del mismo valor numérico que un artefacto binario admitido.
+Los demás campos se comparan estrictamente. El número puede ser
 `null` o un identificador `FL-<fecha>-<secuencia>` válido; al restaurarlo
 conserva el estado confirmado.
 
@@ -323,7 +330,7 @@ integrar la interfaz con los contratos anteriores sin trasladar
   validación deben distinguirse. Los modelos no acceden al navegador.
 - **Tester QA — suite ejecutada:** existe
   `js/test/models.spec.js` con casos Jasmine de las cinco clases y un runner
-  autónomo `js/test/models-test-runner.html`. Resultado verificado: 35 specs,
+  autónomo `js/test/models-test-runner.html`. Resultado verificado: 39 specs,
   0 failures (ver AT CLOSE, sección 12).
   `docs/04-testing/pruebas-modelos-poo.md` contiene instrucciones y el
   resultado de ejecución. La invalidación/cancelación del flujo integrado y Storage
@@ -347,7 +354,7 @@ Los tres entregables UML se encuentran en
 | `docs/03-specs/actividad-obligatoria-4/spec-dev-poo.md` | Actualizado para reflejar los contratos observados en los modelos; no implica integración. |
 | `js/models/Producto.js`, `Catalogo.js`, `Carrito.js` | Implementados; conforman las clases principales. |
 | `js/models/Pago.js`, `Pedido.js` | Implementados como clases adicionales de pago y pedido. |
-| `js/test/models.spec.js` | Suite Jasmine para las cinco clases; ejecutada: 35 specs, 0 failures. |
+| `js/test/models.spec.js` | Suite Jasmine para las cinco clases; ejecutada: 39 specs, 0 failures. |
 | `js/test/models-test-runner.html` | Runner autónomo que inicializa Jasmine, importa la suite y luego la ejecuta. |
 | `docs/04-testing/pruebas-modelos-poo.md` | Instrucciones y estado de ejecución de la suite. |
 | `docs/05-diagramas/02-diagrama-de-clases/diagrama-clases.puml` | Archivo presente en el repositorio. |
@@ -367,13 +374,16 @@ Los tres entregables UML se encuentran en
 | Serialización y restauración (`toJSON()`/`fromJSON()`). | Implementado en los cinco modelos. |
 | Diagrama PlantUML, exportación PNG y documentación UML. | Los tres archivos existen; revisar su alineación cuando cambien contratos. |
 | Contratos para Eventos + DOM y Storage. | Documentados; integración pendiente. |
-| Suite para QA de modelos. | Jasmine ejecutado: 35 specs, 0 failures (PASS). |
+| Suite para QA de modelos. | Jasmine ejecutado: 39 specs, 0 failures (PASS). |
 | Evidencia de uso/generación mediante Copilot. | Pendiente de evidencia verificable; no se atribuye generación sin el prompt y contexto reales. |
 
 ## 12. AT CLOSE — Evidencias
 
 ### Resultado de pruebas Jasmine (verificado)
 
+- Revisión monetaria de la PR #150: 39 ejecutadas, 39 aprobadas y 0 fallidas;
+  salida `39 specs, 0 failures, randomized with seed 86682`. Runner servido
+  por HTTP local y ejecutado en navegador mediante Playwright.
 - Revisión de hallazgos #2 y #3: 35 ejecutadas, 35 aprobadas y 0 fallidas;
   salida `35 specs, 0 failures, randomized with seed 92645`. Evidencia:
   `docs/04-testing/captura-jasmine-modelos-poo-hallazgos-2-3.png`.
