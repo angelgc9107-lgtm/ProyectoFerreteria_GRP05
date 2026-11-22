@@ -14,6 +14,8 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 - [feature/tester-qa-specs] [A4] Tester QA: `storage.spec.js`, `script.spec.js` nuevo para el controlador, `test-runner.html` con los tres specs, script de cobertura, `testing-doc.md` actualizado y AT CLOSE de spec-tester-qa (208 specs, 0 failures) PR: [#163](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/163) — Issue: [#145](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/145) — @alandox1 (Tester QA)
 
+- [feature/coord-devops-at-close] [A4] Coordinador / DevOps: completar AT CLOSE de spec-devops (reviews de #140, #141, #144, #150, #156 y #157, estado y obstáculos) PR: [#165](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/165) — Issue: [#137](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/137) — @alandox1 (Coordinador / DevOps)
+
 ### Changed
 
 - [feature/coord-devops-cuarta-entrega] [A4] Coordinador / DevOps: ajustar nombres de secciones del spec PR: [#154](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/154) - Issue: [#137](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/137) - @alandox1 (Coordinador / DevOps + TesterQA)
