@@ -14,8 +14,9 @@ export class Pago {
      * @throws {TypeError|RangeError} Si las entradas o importes calculados son inválidos.
      */
     constructor(total, metodoPago, cantidadCuotas) {
+        // Las cadenas solo admiten dígitos y un decimal simple: Number() aceptaría "0x10" o "1e2".
         if ((typeof total !== "number" && typeof total !== "string") ||
-                (typeof total === "string" && !total.trim())) {
+                (typeof total === "string" && !/^\s*\d+(\.\d+)?\s*$/.test(total))) {
             throw new TypeError("El total debe ser un numero.");
         }
         const monto = Number(total);
@@ -27,7 +28,7 @@ export class Pago {
         let cuotas = 1;
         if (metodoPago === "tarjeta") {
             if ((typeof cantidadCuotas !== "number" && typeof cantidadCuotas !== "string") ||
-                    (typeof cantidadCuotas === "string" && !cantidadCuotas.trim())) {
+                    (typeof cantidadCuotas === "string" && !/^\s*\d+\s*$/.test(cantidadCuotas))) {
                 throw new TypeError("Las cuotas deben ser un numero.");
             }
             cuotas = Number(cantidadCuotas);

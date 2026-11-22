@@ -29,6 +29,13 @@ probar los modelos sin alterar ese runner ni los archivos de configuración.
 
 Ejecutado con Jasmine 5.10.0 en navegador (servidor HTTP local):
 
+- Revisión de cadenas numéricas estrictas de la PR #150: 42 ejecutadas, 42
+  aprobadas, 0 fallidas. Salida: `42 specs, 0 failures, randomized with seed 95696`.
+  Casos nuevos: `"0x10"`, `"1e2"`, `"1e3"` y `"0x3"` rechazados en `Carrito`,
+  `Catalogo` y `Pago`; cadenas con espacios (`" 3 "`) aceptadas.
+
+Ejecución anterior:
+
 - Revisión monetaria de la PR #150: 39 ejecutadas, 39 aprobadas, 0 fallidas
   y 0 pendientes. Salida: `39 specs, 0 failures, randomized with seed 86682`.
 - Runner abierto mediante Playwright en

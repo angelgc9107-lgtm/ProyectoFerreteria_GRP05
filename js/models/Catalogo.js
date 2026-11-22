@@ -55,7 +55,8 @@ export class Catalogo {
         let precio = null;
         if (precioMaximo !== null && precioMaximo !== undefined &&
                 !(typeof precioMaximo === "string" && precioMaximo.trim() === "")) {
-            if (typeof precioMaximo !== "number" && typeof precioMaximo !== "string") {
+            if (typeof precioMaximo !== "number" &&
+                    !(typeof precioMaximo === "string" && /^\s*\d+(\.\d+)?\s*$/.test(precioMaximo))) {
                 return error("El precio maximo debe ser un numero mayor o igual a cero.");
             }
             precio = Number(precioMaximo);

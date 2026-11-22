@@ -9,11 +9,12 @@
 - **Rama prevista:** `feature/dev-poo-logica-negocio`.
 - **Integración prevista:** Pull Request hacia `develop`.
 - **Estado:** las cinco clases de dominio están implementadas en `js/models/`.
-  La suite de modelos fue ejecutada; la integración con Eventos + DOM y
-  Storage sigue pendiente.
+  La suite de modelos fue ejecutada. Eventos + DOM ya usa los modelos
+  (PR #156) y `StorageUtil` (PR #157) está disponible; `script.js` todavía no
+  persiste con Storage.
 - **Implementado:** modelos, validaciones y serialización/restauración.
 - **Pruebas:** Jasmine ejecutó 39 casos, con 0 fallos (sección 12).
-- **Pendiente de integración:** flujos de interfaz y persistencia.
+- **Integración:** flujos de interfaz integrados en `develop` (PR #156); persistencia con `StorageUtil` (PR #157) aún sin conectar en `script.js`.
 
 ## 2. Objetivo y responsabilidades
 
@@ -38,12 +39,12 @@ persistencia mediante Storage no forma parte de estos modelos. Por eso, la
 presencia de clases no implica que los flujos de la página ya estén conectados
 a ellas.
 
-| Flujo | Comportamiento implementado en los modelos | Integración pendiente |
+| Flujo | Comportamiento implementado en los modelos | Integración |
 |---|---|---|
-| Búsqueda | `Catalogo.buscar()` normaliza texto y categoría, admite precio máximo opcional y orden ascendente o descendente, y devuelve un resultado explícito de éxito o error. | Conectar filtros y orden de la interfaz. |
-| Carrito | `Carrito` mantiene instantáneas, valida operaciones, calcula subtotales, total y ambos contadores. | Conectar controles, estado y persistencia. |
-| Pago | `Pago` valida el total, método y cuotas, y calcula importes redondeados; no procesa transacciones. | Conectar selección y presentación de condiciones. |
-| Pedido | `Pedido` valida cliente y consistencia del pago, crea una instantánea y permite confirmar con fecha y secuencia provistas. | Conectar confirmación, cancelación y ciclo de vida del pedido. |
+| Búsqueda | `Catalogo.buscar()` normaliza texto y categoría, admite precio máximo opcional y orden ascendente o descendente, y devuelve un resultado explícito de éxito o error. | Integrada en `script.js` (PR #156). |
+| Carrito | `Carrito` mantiene instantáneas, valida operaciones, calcula subtotales, total y ambos contadores. | Controles y estado integrados en `script.js` (PR #156); persistencia pendiente de conectar. |
+| Pago | `Pago` valida el total, método y cuotas, y calcula importes redondeados; no procesa transacciones. | Integrada en `script.js` (PR #156). |
+| Pedido | `Pedido` valida cliente y consistencia del pago, crea una instantánea y permite confirmar con fecha y secuencia provistas. | Confirmación y cancelación integradas en `script.js` (PR #156); persistencia pendiente de conectar. |
 
 Los modelos no calculan envío, no cobran, no autentican usuarios, no
 administran stock y no persisten pedidos. La cancelación, la invalidación de
@@ -111,7 +112,7 @@ comparar sin distinguir mayúsculas; no se expone el arreglo interno.
 - `buscar(criterios = {}) -> { valido, error, resultados }`: requiere un
   objeto no nulo ni arreglo. `texto` y `categoria` deben ser cadenas; se
   comparan sin distinguir mayúsculas ni tildes. `precioMaximo` acepta número
-  o cadena numérica finita no negativa; `null`, `undefined`, cadena vacía o
+  o cadena decimal simple no negativa (solo dígitos y un punto; se rechazan `"0x10"` y `"1e3"`); `null`, `undefined`, cadena vacía o
   solo espacios omiten ese filtro. `orden` acepta `"asc"` (predeterminado) o
   `"desc"`. Un criterio inválido devuelve
   `{ valido: false, error: string, resultados: [] }`; el éxito devuelve
@@ -139,8 +140,8 @@ cantidades enteras seguras mayores o iguales a uno.
 
 - `agregar(catalogo, codigo, cantidad) -> { exito, error }`: busca el producto
   en un `Catalogo`; agrega su instantánea o suma la cantidad al ítem
-  existente. Acepta cantidades numéricas o cadenas numéricas no vacías y
-  rechaza cantidades inválidas o sumas fuera del rango entero seguro.
+  existente. Acepta cantidades numéricas o cadenas de solo dígitos (se rechazan
+  `"0x10"` y `"1e2"`) y rechaza cantidades inválidas o sumas fuera del rango entero seguro.
 - `cambiarCantidad(codigo, cantidad) -> { exito, error }`: reemplaza la
   cantidad de un ítem existente; compara el código sin espacios exteriores
   ni distinción de mayúsculas.
@@ -159,7 +160,7 @@ Las operaciones `agregar`, `cambiarCantidad` y `eliminar` devuelven
 `{ exito: true, error: null }` en éxito o `{ exito: false, error: string }`
 en error; los fallos no modifican el carrito. La cantidad del constructor y
 los snapshots debe ser un número entero seguro positivo; las operaciones de
-cantidad también aceptan cadenas numéricas no vacías. Códigos duplicados,
+cantidad también aceptan cadenas de solo dígitos. Códigos duplicados,
 precios no finitos o negativos, cantidades inválidas y desbordes se rechazan.
 `toJSON()` omite subtotales derivados y `fromJSON()` vuelve a validar el
 arreglo mediante el constructor.
@@ -175,8 +176,7 @@ sin efectuar transacciones. Se justifica por `calcularCondicionesPago`.
 calculan a partir de esos datos y no se editan por separado.
 
 **Constructor:** `new Pago(total, metodoPago, cantidadCuotas)`. `total` acepta
-un número o cadena numérica que se convierta a un número finito mayor que
-cero. Para
+un número o cadena decimal simple (dígitos y un punto) mayor que cero. Para
 `efectivo-transferencia` se fija una cuota y recargo 0,
 independientemente del tercer argumento; para `tarjeta` se aceptan 1, 3 o
 6 cuotas, con recargos 0, 10 o 20 respectivamente. Un método o cantidad
@@ -266,7 +266,7 @@ conserva el estado confirmado.
 operación del carrito comunican los errores con sus objetos de resultado en
 vez de lanzar por entradas inválidas de esos métodos. La presentación de
 errores en la interfaz y el reporte de fallos de Storage pertenecen a la
-integración pendiente, no a estas clases.
+integración, no a estas clases.
 
 ## 5. Relaciones entre clases implementadas
 
@@ -301,7 +301,7 @@ actual redondeado del carrito.
   subtotales, total y pago al restaurar.
 - Los modelos no dependen de navegador, DOM, eventos ni Web Storage. La
   invalidación de un pago al cambiar el total, cancelaciones y limpieza tras
-  confirmar siguen pendientes de integración en Eventos + DOM y Storage.
+  confirmar corresponden a Eventos + DOM y a Storage, no a los modelos.
 
 ## 7. Separación de negocio, eventos y DOM
 
@@ -319,13 +319,13 @@ integrar la interfaz con los contratos anteriores sin trasladar
 
 ## 8. Integración con otros roles: estado actual
 
-- **Eventos + DOM — pendiente:** conectar los formularios y acciones de
-  interfaz con `Catalogo.buscar`, operaciones de `Carrito`, `Pago.calcular`
-  y `Pedido.resumir()`/`confirmar()`. Gestionar cancelaciones, invalidación
-  de pago y limpieza posterior sin atribuir esas transiciones a los modelos.
-- **Storage — pendiente:** acordar claves, backend (`localStorage` o
-  `sessionStorage`), ciclo de vida y operaciones. La capa deberá guardar
-  objetos planos con `toJSON()` y restaurarlos mediante `fromJSON()`.
+- **Eventos + DOM — integrado (PR #156):** `script.js` conecta los formularios
+  y acciones de interfaz con `Catalogo.buscar`, `Carrito`, `Pago.calcular` y
+  `Pedido.resumir()`/`confirmar()`. Las cancelaciones, la invalidación de pago
+  y la limpieza posterior las gestiona el controlador, no los modelos.
+- **Storage — implementado (PR #157), sin conectar en `script.js`:**
+  `StorageUtil` guarda objetos planos con `toJSON()` y los restaura mediante
+  `fromJSON()`; su uso desde la página queda pendiente de coordinación.
   Ausencia de datos, JSON corrupto, fallo de almacenamiento y error de
   validación deben distinguirse. Los modelos no acceden al navegador.
 - **Tester QA — suite ejecutada:** existe
@@ -360,7 +360,7 @@ Los tres entregables UML se encuentran en
 | `docs/05-diagramas/02-diagrama-de-clases/diagrama-clases.puml` | Archivo presente en el repositorio. |
 | `docs/05-diagramas/02-diagrama-de-clases/diagrama-clases.png` | Archivo presente en el repositorio. |
 | `docs/05-diagramas/02-diagrama-de-clases/diagrama-clases-doc.md` | Archivo presente en el repositorio. |
-| `js/script.js`, `index.html`, Storage | Integración de los modelos con interfaz y persistencia pendiente de coordinación con sus responsables. |
+| `js/script.js`, `index.html`, Storage | Modelos integrados con la interfaz (PR #156); `StorageUtil` (PR #157) disponible y aún no usado por `script.js`. |
 
 ## 11. Criterios de aceptación
 
@@ -370,17 +370,20 @@ Los tres entregables UML se encuentran en
 | Clases principales `Producto`, `Catalogo` y `Carrito`; clases complementarias `Pago` y `Pedido`. | Implementadas en `js/models/`. |
 | Constructores y métodos documentados con JSDoc. | Implementado en los cinco modelos. |
 | Encapsulamiento y validaciones internas. | Implementado en los cinco modelos. |
-| Lógica de negocio separada de DOM y eventos. | Implementado en los módulos; conexión desde la página pendiente. |
+| Lógica de negocio separada de DOM y eventos. | Implementado en los módulos; consumidos desde `script.js` (PR #156). |
 | Serialización y restauración (`toJSON()`/`fromJSON()`). | Implementado en los cinco modelos. |
 | Diagrama PlantUML, exportación PNG y documentación UML. | Los tres archivos existen; revisar su alineación cuando cambien contratos. |
-| Contratos para Eventos + DOM y Storage. | Documentados; integración pendiente. |
+| Contratos para Eventos + DOM y Storage. | Documentados; Eventos + DOM integrado (PR #156); Storage compatible (PR #157), sin conectar aún en la página. |
 | Suite para QA de modelos. | Jasmine ejecutado: 39 specs, 0 failures (PASS). |
-| Evidencia de uso/generación mediante Copilot. | Pendiente de evidencia verificable; no se atribuye generación sin el prompt y contexto reales. |
+| Evidencia de uso/generación mediante Copilot. | Registrada en la sección 12.1 (prompt, fragmento y ajustes aportados por el responsable del rol). |
 
 ## 12. AT CLOSE — Evidencias
 
 ### Resultado de pruebas Jasmine (verificado)
 
+- Revisión de cadenas numéricas estrictas (PR #150): 42 ejecutadas, 42
+  aprobadas y 0 fallidas; salida `42 specs, 0 failures, randomized with seed 95696`.
+  Runner servido por HTTP local y ejecutado en navegador.
 - Revisión monetaria de la PR #150: 39 ejecutadas, 39 aprobadas y 0 fallidas;
   salida `39 specs, 0 failures, randomized with seed 86682`. Runner servido
   por HTTP local y ejecutado en navegador mediante Playwright.
@@ -399,14 +402,12 @@ Los tres entregables UML se encuentran en
 - Evidencia: `docs/04-testing/captura-jasmine-modelos-poo.png` y
   `docs/04-testing/pruebas-modelos-poo.md`.
 
-## 12.1 Evidencias de GitHub Copilot Agent Mode — pendientes
+## 12.1 Evidencias de GitHub Copilot Agent Mode
 
-No se atribuye todavía generación de clases, ajustes manuales ni resultados
-de implementación a Copilot. Registrar únicamente evidencia real:
+Evidencia registrada por el responsable del rol (prompt utilizado, fragmento
+generado y ajustes manuales):
 
 ### Prompt exacto de implementación
-
-Pendiente: copiar literalmente el prompt utilizado para implementar las clases.
 
 ```text
 Necesito que implementes mi parte de la Actividad Obligatoria N.º 4 del proyecto FerroLab, correspondiente al rol **Desarrollador JS POO (Lógica de Negocio)**.
@@ -572,8 +573,6 @@ Contexto previsto: los cuatro diagramas de actividades `.puml` de
 
 ### Fragmento de código generado
 
-### Fragmento de código generado
-
 Como evidencia de la implementación realizada con GitHub Copilot Agent Mode, seleccioné un fragmento del método `buscar()` de la clase `Catalogo`.
 
 **Archivo:** `js/models/Catalogo.js`
@@ -620,8 +619,8 @@ Además, incorporé:
 - Reglas para métodos de pago, cuotas y recargos.
 - Validaciones de clientes y confirmación de pedidos.
 
-La integración definitiva con Eventos + DOM y Storage continúa pendiente de coordinación con los responsables de esos roles.
+Eventos + DOM quedó integrado en la PR #156; la conexión de `StorageUtil` en `script.js` continúa pendiente de coordinación con los responsables de esos roles.
 
 Las pruebas automatizadas de los modelos se encuentran en `js/test/models.spec.js`, utilizando un runner independiente para no modificar las pruebas existentes de Tester QA.
 
-Los resultados definitivos de Jasmine se documentarán una vez completada su ejecución y verificación.
+Resultado definitivo de Jasmine: 42 specs, 0 failures (sección 12).

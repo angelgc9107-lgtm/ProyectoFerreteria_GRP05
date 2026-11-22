@@ -545,3 +545,35 @@ describe("Pedido", function () {
             .toThrowError(RangeError);
     });
 });
+
+describe("Cadenas numéricas estrictas", function () {
+    it("Carrito rechaza cantidades hexadecimales o exponenciales y acepta dígitos con espacios", function () {
+        const carrito = new Carrito();
+        for (const cantidad of ["0x10", "1e2", "1_0", "+3", "-3"]) {
+            expect(carrito.agregar(crearCatalogo(), "TAL-01", cantidad).exito).toBeFalse();
+        }
+        expect(carrito.resumir().cantidadUnidades).toBe(0);
+        expect(carrito.agregar(crearCatalogo(), "TAL-01", " 3 ").exito).toBeTrue();
+        expect(carrito.resumir().cantidadUnidades).toBe(3);
+    });
+
+    it("Catalogo rechaza precios máximos hexadecimales o exponenciales y acepta decimales simples", function () {
+        const catalogo = crearCatalogo();
+        for (const precioMaximo of ["0x10", "1e3", "Infinity", "-5"]) {
+            expect(catalogo.buscar({ precioMaximo }).valido).toBeFalse();
+        }
+        const resultado = catalogo.buscar({ precioMaximo: " 50.5 " });
+        expect(resultado.valido).toBeTrue();
+        expect(resultado.resultados.map((p) => p.codigo)).toEqual(["MAR-02", "PIN-03"]);
+    });
+
+    it("Pago rechaza totales y cuotas hexadecimales o exponenciales", function () {
+        for (const total of ["0x10", "1e2", "-5"]) {
+            expect(() => new Pago(total, "efectivo-transferencia")).toThrow();
+        }
+        for (const cuotas of ["0x3", "3e0"]) {
+            expect(() => new Pago(100, "tarjeta", cuotas)).toThrow();
+        }
+        expect(new Pago(" 100.5 ", "tarjeta", " 3 ").calcular().cuotas).toBe(3);
+    });
+});
