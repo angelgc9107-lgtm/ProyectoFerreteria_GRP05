@@ -3,6 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <title>Prueba Jasmine</title>
+  <!--
+    Los specs usan módulos ES (import/export), así que este archivo NO funciona
+    abierto con doble clic (file://): el navegador bloquea los módulos.
+    Hay que servir el proyecto por http desde la RAÍZ del repo, por ejemplo:
+        python -m http.server 8000      (o: npx serve .)
+    y abrir  http://localhost:8000/js/test/test-runner.html
+
+    Para ejecutar una sola suite se puede filtrar por nombre, por ejemplo:
+        ...test-runner.html?spec=StorageUtil
+        ...test-runner.html?spec=Controlador
+  -->
   <!-- Jasmine CSS -->
   <link rel="shortcut icon" type="image/png"
         href="https://cdnjs.cloudflare.com/ajax/libs/jasmine/5.10.0/jasmine_favicon.png">
@@ -16,10 +27,13 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/5.10.0/boot1.min.js"></script>
 </head>
 <body>
-  <!-- Código fuente a testear -->
-  <script src="../script.js"></script>
-
-  <!-- Tests -->
-  <script src="script.spec.js"></script>
+  <!--
+    Tests. Cada spec importa por su cuenta el módulo que prueba (models y storage)
+    o abre index.html en un iframe (script.spec.js, que prueba el controlador).
+    Los módulos se ejecutan antes del evento load, que es cuando Jasmine arranca.
+  -->
+  <script type="module" src="models.spec.js"></script>
+  <script type="module" src="storage.spec.js"></script>
+  <script type="module" src="script.spec.js"></script>
 </body>
 </html>
