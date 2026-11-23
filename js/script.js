@@ -1,4 +1,5 @@
 import { Producto } from "./models/Producto.js";
+import { FachadaStorage } from "./services/FachadaStorage.js";
 import { Catalogo } from "./models/Catalogo.js";
 import { Carrito } from "./models/Carrito.js";
 import { Pago } from "./models/Pago.js";
@@ -20,7 +21,7 @@ const productosIniciales = [
 ];
 
 const catalogo = new Catalogo(productosIniciales.map((datos) => new Producto(datos)));
-const carrito = new Carrito();
+const carrito = FachadaStorage.cargarCarrito();
 let pagoActual = null;
 let pedidoPendiente = null;
 let esperandoCierreCarrito = false;
@@ -386,11 +387,18 @@ function agregarDatosResumen(contenedor, resumen) {
         return false;
     }
 
+    const guardado = FachadaStorage.guardarCarrito(carrito);
+
     const pagoInvalidado = invalidarPagoPorCambioCarrito();
 
     renderizarCarrito();
 
-    if (pagoInvalidado) {
+    if (!guardado) {
+        const mensaje = "El carrito se actualizó, pero no pudo guardarse. Los cambios podrían perderse al recargar.";
+
+        mostrarMensaje(elementos.carritoMensaje, mensaje, "error");
+        mostrarMensaje(elementos.estadoAplicacion, mensaje, "error");
+    } else if (pagoInvalidado) {
         const mensaje = "Carrito actualizado; el pago debe seleccionarse nuevamente.";
 
         mostrarMensaje(elementos.carritoMensaje, mensaje, "info");
@@ -475,11 +483,16 @@ function confirmarPedido() {
         elementos.resumenPedido.querySelector('[data-action="confirmar-pedido"]').remove();
         elementos.formPedido.hidden = true;
         carrito.vaciar();
+        const carritoGuardado = FachadaStorage.guardarCarrito(carrito);
         pagoActual = null;
         pedidoPendiente = null;
         renderizarCarrito();
         elementos.seccionPago.hidden = true;
-        mostrarMensaje(elementos.pedidoMensaje, "La operacion se realizo correctamente.", "success");
+        mostrarMensaje(elementos.pedidoMensaje,carritoGuardado
+                ? "La operacion se realizo correctamente."
+                : "Pedido confirmado, pero no se pudo guardar el carrito vacío. Los productos podrían reaparecer al recargar.",
+            carritoGuardado ? "success" : "error"
+        );
     } catch (error) {
         if (!(error instanceof TypeError || error instanceof RangeError)) throw error;
         mostrarMensaje(elementos.pedidoMensaje, error.message, "error");
