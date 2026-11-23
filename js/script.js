@@ -292,17 +292,12 @@ function obtenerCondicionesPago() {
         mostrarMensaje(elementos.pagoMensaje, "No hay productos para pagar.", "error");
         return null;
     }
-    if (!elementos.metodoPago.value) {
-        mostrarMensaje(elementos.pagoMensaje, "Selecciona un metodo de pago.", "error");
-        marcarControl(elementos.metodoPago, false);
-        return null;
-    }
 
     try {
         const pago = new Pago(
             resumen.total,
             elementos.metodoPago.value,
-            elementos.metodoPago.value === "tarjeta" ? elementos.cuotas.value : 1
+            elementos.cuotas.value
         );
         const condiciones = pago.calcular();
         marcarControl(elementos.metodoPago, true);
@@ -316,7 +311,9 @@ function obtenerCondicionesPago() {
         pagoActual = null;
         mostrarMensaje(elementos.pagoMensaje, error.message, "error");
         marcarControl(
-            elementos.metodoPago.value === "tarjeta" ? elementos.cuotas : elementos.metodoPago,
+            Pago.admiteCuotas(elementos.metodoPago.value)
+                ? elementos.cuotas
+                : elementos.metodoPago,
             false,
             error.message
         );
@@ -701,9 +698,14 @@ function inicializarEventos() {
     });
 
     elementos.metodoPago.addEventListener("change", () => {
-        const tarjeta = elementos.metodoPago.value === "tarjeta";
-        elementos.cuotas.disabled = !tarjeta;
-        if (!tarjeta) elementos.cuotas.value = "1";
+        const admiteCuotas = Pago.admiteCuotas(
+            elementos.metodoPago.value
+        );
+        elementos.cuotas.disabled = !admiteCuotas;
+
+        if (!admiteCuotas) {
+            elementos.cuotas.value = "1";
+        }
         elementos.condicionesPago.replaceChildren();
         pagoActual = null;
         pedidoPendiente = null;
