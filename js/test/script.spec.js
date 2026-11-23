@@ -25,6 +25,14 @@ let espiaConsoleLog;
 let espiaConsoleError;
 let storageAntes;
 
+const CLAVES_STORAGE_PRUEBAS = [
+    "app:carrito:items",
+    "app:pedidos:secuencia",
+    "app:pedidos:historial"
+];
+
+let valoresOriginalesStorage;
+
 // ---------------------------------------------------------------------------
 // Utilidades
 // ---------------------------------------------------------------------------
@@ -136,26 +144,61 @@ function llegarAlResumen() {
 // Preparación común: una copia nueva de la página para cada test
 // ---------------------------------------------------------------------------
 
+
 beforeEach(async function () {
+    // Guarda los datos originales del usuario.
+    valoresOriginalesStorage = new Map(
+        CLAVES_STORAGE_PRUEBAS.map((clave) => [
+            clave,
+            window.localStorage.getItem(clave)
+        ])
+    );
+
+    // Cada prueba debe comenzar sin carrito ni pedidos anteriores.
+    CLAVES_STORAGE_PRUEBAS.forEach((clave) => {
+        window.localStorage.removeItem(clave);
+    });
+
+    // Carga una instancia limpia de la aplicación.
     marco = await abrirApp();
     win = marco.contentWindow;
     doc = marco.contentDocument;
-    // Ningún flujo debe usar diálogos del navegador ni dejar trazas en la consola.
+
     espiaAlert = jasmine.createSpy("alert");
     espiaPrompt = jasmine.createSpy("prompt");
     espiaConfirm = jasmine.createSpy("confirm");
+
     win.alert = espiaAlert;
     win.prompt = espiaPrompt;
     win.confirm = espiaConfirm;
+
     espiaConsoleLog = spyOn(win.console, "log");
     espiaConsoleError = spyOn(win.console, "error");
-    // El iframe comparte origen con el runner: se toma el estado previo del storage
-    // para que el test no dependa de claves que haya dejado otro uso del sitio.
-    storageAntes = { local: instantanea(win.localStorage), session: instantanea(win.sessionStorage) };
+
+    storageAntes = {
+        local: instantanea(win.localStorage),
+        session: instantanea(win.sessionStorage)
+    };
 }, TIEMPO_CARGA_MS);
 
+
 afterEach(function () {
-    if (marco) marco.remove();
+    if (marco) {
+        marco.remove();
+    }
+
+    // Restaura los datos originales del localStorage.
+    if (valoresOriginalesStorage) {
+        for (const [clave, valor] of valoresOriginalesStorage) {
+            if (valor === null) {
+                window.localStorage.removeItem(clave);
+            } else {
+                window.localStorage.setItem(clave, valor);
+            }
+        }
+    }
+
+    valoresOriginalesStorage = null;
     marco = win = doc = null;
 });
 
@@ -366,6 +409,45 @@ describe("Controlador - Flujo 1: búsqueda y filtrado", function () {
         expect(codigosVisibles()).toEqual(["PALA-001"]);
         clic(q('nav [data-categoria=""]'));
         expect(codigosVisibles().length).toBe(9);
+        
+    });
+
+    it("recupera los resultados al corregir una búsqueda sin coincidencias", function () {
+    escribir("#busqueda", "producto-inexistente");
+
+    expect(codigosVisibles()).toEqual([]);
+    expect(texto("#catalogo-mensaje")).toBe("Sin coincidencias.");
+
+    escribir("#busqueda", "taladro");
+
+    expect(codigosVisibles()).toEqual(["TALADRO-001"]);
+    expect(texto("#catalogo-mensaje"))
+        .toBe("1 producto(s) encontrado(s).");
+
+    escribir("#busqueda", "");
+
+    expect(codigosVisibles().length).toBe(9);
+    });
+
+    it("recupera los productos al quitar un filtro de precio sin coincidencias", function () {
+        elegir("#categoria", "Jardineria");
+
+        const activar = q("#activar-filtro-precio");
+        activar.checked = true;
+        disparar(activar, "change");
+
+        escribir("#precio-hasta", "10000");
+
+        expect(codigosVisibles()).toEqual([]);
+        expect(texto("#catalogo-mensaje")).toBe("Sin coincidencias.");
+
+        activar.checked = false;
+        disparar(activar, "change");
+
+        expect(codigosVisibles()).toEqual(["PALA-001"]);
+        expect(texto("#catalogo-mensaje"))
+            .toBe("1 producto(s) encontrado(s).");
+
     });
 });
 
@@ -419,7 +501,7 @@ describe("Controlador - Flujo 2: carrito", function () {
         escribir(control, "0");
         expect(control.classList.contains("is-invalid")).toBeTrue();
         expect(texto("#error-cantidad-guantes-001"))
-            .toBe("La cantidad debe ser un número entero mayor o igual a 1.");
+            .toBe("La cantidad debe ser un entero seguro mayor o igual a uno.");
         elegir(control, "0");
         expect(texto("#carrito-total")).toMatch(/4\.401,00/);
         expect(texto("#carrito-mensaje")).toMatch(/entero seguro mayor o igual a uno/);
@@ -432,12 +514,34 @@ describe("Controlador - Flujo 2: carrito", function () {
         expect(texto("#carrito-total")).not.toMatch(/440\.100,00/);
     });
 
+
     it("una cantidad decimal se rechaza y deja el carrito igual", function () {
         agregarAlCarrito("GUANTES-001");
-        elegir(q('[data-action="cambiar-cantidad"]'), "1.5");
+
+        const control = q(
+            '[data-action="cambiar-cantidad"][data-product-code="GUANTES-001"]'
+        );
+
+        // Verifica el estado inicial.
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
         expect(texto("#carrito-total")).toMatch(/4\.401,00/);
-        expect(q('[data-action="cambiar-cantidad"]').classList.contains("is-invalid")).toBeTrue();
+
+        // Intenta ingresar una cantidad decimal.
+        control.value = "1.5";
+
+        expect(control.value).toBe("1.5");
+
+        disparar(control, "change");
+
+        // La cantidad decimal debe rechazarse.
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+        expect(texto("#carrito-total")).toMatch(/4\.401,00/);
+
+        expect(
+            q('[data-action="cambiar-cantidad"]').classList.contains("is-invalid")
+        ).toBeTrue();
     });
+
 
     it("elimina un producto y vuelve al estado vacío", function () {
         agregarAlCarrito("GUANTES-001");
@@ -456,6 +560,46 @@ describe("Controlador - Flujo 2: carrito", function () {
         expect(cantidadEnCarrito("PINZA-001")).toBe("1");
         expect(texto("#carrito-total")).toMatch(/6\.426,00/);
     });
+
+        // Trazabilidad - Flujo 2: validación y actualización
+    it("valida la cantidad con input sin modificar el total hasta change", function () {
+        agregarAlCarrito("GUANTES-001");
+
+        const control = q(
+            '[data-action="cambiar-cantidad"][data-product-code="GUANTES-001"]'
+        );
+
+        escribir(control, "2");
+
+        expect(control.classList.contains("is-valid")).toBeTrue();
+        expect(texto("#carrito-total")).toMatch(/4\.401,00/);
+
+        elegir(control, "2");
+
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("2");
+        expect(texto("#carrito-total")).toMatch(/8\.802,00/);
+    });
+
+    // Trazabilidad - Flujo 2: invalidación del pago
+    it("modificar la cantidad después de elegir el pago invalida la confirmación", function () {
+        irAConfirmacion("tarjeta", "3");
+
+        expect(q("#confirmacion").hidden).toBeFalse();
+
+        const cantidad = q(
+            '[data-action="cambiar-cantidad"][data-product-code="GUANTES-001"]'
+        );
+
+        elegir(cantidad, "2");
+
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("2");
+        expect(q("#pago").hidden).toBeTrue();
+        expect(q("#confirmacion").hidden).toBeTrue();
+        expect(texto("#condiciones-pago")).toBe("");
+        expect(texto("#carrito-mensaje"))
+            .toBe("Carrito actualizado; el pago debe seleccionarse nuevamente.");
+    });
+
 });
 
 // ---------------------------------------------------------------------------
@@ -470,7 +614,7 @@ describe("Controlador - Flujo 3: pago y cuotas", function () {
         expect(texto("#estado-aplicacion")).toBe("Preparando el pago...");
         expect(q("#estado-aplicacion").classList.contains("is-loading")).toBeTrue();
         expect(q("#cuotas").disabled).toBeTrue();
-        expect(q("#cuotas").value).toBe("1");
+        expect(q("#cuotas").value).toBe("");
     });
 
     it("al cerrarse el carrito el indicador pasa a «Pago listo para completar.»", async function () {
@@ -536,7 +680,7 @@ describe("Controlador - Flujo 3: pago y cuotas", function () {
     it("continuar sin elegir método muestra el error y no avanza", function () {
         irAlPago();
         enviar("#form-pago");
-        expect(texto("#pago-mensaje")).toBe("Selecciona un metodo de pago.");
+        expect(texto("#pago-mensaje")).toBe("El metodo de pago no es valido.");
         expect(q("#metodo-pago").classList.contains("is-invalid")).toBeTrue();
         expect(q("#confirmacion").hidden).toBeTrue();
     });
@@ -565,6 +709,37 @@ describe("Controlador - Flujo 3: pago y cuotas", function () {
         expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
         expect(texto("#carrito-mensaje")).toBe("Pago cancelado. El carrito se conserva.");
     });
+
+    // Trazabilidad - Flujo 3: tarjeta en una cuota
+    it("tarjeta en una cuota no aplica recargo", function () {
+        irAlPago();
+
+        elegir("#metodo-pago", "tarjeta");
+        elegir("#cuotas", "1");
+
+        const condiciones = texto("#condiciones-pago");
+
+        expect(q("#cuotas").disabled).toBeFalse();
+        expect(condiciones).toMatch(/Cuotas\s*1/);
+        expect(condiciones).toMatch(/0% \(\$\s?0,00\)/);
+        expect(condiciones).toMatch(/Total financiado\s*\$\s?4\.401,00/);
+    });
+
+    // Trazabilidad - Flujo 3: cambio de método después de continuar
+    it("cambiar el método de pago invalida la confirmación anterior", function () {
+        irAConfirmacion("tarjeta", "3");
+
+        expect(q("#confirmacion").hidden).toBeFalse();
+
+        elegir("#metodo-pago", "efectivo-transferencia");
+
+        expect(q("#cuotas").disabled).toBeTrue();
+        expect(q("#cuotas").value).toBe("1");
+        expect(q("#confirmacion").hidden).toBeTrue();
+        expect(texto("#resumen-pedido")).toBe("");
+        expect(texto("#condiciones-pago")).toMatch(/Cuotas\s*1/);
+    });
+
 });
 
 // ---------------------------------------------------------------------------
@@ -576,41 +751,71 @@ describe("Controlador - Flujo 4: confirmación del pedido", function () {
         irAConfirmacion();
     });
 
-    it("valida el nombre en tiempo real", function () {
-        const nombre = escribir("#pedido-nombre", "Ana Pérez");
-        expect(nombre.classList.contains("is-valid")).toBeTrue();
-        escribir(nombre, "");
-        expect(nombre.classList.contains("is-invalid")).toBeTrue();
-        expect(texto("#error-pedido-nombre")).toBe("Ingresá un nombre válido.");
-        escribir(nombre, "12345");
-        expect(nombre.classList.contains("is-invalid")).toBeTrue();
+    it("valida el nombre al enviar el formulario", function () {
+        completarCliente();
+        escribir("#pedido-nombre", "12345");
+        enviar("#form-pedido");
+
+        expect(q("#pedido-nombre").classList.contains("is-invalid")).toBeTrue();
+        expect(texto("#error-pedido-nombre")).toBe("nombre no es valido.");
+        expect(qa("#resumen-pedido *").length).toBe(0);
+
+        escribir("#pedido-nombre", "Ana Pérez");
+        enviar("#form-pedido");
+
+        expect(q('#resumen-pedido [data-action="confirmar-pedido"]'))
+            .not.toBeNull();
     });
 
-    it("valida el correo en tiempo real", function () {
-        const correo = escribir("#pedido-correo", "ana@correo");
-        expect(correo.classList.contains("is-invalid")).toBeTrue();
-        expect(texto("#error-pedido-correo")).toBe("Ingresá un correo electrónico válido.");
-        escribir(correo, "ana@correo.com");
-        expect(correo.classList.contains("is-valid")).toBeTrue();
-        expect(correo.getAttribute("aria-invalid")).toBe("false");
+    it("valida el correo al enviar el formulario", function () {
+        completarCliente();
+
+        escribir("#pedido-correo", "ana@correo");
+        enviar("#form-pedido");
+
+        expect(q("#pedido-correo").classList.contains("is-invalid")).toBeTrue();
+        expect(texto("#error-pedido-correo")).toBe("correo no es valido.");
+        expect(qa("#resumen-pedido *").length).toBe(0);
+
+        escribir("#pedido-correo", "ana@correo.com");
+        enviar("#form-pedido");
+
+        expect(q('#resumen-pedido [data-action="confirmar-pedido"]'))
+            .not.toBeNull();
+        expect(texto("#resumen-pedido")).toContain("ana@correo.com");
     });
 
     it("acepta correos con caracteres no ASCII", function () {
-        const correo = escribir("#pedido-correo", "ñandú@correo.com");
-        expect(correo.classList.contains("is-valid")).toBeTrue();
+        completarCliente("Ana Pérez", "ñandú@correo.com", "Calle Falsa 123");
+
+        enviar("#form-pedido");
+
+        expect(q('#resumen-pedido [data-action="confirmar-pedido"]'))
+            .not.toBeNull();
+        expect(texto("#resumen-pedido")).toContain("ñandú@correo.com");
     });
 
-    it("valida la dirección en tiempo real", function () {
-        const direccion = escribir("#pedido-direccion", "   ");
-        expect(direccion.classList.contains("is-invalid")).toBeTrue();
-        expect(texto("#error-pedido-direccion")).toBe("Ingresá una dirección de envío.");
-        escribir(direccion, "Calle Falsa 123");
-        expect(direccion.classList.contains("is-valid")).toBeTrue();
+    it("valida la dirección al enviar el formulario", function () {
+        completarCliente();
+        escribir("#pedido-direccion", "   ");
+
+        enviar("#form-pedido");
+
+        expect(q("#pedido-direccion").classList.contains("is-invalid"))
+            .toBeTrue();
+        expect(texto("#error-pedido-direccion")).toBe("direccion no es valido.");
+        expect(qa("#resumen-pedido *").length).toBe(0);
+
+        escribir("#pedido-direccion", "Calle Falsa 123");
+        enviar("#form-pedido");
+
+        expect(q('#resumen-pedido [data-action="confirmar-pedido"]'))
+            .not.toBeNull();
     });
 
     it("enviar con campos vacíos muestra el error y no genera resumen", function () {
         enviar("#form-pedido");
-        expect(texto("#pedido-mensaje")).toBe("Revisá los datos del cliente antes de continuar.");
+        expect(texto("#pedido-mensaje")).toBe("nombre no es valido.");
         expect(qa("#resumen-pedido *").length).toBe(0);
         expect(q("#pedido-nombre").classList.contains("is-invalid")).toBeTrue();
     });
@@ -682,6 +887,62 @@ describe("Controlador - Flujo 4: confirmación del pedido", function () {
         expect(texto("#pedido-mensaje"))
             .toBe("Pedido cancelado. Se conservaron el carrito y las condiciones de pago.");
     });
+
+
+    // Trazabilidad - Flujo 4: corrección de datos inválidos
+    it("permite corregir datos inválidos y generar el resumen", function () {
+        enviar("#form-pedido");
+
+        expect(qa("#resumen-pedido *").length).toBe(0);
+        expect(q("#pedido-nombre").classList.contains("is-invalid"))
+            .toBeTrue();
+
+        completarCliente();
+
+        enviar("#form-pedido");
+
+        expect(q("#pedido-nombre").classList.contains("is-invalid"))
+            .toBeFalse();
+
+        expect(
+            q('#resumen-pedido [data-action="confirmar-pedido"]')
+        ).not.toBeNull();
+
+        expect(texto("#resumen-pedido"))
+            .toMatch(/Cliente: Ana Pérez/);
+    });
+
+    // Trazabilidad - Flujo 4: invalidación y regeneración del resumen
+    it("impide confirmar datos modificados e inválidos hasta regenerar el resumen", function () {
+        completarCliente();
+        enviar("#form-pedido");
+
+        expect(
+            q('#resumen-pedido [data-action="confirmar-pedido"]')
+        ).not.toBeNull();
+
+        escribir("#pedido-correo", "correo-invalido");
+
+        expect(qa("#resumen-pedido *").length).toBe(0);
+
+        enviar("#form-pedido");
+
+        expect(q("#pedido-correo").classList.contains("is-invalid"))
+            .toBeTrue();
+        expect(texto("#error-pedido-correo")).toBe("correo no es valido.");
+        expect(qa("#resumen-pedido *").length).toBe(0);
+
+        escribir("#pedido-correo", "ana@correo.com");
+        enviar("#form-pedido");
+
+        expect(
+            q('#resumen-pedido [data-action="confirmar-pedido"]')
+        ).not.toBeNull();
+
+        expect(texto("#resumen-pedido"))
+            .toMatch(/ana@correo\.com/);
+    });
+
 });
 
 // ---------------------------------------------------------------------------
