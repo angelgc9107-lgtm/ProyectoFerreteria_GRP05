@@ -9,6 +9,8 @@ import { validarCambioCantidad } from "./services/ValidacionCarrito.js";
 import { confirmarPedidoConNumeracion } from "./services/ConfirmadorPedidos.js";
 import { ServicioOfertas } from "./services/ServicioOfertas.js";
 import { IMAGENES_CATALOGO } from "./data/imagenesCatalogo.js";
+import { ServicioCategorias } from "./services/ServicioCategorias.js";
+import { ServicioOpcionesPago } from "./services/ServicioOpcionesPago.js";
 
 const productosIniciales = [
     { codigo: "GUANTES-001", nombre: "Guantes moteados multiuso maxima calidad", categoria: "Herramientas manuales", descripcion: "Proteccion multiuso para trabajos de ferreteria y mantenimiento.", precio: 4401 },
@@ -45,6 +47,7 @@ const elementos = {
     formBusqueda: elemento("#form-busqueda"),
     estadoAplicacion: elemento("#estado-aplicacion", false),
     categoria: elemento("#categoria"),
+    menuCategorias: elemento("#menu-categorias"),
     orden: elemento("#orden"),
     activarPrecio: elemento("#activar-filtro-precio"),
     precio: elemento("#precio-hasta"),
@@ -517,8 +520,7 @@ function iniciarPago() {
     elementos.formPedido.querySelectorAll("input").forEach(limpiarEstadoControl);
     elementos.resumenPedido.replaceChildren();
     elementos.metodoPago.value = "";
-    elementos.cuotas.value = "1";
-    elementos.cuotas.disabled = true;
+    renderizarCuotas("");
     elementos.condicionesPago.replaceChildren();
     elementos.seccionConfirmacion.hidden = true;
     elementos.seccionPago.hidden = false;
@@ -699,10 +701,100 @@ function renderizarTablaPrecios() {
 }
 
 
+/**
+ * Renderiza dinámicamente las categorías en el filtro
+ * y en el menú desplegable de navegación.
+ * @returns {void}
+ */
+function renderizarCategorias() {
+    const categorias = ServicioCategorias.obtenerCategorias(catalogo);
+
+    const fragmentoSelect = document.createDocumentFragment();
+    const fragmentoMenu = document.createDocumentFragment();
+
+    const opciones = ["", ...categorias];
+
+    opciones.forEach((categoria) => {
+        const etiqueta = categoria || "Todas las categorias";
+
+        // Opción del filtro de categorías
+        const opcion = document.createElement("option");
+        opcion.value = categoria;
+        opcion.textContent = etiqueta;
+
+        fragmentoSelect.append(opcion);
+
+        // Opción del menú desplegable
+        const item = document.createElement("li");
+
+        const enlace = document.createElement("a");
+        enlace.className = "dropdown-item";
+        enlace.href = "#catalogo";
+        enlace.dataset.categoria = categoria;
+        enlace.textContent = etiqueta;
+
+        item.append(enlace);
+        fragmentoMenu.append(item);
+    });
+
+    elementos.categoria.replaceChildren(fragmentoSelect);
+    elementos.menuCategorias.replaceChildren(fragmentoMenu);
+}
+
+
+/**
+ * Renderiza los métodos de pago disponibles.
+ * @returns {void}
+ */
+function renderizarMetodosPago() {
+    const metodos = ServicioOpcionesPago.obtenerMetodos();
+    const fragmento = document.createDocumentFragment();
+
+    const inicial = document.createElement("option");
+    inicial.value = "";
+    inicial.textContent = "Selecciona un metodo";
+    fragmento.append(inicial);
+
+    metodos.forEach((metodo) => {
+        const opcion = document.createElement("option");
+        opcion.value = metodo.valor;
+        opcion.textContent = metodo.etiqueta;
+
+        fragmento.append(opcion);
+    });
+
+    elementos.metodoPago.replaceChildren(fragmento);
+}
+
+/**
+ * Renderiza las cuotas disponibles para el método elegido.
+ * @param {string} metodo
+ * @returns {void}
+ */
+function renderizarCuotas(metodo) {
+    const cuotas = ServicioOpcionesPago.obtenerCuotas(metodo);
+    const fragmento = document.createDocumentFragment();
+
+    cuotas.forEach((cuota) => {
+        const opcion = document.createElement("option");
+        opcion.value = cuota.valor;
+        opcion.textContent = cuota.etiqueta;
+
+        fragmento.append(opcion);
+    });
+
+    elementos.cuotas.replaceChildren(fragmento);
+    elementos.cuotas.disabled = !Pago.admiteCuotas(metodo);
+}
+
+
 function inicializarEventos() {
+    renderizarCategorias();
     renderizarOfertas();
     buscarYMostrarCatalogo();
     renderizarTablaPrecios();
+    renderizarMetodosPago();
+    renderizarCuotas("");
     renderizarCarrito();
     // Gestiona el cierre del Offcanvas una sola vez.
     // La transición al pago se ejecuta únicamente
@@ -900,20 +992,17 @@ function inicializarEventos() {
     });
 
     elementos.metodoPago.addEventListener("change", () => {
-        const admiteCuotas = Pago.admiteCuotas(
-            elementos.metodoPago.value
-        );
-        elementos.cuotas.disabled = !admiteCuotas;
+        renderizarCuotas(elementos.metodoPago.value);
 
-        if (!admiteCuotas) {
-            elementos.cuotas.value = "1";
-        }
         elementos.condicionesPago.replaceChildren();
         pagoActual = null;
         pedidoPendiente = null;
         elementos.seccionConfirmacion.hidden = true;
         elementos.resumenPedido.replaceChildren();
-        if (elementos.metodoPago.value) obtenerCondicionesPago();
+
+        if (elementos.metodoPago.value) {
+            obtenerCondicionesPago();
+        }
     });
 
     elementos.cuotas.addEventListener("change", () => {

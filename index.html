@@ -42,41 +42,8 @@
                     Catálogo
                 </button>
                 
-                <ul class="dropdown-menu" aria-labelledby="catalogo-dropdown">
-                    <li>
-                        <a class="dropdown-item" href="#catalogo" data-categoria="">
-                            Todos los productos
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item" href="#catalogo" data-categoria="Herramientas manuales">
-                            Herramientas manuales
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item" href="#catalogo" data-categoria="Herramientas electricas">
-                            Herramientas eléctricas
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item" href="#catalogo" data-categoria="Electricidad">
-                            Electricidad
-                        </a>
-                    </li>
-
-                    <li>
-                        <a class="dropdown-item" href="#catalogo" data-categoria="Jardineria">
-                            Jardinería
-                    </a>
-                </li>
-                
-                <li>
-                    <a class="dropdown-item" href="#catalogo" data-categoria="Accesorios">
-                        Accesorios
-                    </a>
-                </li>
-            </ul>
-        </div>
+                <ul class="dropdown-menu" id="menu-categorias" aria-labelledby="catalogo-dropdown"></ul>
+            </div>
             <a href="#inicio">Inicio</a>
             <a href="#ofertas">Ofertas</a>
             <a href="#ubicacion">Donde estamos</a>
@@ -127,14 +94,7 @@
                 </select>
                 <h3 class="filter-heading--category">Categorias</h3>
                 <label for="categoria">Filtrar por categoria</label>
-                <select id="categoria" name="categoria">
-                    <option value="">Todas las categorias</option>
-                    <option value="Accesorios">Accesorios</option>
-                    <option value="Electricidad">Electricidad</option>
-                    <option value="Herramientas electricas">Herramientas electricas</option>
-                    <option value="Herramientas manuales">Herramientas manuales</option>
-                    <option value="Jardineria">Jardineria</option>
-                </select>
+                <select id="categoria" name="categoria"></select>
                 <h3 class="filter-heading--price">Precio</h3>
                 <label for="activar-filtro-precio">
                     <input type="checkbox" id="activar-filtro-precio" name="activar-filtro-precio">
@@ -158,19 +118,11 @@
             <form id="form-pago" novalidate>
                 <p>
                     <label for="metodo-pago">Metodo de pago</label>
-                    <select id="metodo-pago" name="metodo-pago" class="form-select" required>
-                        <option value="">Selecciona un metodo</option>
-                        <option value="efectivo-transferencia">Efectivo / transferencia</option>
-                        <option value="tarjeta">Tarjeta de credito</option>
-                    </select>
+                    <select id="metodo-pago" name="metodo-pago" class="form-select" required></select>
                 </p>
                 <p>
                     <label for="cuotas">Cuotas</label>
-                    <select id="cuotas" name="cuotas" class="form-select" required disabled>
-                        <option value="1">1 cuota (0%)</option>
-                        <option value="3">3 cuotas (10%)</option>
-                        <option value="6">6 cuotas (20%)</option>
-                    </select>
+                    <select id="cuotas" name="cuotas" class="form-select" required disabled></select>
                 </p>
                 <div id="condiciones-pago" aria-live="polite"></div>
                 <button type="submit">Ver condiciones y continuar</button>
