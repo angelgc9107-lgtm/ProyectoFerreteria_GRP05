@@ -1,4 +1,5 @@
 import { Producto } from "./models/Producto.js";
+import { FachadaStorage } from "./services/FachadaStorage.js";
 import { Catalogo } from "./models/Catalogo.js";
 import { Carrito } from "./models/Carrito.js";
 import { Pago } from "./models/Pago.js";
@@ -6,6 +7,10 @@ import { Pedido } from "./models/Pedido.js";
 import { FormateadorMoneda } from "./services/FormateadorMoneda.js";
 import { validarCambioCantidad } from "./services/ValidacionCarrito.js";
 import { confirmarPedidoConNumeracion } from "./services/ConfirmadorPedidos.js";
+import { ServicioOfertas } from "./services/ServicioOfertas.js";
+import { IMAGENES_CATALOGO } from "./data/imagenesCatalogo.js";
+import { ServicioCategorias } from "./services/ServicioCategorias.js";
+import { ServicioOpcionesPago } from "./services/ServicioOpcionesPago.js";
 
 const productosIniciales = [
     { codigo: "GUANTES-001", nombre: "Guantes moteados multiuso maxima calidad", categoria: "Herramientas manuales", descripcion: "Proteccion multiuso para trabajos de ferreteria y mantenimiento.", precio: 4401 },
@@ -20,7 +25,7 @@ const productosIniciales = [
 ];
 
 const catalogo = new Catalogo(productosIniciales.map((datos) => new Producto(datos)));
-const carrito = new Carrito();
+const carrito = FachadaStorage.cargarCarrito();
 let pagoActual = null;
 let pedidoPendiente = null;
 let esperandoCierreCarrito = false;
@@ -42,11 +47,13 @@ const elementos = {
     formBusqueda: elemento("#form-busqueda"),
     estadoAplicacion: elemento("#estado-aplicacion", false),
     categoria: elemento("#categoria"),
+    menuCategorias: elemento("#menu-categorias"),
     orden: elemento("#orden"),
     activarPrecio: elemento("#activar-filtro-precio"),
     precio: elemento("#precio-hasta"),
     precioValor: elemento("#precio-hasta-valor"),
     resultados: elemento("#resultados-catalogo"),
+    tablaPreciosCuerpo: elemento("#tabla-precios-cuerpo"),
     catalogoMensaje: elemento("#catalogo-mensaje"),
     carritoItems: elemento("#carrito-items"),
     carritoMensaje: elemento("#carrito-mensaje"),
@@ -66,6 +73,7 @@ const elementos = {
     seccionCatalogo: elemento("#catalogo"),
     panelCarrito: elemento("#carrito"),
     seccionOfertas: elemento("#ofertas"),
+    ofertasProductos: elemento("#ofertas-productos"),
     navegacionPrincipal: elemento('nav[aria-label="Navegacion principal"]')
 };
 
@@ -83,10 +91,7 @@ if (elementosFaltantes.length > 0) {
     );
 }
 
-const tarjetasCatalogo = new Map(
-    Array.from(elementos.resultados.querySelectorAll("article[data-product-code]"))
-        .map((tarjeta) => [tarjeta.dataset.productCode, tarjeta.parentElement])
-);
+
 
 // Muestra mensajes informativos, de éxito, error o carga,
 // aplicando las clases CSS correspondientes a cada estado.
@@ -154,6 +159,102 @@ function limpiarEstadoControl(control) {
     }
 }
 
+
+/**
+ * Genera dinámicamente las tarjetas de los productos.
+ * Recibe los resultados del catálogo y los representa en el DOM.
+ *
+ * @param {Producto[]} productos
+ * @returns {void}
+ */
+function renderizarCatalogo(productos) {
+    const fragmento = document.createDocumentFragment();
+
+    const ofertas = ServicioOfertas.obtenerOfertas(catalogo);
+
+    const ofertasPorCodigo = new Map(
+        ofertas.map((oferta) => [oferta.codigo, oferta])
+    );
+
+    productos.forEach((producto) => {
+        const oferta = ofertasPorCodigo.get(producto.codigo);
+
+        const columna = document.createElement("div");
+        columna.className = "col-12 col-md-6 col-lg-4";
+
+        const articulo = document.createElement("article");
+        articulo.className = "h-100";
+        articulo.dataset.productCode = producto.codigo;
+
+        // Imagen del producto
+        const rutaImagen =
+            oferta?.imagen ?? IMAGENES_CATALOGO[producto.codigo];
+
+        if (rutaImagen) {
+            const imagen = document.createElement("img");
+            imagen.src = rutaImagen;
+            imagen.alt = producto.nombre;
+            articulo.append(imagen);
+        }
+
+        // Categoría
+        const categoria = document.createElement("p");
+        categoria.textContent = producto.categoria;
+
+        // Nombre
+        const titulo = document.createElement("h3");
+        titulo.textContent = producto.nombre;
+
+        // Descripción
+        const descripcion = document.createElement("p");
+        descripcion.textContent = producto.descripcion;
+
+        // Precios
+        const precios = document.createElement("p");
+
+        if (oferta) {
+            const precioAnterior = document.createElement("del");
+            precioAnterior.textContent =
+                FormateadorMoneda.formatear(oferta.precioAnterior);
+
+            precios.append(
+                precioAnterior,
+                document.createTextNode(" ")
+            );
+        }
+
+        const precioActual = document.createElement("strong");
+        precioActual.textContent =
+            FormateadorMoneda.formatear(producto.precio);
+
+        precios.append(
+            precioActual,
+            document.createTextNode(" por unidad")
+        );
+
+        // Botón de compra
+        const boton = document.createElement("button");
+        boton.type = "button";
+        boton.dataset.action = "agregar-carrito";
+        boton.dataset.productCode = producto.codigo;
+        boton.textContent = "Comprar";
+
+        articulo.append(
+            categoria,
+            titulo,
+            descripcion,
+            precios,
+            boton
+        );
+
+        columna.append(articulo);
+        fragmento.append(columna);
+    });
+
+    elementos.resultados.replaceChildren(fragmento);
+}
+
+
 function buscarYMostrarCatalogo() {
     const criterios = {
         texto: elementos.busqueda.value,
@@ -161,6 +262,7 @@ function buscarYMostrarCatalogo() {
         precioMaximo: elementos.activarPrecio.checked ? elementos.precio.value : null,
         orden: elementos.orden.value
     };
+
     const resultado = catalogo.buscar(criterios);
 
     if (!resultado.valido) {
@@ -174,19 +276,9 @@ function buscarYMostrarCatalogo() {
     } else {
         limpiarEstadoControl(elementos.precio);
     }
-    resultado.resultados.forEach((producto) => {
-        const tarjeta = tarjetasCatalogo.get(producto.codigo);
-        if (!tarjeta) {
-            throw new Error(`No hay una tarjeta HTML para el producto ${producto.codigo}.`);
-        }
-        elementos.resultados.append(tarjeta);
-        tarjeta.hidden = false;
-    });
 
-    const codigosVisibles = new Set(resultado.resultados.map((producto) => producto.codigo));
-    tarjetasCatalogo.forEach((tarjeta, codigo) => {
-        tarjeta.hidden = !codigosVisibles.has(codigo);
-    });
+    // Genera dinámicamente las tarjetas del catálogo.
+    renderizarCatalogo(resultado.resultados);
 
     mostrarMensaje(
         elementos.catalogoMensaje,
@@ -196,6 +288,7 @@ function buscarYMostrarCatalogo() {
         resultado.resultados.length ? "success" : "info"
     );
 }
+
 
 // Actualiza visualmente los productos, cantidades y totales del carrito
 // utilizando la información proporcionada por la clase Carrito.
@@ -386,11 +479,18 @@ function agregarDatosResumen(contenedor, resumen) {
         return false;
     }
 
+    const guardado = FachadaStorage.guardarCarrito(carrito);
+
     const pagoInvalidado = invalidarPagoPorCambioCarrito();
 
     renderizarCarrito();
 
-    if (pagoInvalidado) {
+    if (!guardado) {
+        const mensaje = "El carrito se actualizó, pero no pudo guardarse. Los cambios podrían perderse al recargar.";
+
+        mostrarMensaje(elementos.carritoMensaje, mensaje, "error");
+        mostrarMensaje(elementos.estadoAplicacion, mensaje, "error");
+    } else if (pagoInvalidado) {
         const mensaje = "Carrito actualizado; el pago debe seleccionarse nuevamente.";
 
         mostrarMensaje(elementos.carritoMensaje, mensaje, "info");
@@ -420,8 +520,7 @@ function iniciarPago() {
     elementos.formPedido.querySelectorAll("input").forEach(limpiarEstadoControl);
     elementos.resumenPedido.replaceChildren();
     elementos.metodoPago.value = "";
-    elementos.cuotas.value = "1";
-    elementos.cuotas.disabled = true;
+    renderizarCuotas("");
     elementos.condicionesPago.replaceChildren();
     elementos.seccionConfirmacion.hidden = true;
     elementos.seccionPago.hidden = false;
@@ -475,11 +574,16 @@ function confirmarPedido() {
         elementos.resumenPedido.querySelector('[data-action="confirmar-pedido"]').remove();
         elementos.formPedido.hidden = true;
         carrito.vaciar();
+        const carritoGuardado = FachadaStorage.guardarCarrito(carrito);
         pagoActual = null;
         pedidoPendiente = null;
         renderizarCarrito();
         elementos.seccionPago.hidden = true;
-        mostrarMensaje(elementos.pedidoMensaje, "La operacion se realizo correctamente.", "success");
+        mostrarMensaje(elementos.pedidoMensaje,carritoGuardado
+                ? "La operacion se realizo correctamente."
+                : "Pedido confirmado, pero no se pudo guardar el carrito vacío. Los productos podrían reaparecer al recargar.",
+            carritoGuardado ? "success" : "error"
+        );
     } catch (error) {
         if (!(error instanceof TypeError || error instanceof RangeError)) throw error;
         mostrarMensaje(elementos.pedidoMensaje, error.message, "error");
@@ -498,8 +602,199 @@ function cancelarPedido() {
     elementos.seccionPago.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+
+/**
+ * Renderiza dinámicamente las tarjetas de ofertas
+ * utilizando los datos proporcionados por ServicioOfertas.
+ * @returns {void}
+ */
+function renderizarOfertas() {
+    const ofertas = ServicioOfertas.obtenerOfertas(catalogo);
+    const fragmento = document.createDocumentFragment();
+
+    ofertas.forEach((oferta) => {
+        const columna = document.createElement("div");
+        columna.className = "col-12 col-md-6 col-lg-4";
+
+        const articulo = document.createElement("article");
+        articulo.className = "h-100";
+        articulo.dataset.productCode = oferta.codigo;
+
+        const imagen = document.createElement("img");
+        imagen.src = oferta.imagen;
+        imagen.alt = oferta.nombre;
+
+        const titulo = document.createElement("h2");
+        titulo.textContent = oferta.nombre;
+
+        const descripcion = document.createElement("p");
+        descripcion.textContent = oferta.descripcion;
+
+        const precios = document.createElement("p");
+
+        const precioAnterior = document.createElement("del");
+        precioAnterior.textContent =
+            FormateadorMoneda.formatear(oferta.precioAnterior);
+
+        const precioActual = document.createElement("strong");
+        precioActual.textContent =
+            FormateadorMoneda.formatear(oferta.precioActual);
+
+        precios.append(
+            precioAnterior,
+            document.createTextNode(" "),
+            precioActual,
+            document.createTextNode(" por unidad")
+        );
+
+        const boton = document.createElement("button");
+        boton.type = "button";
+        boton.dataset.action = "agregar-carrito";
+        boton.dataset.productCode = oferta.codigo;
+        boton.textContent = "Comprar";
+
+        articulo.append(
+            imagen,
+            titulo,
+            descripcion,
+            precios,
+            boton
+        );
+
+        columna.append(articulo);
+        fragmento.append(columna);
+    });
+
+    elementos.ofertasProductos.replaceChildren(fragmento);
+}
+
+
+/**
+ * Renderiza dinámicamente la tabla de precios
+ * utilizando los productos del catálogo.
+ * @returns {void}
+ */
+function renderizarTablaPrecios() {
+    const fragmento = document.createDocumentFragment();
+
+    const productos = catalogo.obtenerProductos();
+
+    productos.forEach((producto) => {
+        const fila = document.createElement("tr");
+
+        const nombre = document.createElement("td");
+        nombre.textContent = producto.nombre;
+
+        const categoria = document.createElement("td");
+        categoria.textContent = producto.categoria;
+
+        const precio = document.createElement("td");
+        precio.textContent = FormateadorMoneda.formatear(
+            producto.precio
+        );
+
+        fila.append(nombre, categoria, precio);
+        fragmento.append(fila);
+    });
+
+    elementos.tablaPreciosCuerpo.replaceChildren(fragmento);
+}
+
+
+/**
+ * Renderiza dinámicamente las categorías en el filtro
+ * y en el menú desplegable de navegación.
+ * @returns {void}
+ */
+function renderizarCategorias() {
+    const categorias = ServicioCategorias.obtenerCategorias(catalogo);
+
+    const fragmentoSelect = document.createDocumentFragment();
+    const fragmentoMenu = document.createDocumentFragment();
+
+    const opciones = ["", ...categorias];
+
+    opciones.forEach((categoria) => {
+        const etiqueta = categoria || "Todas las categorias";
+
+        // Opción del filtro de categorías
+        const opcion = document.createElement("option");
+        opcion.value = categoria;
+        opcion.textContent = etiqueta;
+
+        fragmentoSelect.append(opcion);
+
+        // Opción del menú desplegable
+        const item = document.createElement("li");
+
+        const enlace = document.createElement("a");
+        enlace.className = "dropdown-item";
+        enlace.href = "#catalogo";
+        enlace.dataset.categoria = categoria;
+        enlace.textContent = etiqueta;
+
+        item.append(enlace);
+        fragmentoMenu.append(item);
+    });
+
+    elementos.categoria.replaceChildren(fragmentoSelect);
+    elementos.menuCategorias.replaceChildren(fragmentoMenu);
+}
+
+
+/**
+ * Renderiza los métodos de pago disponibles.
+ * @returns {void}
+ */
+function renderizarMetodosPago() {
+    const metodos = ServicioOpcionesPago.obtenerMetodos();
+    const fragmento = document.createDocumentFragment();
+
+    const inicial = document.createElement("option");
+    inicial.value = "";
+    inicial.textContent = "Selecciona un metodo";
+    fragmento.append(inicial);
+
+    metodos.forEach((metodo) => {
+        const opcion = document.createElement("option");
+        opcion.value = metodo.valor;
+        opcion.textContent = metodo.etiqueta;
+
+        fragmento.append(opcion);
+    });
+
+    elementos.metodoPago.replaceChildren(fragmento);
+}
+
+/**
+ * Renderiza las cuotas disponibles para el método elegido.
+ * @param {string} metodo
+ * @returns {void}
+ */
+function renderizarCuotas(metodo) {
+    const cuotas = ServicioOpcionesPago.obtenerCuotas(metodo);
+    const fragmento = document.createDocumentFragment();
+
+    cuotas.forEach((cuota) => {
+        const opcion = document.createElement("option");
+        opcion.value = cuota.valor;
+        opcion.textContent = cuota.etiqueta;
+
+        fragmento.append(opcion);
+    });
+
+    elementos.cuotas.replaceChildren(fragmento);
+    elementos.cuotas.disabled = !Pago.admiteCuotas(metodo);
+}
+
+
 function inicializarEventos() {
+    renderizarCategorias();
+    renderizarOfertas();
     buscarYMostrarCatalogo();
+    renderizarTablaPrecios();
+    renderizarMetodosPago();
+    renderizarCuotas("");
     renderizarCarrito();
     // Gestiona el cierre del Offcanvas una sola vez.
     // La transición al pago se ejecuta únicamente
@@ -697,20 +992,17 @@ function inicializarEventos() {
     });
 
     elementos.metodoPago.addEventListener("change", () => {
-        const admiteCuotas = Pago.admiteCuotas(
-            elementos.metodoPago.value
-        );
-        elementos.cuotas.disabled = !admiteCuotas;
+        renderizarCuotas(elementos.metodoPago.value);
 
-        if (!admiteCuotas) {
-            elementos.cuotas.value = "1";
-        }
         elementos.condicionesPago.replaceChildren();
         pagoActual = null;
         pedidoPendiente = null;
         elementos.seccionConfirmacion.hidden = true;
         elementos.resumenPedido.replaceChildren();
-        if (elementos.metodoPago.value) obtenerCondicionesPago();
+
+        if (elementos.metodoPago.value) {
+            obtenerCondicionesPago();
+        }
     });
 
     elementos.cuotas.addEventListener("change", () => {

@@ -189,6 +189,92 @@ describe("Controlador - carga inicial", function () {
     });
 });
 
+
+/**
+ *  - Flujo 1 Pruebas de renderizado dinámico del DOM.
+ */
+describe("Controlador - RC44: renderizado dinámico", function () {
+
+    it("el HTML original no contiene tarjetas ni filas de productos", async function () {
+        const respuesta = await fetch(URL_APP, { cache: "no-store" });
+        expect(respuesta.ok).toBeTrue();
+
+        const html = await respuesta.text();
+        const documentoOriginal = new DOMParser().parseFromString(
+            html,
+            "text/html"
+        );
+
+        expect(
+            documentoOriginal.querySelectorAll("#resultados-catalogo article").length
+        ).toBe(0);
+
+        expect(
+            documentoOriginal.querySelectorAll("#ofertas-productos article").length
+        ).toBe(0);
+
+        expect(
+            documentoOriginal.querySelectorAll("#tabla-precios-cuerpo tr").length
+        ).toBe(0);
+
+        expect(
+            documentoOriginal.querySelectorAll("#carrito-items article").length
+        ).toBe(0);
+    });
+
+    it("el controlador genera las tarjetas, ofertas y tabla de precios", function () {
+        expect(
+            qa("#resultados-catalogo article[data-product-code]").length
+        ).toBe(9);
+
+        expect(
+            qa("#ofertas-productos article[data-product-code]").length
+        ).toBe(3);
+
+        expect(
+            qa("#tabla-precios-cuerpo tr").length
+        ).toBe(9);
+
+        expect(
+            q('#resultados-catalogo [data-product-code="GUANTES-001"]')
+        ).not.toBeNull();
+    });
+
+    it("la búsqueda actualiza dinámicamente las tarjetas del catálogo", function () {
+        const tarjetaOriginal = q(
+            '#resultados-catalogo article[data-product-code="GUANTES-001"]'
+        );
+
+        escribir("#busqueda", "guantes");
+
+        expect(codigosVisibles()).toEqual(["GUANTES-001"]);
+
+        const tarjetaNueva = q(
+            '#resultados-catalogo article[data-product-code="GUANTES-001"]'
+        );
+
+        expect(tarjetaNueva).not.toBeNull();
+        expect(tarjetaNueva).not.toBe(tarjetaOriginal);
+    });
+
+    it("genera dinámicamente las categorías y las opciones de pago", function () {
+        expect(qa("#menu-categorias li").length).toBe(6);
+        expect(qa("#categoria option").length).toBe(6);
+
+        expect(
+            Array.from(q("#metodo-pago").options).map((opcion) => opcion.value)
+        ).toEqual(["", "efectivo-transferencia", "tarjeta"]);
+
+        elegir("#metodo-pago", "tarjeta");
+
+        expect(
+            Array.from(q("#cuotas").options).map((opcion) => opcion.value)
+        ).toEqual(["1", "3", "6"]);
+    });
+
+});
+
+
 // ---------------------------------------------------------------------------
 // Flujo 1: búsqueda y filtrado
 // ---------------------------------------------------------------------------

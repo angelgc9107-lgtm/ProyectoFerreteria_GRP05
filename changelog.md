@@ -30,6 +30,7 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 - [fix/arq-diagramas-tercera-entrega] [A3] Corrección de la revisión del profesor en los diagramas de actividades: único `stop` por flujo y `end` en las salidas alternativas (RC1-RC3), con los `.puml`, los `.png` y `diagramas-doc.md` actualizados PR: [#134](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/134) — @alandox1 (Arquitecto de Diagramas de Actividades)
 - [fix/dev-js-menu-carrito-y-tester-cobertura] [A3] Correcciones de la revisión del profesor: ajustes de menú y carrito en `index.html` y `js/script.js`, `script.spec.js` ampliado con tests de interacción, capturas nuevas y `testing-doc.md` con la cobertura medida PR: [#135](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/135) — @alandox1 (Desarrollador JavaScript y Tester)
 - [fix/refactor-logica-negocio] [A4] Refactorización del controlador y delegación de lógica de negocio PR: [#167](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/167) — @angelgc9107-lgtm (Desarrollador JavaScript Eventos + DOM)
+- [fix/renderizado-storage] [A4] Mejoras de persistencia y renderizado dinámico PR: [#168](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/168) — @angelgc9107-lgtm (Desarrollador JavaScript Eventos + DOM)
 
 
 ## [Actividad N°3] - 2026-11-02
