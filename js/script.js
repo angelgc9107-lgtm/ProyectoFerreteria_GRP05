@@ -50,6 +50,7 @@ const elementos = {
     precio: elemento("#precio-hasta"),
     precioValor: elemento("#precio-hasta-valor"),
     resultados: elemento("#resultados-catalogo"),
+    tablaPreciosCuerpo: elemento("#tabla-precios-cuerpo"),
     catalogoMensaje: elemento("#catalogo-mensaje"),
     carritoItems: elemento("#carrito-items"),
     carritoMensaje: elemento("#carrito-mensaje"),
@@ -666,9 +667,42 @@ function renderizarOfertas() {
 }
 
 
+/**
+ * Renderiza dinámicamente la tabla de precios
+ * utilizando los productos del catálogo.
+ * @returns {void}
+ */
+function renderizarTablaPrecios() {
+    const fragmento = document.createDocumentFragment();
+
+    const productos = catalogo.obtenerProductos();
+
+    productos.forEach((producto) => {
+        const fila = document.createElement("tr");
+
+        const nombre = document.createElement("td");
+        nombre.textContent = producto.nombre;
+
+        const categoria = document.createElement("td");
+        categoria.textContent = producto.categoria;
+
+        const precio = document.createElement("td");
+        precio.textContent = FormateadorMoneda.formatear(
+            producto.precio
+        );
+
+        fila.append(nombre, categoria, precio);
+        fragmento.append(fila);
+    });
+
+    elementos.tablaPreciosCuerpo.replaceChildren(fragmento);
+}
+
+
 function inicializarEventos() {
     renderizarOfertas();
     buscarYMostrarCatalogo();
+    renderizarTablaPrecios();
     renderizarCarrito();
     // Gestiona el cierre del Offcanvas una sola vez.
     // La transición al pago se ejecuta únicamente
