@@ -136,6 +136,7 @@ En el Primer Parcial el mockup se adaptó a la grilla de Bootstrap 5: desktop de
 - [Mockup Bootstrap exportado (Primer Parcial)](docs/01-mockup/disenio-bootstrap.png)
 - [Estados de interacción Bootstrap (Primer Parcial)](docs/01-mockup/estados-bootstrap.png)
 - [Mockup con estilos exportado (Actividad Obligatoria N°2)](docs/01-mockup/actividad-obligatoria-2/dise%C3%B1o-con-estilos.png)
+- [Mockup incorporación de estados visuales del flujo de compra](https://www.figma.com/design/jX7NrMUtt6Tg7oiYqock6s/Sin-t%C3%ADtulo?node-id=13-162&p=f&t=yU37ueX5pAf3yZKM-0)
 **Especificaciones por rol**
  
 - [Specs del Primer Parcial](docs/03-specs/primer-parcial/)
