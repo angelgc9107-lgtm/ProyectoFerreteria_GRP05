@@ -333,37 +333,6 @@ function clienteDesdeFormulario() {
     };
 }
 
-// Valida individualmente los campos del formulario.
-// La validación definitiva del pedido permanece en la clase Pedido.
-function validarCampoPedido(control) {
-    if (!carrito.resumir().items.length || !pagoActual) {
-        limpiarEstadoControl(control);
-        return false;
-    }
-
-    const mensajes = {
-        nombre: "Ingresá un nombre válido.",
-        correo: "Ingresá un correo electrónico válido.",
-        direccion: "Ingresá una dirección de envío."
-    };
-
-    const valido =
-        control.value.trim() !== "" &&
-        control.checkValidity();
-
-    if (valido) {
-        marcarControl(control, true);
-    } else {
-        marcarControl(
-            control,
-            false,
-            mensajes[control.name] ?? "El campo ingresado no es válido."
-        );
-    }
-
-    return valido;
-}
-
 // Construye los elementos HTML del resumen del pedido
 // incluyendo productos, datos del cliente y condiciones de pago.
 function agregarDatosResumen(contenedor, resumen) {
@@ -782,46 +751,13 @@ function inicializarEventos() {
             );
         }
             
-        validarCampoPedido(control);
+        limpiarEstadoControl(control);
     });
     
-    // Valida nuevamente el campo cuando el usuario lo abandona.
-    elementos.formPedido.addEventListener("focusout", (evento) => {
-        const control = evento.target.closest("input");
-
-        if (!control) return;
-
-        validarCampoPedido(control);
-    });
 
     // Valida todos los campos antes de generar el resumen del pedido.
     elementos.formPedido.addEventListener("submit", (evento) => {
         evento.preventDefault();
-
-        const controles = Array.from(
-            elementos.formPedido.querySelectorAll("input")
-        );
-        // Valida cada campo de manera independiente.
-        const resultados = controles.map(validarCampoPedido);
-
-        const primerInvalido = resultados.findIndex(
-            (valido) => !valido
-        );
-        if (primerInvalido !== -1) {
-            pedidoPendiente = null;
-
-            elementos.resumenPedido.replaceChildren();
-
-            mostrarMensaje(
-                elementos.pedidoMensaje,
-                "Revisá los datos del cliente antes de continuar.",
-                "error"
-            );
-            
-            controles[primerInvalido].focus();
-            
-            return;
-        }
         
         try {
             // Validación definitiva mediante la clase Pedido.
@@ -853,6 +789,7 @@ function inicializarEventos() {
             }
 
             pedidoPendiente = null;
+            elementos.resumenPedido.replaceChildren();
 
             const campo = error.campo && elementos.formPedido.elements[error.campo];
 
