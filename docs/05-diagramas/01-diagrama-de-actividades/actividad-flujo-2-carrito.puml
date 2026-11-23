@@ -1,110 +1,70 @@
+
 @startuml actividad-flujo-2-carrito
 title Flujo 2 - Gestión del carrito de compras (RF9 a RF13, RF20)
+skinparam backgroundColor #FFFFFF
 skinparam defaultFontName Arial
+skinparam dpi 180
 skinparam ArrowColor #444444
-skinparam ActivityBackgroundColor #FDECEA
+skinparam ActivityBackgroundColor #FFFFFF
 skinparam ActivityBorderColor #C0392B
 skinparam SwimlaneBorderColor #7D7D7D
 
-|Usuario|
+|Sistema|
 start
-:Elige "Gestionar carrito" en el menú principal;
+:Recupera el carrito guardado y renderiza\nproductos, cantidades, subtotales y total;
 
 repeat
   |Usuario|
-  :Elige una acción con prompt()
-  (1 agregar, 2 cambiar cantidad (si es que hay productos),
-  3 eliminar, 4 comprar, 0 salir);
+  :Agrega un producto, escribe o confirma una cantidad,\no elige "Eliminar" en el carrito;
 
   |Sistema|
-  switch (¿Qué opción eligió?)
-  case (1 - Agregar)
-    |Usuario|
-    :Ingresa código de producto y cantidad;
-    |Sistema|
-    if (¿Canceló algún prompt()?) then (sí)
-      :No se modifica el carrito;
+  if (¿Es un evento input de cantidad?) then (sí)
+    :Valida la cantidad sin modificar el carrito;
+    if (¿La cantidad es válida?) then (sí)
+      :Muestra el estado válido del campo;
     else (no)
-      if (¿El producto existe en el catálogo?) then (sí)
-        if (¿La cantidad es válida (entero ≥ 1)?) then (sí)
-          if (¿El producto ya está en el carrito?) then (sí)
-            :Suma la cantidad al ítem existente;
-          else (no)
-            :Agrega el ítem nuevo al carrito;
-          endif
-        else (no)
-          :Muestra error de cantidad con alert();
-        endif
-      else (no)
-        :Muestra error de producto con alert();
-      endif
+      :Marca el campo inválido y muestra el error;
     endif
-  case (2 - Cambiar cantidad)
-    |Usuario|
-    :Ingresa código de producto y nueva cantidad;
-    |Sistema|
-    if (¿Canceló algún prompt()?) then (sí)
-      :No se modifica el carrito;
-    else (no)
-      if (¿El ítem está en el carrito?) then (sí)
-        if (¿La cantidad es válida (entero ≥ 1)?) then (sí)
-          :Actualiza la cantidad del ítem;
-        else (no)
-          :Muestra error de cantidad con alert();
-        endif
-      else (no)
-        :Muestra error de ítem con alert();
-      endif
-    endif
-  case (3 - Eliminar)
-    |Usuario|
-    :Ingresa código de producto;
-    |Sistema|
-    if (¿Canceló el prompt()?) then (sí)
-      :No se modifica el carrito;
-    else (no)
-      if (¿El ítem está en el carrito?) then (sí)
-        :Elimina el ítem del carrito;
-      else (no)
-        :Muestra error de ítem con alert();
-      endif
-    endif
-  case (4 - Comprar)
-    if (¿El carrito tiene ítems?) then (sí)
-      :Marca que el usuario sale hacia el pago;
-    else (no)
-      :Informa que no se puede comprar con el carrito vacío;
-    endif
-  case (0 - Salir o cancelar el menú)
-    :Marca que el usuario terminó;
-  case (Otra)
-    :Informa "Opción inválida" con alert();
-  endswitch
-
-  |Sistema|
-  :Guarda el total anterior;
-  :Reinicia el total en 0;
-  while (¿Quedan ítems por recorrer?) is (sí)
-    :Calcula subtotal = precio unitario x cantidad;
-    :Suma el subtotal al total;
-  endwhile (no)
-  if (¿Cambió el total y ya había\nun método de pago elegido?) then (sí)
-    :Descarta el método de pago y las cuotas elegidos;
-    :Informa que hay que volver a elegir el pago;
   else (no)
+    :Procesa click de agregar/eliminar\no change de cantidad;
+    :Invoca Carrito.agregar(), Carrito.eliminar()\no Carrito.cambiarCantidad(), según la acción;
+    if (¿La operación es válida?) then (sí)
+      :Recalcula cantidades, subtotales y total;
+      :Intenta persistir el carrito\nmediante FachadaStorage.guardarCarrito();
+      if (¿Se pudo guardar?) then (sí)
+        :Conserva el estado actualizado;
+      else (no)
+        :Advierte que los cambios podrían\nperderse al recargar la página;
+      endif
+      if (¿Había pago o pedido pendiente?) then (sí)
+        :Invalida el pago y el pedido pendiente;
+        :Informa que deberá seleccionar el pago otra vez;
+      else (no)
+      endif
+      :Renderiza los ítems, cantidades, subtotales\ny total del carrito;
+    else (no)
+      :Conserva el carrito sin cambios;
+      :Muestra el error y marca la cantidad inválida\nsi corresponde;
+    endif
   endif
-  if (¿El carrito tiene ítems?) then (sí)
-    :Muestra ítems, subtotales y total\ncon console.log() / alert();
-  else (no)
-    :Informa "El carrito está vacío";
-  endif
-repeat while (¿El usuario NO salió, canceló el menú\nni eligió comprar?) is (sí) not (no)
 
+  |Usuario|
+repeat while (¿Realiza otra operación en el carrito?) is (sí) not (no)
+
+|Usuario|
+:Elige "Iniciar compra" o cierra el panel;
 |Sistema|
-if (¿El usuario eligió comprar?) then (sí)
-  :Continúa en el Flujo 3 - Pago y cálculo de cuotas;
+if (¿Elige "Iniciar compra"?) then (sí)
+  if (¿El carrito contiene productos?) then (sí)
+    :Restablece los estados anteriores de pago y pedido;
+    :Muestra la sección de pago y cierra el Offcanvas;
+    :Al cerrarse el panel, desplaza la vista al pago;
+    :Continúa en el Flujo 3 - Pago y cuotas;
+  else (no)
+    :Informa que no se puede comprar\ncon el carrito vacío;
+  endif
 else (no)
-  :Vuelve al menú principal;
+  :Cierra el panel y continúa\nla navegación por la tienda;
 endif
 stop
 @enduml

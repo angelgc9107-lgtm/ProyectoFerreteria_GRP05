@@ -23,8 +23,8 @@ En la tercera entrega `js/script.js` tenía la lógica y usaba `prompt()`/`alert
 |---|---|---|---|
 | `js/models/` (`Producto`, `Catalogo`, `Carrito`, `Pago`, `Pedido`) | Lógica de negocio con clases, sin DOM ni Storage | `js/test/models.spec.js` | 42 |
 | `js/utils/storage.js` (`StorageUtil`) | Capa de abstracción de `localStorage`/`sessionStorage` | `js/test/storage.spec.js` | 113 |
-| `js/script.js` | Controlador: eventos y DOM | `js/test/script.spec.js` | 53 |
-| | | **Total** | **208** |
+| `js/script.js` | Controlador: eventos y DOM | `js/test/script.spec.js` | 65 |
+| | | **Total** | **220** |
 
 `js/test/test-runner.html` carga los tres specs como módulos ES. `js/test/models-test-runner.html` es el runner independiente que armó el Desarrollador JS POO para sus modelos y se conserva.
 
@@ -87,22 +87,138 @@ Requiere conexión a internet: Jasmine se carga desde `cdnjs.cloudflare.com` y `
 | Ninguna operación lanza excepciones hacia afuera | 12 | Se verifica para cada operación |
 | Web Storage real del navegador | 3 | Ciclo completo sin dejar claves |
 
-### `script.spec.js` (53 specs)
+### `script.spec.js` (65 specs)
 
 | Suite | Specs | Qué se prueba |
 |---|---|---|
 | Carga inicial | 4 | 9 productos visibles, carrito vacío, botón deshabilitado, pago y confirmación ocultos |
-| Flujo 1: búsqueda y filtrado | 10 | Texto, tildes y mayúsculas, «Sin coincidencias.», envío del formulario (`preventDefault`), categoría, orden asc/desc, rango de precio, menú de categorías |
-| Flujo 2: carrito | 10 | Agregar desde catálogo y ofertas, sumar cantidades, cambiar cantidad, cantidad inválida (`0`, `1.5`, `1e2`), eliminar |
-| Flujo 3: pago y cuotas | 11 | Indicador de carga, efectivo, tarjeta en 3 y 6 cuotas con importes, método faltante, un cambio del carrito descarta el pago, cancelar pago |
-| Flujo 4: confirmación del pedido | 11 | Validación en tiempo real (nombre, correo con `ñ`, dirección), resumen previo, confirmar (`FL-<ms>-0001`), segunda compra (`0002`), cancelar pedido |
-| Requisitos transversales | 7 | Sin `alert`/`prompt`/`confirm`, sin `console.log`/`error`, sin datos en Web Storage, eventos sin manejadores en línea, regiones `role="status"`, `aria-invalid` y `aria-describedby` |
+| RC44: renderizado dinámico | 4 | Generación dinámica del catálogo, ofertas, tabla de precios, categorías y opciones de pago |
+| Flujo 1: búsqueda y filtrado | 12 | Texto, tildes y mayúsculas, ausencia de coincidencias, envío del formulario, categoría, orden asc/desc, rango de precio, menú de categorías y recuperación de resultados |
+| Flujo 2: carrito | 12 | Agregar productos, actualizar cantidades, validar con input, confirmar cambios con change, rechazar cantidades inválidas, eliminar productos e invalidar el pago |
+| Flujo 3: pago y cuotas | 13 | Efectivo/transferencia, tarjeta en 1, 3 y 6 cuotas, cálculo de recargos, validación del método, cambios de cuotas, invalidación de confirmación y cancelación |
+| Flujo 4: confirmación del pedido | 13 | Validación al enviar el formulario, corrección de errores, generación del resumen, invalidación y regeneración, confirmación, numeración y cancelación |
+| Requisitos transversales | 7 | Uso del DOM y eventos, accesibilidad, mensajes de estado y controles sobre interacciones del navegador |
+
+
+### Trazabilidad del Flujo 1
+
+**Diagrama:** `docs/05-diagramas/01-diagrama-de-actividades/actividad-flujo-1-busqueda-filtrado.puml`
+
+**Implementación:** `js/script.js` y `js/models/Catalogo.js`
+
+**Pruebas:** `js/test/script.spec.js`
+
+| Decisión o estado del diagrama | Prueba Jasmine |
+|---|---|
+| Búsqueda por texto | Filtra por texto mientras se escribe |
+| Normalización de texto | Ignora mayúsculas y tildes |
+| Búsqueda sin resultados | Muestra «Sin coincidencias.» |
+| Filtrado por categoría | Filtra por categoría |
+| Ordenamiento | Ordena por precio ascendente y descendente |
+| Activación y desactivación del filtro de precio | Pruebas del filtro de precio |
+| Recuperación de resultados | Recupera los resultados al corregir una búsqueda sin coincidencias |
+| Recuperación después de un filtro restrictivo | Recupera los productos al quitar un filtro de precio sin coincidencias |
+
+**Resultado Jasmine:** 12 specs, 0 failures.
+
+
+### Trazabilidad del Flujo 2 — Carrito
+
+**Diagrama:** `docs/05-diagramas/01-diagrama-de-actividades/actividad-flujo-2-carrito.puml`
+
+**Implementación:** `js/script.js`, `js/models/Carrito.js` y `js/services/FachadaStorage.js`
+
+**Pruebas:** `js/test/script.spec.js`
+
+| Decisión o estado del diagrama | Prueba Jasmine |
+|---|---|
+| Agregar productos desde el catálogo | Agrega un producto desde el catálogo y actualiza contador, total y botón |
+| Agregar desde ofertas | Agrega un producto desde la sección de ofertas |
+| Acumular cantidades | Agregar dos veces el mismo producto suma la cantidad y no duplica el ítem |
+| Agregar distintos productos | Suma varios productos distintos |
+| Modificar cantidades | Cambia la cantidad y recalcula subtotal y total |
+| Validación de cantidades inválidas | Una cantidad inválida se marca en el campo sin modificar el carrito |
+| Rechazar notación científica | Una cantidad en notación científica se rechaza |
+| Rechazar cantidades decimales | Una cantidad decimal se rechaza y deja el carrito igual |
+| Eliminar productos | Elimina un producto y vuelve al estado vacío |
+| Conservar productos restantes | Eliminar un producto conserva los demás |
+| Diferenciar input y change | Valida la cantidad con input sin modificar el total hasta change |
+| Invalidar pago por modificación del carrito | Modificar la cantidad después de elegir el pago invalida la confirmación |
+
+**Resultado Jasmine:** 12 specs, 0 failures.
+
+**Ejecución:** suite individual con `random=false`.
+
+**Observación:** La persistencia del carrito y los posibles errores de almacenamiento requieren verificaciones específicas adicionales.
+
+### Trazabilidad del Flujo 3 — Pago y cuotas
+
+**Diagrama:** `docs/05-diagramas/01-diagrama-de-actividades/actividad-flujo-3-pago-cuotas.puml`
+
+**Implementación:** `js/script.js` y `js/models/Pago.js`
+
+**Pruebas:** `js/test/script.spec.js`
+
+| Decisión o estado del diagrama | Prueba Jasmine |
+|---|---|
+| Iniciar proceso de compra | Iniciar la compra muestra la sección de pago y el indicador de carga |
+| Transición al pago | Al cerrarse el carrito el indicador pasa a «Pago listo para completar.» |
+| Efectivo o transferencia | Efectivo o transferencia: una cuota y sin recargo |
+| Tarjeta en 1 cuota | Tarjeta en una cuota no aplica recargo |
+| Tarjeta en 3 cuotas | Tarjeta en 3 cuotas aplica 10 % de recargo |
+| Tarjeta en 6 cuotas | Tarjeta en 6 cuotas aplica 20 % de recargo |
+| Modificación de cuotas | Cambiar las cuotas recalcula y avisa que hay que revisar las condiciones |
+| Cambio a efectivo | Volver a efectivo deshabilita las cuotas y las reinicia a 1 |
+| Método de pago faltante | Continuar sin elegir método muestra el error y no avanza |
+| Condiciones válidas | Continuar con un método válido habilita los datos del cliente |
+| Modificación del carrito | Un cambio en el carrito descarta el pago anterior |
+| Cancelación de pago | Cancelar el pago oculta la sección y conserva el carrito |
+| Cambio de método después de continuar | Cambiar el método de pago invalida la confirmación anterior |
+
+**Resultado Jasmine:** 13 specs, 0 failures.
+
+**Ejecución:** suite individual con `random=false`.
+
+### Trazabilidad del Flujo 4 — Confirmación del pedido
+
+**Diagrama:** `docs/05-diagramas/01-diagrama-de-actividades/actividad-flujo-4-confirmacion-pedido.puml`
+
+**Implementación:** `js/script.js` y `js/models/Pedido.js`
+
+**Pruebas:** `js/test/script.spec.js`
+
+| Decisión o estado del diagrama | Prueba Jasmine |
+|---|---|
+| Validación del nombre | Valida el nombre al enviar el formulario |
+| Validación del correo | Valida el correo al enviar el formulario |
+| Correos con caracteres especiales | Acepta correos con caracteres no ASCII |
+| Validación de dirección | Valida la dirección al enviar el formulario |
+| Datos incompletos | Enviar con campos vacíos muestra el error y no genera resumen |
+| Datos válidos | Enviar con datos válidos genera el resumen previo con el botón de confirmar |
+| Modificación de datos | Modificar los datos después del resumen lo invalida |
+| Confirmación válida | Confirmar muestra el número de pedido y limpia carrito y pago |
+| Numeración de pedidos | Una segunda compra obtiene la secuencia siguiente |
+| Pago financiado | Confirmar con tarjeta en 6 cuotas refleja el recargo en el resumen |
+| Cancelación del pedido | Cancelar el pedido conserva el carrito y las condiciones de pago |
+| Corrección de datos inválidos | Permite corregir datos inválidos y generar el resumen |
+| Regeneración del resumen | Impide confirmar datos modificados e inválidos hasta regenerar el resumen |
+
+**Resultado Jasmine:** 13 specs, 0 failures.
+
+**Ejecución:** suite individual con `random=false`.
+
+**Observación:** La validación definitiva se realiza al enviar el formulario. El evento input invalida el resumen pendiente cuando se modifican los datos del cliente.
+
 
 ---
 
 ## Métricas de Cobertura
 
-Corrida completa de `test-runner.html`: **208 specs, 0 failures**.
+**Medición histórica de cobertura:** realizada sobre la versión anterior del proyecto, con 208 specs y 0 failures.
+
+La versión actual contiene 220 specs, de los cuales se verificaron individualmente los cuatro flujos principales. Todavía no se ha confirmado una ejecución completa sin fallas.
+
+Los porcentajes de cobertura presentados a continuación corresponden a la medición histórica y deben actualizarse al ejecutar nuevamente la herramienta de cobertura.
 
 Cobertura de **líneas ejecutables**, medida con la cobertura de código de V8 (Chromium, vía Playwright) durante esa misma corrida. No cuentan líneas en blanco, comentarios ni llaves de cierre. Es cobertura de líneas: no mide ramas.
 
@@ -158,7 +274,9 @@ No hay capturas de tests fallando porque la corrida final no tuvo fallos. Para c
 
 En la corrida final no hay tests fallando contra `develop`. Durante la revisión se registró lo siguiente:
 
-- **`script.js` todavía no usa `StorageUtil`.** El plan de testing preveía probar que «el carrito persiste vía storage». Como la persistencia no está conectada en la página, ese caso no se pudo escribir y `script.spec.js` comprueba lo contrario: que una compra completa no modifica `localStorage` ni `sessionStorage` (compara el contenido antes y después, así que no depende de claves previas del navegador). Se da seguimiento con una issue asignada al Desarrollador JS Eventos + DOM. Cuando se conecte la persistencia hay que sumar la prueba: agregar productos, recargar la página y comprobar que el carrito se restaura, con storage aislado. La integración figura como pendiente en `spec-dev-storage.md` y `spec-dev-poo.md`.
+
+- **Integración de persistencia del carrito:** Se incorporó `FachadaStorage` para recuperar y guardar el estado del carrito mediante la capa de almacenamiento del proyecto. Las pruebas Jasmine del controlador fueron adaptadas para aislar los datos almacenados entre ejecuciones, evitando que los productos agregados durante una prueba afecten a las siguientes. Queda pendiente incorporar pruebas específicas que verifiquen la recuperación del carrito después de recargar la página y los errores de almacenamiento.
+
 - **Cadenas numéricas (`"0x10"`, `"1e2"`).** Detectado en la revisión de la PR #150 y corregido en la misma PR. El caso queda cubierto en `models.spec.js` y, desde la interfaz, en `script.spec.js` (cantidad `1e2`).
 - **Correo con caracteres no ASCII (`ñandú@correo.com`).** Detectado en la revisión de la PR #156 y corregido por el Desarrollador de Eventos + DOM. Queda cubierto en `script.spec.js`.
 

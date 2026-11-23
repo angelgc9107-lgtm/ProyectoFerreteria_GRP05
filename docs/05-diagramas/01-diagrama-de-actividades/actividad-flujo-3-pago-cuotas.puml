@@ -1,68 +1,79 @@
+
 @startuml actividad-flujo-3-pago-cuotas
 title Flujo 3 - Pago y cálculo de cuotas (RF14 a RF19)
+skinparam backgroundColor #FFFFFF
 skinparam defaultFontName Arial
+skinparam dpi 180
 skinparam ArrowColor #444444
-skinparam ActivityBackgroundColor #FDECEA
+skinparam ActivityBackgroundColor #FFFFFF
 skinparam ActivityBorderColor #C0392B
 skinparam SwimlaneBorderColor #7D7D7D
 
 |Usuario|
 start
-:Elige "Pagar" en el menú principal
-o llega desde "Comprar" del Flujo 2;
+:Inicia la compra desde el carrito;
 
 |Sistema|
-:Obtiene el total del carrito;
-if (¿El carrito está vacío?) then (sí)
-  :Informa "No hay productos para pagar" con alert();
-  end
+if (¿El carrito tiene productos?) then (sí)
+  :Restablece el pago anterior\ny muestra el formulario de pago;
 else (no)
+  :Muestra un mensaje de carrito vacío;
+  stop
 endif
 
 repeat
   |Usuario|
-  :Elige el método de pago con prompt()
-  (1 efectivo / transferencia, 2 tarjeta de crédito);
+  :Elige o cambia el método de pago,\no modifica las cuotas disponibles;
+
   |Sistema|
-  if (¿Canceló el prompt()?) then (sí)
-    :No se guarda método ni cuotas;
-    :Vuelve al menú principal;
-    end
-  else (no)
-    :Valida la opción ingresada;
-  endif
-repeat while (¿La opción es válida?) is (no) not (sí)
-
-|Sistema|
-if (¿El método permite financiación (tarjeta de crédito)?) then (no)
-  :Fija cuotas = 1 y recargo = 0 %;
-else (sí)
-  repeat
-    |Usuario|
-    :Ingresa la cantidad de cuotas con prompt();
-    |Sistema|
-    if (¿Canceló el prompt()?) then (sí)
-      :No se guarda método ni cuotas;
-      :Vuelve al menú principal;
-      end
+  if (¿Cambió el método de pago?) then (sí)
+    :Actualiza las opciones de cuotas\nmediante el evento change;
+    if (¿Es efectivo o transferencia?) then (sí)
+      :Deshabilita las cuotas y utiliza\n1 cuota sin recargo;
     else (no)
-      :Valida que sea una cantidad de cuotas ofrecida;
+      if (¿Es tarjeta?) then (sí)
+        :Habilita las cuotas disponibles\n(1, 3 o 6);
+      else (no)
+        :Mantiene sin seleccionar un método válido;
+      endif
     endif
-  repeat while (¿La cantidad de cuotas es válida?) is (no) not (sí)
-  :Obtiene el % de recargo de la tabla\nsegún la cantidad de cuotas;
-endif
+  else (no)
+    :Conserva el método seleccionado\ny procesa el cambio de cuotas;
+  endif
 
-|Sistema|
-:Calcula el interés = total x recargo;
-:Calcula el total financiado = total + interés;
-:Calcula el valor de cada cuota = total financiado / cuotas;
-:Muestra las condiciones con alert():\ntotal original, cuotas, interés,\ntotal financiado y valor de cuota;
+  if (¿Hay un método seleccionado?) then (sí)
+    :Calcula las condiciones con Pago.calcular();
+    if (¿El método y las cuotas son válidos?) then (sí)
+      :Renderiza total original, recargo,\ntotal financiado y valor de cuota;
+      :Informa que las condiciones fueron calculadas;
+    else (no)
+      :Marca el control inválido y muestra el error;
+    endif
+  else (no)
+    :No calcula las condiciones todavía;
+  endif
+
+  |Usuario|
+repeat while (¿Sigue ajustando el método o las cuotas?) is (sí) not (no)
 
 |Usuario|
-:Revisa las condiciones de financiación;
-
-|Sistema|
-:Guarda el método y las cuotas elegidas\npara el resumen del pedido;
-:Vuelve al menú principal;
+:Elige "Ver condiciones y continuar"\no "Cancelar pago";
+if (¿Cancela el pago?) then (sí)
+  |Sistema|
+  :Oculta las secciones de pago y confirmación;
+  :Descarta el pago y el pedido pendiente;
+  :Conserva los productos en el carrito;
+else (no)
+  |Sistema|
+  :Previene el envío tradicional del formulario;
+  :Vuelve a validar las condiciones de pago;
+  if (¿Las condiciones son válidas?) then (sí)
+    :Conserva el pago seleccionado y las cuotas;
+    :Muestra el formulario de datos del cliente;
+    :Continúa en el Flujo 4 - Confirmación;
+  else (no)
+    :Mantiene visible el formulario y muestra el error;
+  endif
+endif
 stop
 @enduml
