@@ -41,6 +41,16 @@ export class Pago {
         this.calcular();
     }
 
+
+    /**
+     * Indica si el método de pago permite seleccionar cuotas.
+     * @param {string} metodoPago Método seleccionado.
+     * @returns {boolean} Indica si admite cuotas.
+     */
+    static admiteCuotas(metodoPago) {
+        return metodoPago === "tarjeta";
+    }
+
     /**
      * Calcula el interés sobre el total original ya redondeado a dos decimales.
      * Redondea también el interés, el total financiado y el valor de cuota.
@@ -82,6 +92,7 @@ export class Pago {
         }
         return new Pago(datos.totalOriginal, datos.metodoPago, datos.cuotas);
     }
+    
 }
 
 export default Pago;

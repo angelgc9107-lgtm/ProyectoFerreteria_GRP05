@@ -2,7 +2,7 @@
 
 Este archivo se actualiza con cada Pull Request para registrar avances y correcciones.
 
-## [Actividad N°4] - Unreleased
+## [Actividad N°4] - Released
 
 ### Added
 - [feature/dev-poo-logica-negocio] [A4] Desarrollador JS POO (Lógica de Negocio) - Implementación de 5 clases y diagrama UML - PR: [#150](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/150) - Issue: [#149](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/149) - @LuchoBarrionuevo13 (Desarrollador JS POO)
@@ -29,7 +29,7 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 - [fix/arq-diagramas-tercera-entrega] [A3] Corrección de la revisión del profesor en los diagramas de actividades: único `stop` por flujo y `end` en las salidas alternativas (RC1-RC3), con los `.puml`, los `.png` y `diagramas-doc.md` actualizados PR: [#134](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/134) — @alandox1 (Arquitecto de Diagramas de Actividades)
 - [fix/dev-js-menu-carrito-y-tester-cobertura] [A3] Correcciones de la revisión del profesor: ajustes de menú y carrito en `index.html` y `js/script.js`, `script.spec.js` ampliado con tests de interacción, capturas nuevas y `testing-doc.md` con la cobertura medida PR: [#135](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/135) — @alandox1 (Desarrollador JavaScript y Tester)
-
+- [fix/refactor-logica-negocio] [A4] Refactorización del controlador y delegación de lógica de negocio PR: [#167](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/167) — @angelgc9107-lgtm (Desarrollador JavaScript Eventos + DOM)
 
 
 ## [Actividad N°3] - 2026-11-02

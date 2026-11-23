@@ -3,6 +3,9 @@ import { Catalogo } from "./models/Catalogo.js";
 import { Carrito } from "./models/Carrito.js";
 import { Pago } from "./models/Pago.js";
 import { Pedido } from "./models/Pedido.js";
+import { FormateadorMoneda } from "./services/FormateadorMoneda.js";
+import { validarCambioCantidad } from "./services/ValidacionCarrito.js";
+import { confirmarPedidoConNumeracion } from "./services/ConfirmadorPedidos.js";
 
 const productosIniciales = [
     { codigo: "GUANTES-001", nombre: "Guantes moteados multiuso maxima calidad", categoria: "Herramientas manuales", descripcion: "Proteccion multiuso para trabajos de ferreteria y mantenimiento.", precio: 4401 },
@@ -20,7 +23,6 @@ const catalogo = new Catalogo(productosIniciales.map((datos) => new Producto(dat
 const carrito = new Carrito();
 let pagoActual = null;
 let pedidoPendiente = null;
-let secuenciaPedidos = 1;
 let esperandoCierreCarrito = false;
 
 // Obtiene elementos del DOM y permite distinguir
@@ -85,15 +87,6 @@ const tarjetasCatalogo = new Map(
     Array.from(elementos.resultados.querySelectorAll("article[data-product-code]"))
         .map((tarjeta) => [tarjeta.dataset.productCode, tarjeta.parentElement])
 );
-
-function formatearMoneda(importe) {
-    return new Intl.NumberFormat("es-AR", {
-        style: "currency",
-        currency: "ARS",
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    }).format(importe);
-}
 
 // Muestra mensajes informativos, de éxito, error o carga,
 // aplicando las clases CSS correspondientes a cada estado.
@@ -210,7 +203,7 @@ function renderizarCarrito() {
     const resumen = carrito.resumir();
     elementos.carritoItems.replaceChildren();
     elementos.contadorCarrito.textContent = String(resumen.cantidadItems);
-    elementos.carritoTotal.textContent = formatearMoneda(resumen.total);
+    elementos.carritoTotal.textContent = FormateadorMoneda.formatear(resumen.total);
     elementos.botonIniciarCompra.disabled = resumen.items.length === 0;
     mostrarMensaje(
         elementos.carritoMensaje,
@@ -225,7 +218,7 @@ function renderizarCarrito() {
         const titulo = document.createElement("h3");
         titulo.textContent = item.nombre;
         const precio = document.createElement("p");
-        precio.textContent = `Precio unitario: ${formatearMoneda(item.precio)}`;
+        precio.textContent = `Precio unitario: ${FormateadorMoneda.formatear(item.precio)}`;
 
         const label = document.createElement("label");
         const cantidadId = `cantidad-${item.codigo.toLocaleLowerCase("es")}`;
@@ -248,7 +241,7 @@ function renderizarCarrito() {
         cantidad.setAttribute("aria-describedby", errorCantidad.id);
 
         const subtotal = document.createElement("p");
-        subtotal.textContent = `Subtotal: ${formatearMoneda(item.subtotal)}`;
+        subtotal.textContent = `Subtotal: ${FormateadorMoneda.formatear(item.subtotal)}`;
         const eliminar = document.createElement("button");
         eliminar.type = "button";
         eliminar.dataset.action = "eliminar-carrito";
@@ -277,11 +270,11 @@ function renderizarCondiciones(condiciones) {
     elementos.condicionesPago.replaceChildren();
     const lista = document.createElement("dl");
     const datos = [
-        ["Total original", formatearMoneda(condiciones.totalOriginal)],
+        ["Total original", FormateadorMoneda.formatear(condiciones.totalOriginal)],
         ["Cuotas", String(condiciones.cuotas)],
-        ["Interes / recargo", `${condiciones.porcentajeRecargo}% (${formatearMoneda(condiciones.interes)})`],
-        ["Total financiado", formatearMoneda(condiciones.totalFinanciado)],
-        ["Valor de cada cuota", formatearMoneda(condiciones.valorCuota)]
+        ["Interes / recargo", `${condiciones.porcentajeRecargo}% (${FormateadorMoneda.formatear(condiciones.interes)})`],
+        ["Total financiado", FormateadorMoneda.formatear(condiciones.totalFinanciado)],
+        ["Valor de cada cuota", FormateadorMoneda.formatear(condiciones.valorCuota)]
     ];
     datos.forEach(([etiqueta, valor]) => {
         const termino = document.createElement("dt");
@@ -299,17 +292,12 @@ function obtenerCondicionesPago() {
         mostrarMensaje(elementos.pagoMensaje, "No hay productos para pagar.", "error");
         return null;
     }
-    if (!elementos.metodoPago.value) {
-        mostrarMensaje(elementos.pagoMensaje, "Selecciona un metodo de pago.", "error");
-        marcarControl(elementos.metodoPago, false);
-        return null;
-    }
 
     try {
         const pago = new Pago(
             resumen.total,
             elementos.metodoPago.value,
-            elementos.metodoPago.value === "tarjeta" ? elementos.cuotas.value : 1
+            elementos.cuotas.value
         );
         const condiciones = pago.calcular();
         marcarControl(elementos.metodoPago, true);
@@ -323,7 +311,9 @@ function obtenerCondicionesPago() {
         pagoActual = null;
         mostrarMensaje(elementos.pagoMensaje, error.message, "error");
         marcarControl(
-            elementos.metodoPago.value === "tarjeta" ? elementos.cuotas : elementos.metodoPago,
+            Pago.admiteCuotas(elementos.metodoPago.value)
+                ? elementos.cuotas
+                : elementos.metodoPago,
             false,
             error.message
         );
@@ -341,37 +331,6 @@ function clienteDesdeFormulario() {
     };
 }
 
-// Valida individualmente los campos del formulario.
-// La validación definitiva del pedido permanece en la clase Pedido.
-function validarCampoPedido(control) {
-    if (!carrito.resumir().items.length || !pagoActual) {
-        limpiarEstadoControl(control);
-        return false;
-    }
-
-    const mensajes = {
-        nombre: "Ingresá un nombre válido.",
-        correo: "Ingresá un correo electrónico válido.",
-        direccion: "Ingresá una dirección de envío."
-    };
-
-    const valido =
-        control.value.trim() !== "" &&
-        control.checkValidity();
-
-    if (valido) {
-        marcarControl(control, true);
-    } else {
-        marcarControl(
-            control,
-            false,
-            mensajes[control.name] ?? "El campo ingresado no es válido."
-        );
-    }
-
-    return valido;
-}
-
 // Construye los elementos HTML del resumen del pedido
 // incluyendo productos, datos del cliente y condiciones de pago.
 function agregarDatosResumen(contenedor, resumen) {
@@ -380,14 +339,14 @@ function agregarDatosResumen(contenedor, resumen) {
     const productos = document.createElement("ul");
     resumen.productos.forEach((item) => {
         const linea = document.createElement("li");
-        linea.textContent = `${item.nombre} | ${item.cantidad} x ${formatearMoneda(item.precio)} = ${formatearMoneda(item.subtotal)}`;
+        linea.textContent = `${item.nombre} | ${item.cantidad} x ${FormateadorMoneda.formatear(item.precio)} = ${FormateadorMoneda.formatear(item.subtotal)}`;
         productos.append(linea);
     });
 
     const cliente = document.createElement("p");
     cliente.textContent = `Cliente: ${resumen.cliente.nombre} · ${resumen.cliente.correo} · Envio a: ${resumen.cliente.direccion}`;
     const condiciones = document.createElement("p");
-    condiciones.textContent = `Total original: ${formatearMoneda(resumen.pago.totalOriginal)} · Metodo: ${resumen.pago.metodoPago} · ${resumen.pago.cuotas} cuota(s) · Recargo: ${resumen.pago.porcentajeRecargo}% · Total financiado: ${formatearMoneda(resumen.pago.totalFinanciado)} · Valor de cuota: ${formatearMoneda(resumen.pago.valorCuota)}`;
+    condiciones.textContent = `Total original: ${FormateadorMoneda.formatear(resumen.pago.totalOriginal)} · Metodo: ${resumen.pago.metodoPago} · ${resumen.pago.cuotas} cuota(s) · Recargo: ${resumen.pago.porcentajeRecargo}% · Total financiado: ${FormateadorMoneda.formatear(resumen.pago.totalFinanciado)} · Valor de cuota: ${FormateadorMoneda.formatear(resumen.pago.valorCuota)}`;
     const boton = document.createElement("button");
     boton.type = "button";
     boton.dataset.action = "confirmar-pedido";
@@ -506,8 +465,7 @@ function confirmarPedido() {
         return;
     }
     try {
-        const numero = pedidoPendiente.confirmar(Date.now(), secuenciaPedidos);
-        secuenciaPedidos += 1;
+        const numero = confirmarPedidoConNumeracion(pedidoPendiente);
         const resumen = pedidoPendiente.resumir();
         elementos.resumenPedido.replaceChildren();
         const mensaje = document.createElement("p");
@@ -598,12 +556,12 @@ function inicializarEventos() {
     elementos.activarPrecio.addEventListener("change", () => {
         elementos.precio.disabled = !elementos.activarPrecio.checked;
         elementos.precioValor.textContent = elementos.activarPrecio.checked
-            ? formatearMoneda(Number(elementos.precio.value))
+            ? FormateadorMoneda.formatear(Number(elementos.precio.value))
             : "Sin limite";
         buscarYMostrarCatalogo();
     });
     elementos.precio.addEventListener("input", () => {
-        elementos.precioValor.textContent = formatearMoneda(Number(elementos.precio.value));
+        elementos.precioValor.textContent = FormateadorMoneda.formatear(Number(elementos.precio.value));
         buscarYMostrarCatalogo();
     });
 
@@ -713,21 +671,20 @@ function inicializarEventos() {
     elementos.carritoItems.addEventListener("input", (evento) => {
         const control = evento.target.closest('[data-action="cambiar-cantidad"]');
         if (!control) return;
-        const valor = control.value.trim();
-        const valido =
-            valor !== "" &&
-            control.validity.valid &&
-            Number.isSafeInteger(Number(valor));
-        if (valido) {
-            marcarControl(control, true);
-        } else {
-            marcarControl(
-                control,
-                false,
-                "La cantidad debe ser un número entero mayor o igual a 1."
-            );
-        }
+
+        const resultado = validarCambioCantidad(
+            carrito,
+            control.dataset.productCode,
+            control.value
+        );
+
+        marcarControl(
+            control,
+            resultado.exito,
+            resultado.error ?? ""
+        );
     });
+
 
     // Actualiza la cantidad mediante la clase Carrito cuando se confirma el cambio.
     elementos.carritoItems.addEventListener("change", (evento) => {
@@ -740,9 +697,14 @@ function inicializarEventos() {
     });
 
     elementos.metodoPago.addEventListener("change", () => {
-        const tarjeta = elementos.metodoPago.value === "tarjeta";
-        elementos.cuotas.disabled = !tarjeta;
-        if (!tarjeta) elementos.cuotas.value = "1";
+        const admiteCuotas = Pago.admiteCuotas(
+            elementos.metodoPago.value
+        );
+        elementos.cuotas.disabled = !admiteCuotas;
+
+        if (!admiteCuotas) {
+            elementos.cuotas.value = "1";
+        }
         elementos.condicionesPago.replaceChildren();
         pagoActual = null;
         pedidoPendiente = null;
@@ -790,46 +752,13 @@ function inicializarEventos() {
             );
         }
             
-        validarCampoPedido(control);
+        limpiarEstadoControl(control);
     });
     
-    // Valida nuevamente el campo cuando el usuario lo abandona.
-    elementos.formPedido.addEventListener("focusout", (evento) => {
-        const control = evento.target.closest("input");
-
-        if (!control) return;
-
-        validarCampoPedido(control);
-    });
 
     // Valida todos los campos antes de generar el resumen del pedido.
     elementos.formPedido.addEventListener("submit", (evento) => {
         evento.preventDefault();
-
-        const controles = Array.from(
-            elementos.formPedido.querySelectorAll("input")
-        );
-        // Valida cada campo de manera independiente.
-        const resultados = controles.map(validarCampoPedido);
-
-        const primerInvalido = resultados.findIndex(
-            (valido) => !valido
-        );
-        if (primerInvalido !== -1) {
-            pedidoPendiente = null;
-
-            elementos.resumenPedido.replaceChildren();
-
-            mostrarMensaje(
-                elementos.pedidoMensaje,
-                "Revisá los datos del cliente antes de continuar.",
-                "error"
-            );
-            
-            controles[primerInvalido].focus();
-            
-            return;
-        }
         
         try {
             // Validación definitiva mediante la clase Pedido.
@@ -861,6 +790,7 @@ function inicializarEventos() {
             }
 
             pedidoPendiente = null;
+            elementos.resumenPedido.replaceChildren();
 
             const campo = error.campo && elementos.formPedido.elements[error.campo];
 
