@@ -5,6 +5,7 @@ import { Pago } from "./models/Pago.js";
 import { Pedido } from "./models/Pedido.js";
 import { FormateadorMoneda } from "./services/FormateadorMoneda.js";
 import { validarCambioCantidad } from "./services/ValidacionCarrito.js";
+import { confirmarPedidoConNumeracion } from "./services/ConfirmadorPedidos.js";
 
 const productosIniciales = [
     { codigo: "GUANTES-001", nombre: "Guantes moteados multiuso maxima calidad", categoria: "Herramientas manuales", descripcion: "Proteccion multiuso para trabajos de ferreteria y mantenimiento.", precio: 4401 },
@@ -22,7 +23,6 @@ const catalogo = new Catalogo(productosIniciales.map((datos) => new Producto(dat
 const carrito = new Carrito();
 let pagoActual = null;
 let pedidoPendiente = null;
-let secuenciaPedidos = 1;
 let esperandoCierreCarrito = false;
 
 // Obtiene elementos del DOM y permite distinguir
@@ -465,8 +465,7 @@ function confirmarPedido() {
         return;
     }
     try {
-        const numero = pedidoPendiente.confirmar(Date.now(), secuenciaPedidos);
-        secuenciaPedidos += 1;
+        const numero = confirmarPedidoConNumeracion(pedidoPendiente);
         const resumen = pedidoPendiente.resumir();
         elementos.resumenPedido.replaceChildren();
         const mensaje = document.createElement("p");
