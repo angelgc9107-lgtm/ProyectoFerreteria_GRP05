@@ -3,6 +3,7 @@ import { Catalogo } from "./models/Catalogo.js";
 import { Carrito } from "./models/Carrito.js";
 import { Pago } from "./models/Pago.js";
 import { Pedido } from "./models/Pedido.js";
+import { FormateadorMoneda } from "./services/FormateadorMoneda.js";
 
 const productosIniciales = [
     { codigo: "GUANTES-001", nombre: "Guantes moteados multiuso maxima calidad", categoria: "Herramientas manuales", descripcion: "Proteccion multiuso para trabajos de ferreteria y mantenimiento.", precio: 4401 },
@@ -85,15 +86,6 @@ const tarjetasCatalogo = new Map(
     Array.from(elementos.resultados.querySelectorAll("article[data-product-code]"))
         .map((tarjeta) => [tarjeta.dataset.productCode, tarjeta.parentElement])
 );
-
-function formatearMoneda(importe) {
-    return new Intl.NumberFormat("es-AR", {
-        style: "currency",
-        currency: "ARS",
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    }).format(importe);
-}
 
 // Muestra mensajes informativos, de éxito, error o carga,
 // aplicando las clases CSS correspondientes a cada estado.
@@ -210,7 +202,7 @@ function renderizarCarrito() {
     const resumen = carrito.resumir();
     elementos.carritoItems.replaceChildren();
     elementos.contadorCarrito.textContent = String(resumen.cantidadItems);
-    elementos.carritoTotal.textContent = formatearMoneda(resumen.total);
+    elementos.carritoTotal.textContent = FormateadorMoneda.formatear(resumen.total);
     elementos.botonIniciarCompra.disabled = resumen.items.length === 0;
     mostrarMensaje(
         elementos.carritoMensaje,
@@ -225,7 +217,7 @@ function renderizarCarrito() {
         const titulo = document.createElement("h3");
         titulo.textContent = item.nombre;
         const precio = document.createElement("p");
-        precio.textContent = `Precio unitario: ${formatearMoneda(item.precio)}`;
+        precio.textContent = `Precio unitario: ${FormateadorMoneda.formatear(item.precio)}`;
 
         const label = document.createElement("label");
         const cantidadId = `cantidad-${item.codigo.toLocaleLowerCase("es")}`;
@@ -248,7 +240,7 @@ function renderizarCarrito() {
         cantidad.setAttribute("aria-describedby", errorCantidad.id);
 
         const subtotal = document.createElement("p");
-        subtotal.textContent = `Subtotal: ${formatearMoneda(item.subtotal)}`;
+        subtotal.textContent = `Subtotal: ${FormateadorMoneda.formatear(item.subtotal)}`;
         const eliminar = document.createElement("button");
         eliminar.type = "button";
         eliminar.dataset.action = "eliminar-carrito";
@@ -277,11 +269,11 @@ function renderizarCondiciones(condiciones) {
     elementos.condicionesPago.replaceChildren();
     const lista = document.createElement("dl");
     const datos = [
-        ["Total original", formatearMoneda(condiciones.totalOriginal)],
+        ["Total original", FormateadorMoneda.formatear(condiciones.totalOriginal)],
         ["Cuotas", String(condiciones.cuotas)],
-        ["Interes / recargo", `${condiciones.porcentajeRecargo}% (${formatearMoneda(condiciones.interes)})`],
-        ["Total financiado", formatearMoneda(condiciones.totalFinanciado)],
-        ["Valor de cada cuota", formatearMoneda(condiciones.valorCuota)]
+        ["Interes / recargo", `${condiciones.porcentajeRecargo}% (${FormateadorMoneda.formatear(condiciones.interes)})`],
+        ["Total financiado", FormateadorMoneda.formatear(condiciones.totalFinanciado)],
+        ["Valor de cada cuota", FormateadorMoneda.formatear(condiciones.valorCuota)]
     ];
     datos.forEach(([etiqueta, valor]) => {
         const termino = document.createElement("dt");
@@ -380,14 +372,14 @@ function agregarDatosResumen(contenedor, resumen) {
     const productos = document.createElement("ul");
     resumen.productos.forEach((item) => {
         const linea = document.createElement("li");
-        linea.textContent = `${item.nombre} | ${item.cantidad} x ${formatearMoneda(item.precio)} = ${formatearMoneda(item.subtotal)}`;
+        linea.textContent = `${item.nombre} | ${item.cantidad} x ${FormateadorMoneda.formatear(item.precio)} = ${FormateadorMoneda.formatear(item.subtotal)}`;
         productos.append(linea);
     });
 
     const cliente = document.createElement("p");
     cliente.textContent = `Cliente: ${resumen.cliente.nombre} · ${resumen.cliente.correo} · Envio a: ${resumen.cliente.direccion}`;
     const condiciones = document.createElement("p");
-    condiciones.textContent = `Total original: ${formatearMoneda(resumen.pago.totalOriginal)} · Metodo: ${resumen.pago.metodoPago} · ${resumen.pago.cuotas} cuota(s) · Recargo: ${resumen.pago.porcentajeRecargo}% · Total financiado: ${formatearMoneda(resumen.pago.totalFinanciado)} · Valor de cuota: ${formatearMoneda(resumen.pago.valorCuota)}`;
+    condiciones.textContent = `Total original: ${FormateadorMoneda.formatear(resumen.pago.totalOriginal)} · Metodo: ${resumen.pago.metodoPago} · ${resumen.pago.cuotas} cuota(s) · Recargo: ${resumen.pago.porcentajeRecargo}% · Total financiado: ${FormateadorMoneda.formatear(resumen.pago.totalFinanciado)} · Valor de cuota: ${FormateadorMoneda.formatear(resumen.pago.valorCuota)}`;
     const boton = document.createElement("button");
     boton.type = "button";
     boton.dataset.action = "confirmar-pedido";
@@ -598,12 +590,12 @@ function inicializarEventos() {
     elementos.activarPrecio.addEventListener("change", () => {
         elementos.precio.disabled = !elementos.activarPrecio.checked;
         elementos.precioValor.textContent = elementos.activarPrecio.checked
-            ? formatearMoneda(Number(elementos.precio.value))
+            ? FormateadorMoneda.formatear(Number(elementos.precio.value))
             : "Sin limite";
         buscarYMostrarCatalogo();
     });
     elementos.precio.addEventListener("input", () => {
-        elementos.precioValor.textContent = formatearMoneda(Number(elementos.precio.value));
+        elementos.precioValor.textContent = FormateadorMoneda.formatear(Number(elementos.precio.value));
         buscarYMostrarCatalogo();
     });
 
