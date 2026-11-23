@@ -27,7 +27,7 @@
         </form>
 
         <button type="button" aria-label="Ver carrito de compras" data-bs-toggle="offcanvas" data-bs-target="#carrito" aria-controls="carrito">
-            Carrito (<span id="contador-carrito">0</span>)
+            Carrito (<span id="contador-carrito"></span>)
         </button>
         <span>Iniciar sesion</span>
 
@@ -194,9 +194,9 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Cerrar carrito"></button>
             </div>
             <div class="offcanvas-body">
-                <p id="carrito-mensaje" role="status" aria-live="polite">El carrito esta vacio.</p>
+                <p id="carrito-mensaje" role="status" aria-live="polite"></p>
                 <div id="carrito-items"></div>
-                <p>Total: <strong id="carrito-total">$0,00</strong></p>
+                <p>Total: <strong id="carrito-total"></strong></p>
                 <button type="button" data-action="iniciar-compra" data-bs-dismiss="offcanvas" disabled>Iniciar compra</button>
             </div>
         </aside>
