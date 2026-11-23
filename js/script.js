@@ -8,6 +8,7 @@ import { FormateadorMoneda } from "./services/FormateadorMoneda.js";
 import { validarCambioCantidad } from "./services/ValidacionCarrito.js";
 import { confirmarPedidoConNumeracion } from "./services/ConfirmadorPedidos.js";
 import { ServicioOfertas } from "./services/ServicioOfertas.js";
+import { IMAGENES_CATALOGO } from "./data/imagenesCatalogo.js";
 
 const productosIniciales = [
     { codigo: "GUANTES-001", nombre: "Guantes moteados multiuso maxima calidad", categoria: "Herramientas manuales", descripcion: "Proteccion multiuso para trabajos de ferreteria y mantenimiento.", precio: 4401 },
@@ -86,10 +87,7 @@ if (elementosFaltantes.length > 0) {
     );
 }
 
-const tarjetasCatalogo = new Map(
-    Array.from(elementos.resultados.querySelectorAll("article[data-product-code]"))
-        .map((tarjeta) => [tarjeta.dataset.productCode, tarjeta.parentElement])
-);
+
 
 // Muestra mensajes informativos, de éxito, error o carga,
 // aplicando las clases CSS correspondientes a cada estado.
@@ -157,6 +155,102 @@ function limpiarEstadoControl(control) {
     }
 }
 
+
+/**
+ * Genera dinámicamente las tarjetas de los productos.
+ * Recibe los resultados del catálogo y los representa en el DOM.
+ *
+ * @param {Producto[]} productos
+ * @returns {void}
+ */
+function renderizarCatalogo(productos) {
+    const fragmento = document.createDocumentFragment();
+
+    const ofertas = ServicioOfertas.obtenerOfertas(catalogo);
+
+    const ofertasPorCodigo = new Map(
+        ofertas.map((oferta) => [oferta.codigo, oferta])
+    );
+
+    productos.forEach((producto) => {
+        const oferta = ofertasPorCodigo.get(producto.codigo);
+
+        const columna = document.createElement("div");
+        columna.className = "col-12 col-md-6 col-lg-4";
+
+        const articulo = document.createElement("article");
+        articulo.className = "h-100";
+        articulo.dataset.productCode = producto.codigo;
+
+        // Imagen del producto
+        const rutaImagen =
+            oferta?.imagen ?? IMAGENES_CATALOGO[producto.codigo];
+
+        if (rutaImagen) {
+            const imagen = document.createElement("img");
+            imagen.src = rutaImagen;
+            imagen.alt = producto.nombre;
+            articulo.append(imagen);
+        }
+
+        // Categoría
+        const categoria = document.createElement("p");
+        categoria.textContent = producto.categoria;
+
+        // Nombre
+        const titulo = document.createElement("h3");
+        titulo.textContent = producto.nombre;
+
+        // Descripción
+        const descripcion = document.createElement("p");
+        descripcion.textContent = producto.descripcion;
+
+        // Precios
+        const precios = document.createElement("p");
+
+        if (oferta) {
+            const precioAnterior = document.createElement("del");
+            precioAnterior.textContent =
+                FormateadorMoneda.formatear(oferta.precioAnterior);
+
+            precios.append(
+                precioAnterior,
+                document.createTextNode(" ")
+            );
+        }
+
+        const precioActual = document.createElement("strong");
+        precioActual.textContent =
+            FormateadorMoneda.formatear(producto.precio);
+
+        precios.append(
+            precioActual,
+            document.createTextNode(" por unidad")
+        );
+
+        // Botón de compra
+        const boton = document.createElement("button");
+        boton.type = "button";
+        boton.dataset.action = "agregar-carrito";
+        boton.dataset.productCode = producto.codigo;
+        boton.textContent = "Comprar";
+
+        articulo.append(
+            categoria,
+            titulo,
+            descripcion,
+            precios,
+            boton
+        );
+
+        columna.append(articulo);
+        fragmento.append(columna);
+    });
+
+    elementos.resultados.replaceChildren(fragmento);
+}
+
+
 function buscarYMostrarCatalogo() {
     const criterios = {
         texto: elementos.busqueda.value,
@@ -164,6 +258,7 @@ function buscarYMostrarCatalogo() {
         precioMaximo: elementos.activarPrecio.checked ? elementos.precio.value : null,
         orden: elementos.orden.value
     };
+
     const resultado = catalogo.buscar(criterios);
 
     if (!resultado.valido) {
@@ -177,19 +272,9 @@ function buscarYMostrarCatalogo() {
     } else {
         limpiarEstadoControl(elementos.precio);
     }
-    resultado.resultados.forEach((producto) => {
-        const tarjeta = tarjetasCatalogo.get(producto.codigo);
-        if (!tarjeta) {
-            throw new Error(`No hay una tarjeta HTML para el producto ${producto.codigo}.`);
-        }
-        elementos.resultados.append(tarjeta);
-        tarjeta.hidden = false;
-    });
 
-    const codigosVisibles = new Set(resultado.resultados.map((producto) => producto.codigo));
-    tarjetasCatalogo.forEach((tarjeta, codigo) => {
-        tarjeta.hidden = !codigosVisibles.has(codigo);
-    });
+    // Genera dinámicamente las tarjetas del catálogo.
+    renderizarCatalogo(resultado.resultados);
 
     mostrarMensaje(
         elementos.catalogoMensaje,
@@ -199,6 +284,7 @@ function buscarYMostrarCatalogo() {
         resultado.resultados.length ? "success" : "info"
     );
 }
+
 
 // Actualiza visualmente los productos, cantidades y totales del carrito
 // utilizando la información proporcionada por la clase Carrito.
