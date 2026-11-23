@@ -7,6 +7,7 @@ import { Pedido } from "./models/Pedido.js";
 import { FormateadorMoneda } from "./services/FormateadorMoneda.js";
 import { validarCambioCantidad } from "./services/ValidacionCarrito.js";
 import { confirmarPedidoConNumeracion } from "./services/ConfirmadorPedidos.js";
+import { ServicioOfertas } from "./services/ServicioOfertas.js";
 
 const productosIniciales = [
     { codigo: "GUANTES-001", nombre: "Guantes moteados multiuso maxima calidad", categoria: "Herramientas manuales", descripcion: "Proteccion multiuso para trabajos de ferreteria y mantenimiento.", precio: 4401 },
@@ -67,6 +68,7 @@ const elementos = {
     seccionCatalogo: elemento("#catalogo"),
     panelCarrito: elemento("#carrito"),
     seccionOfertas: elemento("#ofertas"),
+    ofertasProductos: elemento("#ofertas-productos"),
     navegacionPrincipal: elemento('nav[aria-label="Navegacion principal"]')
 };
 
@@ -511,7 +513,75 @@ function cancelarPedido() {
     elementos.seccionPago.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+
+/**
+ * Renderiza dinámicamente las tarjetas de ofertas
+ * utilizando los datos proporcionados por ServicioOfertas.
+ * @returns {void}
+ */
+function renderizarOfertas() {
+    const ofertas = ServicioOfertas.obtenerOfertas(catalogo);
+    const fragmento = document.createDocumentFragment();
+
+    ofertas.forEach((oferta) => {
+        const columna = document.createElement("div");
+        columna.className = "col-12 col-md-6 col-lg-4";
+
+        const articulo = document.createElement("article");
+        articulo.className = "h-100";
+        articulo.dataset.productCode = oferta.codigo;
+
+        const imagen = document.createElement("img");
+        imagen.src = oferta.imagen;
+        imagen.alt = oferta.nombre;
+
+        const titulo = document.createElement("h2");
+        titulo.textContent = oferta.nombre;
+
+        const descripcion = document.createElement("p");
+        descripcion.textContent = oferta.descripcion;
+
+        const precios = document.createElement("p");
+
+        const precioAnterior = document.createElement("del");
+        precioAnterior.textContent =
+            FormateadorMoneda.formatear(oferta.precioAnterior);
+
+        const precioActual = document.createElement("strong");
+        precioActual.textContent =
+            FormateadorMoneda.formatear(oferta.precioActual);
+
+        precios.append(
+            precioAnterior,
+            document.createTextNode(" "),
+            precioActual,
+            document.createTextNode(" por unidad")
+        );
+
+        const boton = document.createElement("button");
+        boton.type = "button";
+        boton.dataset.action = "agregar-carrito";
+        boton.dataset.productCode = oferta.codigo;
+        boton.textContent = "Comprar";
+
+        articulo.append(
+            imagen,
+            titulo,
+            descripcion,
+            precios,
+            boton
+        );
+
+        columna.append(articulo);
+        fragmento.append(columna);
+    });
+
+    elementos.ofertasProductos.replaceChildren(fragmento);
+}
+
+
 function inicializarEventos() {
+    renderizarOfertas();
     buscarYMostrarCatalogo();
     renderizarCarrito();
     // Gestiona el cierre del Offcanvas una sola vez.
