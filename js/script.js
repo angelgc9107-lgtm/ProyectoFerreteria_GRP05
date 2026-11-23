@@ -4,6 +4,7 @@ import { Carrito } from "./models/Carrito.js";
 import { Pago } from "./models/Pago.js";
 import { Pedido } from "./models/Pedido.js";
 import { FormateadorMoneda } from "./services/FormateadorMoneda.js";
+import { validarCambioCantidad } from "./services/ValidacionCarrito.js";
 
 const productosIniciales = [
     { codigo: "GUANTES-001", nombre: "Guantes moteados multiuso maxima calidad", categoria: "Herramientas manuales", descripcion: "Proteccion multiuso para trabajos de ferreteria y mantenimiento.", precio: 4401 },
@@ -674,21 +675,20 @@ function inicializarEventos() {
     elementos.carritoItems.addEventListener("input", (evento) => {
         const control = evento.target.closest('[data-action="cambiar-cantidad"]');
         if (!control) return;
-        const valor = control.value.trim();
-        const valido =
-            valor !== "" &&
-            control.validity.valid &&
-            Number.isSafeInteger(Number(valor));
-        if (valido) {
-            marcarControl(control, true);
-        } else {
-            marcarControl(
-                control,
-                false,
-                "La cantidad debe ser un número entero mayor o igual a 1."
-            );
-        }
+
+        const resultado = validarCambioCantidad(
+            carrito,
+            control.dataset.productCode,
+            control.value
+        );
+
+        marcarControl(
+            control,
+            resultado.exito,
+            resultado.error ?? ""
+        );
     });
+
 
     // Actualiza la cantidad mediante la clase Carrito cuando se confirma el cambio.
     elementos.carritoItems.addEventListener("change", (evento) => {
