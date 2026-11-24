@@ -1,7 +1,7 @@
 # Documentación de Storage
 
 Describe cómo la aplicación guarda datos en el navegador mediante `js/utils/storage.js`.
-Ninguna otra parte del código debe usar `localStorage` o `sessionStorage` directamente: todo pasa por `StorageUtil`.
+Ninguna otra parte del código debe usar `localStorage` o `sessionStorage` directamente: todo pasa por `StorageUtil`. La interfaz (`js/script.js`) no llama a `StorageUtil` directamente, sino a `js/services/FachadaStorage.js`, que agrupa una operación por dato (ver sección 7).
 
 ## 1. localStorage vs sessionStorage en este proyecto
 
@@ -14,16 +14,18 @@ Ninguna otra parte del código debe usar `localStorage` o `sessionStorage` direc
 
 ## 2. Qué datos se almacenan
 
-| Dato | Clave | Storage | Justificación |
-|---|---|---|---|
-| Carrito de compras | `app:carrito:items` | local | El cliente espera encontrar su carrito al volver otro día. |
-| Historial de pedidos | `app:pedidos:historial` | local | Se consulta entre sesiones. |
-| Secuencia de pedidos | `app:pedidos:secuencia` | local | Mantiene la numeración correlativa tras recargar. |
-| Preferencias del usuario | `app:usuario:preferencias` | local | Se mantienen entre visitas. |
-| Caché del catálogo | `app:catalogo:cache` | local | Evita reconstruir el catálogo en cada visita; se invalida por antigüedad (`ttlMs`). |
-| Borrador del checkout | `app:checkout:borrador` | session | Dato sensible y temporal; no debe quedar al cerrar la pestaña. |
-| Filtros del catálogo | `app:catalogo:filtros` | session | Estado de navegación de la visita actual. |
-| Mensaje de bienvenida visto | `app:ui:bienvenida-vista` | session | Se muestra una vez por visita. |
+| Dato | Clave | Storage | Justificación | Uso actual en la aplicación |
+|---|---|---|---|---|
+| Carrito de compras | `app:carrito:items` | local | El cliente espera encontrar su carrito al volver otro día. | **En uso**: se carga al iniciar y se guarda después de cada cambio (sección 7.1). |
+| Historial de pedidos | `app:pedidos:historial` | local | Se consulta entre sesiones. | Definido; la interfaz todavía no lo usa. |
+| Secuencia de pedidos | `app:pedidos:secuencia` | local | Mantiene la numeración correlativa tras recargar. | Definido; la interfaz todavía no lo usa. |
+| Preferencias del usuario | `app:usuario:preferencias` | local | Se mantienen entre visitas. | Definido; la interfaz todavía no lo usa. |
+| Caché del catálogo | `app:catalogo:cache` | local | Evita reconstruir el catálogo en cada visita; se invalida por antigüedad (`ttlMs`). | Definido; la interfaz todavía no lo usa. |
+| Borrador del checkout | `app:checkout:borrador` | session | Dato sensible y temporal; no debe quedar al cerrar la pestaña. | Definido; la interfaz todavía no lo usa. |
+| Filtros del catálogo | `app:catalogo:filtros` | session | Estado de navegación de la visita actual. | Definido; la interfaz todavía no lo usa. |
+| Mensaje de bienvenida visto | `app:ui:bienvenida-vista` | session | Se muestra una vez por visita. | Definido; la interfaz todavía no lo usa. |
+
+Las claves y schemas de los datos que todavía no se usan quedan definidos para que la integración futura no tenga que rediseñar el almacenamiento.
 
 No se guardan datos de tarjeta de crédito ni información que no sea necesaria para reconstruir la interfaz.
 
@@ -162,56 +164,85 @@ Antes de serializar, el módulo recorre todo el valor (objetos y arrays anidados
 
 La interfaz decide qué mostrar al usuario cuando una operación devuelve `false` o `null`; el módulo solo informa por consola.
 
-## 7. Ejemplos de uso
+## 7. Uso en la aplicación
 
-**Guardar y recuperar el carrito**
+La interfaz usa el storage en tres capas:
+
+```text
+js/script.js  →  js/services/FachadaStorage.js  →  js/utils/storage.js (StorageUtil)  →  localStorage / sessionStorage
+```
+
+`FachadaStorage` le da a cada dato una operación con nombre propio (`cargarCarrito()`, `guardarCarrito()`, etc.), así `script.js` no necesita conocer las claves ni el tipo de storage.
+
+### 7.1 Persistencia del carrito (en uso)
+
+Es el único dato que la aplicación guarda hoy. Los fragmentos son del código real.
+
+**`js/services/FachadaStorage.js`**: restaura el carrito con `Carrito.fromJSON()` o crea uno vacío si no hay datos válidos, y lo guarda con `toJSON()`.
 
 ```javascript
-import { StorageUtil, CLAVES } from './utils/storage.js';
-import { Carrito } from './models/Carrito.js';
+cargarCarrito() {
+    return StorageUtil.cargarInstancia(
+        CLAVES.CARRITO, Carrito
+    ) ?? new Carrito();
+},
 
-// Al iniciar: restaura el carrito o crea uno vacío si no hay datos válidos
-const carrito = StorageUtil.cargarInstancia(CLAVES.CARRITO, Carrito) ?? new Carrito();
+guardarCarrito(carrito) {
+    return StorageUtil.guardarInstancia(
+        CLAVES.CARRITO, carrito
+    );
+},
+```
 
-// Después de cada cambio en el carrito:
-if (!StorageUtil.guardarInstancia(CLAVES.CARRITO, carrito)) {
-  // El storage está lleno o no disponible: avisar en la interfaz
+**`js/script.js`, al cargar la página**: el carrito arranca con lo que había guardado.
+
+```javascript
+const carrito = FachadaStorage.cargarCarrito();
+```
+
+**`js/script.js`, en `procesarOperacionCarrito()`**: después de agregar, quitar o cambiar cantidades se guarda el carrito. Si `guardarCarrito()` devuelve `false` (storage lleno o bloqueado), la interfaz avisa al usuario.
+
+```javascript
+const guardado = FachadaStorage.guardarCarrito(carrito);
+// ...
+if (!guardado) {
+    const mensaje = "El carrito se actualizó, pero no pudo guardarse. Los cambios podrían perderse al recargar.";
+
+    mostrarMensaje(elementos.carritoMensaje, mensaje, "error");
+    mostrarMensaje(elementos.estadoAplicacion, mensaje, "error");
 }
 ```
 
-**Borrador del checkout (solo durante la visita)**
+**`js/script.js`, en `confirmarPedido()`**: al confirmar el pedido se vacía el carrito y se guarda vacío, para que los productos no reaparezcan al recargar. Si no se puede guardar, se informa.
 
 ```javascript
-StorageUtil.guardar(CLAVES.BORRADOR_CHECKOUT, { cliente: { nombre: 'Ana', correo: 'ana@mail.com', direccion: 'Calle 123' }, metodoPago: 'tarjeta', cuotas: 3 }, 'session');
-const borrador = StorageUtil.obtener(CLAVES.BORRADOR_CHECKOUT, 'session');
-StorageUtil.eliminar(CLAVES.BORRADOR_CHECKOUT, 'session'); // al confirmar el pedido
+carrito.vaciar();
+const carritoGuardado = FachadaStorage.guardarCarrito(carrito);
+// ...
+mostrarMensaje(elementos.pedidoMensaje,carritoGuardado
+        ? "La operacion se realizo correctamente."
+        : "Pedido confirmado, pero no se pudo guardar el carrito vacío. Los productos podrían reaparecer al recargar.",
+    carritoGuardado ? "success" : "error"
+);
 ```
 
-**Persistir instancias de las clases del dominio**
+Así se cumple lo indicado en la sección 6: `StorageUtil` solo registra el error por consola y es `script.js` el que decide qué mostrar.
 
-```javascript
-// Las clases de js/models/ implementan toJSON() y static fromJSON(datos)
-StorageUtil.guardarLista(CLAVES.PEDIDOS, pedidos);
-const historial = StorageUtil.cargarLista(CLAVES.PEDIDOS, Pedido);
-```
+### 7.2 Operaciones disponibles que la interfaz todavía no usa
 
-**Caché del catálogo con vencimiento**
+`FachadaStorage` ya expone operaciones para el resto de los datos de la sección 2, pero `script.js` no las llama en esta entrega. Quedan como punto de integración para entregas futuras:
 
-```javascript
-const cache = StorageUtil.obtener(CLAVES.CACHE_CATALOGO);
-const vigente = cache && (Date.now() - cache.guardadoEn) < cache.ttlMs;
-const productos = vigente ? cache.productos : catalogo.toJSON().productos;
-if (!vigente) {
-  StorageUtil.guardar(CLAVES.CACHE_CATALOGO, { guardadoEn: Date.now(), ttlMs: 3600000, productos });
-}
-```
+| Dato | Operaciones de `FachadaStorage` | Llamada a `StorageUtil` |
+|---|---|---|
+| Historial de pedidos | `cargarPedidos()` / `guardarPedidos(pedidos)` | `cargarLista` / `guardarLista` con `Pedido` |
+| Secuencia de pedidos | `cargarSecuenciaPedidos()` / `guardarSecuenciaPedidos(n)` | `obtener` / `guardar` |
+| Preferencias | `cargarPreferencias()` / `guardarPreferencias(p)` | `obtener` / `guardar` |
+| Caché del catálogo | `cargarCatalogo()` / `guardarCatalogo(catalogo)` | `cargarInstancia` / `guardarInstancia` con `Catalogo` |
+| Borrador del checkout | `cargarBorrador()` / `guardarBorrador(b)` / `eliminarBorrador()` | `obtener` / `guardar` / `eliminar` en `session` |
+| Filtros del catálogo | `cargarFiltros()` / `guardarFiltros(f)` | `obtener` / `guardar` en `session` |
+| Mensaje de bienvenida | `bienvenidaVista()` / `guardarBienvenidaVista()` | `obtener` / `guardar` en `session` |
 
-**Listar y limpiar datos de la aplicación**
-
-```javascript
-StorageUtil.listar('app:pedidos:');   // ['app:pedidos:historial', 'app:pedidos:secuencia']
-StorageUtil.limpiar('session');       // borra solo claves app:* de la sesión
-```
+Al integrar la caché del catálogo hay que ajustar la fachada: hoy guarda `Catalogo.toJSON()` directamente, sin `guardadoEn` ni `ttlMs`, así que no sigue el schema de la sección 4 y no se invalida por antigüedad.
 
 ## 8. Uso del módulo desde `index.html`
 
