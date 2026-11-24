@@ -862,6 +862,341 @@ describe("StorageUtil (js/utils/storage.js)", () => {
         });
     });
 
+    /* ---------------- rutas de error y ramas adicionales ---------------- */
+
+    describe("Detección de storage lleno (cuota)", () => {
+        const casos = [
+            ["NS_ERROR_DOM_QUOTA_REACHED (Firefox antiguo)", { name: "NS_ERROR_DOM_QUOTA_REACHED" }],
+            ["código 22 de DOMException", { name: "Otro", code: 22 }],
+            ["código 1014 de Firefox", { name: "Otro", code: 1014 }]
+        ];
+
+        casos.forEach(([descripcion, error]) => {
+            it(`guardar() lo informa como storage lleno: ${descripcion}`, () => {
+                local.errorEnSetItem = error;
+                expect(StorageUtil.guardar("app:x", 1)).toBeFalse();
+                expect(console.error.calls.mostRecent().args[0]).toContain("Storage lleno");
+            });
+        });
+
+        it("un error que no es de cuota se informa como error de escritura", () => {
+            local.errorEnSetItem = { name: "SecurityError", code: 18 };
+            expect(StorageUtil.guardar("app:x", 1)).toBeFalse();
+            expect(console.error.calls.mostRecent().args[0]).toContain("No se pudo guardar");
+        });
+
+        it("un valor lanzado que no es un objeto no se confunde con una cuota", () => {
+            local.errorEnSetItem = "falló";
+            expect(StorageUtil.guardar("app:x", 1)).toBeFalse();
+            expect(console.error.calls.mostRecent().args[0]).toContain("No se pudo guardar");
+        });
+
+        it("un error nulo lanzado por setItem tampoco es una cuota", () => {
+            local.errorEnSetItem = 0;
+            local.setItem = () => { throw null; };
+            expect(StorageUtil.guardar("app:x", 1)).toBeFalse();
+            expect(console.error.calls.mostRecent().args[0]).toContain("No se pudo guardar");
+        });
+
+        it("estaDisponible() informa un storage lleno sin lanzar", () => {
+            local.errorEnSetItem = errorDeCuota();
+            expect(StorageUtil.estaDisponible()).toBeFalse();
+            expect(console.error.calls.mostRecent().args[0]).toContain("está lleno");
+        });
+
+        it("estaDisponible() informa otros errores de escritura como no disponible", () => {
+            local.errorEnSetItem = new Error("bloqueado");
+            expect(StorageUtil.estaDisponible()).toBeFalse();
+            expect(console.error.calls.mostRecent().args[0]).toContain("no está disponible");
+        });
+    });
+
+    describe("Serialización: valores que no se pueden guardar", () => {
+        it("rechaza una referencia circular directa", () => {
+            const objeto = {};
+            objeto.yo = objeto;
+            expect(StorageUtil.guardar("app:x", objeto)).toBeFalse();
+            expect(console.error.calls.mostRecent().args[0]).toContain("no serializables");
+            expect(local.datos.size).toBe(0);
+        });
+
+        it("rechaza un objeto cuyo toJSON() devuelve el mismo objeto", () => {
+            const objeto = { toJSON() { return this; } };
+            expect(StorageUtil.guardar("app:x", objeto)).toBeFalse();
+            expect(local.datos.size).toBe(0);
+        });
+
+        it("rechaza un objeto cuyo toJSON() devuelve una estructura que lo contiene", () => {
+            const objeto = { toJSON() { return { dentro: objeto }; } };
+            expect(StorageUtil.guardar("app:x", objeto)).toBeFalse();
+            expect(local.datos.size).toBe(0);
+        });
+
+        it("rechaza un arreglo con una función adentro", () => {
+            expect(StorageUtil.guardar("app:x", [1, () => {}])).toBeFalse();
+            expect(local.datos.size).toBe(0);
+        });
+
+        it("rechaza un objeto con una propiedad undefined", () => {
+            expect(StorageUtil.guardar("app:x", { a: 1, b: undefined })).toBeFalse();
+        });
+
+        it("rechaza undefined, funciones, símbolos y BigInt en la raíz", () => {
+            [undefined, () => {}, Symbol("s"), 10n].forEach((valor) => {
+                expect(StorageUtil.guardar("app:x", valor)).toBeFalse();
+            });
+            expect(local.datos.size).toBe(0);
+        });
+
+        it("guarda null, números, booleanos y cadenas", () => {
+            [null, 0, -1.5, true, false, "texto", ""].forEach((valor, i) => {
+                expect(StorageUtil.guardar(`app:v${i}`, valor)).toBeTrue();
+                expect(StorageUtil.obtener(`app:v${i}`)).toEqual(valor);
+            });
+        });
+
+        it("acepta el mismo objeto repetido en ramas distintas (no es un ciclo)", () => {
+            const compartido = { a: 1 };
+            expect(StorageUtil.guardar("app:x", { uno: compartido, dos: compartido })).toBeTrue();
+            expect(StorageUtil.obtener("app:x")).toEqual({ uno: { a: 1 }, dos: { a: 1 } });
+        });
+
+        it("actualizar() rechaza un valor no serializable y conserva el dato anterior", () => {
+            StorageUtil.guardar("app:x", { ok: true });
+            expect(StorageUtil.actualizar("app:x", { f: () => {} })).toBeFalse();
+            expect(StorageUtil.obtener("app:x")).toEqual({ ok: true });
+        });
+    });
+
+    describe("Errores al leer", () => {
+        it("obtener() devuelve null si getItem() lanza", () => {
+            local.getItem = () => { throw new Error("lectura denegada"); };
+            expect(StorageUtil.obtener("app:x")).toBeNull();
+            expect(console.error.calls.mostRecent().args[0]).toContain("No se pudo leer");
+        });
+
+        it("existe() devuelve false si getItem() lanza", () => {
+            local.getItem = () => { throw new Error("lectura denegada"); };
+            expect(StorageUtil.existe("app:x")).toBeFalse();
+            expect(console.error.calls.mostRecent().args[0]).toContain("No se pudo consultar");
+        });
+
+        it("actualizar() devuelve false si getItem() lanza", () => {
+            local.getItem = () => { throw new Error("lectura denegada"); };
+            expect(StorageUtil.actualizar("app:x", 1)).toBeFalse();
+            expect(console.error.calls.mostRecent().args[0]).toContain("Error inesperado al actualizar");
+        });
+
+        it("actualizar() informa que la clave no existe", () => {
+            expect(StorageUtil.actualizar("app:no-existe", 1)).toBeFalse();
+            expect(console.error.calls.mostRecent().args[0]).toContain("la clave no existe");
+        });
+
+        it("estaDisponible() devuelve false si getItem() lanza", () => {
+            local.getItem = () => { throw new Error("lectura denegada"); };
+            expect(StorageUtil.estaDisponible()).toBeFalse();
+        });
+
+        it("estaDisponible() no lanza aunque removeItem() también falle al limpiar", () => {
+            local.errorEnRemoveItem = new Error("no se puede borrar");
+            expect(StorageUtil.estaDisponible()).toBeFalse();
+        });
+    });
+
+    describe("Storage sin getItem() o ausente", () => {
+        const operaciones = [
+            ["guardar", () => StorageUtil.guardar("app:x", 1), false],
+            ["obtener", () => StorageUtil.obtener("app:x"), null],
+            ["actualizar", () => StorageUtil.actualizar("app:x", 1), false],
+            ["eliminar", () => StorageUtil.eliminar("app:x"), false],
+            ["existe", () => StorageUtil.existe("app:x"), false],
+            ["listar", () => StorageUtil.listar(), []],
+            ["limpiar", () => StorageUtil.limpiar(), false],
+            ["estaDisponible", () => StorageUtil.estaDisponible(), false],
+            ["guardarInstancia", () => StorageUtil.guardarInstancia("app:x", new Modelo("a")), false],
+            ["cargarInstancia", () => StorageUtil.cargarInstancia("app:x", Modelo), null],
+            ["guardarLista", () => StorageUtil.guardarLista("app:x", [new Modelo("a")]), false],
+            ["cargarLista", () => StorageUtil.cargarLista("app:x", Modelo), []]
+        ];
+
+        operaciones.forEach(([nombre, ejecutar, esperado]) => {
+            it(`${nombre}() devuelve el valor de fallo si el objeto Storage no tiene getItem()`, () => {
+                instalarStorage("local", { length: 0, key: () => null });
+                expect(ejecutar()).toEqual(esperado);
+                expect(console.error).toHaveBeenCalled();
+            });
+
+            it(`${nombre}() devuelve el valor de fallo si el storage es null`, () => {
+                instalarStorage("local", null);
+                expect(ejecutar()).toEqual(esperado);
+                expect(console.error).toHaveBeenCalled();
+            });
+        });
+    });
+
+    describe("key() y length", () => {
+        it("listar() ignora las posiciones en las que key() devuelve null", () => {
+            StorageUtil.guardar("app:a", 1);
+            StorageUtil.guardar("app:b", 2);
+            const keyOriginal = local.key.bind(local);
+            Object.defineProperty(local, "length", { get: () => 3 });
+            local.key = (i) => (i === 1 ? null : keyOriginal(i > 1 ? i - 1 : i));
+            expect(StorageUtil.listar()).toEqual(["app:a", "app:b"]);
+        });
+
+        it("limpiar() ignora las posiciones en las que key() devuelve null", () => {
+            StorageUtil.guardar("app:a", 1);
+            local.datos.set("ajena", "1");
+            const claves = [...local.datos.keys()];
+            Object.defineProperty(local, "length", { get: () => claves.length + 1 });
+            local.key = (i) => claves[i] ?? null;
+            expect(StorageUtil.limpiar()).toBeTrue();
+            expect([...local.datos.keys()]).toEqual(["ajena"]);
+        });
+
+        it("listar() devuelve [] si length lanza", () => {
+            Object.defineProperty(local, "length", { get: () => { throw new Error("sin acceso"); } });
+            expect(StorageUtil.listar()).toEqual([]);
+            expect(console.error.calls.mostRecent().args[0]).toContain("No se pudieron listar");
+        });
+
+        it("limpiar() devuelve false si key() lanza", () => {
+            StorageUtil.guardar("app:a", 1);
+            local.key = () => { throw new Error("sin acceso"); };
+            expect(StorageUtil.limpiar()).toBeFalse();
+            expect(console.error.calls.mostRecent().args[0]).toContain("No se pudo limpiar");
+        });
+
+        it("listar() devuelve [] con un prefijo que no es una cadena", () => {
+            expect(StorageUtil.listar(42)).toEqual([]);
+            expect(console.error.calls.mostRecent().args[0]).toContain("Prefijo inválido");
+        });
+
+        it("listar() devuelve [] con un tipo de storage inválido", () => {
+            expect(StorageUtil.listar("app:", "otro")).toEqual([]);
+        });
+
+        it("listar() filtra por un prefijo propio y ordena las claves", () => {
+            StorageUtil.guardar("app:b", 1);
+            StorageUtil.guardar("app:a", 1);
+            local.datos.set("otra:z", "1");
+            expect(StorageUtil.listar("otra:")).toEqual(["otra:z"]);
+            expect(StorageUtil.listar()).toEqual(["app:a", "app:b"]);
+        });
+    });
+
+    describe("limpiar(): ramas adicionales", () => {
+        it("con soloApp en false borra también las claves ajenas", () => {
+            StorageUtil.guardar("app:a", 1);
+            local.datos.set("ajena", "1");
+            expect(StorageUtil.limpiar("local", false)).toBeTrue();
+            expect(local.datos.size).toBe(0);
+        });
+
+        it("con soloApp en true conserva las claves ajenas", () => {
+            StorageUtil.guardar("app:a", 1);
+            local.datos.set("ajena", "1");
+            expect(StorageUtil.limpiar("local", true)).toBeTrue();
+            expect([...local.datos.keys()]).toEqual(["ajena"]);
+        });
+
+        it("devuelve false con un tipo inválido", () => {
+            expect(StorageUtil.limpiar("otro")).toBeFalse();
+        });
+
+        it("devuelve false si clear() lanza", () => {
+            local.clear = () => { throw new Error("no se puede"); };
+            expect(StorageUtil.limpiar("local", false)).toBeFalse();
+            expect(console.error.calls.mostRecent().args[0]).toContain("No se pudo limpiar");
+        });
+
+        it("devuelve false si removeItem() lanza", () => {
+            StorageUtil.guardar("app:a", 1);
+            local.errorEnRemoveItem = new Error("no se puede borrar");
+            expect(StorageUtil.limpiar()).toBeFalse();
+        });
+
+        it("limpia sessionStorage sin tocar localStorage", () => {
+            StorageUtil.guardar("app:a", 1, "local");
+            StorageUtil.guardar("app:b", 2, "session");
+            expect(StorageUtil.limpiar("session")).toBeTrue();
+            expect(local.datos.size).toBe(1);
+            expect(session.datos.size).toBe(0);
+        });
+    });
+
+    describe("Instancias y listas: ramas de error", () => {
+        it("guardarInstancia() rechaza un valor sin toJSON()", () => {
+            expect(StorageUtil.guardarInstancia("app:x", { nombre: "a" })).toBeFalse();
+            expect(StorageUtil.guardarInstancia("app:x", null)).toBeFalse();
+            expect(console.error.calls.mostRecent().args[0]).toContain("no tiene toJSON()");
+        });
+
+        it("guardarInstancia() devuelve false si toJSON() lanza", () => {
+            const instancia = { toJSON() { throw new Error("roto"); } };
+            expect(StorageUtil.guardarInstancia("app:x", instancia)).toBeFalse();
+            expect(console.error.calls.mostRecent().args[0]).toContain("No se pudo serializar la instancia");
+        });
+
+        it("cargarInstancia() devuelve null con una clase sin fromJSON()", () => {
+            StorageUtil.guardar("app:x", { nombre: "a" });
+            expect(StorageUtil.cargarInstancia("app:x", class SinMetodo {})).toBeNull();
+            expect(StorageUtil.cargarInstancia("app:x", null)).toBeNull();
+        });
+
+        it("cargarInstancia() devuelve null si no hay datos guardados", () => {
+            expect(StorageUtil.cargarInstancia("app:no-hay", Modelo)).toBeNull();
+        });
+
+        it("cargarInstancia() devuelve null si fromJSON() rechaza los datos", () => {
+            StorageUtil.guardar("app:x", { nombre: "" });
+            expect(StorageUtil.cargarInstancia("app:x", Modelo)).toBeNull();
+            expect(console.error.calls.mostRecent().args[0]).toContain("no son válidos");
+        });
+
+        it("guardarLista() rechaza un valor que no es un arreglo", () => {
+            expect(StorageUtil.guardarLista("app:x", new Modelo("a"))).toBeFalse();
+            expect(console.error.calls.mostRecent().args[0]).toContain("se esperaba un arreglo");
+        });
+
+        it("guardarLista() rechaza un elemento sin toJSON() e indica su posición", () => {
+            expect(StorageUtil.guardarLista("app:x", [new Modelo("a"), { nombre: "b" }])).toBeFalse();
+            expect(console.error.calls.mostRecent().args[0]).toContain("el elemento 1");
+        });
+
+        it("guardarLista() devuelve false si toJSON() de un elemento lanza", () => {
+            const roto = { toJSON() { throw new Error("roto"); } };
+            expect(StorageUtil.guardarLista("app:x", [roto])).toBeFalse();
+            expect(console.error.calls.mostRecent().args[0]).toContain("No se pudo serializar la lista");
+        });
+
+        it("guardarLista() guarda una lista vacía", () => {
+            expect(StorageUtil.guardarLista("app:x", [])).toBeTrue();
+            expect(StorageUtil.cargarLista("app:x", Modelo)).toEqual([]);
+        });
+
+        it("cargarLista() devuelve [] con una clase sin fromJSON()", () => {
+            StorageUtil.guardar("app:x", [{ nombre: "a" }]);
+            expect(StorageUtil.cargarLista("app:x", {})).toEqual([]);
+        });
+
+        it("cargarLista() devuelve [] si no hay datos", () => {
+            expect(StorageUtil.cargarLista("app:no-hay", Modelo)).toEqual([]);
+        });
+
+        it("cargarLista() devuelve [] si lo guardado no es un arreglo", () => {
+            StorageUtil.guardar("app:x", { nombre: "a" });
+            expect(StorageUtil.cargarLista("app:x", Modelo)).toEqual([]);
+            expect(console.error.calls.mostRecent().args[0]).toContain("no son un arreglo");
+        });
+
+        it("cargarLista() devuelve [] si algún elemento es inválido (todo o nada)", () => {
+            StorageUtil.guardar("app:x", [{ nombre: "a" }, { nombre: "" }]);
+            expect(StorageUtil.cargarLista("app:x", Modelo)).toEqual([]);
+            expect(console.error.calls.mostRecent().args[0]).toContain("elementos inválidos");
+        });
+    });
+
     /* ---------------- ninguna operación lanza ---------------- */
 
     describe("Ninguna operación lanza excepciones hacia afuera", () => {

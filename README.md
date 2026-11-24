@@ -45,7 +45,8 @@ completa, aplicando cuatro pilares técnicos:
 - Manipulación del DOM y eventos del usuario.
 - Programación Orientada a Objetos, con clases en `js/models/`.
 - Almacenamiento persistente con `localStorage` y `sessionStorage`, a través
-  de una capa de abstracción en `js/utils/storage.js`.
+  de una capa de abstracción en `js/utils/storage.js`, conectada al controlador
+  mediante la fachada `js/services/FachadaStorage.js`.
 - Testing automatizado con Jasmine.
 Esta entrega se construye sobre las correcciones de la Actividad
 Obligatoria N.º 3 y es la base técnica del Segundo Parcial Integrador.
@@ -74,8 +75,9 @@ Obligatoria N.º 3 y es la base técnica del Segundo Parcial Integrador.
   formularios, inputs y botones, sin `prompt()` ni `alert()`.
 - Validación de las entradas en tiempo real, con feedback visual.
 - Resultados mostrados mediante manipulación del DOM.
-- Capa de Web Storage (`StorageUtil`) implementada y probada. **Todavía no está conectada al controlador:** el carrito no persiste al recargar la página (ver «Limitaciones conocidas» más abajo).
-- Pruebas automatizadas de modelos, storage y controlador con Jasmine.
+- **Persistencia del carrito en Web Storage:** el carrito se guarda en `localStorage` (clave `app:carrito:items`) y se restaura al recargar la página. El controlador accede a través de la fachada `js/services/FachadaStorage.js` y no conoce claves ni detalles de `StorageUtil`. Si el navegador no permite guardar, la interfaz avisa y el carrito sigue funcionando en memoria.
+- Catálogo, ofertas, tabla de precios, categorías, métodos de pago y cuotas se dibujan desde JavaScript (`index.html` no repite productos ni precios); las ofertas y las opciones de pago salen de `ServicioOfertas` y `ServicioOpcionesPago`.
+- Pruebas automatizadas de modelos, servicios, storage y controlador con Jasmine.
 ## ▶️ Cómo ejecutar el proyecto
  
 `index.html` carga el controlador como módulo ES6 (`<script type="module" src="js/script.js">`), por lo que **no funciona abriéndolo con `file://`**: hay que servirlo por HTTP. Desde la raíz del repositorio:
@@ -94,8 +96,10 @@ El código se organiza por responsabilidad:
 |---|---|
 | `js/script.js` | Controlador principal: solo manejo de eventos y manipulación del DOM. Invoca a las clases del dominio. |
 | `js/models/` | Clases del dominio (PascalCase, un archivo por clase) con la lógica de negocio, validaciones internas y serialización (`toJSON()` / `fromJSON()`). No toca el DOM ni los eventos. |
-| `js/utils/storage.js` | Capa de abstracción para `localStorage` y `sessionStorage`: operaciones CRUD, manejo de errores y serialización de JSON. |
-| `js/test/` | Suites de Jasmine (`script.spec.js`, `models.spec.js`, `storage.spec.js`), el runner `test-runner.html` y `testing-doc.md`. |
+| `js/services/` | Servicios entre el controlador y el dominio: `FachadaStorage.js` (acceso a storage), `ConfirmadorPedidos.js` (numeración), `ValidacionCarrito.js`, `FormateadorMoneda.js`, `ServicioOfertas.js`, `ServicioCategorias.js` y `ServicioOpcionesPago.js`. |
+| `js/data/imagenesCatalogo.js` | Mapa de imágenes de los productos del catálogo. |
+| `js/utils/storage.js` | Capa de abstracción para `localStorage` y `sessionStorage`: operaciones CRUD, manejo de errores y serialización de JSON. Solo la usa la fachada `FachadaStorage.js`. |
+| `js/test/` | Suites de Jasmine (`script.spec.js`, `models.spec.js`, `services.spec.js`, `storage.spec.js`), el runner `test-runner.html` y `testing-doc.md`. |
  
 ```
 .
@@ -107,10 +111,12 @@ El código se organiza por responsabilidad:
 ├── js/
 │   ├── script.js                    # Controlador (eventos y DOM)
 │   ├── models/                      # Clases del dominio (POO)
+│   ├── services/                    # Fachada de storage, ofertas, categorías, opciones de pago, formateo
+│   ├── data/imagenesCatalogo.js     # Imágenes del catálogo
 │   ├── utils/storage.js             # Utilidades de storage
 │   └── test/                        # Jasmine: specs, runner, testing-doc.md y herramientas/ (cobertura)
 └── docs/
-    ├── 01-mockup/
+    ├── 01-mockup/                   # Mockups y estados visuales (cuarta-entrega/)
     ├── 02-prompts/
     ├── 03-specs/                    # Un spec por rol y por actividad
     ├── 04-testing/
@@ -135,8 +141,9 @@ En el Primer Parcial el mockup se adaptó a la grilla de Bootstrap 5: desktop de
 - [Mockup en Figma (actualizado en el Primer Parcial con Bootstrap)](https://www.figma.com/design/jX7NrMUtt6Tg7oiYqock6s/Sin-t%C3%ADtulo?node-id=191-963&t=ouTMvmvpb279r7wJ-1)
 - [Mockup Bootstrap exportado (Primer Parcial)](docs/01-mockup/disenio-bootstrap.png)
 - [Estados de interacción Bootstrap (Primer Parcial)](docs/01-mockup/estados-bootstrap.png)
-- [Mockup con estilos exportado (Actividad Obligatoria N°2)](docs/01-mockup/actividad-obligatoria-2/dise%C3%B1o-con-estilos.png)
+- [Estados visuales de la cuarta entrega](docs/01-mockup/cuarta-entrega/README.md): capturas de la interfaz implementada (carrito vacío, método de pago y cuotas, formulario con errores, resumen, confirmación y cancelación). Son capturas de la aplicación real y complementan el mockup de Figma enlazado debajo.
 - [Mockup incorporación de estados visuales del flujo de compra](https://www.figma.com/design/jX7NrMUtt6Tg7oiYqock6s/Sin-t%C3%ADtulo?node-id=13-162&p=f&t=yU37ueX5pAf3yZKM-0)
+- [Mockup con estilos exportado (Actividad Obligatoria N°2)](docs/01-mockup/actividad-obligatoria-2/dise%C3%B1o-con-estilos.png)
 **Especificaciones por rol**
  
 - [Specs del Primer Parcial](docs/03-specs/primer-parcial/)
@@ -174,15 +181,20 @@ capa de storage y del controlador.
 - **Directorio de pruebas:** `js/test/`
 - **Runner:** `js/test/test-runner.html` (se abre en el navegador, servido por HTTP; ver «Cómo ejecutar el proyecto»)
 - **Suites:**
-  - `js/test/models.spec.js`: clases del dominio (constructores, métodos de negocio, validaciones y serialización).
-  - `js/test/storage.spec.js`: operaciones CRUD y manejo de errores de storage.
-  - `js/test/script.spec.js`: controlador principal. Abre el `index.html` real en un iframe por test y recorre los cuatro flujos (búsqueda, carrito, pago y confirmación).
-- **Resultado actual:** 208 specs, 0 failures (42 de modelos, 113 de storage y 53 del controlador).
-- **Cobertura:** 94,2 % de líneas ejecutables, medida con la cobertura de V8 de Chromium (procedimiento en `js/test/testing-doc.md`).
+  - `js/test/models.spec.js`: clases del dominio (constructores, métodos de negocio, validaciones, casos borde y serialización).
+  - `js/test/services.spec.js`: servicios (fachada de storage, confirmación de pedidos, ofertas, categorías, opciones de pago, formateo y validación de cantidades).
+  - `js/test/storage.spec.js`: operaciones CRUD y manejo de errores de storage (cuota, lectura, `key()`/`length`, `limpiar()`, storage sin `getItem()`).
+  - `js/test/script.spec.js`: controlador principal. Abre el `index.html` real en un iframe por test y recorre los cuatro flujos (búsqueda, carrito, pago y confirmación), la persistencia del carrito al recargar y los casos borde (carrito vacío, acciones repetidas, storage que rechaza escrituras).
+- **Resultado actual:** 394 specs, 0 failures (73 de modelos, 186 de storage, 49 de servicios y 86 del controlador).
+- **Cobertura** (V8 de Chromium; procedimiento y limitaciones en `js/test/testing-doc.md`): 98,1 % de líneas, 99,5 % de funciones y 97,1 % de ramas. La cobertura de ramas es una estimación a partir de los bloques que informa V8, no equivale a la de Istanbul; lo que falta cubrir son guardas defensivas y está detallado en el documento.
 - **Documentación:** [`js/test/testing-doc.md`](js/test/testing-doc.md), con la estructura de testing, las instrucciones para ejecutar cada módulo, las métricas de cobertura y las capturas de resultados.
 ## ⚠️ Limitaciones conocidas
  
-- **Persistencia del carrito:** `js/script.js` todavía no usa `StorageUtil`, por lo que el carrito no se restaura al recargar. Está registrado en la [issue #164](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/164). La prueba de persistencia (comprar, recargar y restaurar) queda pendiente hasta que se integre.
+- **Persistencia:** solo se guarda el carrito. Los pedidos confirmados y la secuencia de numeración **no** se guardan: `ConfirmadorPedidos` numera en memoria y el número vuelve a `0001` al recargar. Tampoco se sincroniza el carrito entre pestañas.
+- **Datos de storage reservados:** `FachadaStorage` y `CLAVES` soportan historial y secuencia de pedidos, preferencias, caché del catálogo, borrador del checkout, filtros y mensaje de bienvenida, pero ninguna pantalla los usa (están probados por separado). Está indicado en [`storage-doc.md`](docs/06-storage/storage-doc.md).
+- **Validación del formulario del cliente:** se hace al enviar el formulario y muestra el mensaje del modelo; no hay validación por campo mientras se escribe (la cantidad del carrito sí se valida al escribir). Es una decisión del equipo documentada en `js/test/testing-doc.md` (H1).
+- **Datos del catálogo en JavaScript:** el catálogo inicial sigue declarado en `js/script.js` y la configuración de ofertas en `js/services/ServicioOfertas.js`; ya no están en `index.html`.
+- **Mockup:** además del mockup de Figma, los estados visuales de la aplicación implementada están documentados con capturas en `docs/01-mockup/cuarta-entrega/` (ver «Documentación»).
 - **Playwright MCP:** los tests de la cuarta entrega se ejecutaron con Playwright (Chromium) por script, no con el servidor Playwright MCP, y el recorrido manual de los cuatro flujos no se hizo con MCP. El criterio figura como no cumplido en [`spec-tester-qa.md`](docs/03-specs/actividad-obligatoria-4/spec-tester-qa.md).
 - **Evidencia de prompts del Tester QA:** no se conservan los prompts exactos con los que se generaron las suites; también figura como no cumplida en `spec-tester-qa.md`.
 ## 🔍 Code Reviews
