@@ -15,7 +15,53 @@ de cada clase se contrastaron con el código actual (incluido `Pago.admiteCuotas
 `+` indica un miembro público y `-` uno privado. El prefijo `#` es parte de
 la sintaxis de campos y métodos privados de JavaScript. Los métodos
 estáticos aparecen subrayados. Los getters de `Producto` son de solo lectura.
-`object` y `object[]` representan objetos planos y arreglos, no clases nuevas.
+Los nombres de tipos compuestos son alias descriptivos de objetos planos y
+arreglos, no clases nuevas. `?` indica un parámetro o campo opcional.
+
+## Formas de datos de los modelos
+
+| Alias en el diagrama | Forma o valores |
+|---|---|
+| `DatosProducto` | `{ codigo: string, nombre: string, categoria: string, descripcion: string, precio: number }` |
+| `FiltrosProducto` | `{ texto?: string, categoria?: string, precioMaximo?: number \| null }`; los criterios deben estar normalizados y validados |
+| `FiltrosCatalogo` | `{ texto?: string, categoria?: string, precioMaximo?: number \| string \| null, orden?: "asc" \| "desc" }` |
+| `ResultadoBusqueda` | `{ valido: boolean, error: string \| null, resultados: Producto[] }` |
+| `DatosCatalogo` | `{ productos: DatosProducto[] }` |
+| `Item` | `{ codigo: string, nombre: string, categoria: string, precio: number, cantidad: number }` |
+| `ItemConSubtotal` | `Item` más `{ subtotal: number }` |
+| `ResultadoOperacion` | `{ exito: boolean, error: string \| null }` |
+| `ResumenCarrito` | `{ items: ItemConSubtotal[], total: number, cantidadItems: number, cantidadUnidades: number }` |
+| `DatosCarrito` | `{ items: Item[] }` |
+| `MetodoPago` | `"efectivo-transferencia" \| "tarjeta"` |
+| `CondicionesPago` | `{ valido: boolean, error: null, metodoPago: MetodoPago, cuotas: number, porcentajeRecargo: number, totalOriginal: number, interes: number, totalFinanciado: number, valorCuota: number }` |
+| `DatosPago` | `{ totalOriginal: number, metodoPago: MetodoPago, cuotas: number }` |
+| `Cliente` | `{ nombre: string, correo: string, direccion: string }` |
+| `ResumenPedido` | `{ valido: boolean, cliente: Cliente, productos: ItemConSubtotal[], total: number, pago: CondicionesPago }` |
+| `DatosPedido` | `{ cliente: Cliente, productos: ItemConSubtotal[], total: number, pago: CondicionesPago, numero: string \| null }` |
+
+Las formas describen los valores válidos y los retornos, no impiden que en
+ejecución JavaScript reciba valores inválidos y los rechace. `Pago` requiere
+cuotas para tarjeta; para efectivo/transferencia ignora el tercer argumento.
+
+## Correcciones de RC50
+
+- Los cinco modelos ya aparecían con sus campos privados, getters, métodos y
+  multiplicidades principales correctos; no se agregaron clases de dominio.
+- Se reemplazaron los `object` genéricos de sus firmas y campos por las formas
+  anteriores, incluyendo resultados, instantáneas y condiciones de pago.
+- Se precisaron el método de pago admitido y la opcionalidad de cuotas; no
+  hay un valor predeterminado explícito en la firma JavaScript del constructor.
+- Se documentaron las funciones auxiliares reales de los módulos de modelos:
+  normalizadores exportados, validación de cantidad y resumen, validación de
+  cliente, número y comparación monetaria. `RECARGOS` es una constante de
+  módulo, no un atributo de `Pago`.
+- Se aclaró que `Carrito` obtiene datos del `Producto` devuelto por `Catalogo`,
+  no conserva una referencia a él; las dependencias de `Pedido` tampoco son
+  asociaciones persistentes. Se mantiene la agregación de catálogo y sus
+  multiplicidades `0..*` en ambos extremos.
+- Se incorporó el campo estático privado real de `FormateadorMoneda` y se
+  corrigió la descripción de `ServicioOpcionesPago`: construye pagos para
+  consultar opciones y no llama a `Pago.admiteCuotas()`.
 
 ## Clases
 
@@ -52,7 +98,7 @@ el total financiado y el valor de cuota. Efectivo o transferencia usa una
 cuota sin recargo; tarjeta admite 1, 3 o 6 cuotas, con 0 %, 10 % o 20 %.
 `toJSON()` conserva las entradas, incluido el total sin redondear. El método
 estático `admiteCuotas(metodoPago)` indica si un método permite elegir cuotas
-(sólo tarjeta); lo usan la interfaz y `ServicioOpcionesPago`.
+(sólo tarjeta); lo usa la interfaz.
 
 ### Pedido
 
@@ -99,7 +145,7 @@ funciones sueltas); los demás servicios son clases con métodos estáticos.
 | `FormateadorMoneda` | Formatea importes en pesos argentinos | — |
 | `ServicioOfertas` | Devuelve las ofertas con nombre y precio actual tomados del catálogo; valida que el precio anterior sea mayor | `Catalogo` |
 | `ServicioCategorias` | Categorías únicas y ordenadas de un catálogo | `Catalogo` |
-| `ServicioOpcionesPago` | Métodos y cuotas aceptados, consultando a `Pago` | `Pago` |
+| `ServicioOpcionesPago` | Métodos y cuotas aceptados mediante construcción y cálculo de `Pago` | `Pago` |
 | `StorageUtil` | Capa de abstracción de `localStorage`/`sessionStorage`; no conoce el dominio, sólo exige `toJSON()` / `fromJSON()` | — |
 
 El controlador `js/script.js` usa los modelos y estos servicios, y sólo él toca el DOM; no
@@ -115,4 +161,5 @@ java -jar C:\ruta\a\plantuml.jar -charset UTF-8 -tpng docs\05-diagramas\02-diagr
 
 El comando genera `diagrama-clases.png` junto al archivo fuente. La
 disposición del diagrama de clases requiere Graphviz o un motor compatible
-disponible para PlantUML.
+disponible para PlantUML. Para esta revisión se usó PlantUML 1.2024.3 con
+Graphviz 2.44.1 y `PLANTUML_LIMIT_SIZE=8192`.
