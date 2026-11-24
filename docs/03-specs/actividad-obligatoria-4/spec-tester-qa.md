@@ -180,10 +180,10 @@ Tomadas con Playwright (Chromium) sobre `js/test/test-runner.html` y sobre un ru
 
 | Captura | Resultado |
 |---|---|
-| `captura-runner-completo.png` | 208 specs, 0 failures |
-| `captura-models-spec.png` | 42 specs, 0 failures |
-| `captura-storage-spec.png` | 113 specs, 0 failures |
-| `captura-script-spec.png` | 53 specs, 0 failures |
+| `captura-runner-completo.png` | 394 specs, 0 failures |
+| `captura-models-spec.png` | 73 specs, 0 failures |
+| `captura-storage-spec.png` | 186 specs, 0 failures |
+| `captura-script-spec.png` | 86 specs, 0 failures |
 
 ### Criterios no cumplidos (declaración explícita)
 
@@ -191,7 +191,7 @@ Tomadas con Playwright (Chromium) sobre `js/test/test-runner.html` y sobre un ru
 |---|---|---|
 | Ejecución en `test-runner.html` con Playwright MCP y recorrido manual de los 4 flujos con MCP | **No cumplido** | Se usó Playwright (Chromium) por script. Las capturas muestran resultados del runner, pero no prueban el uso de MCP |
 | Evidencia de los prompts utilizados | **No cumplido** | No se conservan los prompts exactos; no se presenta ningún mensaje como evidencia de generación de las suites |
-| Prueba de persistencia del carrito (comprar, recargar, restaurar) | **Pendiente** | No existe todavía: `script.js` no integra `StorageUtil`. El caso está propuesto en la issue #164 y se agrega y ejecuta cuando se implemente la integración. Mientras tanto no se afirma que la persistencia esté cubierta |
+| Prueba de persistencia del carrito (comprar, recargar, restaurar) | **Cumplido (corrección del 2026-11-23)** | Al integrarse la persistencia del carrito (`FachadaStorage`, PR #168) se agregó la suite «persistencia del carrito en Web Storage» de `script.spec.js` (8 specs) y la suite `FachadaStorage` de `services.spec.js`. Estado anterior: pendiente, porque `script.js` no usaba `StorageUtil` |
 | Bugs encontrados reportados como issues | **Cumplido** | Issue #164 de seguimiento de `script.js` / `StorageUtil`: severidad media, etiqueta `bug`, rol responsable Desarrollador JS Eventos + DOM (asignada), pasos para reproducir y test propuesto |
 | PR con aprobación de otro integrante | **Pendiente** | La aprobación y el merge se completan después de esta entrega |
 
@@ -218,3 +218,18 @@ Tomadas con Playwright (Chromium) sobre `js/test/test-runner.html` y sobre un ru
 - **Runner:** `test-runner.html` ya no carga `../script.js` ni el spec anterior; carga los tres specs como módulos ES.
 - **Ajustes a los tests escritos:** se corrigieron a mano dos specs de `script.spec.js` en la primera corrida (una búsqueda con tilde y una compra con tarjeta que sumaba dos unidades), y se comprobó con tres cambios deliberados en el código que los specs fallan cuando deben.
 - **Revisión de la PR #163:** se corrigió el test de storage del controlador (ahora compara el estado antes y después, en lugar de exigir que no haya claves `app:*`), se agregaron los round trips con modelos reales y el script reproducible de cobertura, y se ajustó la documentación de prompts y de herramientas. En la segunda revisión se declararon como no cumplidos la ejecución con Playwright MCP y la evidencia de prompts, y como pendiente la prueba de persistencia; se completaron los metadatos de la issue #164.
+
+## Actualización — correcciones de la revisión del docente (2026-11-23)
+
+Estado de la suite sobre `release/cuarta-entrega` con las PR #167, #168 y #169 integradas: **394 specs, 0 failures** (73 de modelos, 186 de storage, 49 de servicios, 86 del controlador), en tres corridas con semillas distintas. Antes de esta corrección la suite de la PR #169 tenía 220 specs y 3 failures. Cobertura medida con V8 (`js/test/herramientas/cobertura-v8.js`): **98,1 % de líneas, 99,5 % de funciones y 97,1 % de ramas** (esta última es una estimación; ver `js/test/testing-doc.md`). Las cifras anteriores (208 specs, 94,2 %) eran de líneas solamente.
+
+Cambios de esta corrección (no se modificó código de producción ni la documentación de trazabilidad de la PR #169):
+
+- Casos borde agregados: carrito vacío, acciones repetidas (doble pago, doble resumen, doble confirmación y cancelación), storage que rechaza escrituras, y las ramas de error de `StorageUtil` (cuota, lectura, `key()`/`length`, `limpiar()`, storage sin `getItem()`). Nuevo `services.spec.js` para los servicios.
+- Persistencia: suite «Persistencia del carrito en Web Storage» (8 specs) que recarga la página y comprueba que el carrito se restaura.
+- Aislamiento del storage entre tests: lo incorporó el Desarrollador Eventos + DOM en la PR #169 (guarda, borra y restaura las claves `app:`) y se conservó sin cambios.
+- Tres specs del controlador que quedaban en rojo tras la PR #169 se adaptaron al comportamiento actual (detalle en el hallazgo H7 de `testing-doc.md`): el filtro de la búsqueda vuelve a dibujar el catálogo, la validación del cliente ocurre al enviar y la compra ahora escribe el carrito en `localStorage`.
+- Se verificó por mutación manual que los tests detectan defectos (siete cambios, todos detectados; detalle en `testing-doc.md`).
+- Se detectó y corrigió un error de la herramienta de cobertura de ramas, que subestimaba el valor (69,5 % antes de sumar tests).
+- Hallazgos asentados con rol y criterio (RC3): H1 a H8 en `testing-doc.md`.
+- **Siguen sin cumplirse:** ejecución con Playwright MCP y evidencia de los prompts de las suites (ver «Criterios no cumplidos»). No se modifica esa declaración.

@@ -202,6 +202,28 @@ afterEach(function () {
     marco = win = doc = null;
 });
 
+/**
+ * Cierra la página y la abre de nuevo SIN borrar el storage, como una recarga del
+ * navegador. Se usa en las pruebas de persistencia; el aislamiento entre tests lo
+ * siguen resolviendo el beforeEach y el afterEach de arriba.
+ */
+async function recargarApp() {
+    marco.remove();
+    marco = await abrirApp();
+    win = marco.contentWindow;
+    doc = marco.contentDocument;
+
+    espiaAlert = jasmine.createSpy("alert");
+    espiaPrompt = jasmine.createSpy("prompt");
+    espiaConfirm = jasmine.createSpy("confirm");
+    win.alert = espiaAlert;
+    win.prompt = espiaPrompt;
+    win.confirm = espiaConfirm;
+
+    espiaConsoleLog = spyOn(win.console, "log");
+    espiaConsoleError = spyOn(win.console, "error");
+}
+
 // ---------------------------------------------------------------------------
 // Carga inicial
 // ---------------------------------------------------------------------------
@@ -959,11 +981,13 @@ describe("Controlador - requisitos transversales", function () {
     });
 
     it("los flujos de búsqueda, carrito, pago y cancelaciones tampoco los usan", function () {
-        escribir("#busqueda", "zzz");
+        escribir("#busqueda", "zzz");           // sin resultados: el catálogo se vuelve a dibujar sin tarjetas
+        escribir("#busqueda", "");
         elegir("#categoria", "Jardineria");
         agregarAlCarrito("PALA-001");
         elegir(q('[data-action="cambiar-cantidad"]'), "0");
         clic(q('[data-action="eliminar-carrito"]'));
+        elegir("#categoria", "");               // el catálogo ya no conserva las tarjetas filtradas
         irAConfirmacion();
         clic(q('[data-action="cancelar-pago"]'));
         expect(espiaAlert).not.toHaveBeenCalled();
@@ -978,11 +1002,17 @@ describe("Controlador - requisitos transversales", function () {
         expect(espiaConsoleError).not.toHaveBeenCalled();
     });
 
-    it("no modifica localStorage ni sessionStorage durante una compra completa", function () {
+    it("una compra completa solo escribe claves de la app en localStorage y no toca sessionStorage", function () {
         llegarAlResumen();
         clic(q('[data-action="confirmar-pedido"]'));
-        expect(instantanea(win.localStorage)).toEqual(storageAntes.local);
         expect(instantanea(win.sessionStorage)).toEqual(storageAntes.session);
+        const ajenas = Object.keys(instantanea(win.localStorage))
+            .filter((clave) => !clave.startsWith("app:"))
+            .filter((clave) => !(clave in storageAntes.local));
+        expect(ajenas).toEqual([]);
+        expect(Object.keys(instantanea(win.localStorage)).every(
+            (clave) => CLAVES_STORAGE_PRUEBAS.includes(clave) || clave in storageAntes.local
+        )).toBeTrue();
     });
 
     it("los eventos se registran con addEventListener, sin manejadores en línea", function () {
@@ -998,9 +1028,213 @@ describe("Controlador - requisitos transversales", function () {
 
     it("los campos con error quedan asociados a su mensaje (aria-describedby / aria-invalid)", function () {
         irAConfirmacion();
+        completarCliente();
         const correo = escribir("#pedido-correo", "mal");
+        enviar("#form-pedido");                 // desde #167 el controlador valida al enviar, no al escribir
         expect(correo.getAttribute("aria-invalid")).toBe("true");
         const idMensaje = correo.getAttribute("aria-describedby");
         expect(q(`#${idMensaje}`).textContent).not.toBe("");
+    });
+});
+
+// ---------------------------------------------------------------------------
+// Persistencia del carrito (FachadaStorage → StorageUtil → localStorage)
+// ---------------------------------------------------------------------------
+
+describe("Controlador - persistencia del carrito en Web Storage", function () {
+    const CLAVE_CARRITO = "app:carrito:items";
+
+    it("guarda el carrito en localStorage al agregar un producto", function () {
+        agregarAlCarrito("GUANTES-001");
+        const guardado = JSON.parse(win.localStorage.getItem(CLAVE_CARRITO));
+        expect(guardado.items.length).toBe(1);
+        expect(guardado.items[0].codigo).toBe("GUANTES-001");
+        expect(guardado.items[0].cantidad).toBe(1);
+    });
+
+    it("restaura el carrito al recargar la página", async function () {
+        agregarAlCarrito("GUANTES-001");
+        agregarAlCarrito("GUANTES-001");
+        agregarAlCarrito("PALA-001");
+        await recargarApp();
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("2");
+        expect(cantidadEnCarrito("PALA-001")).toBe("1");
+        expect(texto("#contador-carrito")).toBe("2");
+        expect(q('[data-action="iniciar-compra"]').disabled).toBeFalse();
+    });
+
+    it("conserva los cambios de cantidad y las eliminaciones tras recargar", async function () {
+        agregarAlCarrito("GUANTES-001");
+        agregarAlCarrito("PALA-001");
+        elegir(q('[data-action="cambiar-cantidad"][data-product-code="GUANTES-001"]'), "4");
+        clic(q('[data-action="eliminar-carrito"][data-product-code="PALA-001"]'));
+        await recargarApp();
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("4");
+        expect(cantidadEnCarrito("PALA-001")).toBeNull();
+    });
+
+    it("al vaciar el carrito y recargar, la página arranca con el carrito vacío", async function () {
+        agregarAlCarrito("GUANTES-001");
+        clic(q('[data-action="eliminar-carrito"]'));
+        await recargarApp();
+        expect(texto("#contador-carrito")).toBe("0");
+        expect(q('[data-action="iniciar-compra"]').disabled).toBeTrue();
+    });
+
+    it("inicia con el carrito vacío si el dato guardado está corrupto", async function () {
+        agregarAlCarrito("GUANTES-001");
+        win.localStorage.setItem(CLAVE_CARRITO, "{esto no es json");
+        await recargarApp();
+        expect(qa("#carrito-items [data-action='cambiar-cantidad']").length).toBe(0);
+        expect(q('[data-action="iniciar-compra"]').disabled).toBeTrue();
+    });
+
+    it("inicia con el carrito vacío si el dato guardado tiene una estructura inválida", async function () {
+        win.localStorage.setItem(CLAVE_CARRITO, JSON.stringify({ items: [{ codigo: "X", cantidad: -3 }] }));
+        await recargarApp();
+        expect(qa("#carrito-items [data-action='cambiar-cantidad']").length).toBe(0);
+    });
+
+    it("al confirmar un pedido el carrito queda vacío también después de recargar", async function () {
+        llegarAlResumen();
+        clic(q('[data-action="confirmar-pedido"]'));
+        await recargarApp();
+        expect(texto("#contador-carrito")).toBe("0");
+    });
+
+    it("no guarda nada en sessionStorage", function () {
+        agregarAlCarrito("GUANTES-001");
+        expect(instantanea(win.sessionStorage)).toEqual({});
+    });
+});
+
+// ---------------------------------------------------------------------------
+// Casos borde: carrito vacío, acciones repetidas y errores de storage
+// ---------------------------------------------------------------------------
+
+describe("Controlador - casos borde", function () {
+    describe("carrito vacío", function () {
+        it("no permite iniciar la compra y no muestra la sección de pago", function () {
+            iniciarCompra();
+            expect(q("#pago").hidden).toBeTrue();
+            expect(q('[data-action="iniciar-compra"]').disabled).toBeTrue();
+        });
+
+        it("enviar el formulario de pago sin productos avisa y no abre la confirmación", function () {
+            enviar("#form-pago");
+            expect(texto("#pago-mensaje")).toBe("No hay productos para pagar.");
+            expect(q("#confirmacion").hidden).toBeTrue();
+        });
+
+        it("el pedido no se puede enviar sin haber elegido un pago", function () {
+            enviar("#form-pedido");
+            expect(qa("#resumen-pedido *").length).toBe(0);
+        });
+
+        it("vaciar el carrito en medio del pago descarta las condiciones calculadas", function () {
+            irAConfirmacion();
+            clic(q('[data-action="eliminar-carrito"]'));
+            expect(texto("#contador-carrito")).toBe("0");
+            expect(q("#pago").hidden).toBeTrue();
+            expect(q("#confirmacion").hidden).toBeTrue();
+            expect(texto("#condiciones-pago")).toBe("");
+        });
+    });
+
+    describe("acciones repetidas", function () {
+        it("enviar dos veces el formulario de pago deja una sola confirmación abierta", function () {
+            irAlPago();
+            elegir("#metodo-pago", "efectivo-transferencia");
+            enviar("#form-pago");
+            enviar("#form-pago");
+            expect(q("#confirmacion").hidden).toBeFalse();
+            expect(qa("#condiciones-pago dl").length).toBe(1);
+        });
+
+        it("generar el resumen dos veces no duplica el botón de confirmar", function () {
+            irAConfirmacion();
+            completarCliente();
+            enviar("#form-pedido");
+            enviar("#form-pedido");
+            expect(qa('#resumen-pedido [data-action="confirmar-pedido"]').length).toBe(1);
+        });
+
+        it("confirmar dos veces el mismo pedido muestra un único número de pedido", function () {
+            llegarAlResumen();
+            const boton = q('[data-action="confirmar-pedido"]');
+            clic(boton);
+            clic(boton);
+            expect(texto("#resumen-pedido")).toMatch(/^Pedido confirmado: FL-\d+-0001/);
+            expect(texto("#contador-carrito")).toBe("0");
+        });
+
+        it("cancelar dos veces el pedido no cambia el estado", function () {
+            llegarAlResumen();
+            clic(q('[data-action="cancelar-pedido"]'));
+            clic(q('[data-action="cancelar-pedido"]'));
+            expect(q("#confirmacion").hidden).toBeTrue();
+            expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+        });
+
+        it("iniciar la compra dos veces seguidas no duplica el formulario de pago", function () {
+            agregarAlCarrito("GUANTES-001");
+            iniciarCompra();
+            iniciarCompra();
+            expect(q("#pago").hidden).toBeFalse();
+            expect(qa("#form-pago").length).toBe(1);
+        });
+    });
+
+    describe("errores del storage durante el uso", function () {
+        let setItemOriginal;
+
+        beforeEach(function () {
+            setItemOriginal = win.Storage.prototype.setItem;
+            win.Storage.prototype.setItem = function () {
+                throw new win.DOMException("Cuota excedida", "QuotaExceededError");
+            };
+        });
+
+        afterEach(function () {
+            win.Storage.prototype.setItem = setItemOriginal;
+        });
+
+        it("sigue funcionando si guardar en localStorage falla por cuota y avisa al usuario", function () {
+            agregarAlCarrito("GUANTES-001");
+            expect(texto("#contador-carrito")).toBe("1");
+            expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+            expect(texto("#carrito-mensaje")).toMatch(/no pudo guardarse/);
+        });
+
+        it("completa una compra aunque el storage rechace las escrituras", function () {
+            llegarAlResumen();
+            clic(q('[data-action="confirmar-pedido"]'));
+            expect(texto("#resumen-pedido")).toMatch(/^Pedido confirmado: FL-\d+-\d{4}/);
+            expect(texto("#contador-carrito")).toBe("0");
+        });
+    });
+});
+
+describe("Controlador - eventos que no corresponden a una acción", function () {
+    it("un clic en una zona sin acción no cambia nada", function () {
+        irAConfirmacion();
+        const estado = () => [texto("#contador-carrito"), q("#pago").hidden, q("#confirmacion").hidden,
+            texto("#pago-mensaje"), texto("#pedido-mensaje")];
+        const antes = estado();
+        ["#catalogo", "#pago", "#confirmacion", "#carrito-items", "nav"].forEach((selector) => {
+            const zona = q(selector);
+            if (zona) clic(zona);
+        });
+        expect(estado()).toEqual(antes);
+        expect(qa(".is-invalid").length).toBe(0);
+    });
+
+    it("un input o change en el panel del carrito que no viene de una cantidad se ignora", function () {
+        agregarAlCarrito("GUANTES-001");
+        const contenedor = q("#carrito-items");
+        disparar(contenedor, "input");
+        disparar(contenedor, "change");
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+        expect(qa("#carrito-items .is-invalid").length).toBe(0);
     });
 });

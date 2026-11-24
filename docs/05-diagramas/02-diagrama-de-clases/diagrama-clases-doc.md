@@ -1,7 +1,8 @@
 # Diagrama de clases — FerroLab
 
-El diagrama describe las cinco clases implementadas en `js/models/` y sus
-dependencias, contrastadas con el
+El diagrama describe las cinco clases implementadas en `js/models/`, los servicios de
+`js/services/` y `js/utils/storage.js` que las usan, y sus dependencias. Los miembros
+de cada clase se contrastaron con el código actual (incluido `Pago.admiteCuotas()`) y con el
 [spec de POO](../../03-specs/actividad-obligatoria-4/spec-dev-poo.md).
 
 - [Fuente PlantUML](diagrama-clases.puml)
@@ -49,7 +50,9 @@ Valida un total y calcula las condiciones sin realizar una transacción.
 `calcular()` devuelve el total original redondeado, el recargo, el interés,
 el total financiado y el valor de cuota. Efectivo o transferencia usa una
 cuota sin recargo; tarjeta admite 1, 3 o 6 cuotas, con 0 %, 10 % o 20 %.
-`toJSON()` conserva las entradas, incluido el total sin redondear.
+`toJSON()` conserva las entradas, incluido el total sin redondear. El método
+estático `admiteCuotas(metodoPago)` indica si un método permite elegir cuotas
+(sólo tarjeta); lo usan la interfaz y `ServicioOpcionesPago`.
 
 ### Pedido
 
@@ -82,13 +85,25 @@ restauraciones rechazan datos inválidos con `TypeError` o `RangeError`.
 No hay herencia. El cliente y los ítems son objetos de valor, no entidades o
 clases adicionales.
 
-## Integración pendiente
+## Servicios y storage
 
-La integración con **Eventos + DOM** y **Storage** sigue pendiente de
-coordinación. Deben acordarse la carga de módulos, la presentación de errores
-y la validación individual de campos, así como los formatos y el ciclo de
-vida de los datos persistidos. Los modelos no manipulan el DOM ni acceden
-directamente a Storage.
+Los módulos de `js/services/` y `js/utils/storage.js` conectan el controlador con el
+dominio. `FachadaStorage` y `ConfirmadorPedidos` son módulos (objeto de funciones o
+funciones sueltas); los demás servicios son clases con métodos estáticos.
+
+| Módulo | Responsabilidad | Usa |
+|---|---|---|
+| `FachadaStorage` | Objeto congelado con un par `cargar…`/`guardar…` por cada dato persistible. **La página sólo usa `cargarCarrito()` y `guardarCarrito()`**; los otros 15 métodos están disponibles y probados pero ningún flujo los llama | `Carrito`, `Pedido`, `Catalogo`, `StorageUtil` |
+| `ConfirmadorPedidos` | `confirmarPedidoConNumeracion()` genera fecha y secuencia (en memoria) y confirma el pedido | `Pedido` |
+| `ValidacionCarrito` | Valida un cambio de cantidad sobre una copia temporal, sin modificar el carrito | `Carrito` |
+| `FormateadorMoneda` | Formatea importes en pesos argentinos | — |
+| `ServicioOfertas` | Devuelve las ofertas con nombre y precio actual tomados del catálogo; valida que el precio anterior sea mayor | `Catalogo` |
+| `ServicioCategorias` | Categorías únicas y ordenadas de un catálogo | `Catalogo` |
+| `ServicioOpcionesPago` | Métodos y cuotas aceptados, consultando a `Pago` | `Pago` |
+| `StorageUtil` | Capa de abstracción de `localStorage`/`sessionStorage`; no conoce el dominio, sólo exige `toJSON()` / `fromJSON()` | — |
+
+El controlador `js/script.js` usa los modelos y estos servicios, y sólo él toca el DOM; no
+se dibuja porque no define clases. Los modelos no manipulan el DOM ni acceden a Storage.
 
 ## Generación local del PNG
 
