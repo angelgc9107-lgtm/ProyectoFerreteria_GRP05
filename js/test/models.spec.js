@@ -817,6 +817,133 @@ describe("Pago y Pedido: validaciones restantes", function () {
         });
     });
 
+    describe("RC51: límites y contratos complementarios", function () {
+        it("Producto valida todos los campos textuales y restaura una copia independiente", function () {
+            for (const campo of ["codigo", "nombre", "categoria", "descripcion"]) {
+                expect(() => crearProducto({ [campo]: null })).toThrowError(TypeError);
+                expect(() => crearProducto({ [campo]: " \t " })).toThrowError(RangeError);
+            }
+            expect(() => Producto.fromJSON({ ...crearProducto().toJSON(), precio: Infinity }))
+                .toThrowError(RangeError);
+            const datos = crearProducto().toJSON();
+            const copia = Producto.fromJSON(datos);
+            datos.nombre = "Modificado";
+            expect(copia.nombre).toBe("Taladro Eléctrico");
+        });
+
+        it("Producto busca en la descripción y combina criterios sin normalizarlos de nuevo", function () {
+            const producto = crearProducto();
+            expect(producto.coincide({ texto: "hormigon" })).toBeTrue();
+            expect(producto.coincide({ texto: "inexistente" })).toBeFalse();
+            expect(producto.coincide({ texto: "ELECTRICO" })).toBeFalse();
+            expect(producto.coincide({ texto: "taladro", precioMaximo: 0 })).toBeFalse();
+        });
+
+        it("Catalogo acepta la colección vacía y rechaza colecciones dispersas o no arreglos", function () {
+            const vacio = new Catalogo();
+            expect(vacio.buscar()).toEqual({ valido: true, error: null, resultados: [] });
+            expect(vacio.obtenerPorCodigo("A")).toBeNull();
+            expect(() => new Catalogo(null)).toThrowError(TypeError);
+            expect(() => new Catalogo(new Array(1))).toThrowError(TypeError);
+            expect(() => Catalogo.fromJSON({ productos: new Array(1) })).toThrowError(TypeError);
+        });
+
+        it("Catalogo distingue precio cero del filtro omitido y valida tipos de criterios", function () {
+            const gratis = crearProducto({ codigo: "GRATIS", precio: 0 });
+            const catalogo = new Catalogo([gratis, crearProducto()]);
+            for (const precioMaximo of [null, undefined, "", "  "]) {
+                expect(catalogo.buscar({ precioMaximo }).resultados.length).toBe(2);
+            }
+            expect(catalogo.buscar({ precioMaximo: 0 }).resultados).toEqual([gratis]);
+            expect(catalogo.buscar({ precioMaximo: "0" }).resultados).toEqual([gratis]);
+            for (const criterios of [{ categoria: null }, { precioMaximo: true },
+                { precioMaximo: {} }, { precioMaximo: NaN }, { orden: null }]) {
+                expect(catalogo.buscar(criterios).valido).toBeFalse();
+            }
+        });
+
+        it("Carrito rechaza desbordes del total o de unidades entre ítems sin mutar el estado", function () {
+            const catalogo = new Catalogo([
+                crearProducto({ codigo: "A", precio: 1e308 }),
+                crearProducto({ codigo: "B", precio: 1e308 })
+            ]);
+            const carrito = new Carrito();
+            expect(carrito.agregar(catalogo, "A", 1).exito).toBeTrue();
+            const antes = carrito.toJSON();
+            expect(carrito.agregar(catalogo, "B", 1).exito).toBeFalse();
+            expect(carrito.toJSON()).toEqual(antes);
+
+            const unidades = new Carrito([
+                { codigo: "A", nombre: "A", categoria: "Cat", precio: 0, cantidad: Number.MAX_SAFE_INTEGER }
+            ]);
+            const catalogoGratis = new Catalogo([crearProducto({ codigo: "B", precio: 0 })]);
+            const anterior = unidades.toJSON();
+            expect(unidades.agregar(catalogoGratis, "B", 1).exito).toBeFalse();
+            expect(unidades.toJSON()).toEqual(anterior);
+        });
+
+        it("Carrito restaura vacío y sus copias serializadas no alteran las instantáneas", function () {
+            expect(Carrito.fromJSON({ items: [] }).resumir()).toEqual({
+                items: [], total: 0, cantidadItems: 0, cantidadUnidades: 0
+            });
+            const carrito = crearCarrito();
+            const copia = carrito.toJSON();
+            copia.items[0].precio = 0;
+            expect(carrito.resumir().total).toBe(200.3);
+        });
+
+        it("Pago respeta el redondeo binario y conserva la entrada sin redondear al restaurar", function () {
+            expect(new Pago(1.005, "efectivo-transferencia").calcular().totalOriginal).toBe(1);
+            const pago = new Pago(1.006, "efectivo-transferencia");
+            expect(pago.calcular().totalOriginal).toBe(1.01);
+            expect(Pago.fromJSON(JSON.parse(JSON.stringify(pago))).toJSON().totalOriginal).toBe(1.006);
+            expect(() => new Pago(Number.MAX_VALUE, "efectivo-transferencia"))
+                .toThrowError(RangeError);
+        });
+
+        it("Pago rechaza estructuras inválidas y cuotas no numéricas al restaurar", function () {
+            for (const datos of [null, [], {}, { totalOriginal: 100, metodoPago: "tarjeta", cuotas: "3" }]) {
+                expect(() => Pago.fromJSON(datos)).toThrowError(TypeError);
+            }
+            expect(() => new Pago(100, "tarjeta", null)).toThrowError(TypeError);
+            expect(() => new Pago(100, "tarjeta", 1.5)).toThrowError(RangeError);
+        });
+
+        it("Pedido protege las copias del resumen y de la serialización", function () {
+            const pedido = crearPedido().pedido;
+            const resumen = pedido.resumir();
+            resumen.cliente.nombre = "Otro";
+            resumen.productos[0].cantidad = 99;
+            resumen.pago.cuotas = 6;
+            const datos = pedido.toJSON();
+            datos.productos[0].precio = 0;
+            expect(pedido.resumir().cliente.nombre).toBe("Ana Pérez");
+            expect(pedido.resumir().productos[0].cantidad).toBe(2);
+            expect(pedido.resumir().productos[0].precio).toBe(100.15);
+            expect(pedido.resumir().pago.cuotas).toBe(3);
+        });
+
+        it("Pedido admite los enteros seguros máximos y mantiene la confirmación al restaurar", function () {
+            const pedido = crearPedido().pedido;
+            const maximo = Number.MAX_SAFE_INTEGER;
+            const numero = `FL-${maximo}-${maximo}`;
+            expect(pedido.confirmar(maximo, maximo)).toBe(numero);
+            const restaurado = Pedido.fromJSON(JSON.parse(JSON.stringify(pedido)));
+            expect(restaurado.toJSON().numero).toBe(numero);
+            expect(() => restaurado.confirmar(1, 1)).toThrowError(RangeError);
+        });
+
+        it("Pedido rechaza números restaurados fuera del rango seguro", function () {
+            const datos = crearPedido().pedido.toJSON();
+            const fueraDeRango = String(Number.MAX_SAFE_INTEGER + 1);
+            for (const numero of [`FL-${fueraDeRango}-0001`, `FL-1-${fueraDeRango}`]) {
+                expect(() => Pedido.fromJSON({ ...datos, numero })).toThrowError(RangeError);
+            }
+            expect(() => crearPedido().pedido.confirmar(1, Number.MAX_SAFE_INTEGER + 1))
+                .toThrowError(RangeError);
+        });
+    });
+
     it("Pago informa si el recargo desborda a un importe infinito", function () {
         expect(() => new Pago(1.7e308, "tarjeta", 3)).toThrowError(RangeError, /finitos/);
     });
