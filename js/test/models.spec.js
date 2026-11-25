@@ -967,7 +967,23 @@ describe("Pago y Pedido: validaciones restantes", function () {
             expect(restaurado.toJSON().numero).toBe(numero);
             expect(() => restaurado.confirmar(1, 1)).toThrowError(RangeError);
         });
-
+        
+        it("Pedido.fromJSON() lee el número una sola vez y guarda el mismo valor que validó", function () {
+            const { pedido } = crearPedido();
+            pedido.confirmar(1700000000000, 12);
+            const datos = { ...pedido.toJSON() };
+            delete datos.numero;
+            // El getter devuelve un número válido la primera vez y uno inválido después.
+            const valores = ["FL-1700000000000-0012", 42];
+            let lecturas = 0;
+            Object.defineProperty(datos, "numero", {
+                enumerable: true,
+                get() { return valores[Math.min(lecturas++, valores.length - 1)]; }
+            });
+            const restaurado = Pedido.fromJSON(datos);
+            expect(lecturas).toBe(1);
+            expect(restaurado.toJSON().numero).toBe("FL-1700000000000-0012");
+        });
         it("Pedido rechaza números restaurados fuera del rango seguro", function () {
             const datos = crearPedido().pedido.toJSON();
             const fueraDeRango = String(Number.MAX_SAFE_INTEGER + 1);

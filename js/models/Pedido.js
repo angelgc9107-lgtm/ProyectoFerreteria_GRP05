@@ -27,8 +27,13 @@ function validarCliente(cliente) {
     return resultado;
 }
 
+/**
+ * Valida el formato FL-<fecha>-<secuencia>.
+ * Precondición: `numero` es una cadena (fromJSON() valida el tipo antes de llamarla).
+ * @param {string} numero Número de pedido.
+ * @returns {boolean} true si el formato y los rangos son válidos.
+ */
 function numeroValido(numero) {
-    if (typeof numero !== "string") return false;
     const partes = /^FL-(\d+)-(\d{4,})$/.exec(numero);
     if (!partes) return false;
     const fecha = Number(partes[1]);
@@ -128,7 +133,9 @@ export class Pedido {
                 typeof datos.total !== "number" || !Object.hasOwn(datos, "numero")) {
             throw new TypeError("Los datos del pedido son invalidos.");
         }
-        if (datos.numero !== null && typeof datos.numero !== "string") {
+                // Se lee una sola vez: lo que se valida es exactamente lo que se guarda.
+        const numero = datos.numero;
+        if (numero !== null && typeof numero !== "string") {
             throw new TypeError("El numero del pedido debe ser una cadena o null.");
         }
         const carrito = new Carrito(datos.productos);
@@ -155,11 +162,11 @@ export class Pedido {
             : datos.pago[campo] !== condiciones[campo])) {
             throw new RangeError("Las condiciones de pago son inconsistentes.");
         }
-        if (datos.numero !== null && !numeroValido(datos.numero)) {
+        if (numero !== null && !numeroValido(numero)) {
             throw new RangeError("El numero del pedido no es valido.");
         }
         const pedido = new Pedido(carrito, pago, datos.cliente);
-        pedido.#numero = datos.numero;
+        pedido.#numero = numero;
         return pedido;
     }
 }
