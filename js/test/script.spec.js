@@ -772,6 +772,166 @@ describe("Controlador - Flujo 4: confirmación del pedido", function () {
     beforeEach(function () {
         irAConfirmacion();
     });
+    
+    // RC22 y RC59 - Validación individual durante la edición.
+    it("RC59 - valida los campos del cliente durante input", function () {
+        const casos = [
+            ["nombre", "12345"],
+            ["correo", "correo-invalido"],
+            ["direccion", "   "]
+        ];
+
+        for (const [campo, valor] of casos) {
+            const control = escribir(`#pedido-${campo}`, valor);
+
+            expect(control.classList.contains("is-invalid")).toBeTrue();
+            expect(control.getAttribute("aria-invalid")).toBe("true");
+
+            expect(texto(`#error-pedido-${campo}`))
+                .toBe(`${campo} no es valido.`);
+        }
+
+        expect(qa("#resumen-pedido *").length).toBe(0);
+    });
+
+
+    // RC22 y RC59 - Validación al abandonar un campo.
+    it("RC59 - valida los campos vacíos mediante focusout", function () {
+        const campos = ["nombre", "correo", "direccion"];
+
+        for (const campo of campos) {
+            const control = q(`#pedido-${campo}`);
+
+            expect(control.value).toBe("");
+            expect(control.classList.contains("is-invalid")).toBeFalse();
+
+            disparar(control, "focusout");
+
+            expect(control.classList.contains("is-invalid")).toBeTrue();
+            expect(control.getAttribute("aria-invalid")).toBe("true");
+
+            expect(texto(`#error-pedido-${campo}`))
+                .toBe(`${campo} no es valido.`);
+        }
+
+        expect(qa("#resumen-pedido *").length).toBe(0);
+    });
+
+
+    // RC59 - Actualización del feedback al corregir los datos.
+    it("RC59 - elimina los errores al corregir los datos del cliente", function () {
+        const casos = [
+            ["nombre", "12345", "Ana Pérez"],
+            ["correo", "correo-invalido", "ana@correo.com"],
+            ["direccion", "   ", "Calle Falsa 123"]
+        ];
+
+        for (const [campo, invalido, valido] of casos) {
+            const control = escribir(`#pedido-${campo}`, invalido);
+
+            expect(control.classList.contains("is-invalid")).toBeTrue();
+
+            escribir(control, valido);
+
+            expect(control.classList.contains("is-invalid")).toBeFalse();
+            expect(control.classList.contains("is-valid")).toBeTrue();
+            expect(control.getAttribute("aria-invalid")).toBe("false");
+            expect(texto(`#error-pedido-${campo}`)).toBe("");
+        }
+    });
+
+
+    // RC59 - Independencia entre los campos del formulario.
+    it("RC59 - valida cada campo independientemente de los demás", function () {
+        const correo = escribir("#pedido-correo", "ñandú@correo.com");
+
+        expect(q("#pedido-nombre").value).toBe("");
+        expect(q("#pedido-direccion").value).toBe("");
+
+        expect(correo.classList.contains("is-valid")).toBeTrue();
+        expect(correo.getAttribute("aria-invalid")).toBe("false");
+        expect(texto("#error-pedido-correo")).toBe("");
+
+        expect(q("#pedido-nombre").classList.contains("is-invalid"))
+            .toBeFalse();
+
+        expect(q("#pedido-direccion").classList.contains("is-invalid"))
+            .toBeFalse();
+    });
+
+
+    // RC59 - Conservación del resumen al perder el foco.
+    it("RC59 - perder el foco sin modificar datos conserva el resumen", function () {
+        completarCliente();
+        enviar("#form-pedido");
+
+        const resumenAnterior = texto("#resumen-pedido");
+
+        expect(q('[data-action="confirmar-pedido"]')).not.toBeNull();
+
+        disparar(q("#pedido-nombre"), "focusout");
+
+        expect(texto("#resumen-pedido")).toBe(resumenAnterior);
+        expect(q('[data-action="confirmar-pedido"]')).not.toBeNull();
+    });
+
+
+    // RC59 - Conservación del estado de la compra.
+    it("RC59 - validar los datos no modifica el carrito, pago ni storage", function () {
+        const totalAnterior = texto("#carrito-total");
+        const contadorAnterior = texto("#contador-carrito");
+        const condicionesAnteriores = texto("#condiciones-pago");
+
+        const localAnterior = instantanea(win.localStorage);
+        const sessionAnterior = instantanea(win.sessionStorage);
+
+        escribir("#pedido-nombre", "12345");
+        escribir("#pedido-correo", "correo-invalido");
+        disparar(q("#pedido-direccion"), "focusout");
+
+        expect(texto("#carrito-total")).toBe(totalAnterior);
+        expect(texto("#contador-carrito")).toBe(contadorAnterior);
+        expect(texto("#condiciones-pago")).toBe(condicionesAnteriores);
+
+        expect(instantanea(win.localStorage)).toEqual(localAnterior);
+        expect(instantanea(win.sessionStorage)).toEqual(sessionAnterior);
+    });
+
+
+    // RC59 - Compatibilidad con la cancelación del pedido.
+    it("RC59 - cancelar el pedido elimina los estados de validación", function () {
+        escribir("#pedido-nombre", "12345");
+        escribir("#pedido-correo", "correo-invalido");
+        disparar(q("#pedido-direccion"), "focusout");
+
+        clic(q('[data-action="cancelar-pedido"]'));
+
+        expect(q("#confirmacion").hidden).toBeTrue();
+
+        for (const campo of ["nombre", "correo", "direccion"]) {
+            const control = q(`#pedido-${campo}`);
+
+            expect(control.value).toBe("");
+            expect(control.classList.contains("is-invalid")).toBeFalse();
+            expect(control.classList.contains("is-valid")).toBeFalse();
+            expect(control.hasAttribute("aria-invalid")).toBeFalse();
+            expect(texto(`#error-pedido-${campo}`)).toBe("");
+        }
+
+        // No debe volver a validar un formulario oculto.
+        disparar(q("#pedido-nombre"), "focusout");
+
+        expect(q("#pedido-nombre").classList.contains("is-invalid"))
+            .toBeFalse();
+
+        expect(texto("#error-pedido-nombre")).toBe("");
+
+        // Comprueba que se puede volver al formulario sin errores.
+        enviar("#form-pago");
+
+        expect(q("#confirmacion").hidden).toBeFalse();
+        expect(qa("#form-pedido .is-invalid").length).toBe(0);
+    });
 
     it("valida el nombre al enviar el formulario", function () {
         completarCliente();

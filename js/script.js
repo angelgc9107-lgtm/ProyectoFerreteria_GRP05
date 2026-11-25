@@ -11,6 +11,7 @@ import { ServicioOfertas } from "./services/ServicioOfertas.js";
 import { IMAGENES_CATALOGO } from "./data/imagenesCatalogo.js";
 import { ServicioCategorias } from "./services/ServicioCategorias.js";
 import { ServicioOpcionesPago } from "./services/ServicioOpcionesPago.js";
+import { validarCampoPedido } from "./services/ValidacionPedido.js";
 
 const productosIniciales = [
     { codigo: "GUANTES-001", nombre: "Guantes moteados multiuso maxima calidad", categoria: "Herramientas manuales", descripcion: "Proteccion multiuso para trabajos de ferreteria y mantenimiento.", precio: 4401 },
@@ -422,6 +423,27 @@ function clienteDesdeFormulario() {
         correo: elementos.formPedido.elements.correo.value,
         direccion: elementos.formPedido.elements.direccion.value
     };
+}
+
+ // Actualiza el estado visual y accesible de un campo
+ // del formulario de pedido.
+function actualizarValidacionCampoPedido(control) {
+    if (elementos.seccionConfirmacion.hidden ||
+        elementos.formPedido.hidden
+    ) {
+        return;
+    }
+
+    const resultado = validarCampoPedido(
+        control.name,
+        control.value
+    );
+
+    marcarControl(
+        control,
+        resultado.exito,
+        resultado.error ?? ""
+    );
 }
 
 // Construye los elementos HTML del resumen del pedido
@@ -1044,9 +1066,18 @@ function inicializarEventos() {
             );
         }
             
-        limpiarEstadoControl(control);
+        actualizarValidacionCampoPedido(control);
     });
-    
+
+    // Valida el campo cuando el usuario lo abandona.
+    elementos.formPedido.addEventListener("focusout", (evento) => {
+        const control = evento.target.closest("input");
+
+        if (!control) return;
+
+        actualizarValidacionCampoPedido(control);
+    });
+
 
     // Valida todos los campos antes de generar el resumen del pedido.
     elementos.formPedido.addEventListener("submit", (evento) => {
