@@ -460,5 +460,12 @@ describe("ServicioOpcionesPago", function () {
         it("un método inexistente no ofrece cuotas", function () {
             expect(ServicioOpcionesPago.obtenerCuotas("cheque")).toEqual([]);
         });
+
+        it("un error que no es de validación (ni TypeError ni RangeError) no se oculta", function () {
+            // Solo los errores de validación del modelo significan «cuota no aceptada»;
+            // cualquier otro fallo es un bug y debe llegar a quien llama.
+            spyOn(Pago.prototype, "calcular").and.throwError(new Error("falla interna"));
+            expect(() => ServicioOpcionesPago.obtenerCuotas("tarjeta")).toThrowError("falla interna");
+        });
     });
 });

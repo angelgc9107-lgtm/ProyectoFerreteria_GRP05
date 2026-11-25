@@ -18,7 +18,7 @@ Módulos testeados: `js/models/*.js`, `js/services/*.js`, `js/utils/storage.js` 
 
 ## Estado de la corrida (leer primero)
 
-Corrida completa de `test-runner.html` sobre la rama `release/cuarta-entrega` con las PR #167, #168 y #169 del Desarrollador JS Eventos + DOM ya integradas: **394 specs, 0 failures** (tres corridas con semillas distintas).
+Corrida completa de `test-runner.html` sobre la rama `release/cuarta-entrega` con las PR #167, #168, #169 (Desarrollador JS Eventos + DOM), #172 (Local y Session Storage) y #175 (POO) ya integradas, más los specs agregados en esta corrección de QA: **425 specs, 0 failures** (tres corridas con semillas distintas). Sin los specs de esta corrección, la rama de release tenía 405 specs, 0 failures.
 
 Antes de esta corrección, la suite de la PR #169 tenía **220 specs y 3 failures**. Los tres eran specs desactualizados respecto del controlador (no defectos del código); se adaptaron y el detalle está en [Hallazgos e Issues](#hallazgos-e-issues). El código de producción (`js/script.js`, `index.html`, `js/models/`, `js/services/`, `js/utils/`) no fue modificado por esta corrección de QA, y tampoco la documentación de trazabilidad de los cuatro flujos que agregó la PR #169, que se conserva tal cual.
 
@@ -28,11 +28,11 @@ En la tercera entrega `js/script.js` tenía la lógica y usaba `prompt()`/`alert
 
 | Módulo | Qué contiene | Spec | Specs |
 |---|---|---|---|
-| `js/models/` (`Producto`, `Catalogo`, `Carrito`, `Pago`, `Pedido`) | Lógica de negocio con clases, sin DOM ni Storage | `js/test/models.spec.js` | 73 |
-| `js/utils/storage.js` (`StorageUtil`) | Capa de abstracción de `localStorage`/`sessionStorage` | `js/test/storage.spec.js` | 186 |
-| `js/services/` | `FormateadorMoneda`, `ValidacionCarrito`, `ConfirmadorPedidos`, `FachadaStorage`, `ServicioOfertas`, `ServicioCategorias`, `ServicioOpcionesPago` | `js/test/services.spec.js` | 49 |
-| `js/script.js` | Controlador: eventos y DOM | `js/test/script.spec.js` | 86 |
-| | | **Total** | **394** |
+| `js/models/` (`Producto`, `Catalogo`, `Carrito`, `Pago`, `Pedido`) | Lógica de negocio con clases, sin DOM ni Storage | `js/test/models.spec.js` | 88 |
+| `js/utils/storage.js` (`StorageUtil`) | Capa de abstracción de `localStorage`/`sessionStorage` | `js/test/storage.spec.js` | 189 |
+| `js/services/` | `FormateadorMoneda`, `ValidacionCarrito`, `ConfirmadorPedidos`, `FachadaStorage`, `ServicioOfertas`, `ServicioCategorias`, `ServicioOpcionesPago` | `js/test/services.spec.js` | 50 |
+| `js/script.js` | Controlador: eventos y DOM | `js/test/script.spec.js` | 98 |
+| | | **Total** | **425** |
 
 `js/test/test-runner.html` carga los cuatro specs como módulos ES. `js/test/models-test-runner.html` es el runner independiente que armó el Desarrollador JS POO para sus modelos y se conserva.
 
@@ -63,28 +63,29 @@ Requiere conexión a internet: Jasmine se carga desde `cdnjs.cloudflare.com` y `
 
 ## Suites de Tests
 
-### `models.spec.js` (73 specs)
+### `models.spec.js` (88 specs)
 
 | Suite | Specs | Qué se prueba |
 |---|---|---|
 | `Producto` | 5 | Constructor, getters, `coincide()` por texto, categoría y precio; validaciones |
 | `Catalogo` | 6 | `buscar()` con filtros y orden, copias independientes, códigos duplicados, errores |
 | `Carrito` | 7 | `agregar`, `cambiarCantidad`, `eliminar`, `vaciar`, `resumir()`, desbordes, estado intacto ante errores |
-| `Carrito: validación de instantáneas y casos borde` | 13 | Ítems que no son objetos, campos de texto vacíos o de otro tipo, precio y cantidad inválidos, códigos repetidos, totales infinitos o fuera del entero seguro, `cambiarCantidad`/`eliminar` con códigos inexistentes, `fromJSON()` con forma inválida |
+| `Carrito: validación de instantáneas y casos borde` | 14 | Ítems que no son objetos, campos de texto vacíos o de otro tipo, precio y cantidad inválidos, códigos repetidos, totales infinitos o fuera del entero seguro, `cambiarCantidad`/`eliminar` con códigos inexistentes, `fromJSON()` con forma inválida |
 | `Pago` | 6 | Efectivo/transferencia, tarjeta en 1/3/6 cuotas (0/10/20 %), redondeo, entradas inválidas |
 | `Pago: método con cuotas` | 1 | `Pago.admiteCuotas()` |
 | `Pago y Pedido: validaciones restantes` | 3 | Método de pago que no es cadena, desborde a importe infinito, pago que no es instancia de `Pago` |
 | `Pedido` | 15 | Validación de cliente, coherencia con el pago, `confirmar()` determinista, `toJSON()`/`fromJSON()` |
-| `Pedido: validación de campos, confirmación y reconstrucción` | 4 + 10 | Cliente que no es objeto, campo que informa el error, segunda confirmación, parámetros inválidos de `confirmar()`; y `fromJSON()` con número mal formado, importes o condiciones de pago inconsistentes y cliente inválido (10 specs) |
+| `Pedido: validación de campos, confirmación y reconstrucción` | 4 + 13 | Cliente que no es objeto, campo que informa el error, segunda confirmación, parámetros inválidos de `confirmar()`; y `fromJSON()` con número mal formado, importes o condiciones de pago inconsistentes y cliente inválido (13 specs, incluidos los que agregó el análisis de mutación: fecha 0, total con un bit de diferencia y total con un centavo de diferencia) |
+| `Pago y Pedido: validaciones restantes › RC51: límites y contratos complementarios` | 11 | Specs agregados por el Desarrollador JS POO en la PR #175: validación de todos los campos textuales de `Producto`, búsqueda en la descripción, colecciones vacías o dispersas en `Catalogo`, precio cero frente al filtro omitido y tipos de criterios |
 | `Cadenas numéricas estrictas` | 3 | `"0x10"`, `"1e2"` y `"1e3"` se rechazan en `Carrito`, `Catalogo` y `Pago`; se aceptan dígitos con espacios |
 
-### `storage.spec.js` (186 specs)
+### `storage.spec.js` (189 specs)
 
 | Suite | Specs | Qué se prueba |
 |---|---|---|
 | Nombres de clave (`CLAVES`) | 3 | Convención `app:<dominio>:<dato>` |
 | `guardar()` y `obtener()` | 9 | Ida y vuelta en `localStorage` y `sessionStorage`, valores `null`, anidados, clave inexistente |
-| `guardar()`: errores | 15 | Clave o tipo inválidos, referencia circular y otros fallos de escritura |
+| `guardar()`: errores | 16 | Clave o tipo inválidos, referencia circular, otros fallos de escritura y un `console.error` que lanza al registrar el fallo (error inesperado) |
 | Detección de storage lleno (cuota) | 8 | `QuotaExceededError` y variantes entre navegadores; otros errores no se confunden con cuota |
 | Serialización: valores que no se pueden guardar | 9 | Referencias circulares (también a través de `toJSON()`), `undefined`, funciones, símbolos y `BigInt`; se aceptan `null`, números, booleanos, cadenas y objetos repetidos que no son ciclos |
 | Datos corruptos | 4 | JSON inválido: devuelve `null` y registra el error sin lanzar |
@@ -102,12 +103,12 @@ Requiere conexión a internet: Jasmine se carga desde `cdnjs.cloudflare.com` y `
 | Storage sin `getItem()` o ausente | 24 | Las 12 operaciones con un storage al que le falta `getItem()` y con storage `null` |
 | `guardarInstancia()` y `cargarInstancia()` | 8 | Contrato genérico con una clase auxiliar `Modelo` (`toJSON()` / `fromJSON()`) |
 | `guardarLista()` y `cargarLista()` | 9 | Contrato genérico con `Modelo`: listas, lista vacía, datos que ya no cumplen las reglas |
-| Instancias y listas: ramas de error | 13 | Valor sin `toJSON()` o con `toJSON()` que lanza, clase sin `fromJSON()`, sin datos guardados, lista que no es un arreglo, elemento inválido (se descarta la lista completa) |
+| Instancias y listas: ramas de error | 15 | Valor sin `toJSON()` o con `toJSON()` que lanza, clase sin `fromJSON()`, sin datos guardados, lista que no es un arreglo, elemento inválido (se descarta la lista completa) y clase cuyo `fromJSON` lanza al consultarse (`cargarInstancia()`/`cargarLista()` devuelven `null`/`[]` sin lanzar) |
 | Integración con los modelos reales de `js/models/` | 9 | Round trip de `Carrito`, `Catalogo`, `Producto` y `Pedido` (sin confirmar y confirmado); datos alterados (cantidad negativa, importe modificado, correo inválido) devuelven `null` o `[]`, sin objetos parciales |
 | Ninguna operación lanza excepciones hacia afuera | 12 | Se verifica para cada operación |
 | Web Storage real del navegador | 3 | Ciclo completo sin dejar claves |
 
-### `services.spec.js` (49 specs)
+### `services.spec.js` (50 specs)
 
 | Suite | Specs | Qué se prueba |
 |---|---|---|
@@ -117,9 +118,9 @@ Requiere conexión a internet: Jasmine se carga desde `cdnjs.cloudflare.com` y `
 | `FachadaStorage` | 23 | Congelada; carrito (round trip, vacío, datos corruptos o con estructura inválida, storage lleno, valor no serializable); historial y secuencia (round trip, corrupto, no es lista, storage lleno); preferencias y caché del catálogo; datos de sesión (borrador, filtros, bienvenida, en `sessionStorage` y no en `localStorage`); storage bloqueado (`SecurityError`) |
 | `ServicioOfertas.obtenerOfertas` | 6 | Las tres ofertas con datos del catálogo, precio actual tomado del catálogo, precio anterior mayor, catálogo inválido (`TypeError`), producto ausente y precio anterior no mayor (`RangeError`) |
 | `ServicioCategorias.obtenerCategorias` | 3 | Únicas y ordenadas, orden del español (`Á`, `Ñ`), catálogo vacío |
-| `ServicioOpcionesPago` | 6 | Métodos aceptados por `Pago`, cuotas por método (1 para efectivo/transferencia; 1, 3 y 6 para tarjeta con su recargo), sin método → `[]`, método inexistente → `[]` |
+| `ServicioOpcionesPago` | 7 | Métodos aceptados por `Pago`, cuotas por método (1 para efectivo/transferencia; 1, 3 y 6 para tarjeta con su recargo), sin método → `[]`, método inexistente → `[]` y un error que no es de validación (ni `TypeError` ni `RangeError`) que se relanza en lugar de ocultarse |
 
-### `script.spec.js` (86 specs)
+### `script.spec.js` (98 specs)
 
 | Suite | Specs | Qué se prueba |
 |---|---|---|
@@ -133,6 +134,7 @@ Requiere conexión a internet: Jasmine se carga desde `cdnjs.cloudflare.com` y `
 | Persistencia del carrito en Web Storage | 8 | Guarda el carrito al agregar, lo restaura al recargar la página, conserva cambios de cantidad y eliminaciones, carrito vacío tras vaciar y tras confirmar, ignora datos corruptos o con estructura inválida, nada en `sessionStorage` |
 | Casos borde | 11 | Carrito vacío (4: iniciar compra, pago, pedido sin pago, vaciar a mitad del pago), acciones repetidas (5: doble envío del pago, doble resumen, doble confirmación, doble cancelación, doble inicio de compra), storage que rechaza escrituras (2: se avisa al usuario y la compra se completa igual) |
 | Eventos que no corresponden a una acción | 2 | Clics fuera de un botón de acción e `input`/`change` en el panel del carrito que no vienen de una cantidad: no cambian nada |
+| Rutas defensivas y de error | 12 | Confirmar sin pedido pendiente (RC24), acciones desconocidas en el carrito y en la confirmación, cierre del carrito sin compra iniciada, `input` ajeno al formulario del pedido, reloj del sistema inválido y reintento, filtro de precio alterado a mano, cuota inexistente agregada a mano, error inesperado al generar el resumen (no se oculta), página sin un elemento obligatorio (`#form-pago`) que avisa y no registra eventos, página sin `#estado-aplicacion` que sigue funcionando y comprobación de que `index.html` carga `script.js` como módulo diferido |
 
 
 ### Trazabilidad del Flujo 1
@@ -251,27 +253,29 @@ Requiere conexión a internet: Jasmine se carga desde `cdnjs.cloudflare.com` y `
 
 ## Métricas de Cobertura
 
-Corrida completa de `test-runner.html`: **394 specs, 0 failures** (ver «Estado de la corrida»).
+Corrida completa de `test-runner.html`: **425 specs, 0 failures** (ver «Estado de la corrida»).
 
 Se miden tres cosas, con la cobertura de código de V8 (Chromium, vía Playwright) durante esa misma corrida. **No son el mismo número**, y la cobertura de ramas es una estimación, no una medición equivalente a la de Istanbul o c8 (ver más abajo).
 
 | Archivo | Líneas ejecutables | Cubiertas | Líneas | Funciones | Ramas |
 |---|---|---|---|---|---|
 | `js/models/Carrito.js` | 92 | 92 | 100,0 % | 21/21 (100,0 %) | 66/66 (100,0 %) |
-| `js/models/Catalogo.js` | 46 | 46 | 100,0 % | 16/16 (100,0 %) | 32/32 (100,0 %) |
-| `js/models/Pago.js` | 49 | 49 | 100,0 % | 7/7 (100,0 %) | 30/30 (100,0 %) |
-| `js/models/Pedido.js` | 110 | 110 | 100,0 % | 16/16 (100,0 %) | 101/102 (99,0 %) |
+| `js/models/Catalogo.js` | 46 | 46 | 100,0 % | 16/16 (100,0 %) | 36/36 (100,0 %) |
+| `js/models/Pago.js` | 49 | 49 | 100,0 % | 7/7 (100,0 %) | 36/36 (100,0 %) |
+| `js/models/Pedido.js` | 110 | 110 | 100,0 % | 16/16 (100,0 %) | 102/103 (99,0 %) |
 | `js/models/Producto.js` | 44 | 44 | 100,0 % | 13/13 (100,0 %) | 20/20 (100,0 %) |
-| `js/script.js` | 729 | 711 | 97,5 % | 59/60 (98,3 %) | 87/99 (87,9 %) |
+| `js/script.js` | 729 | 727 | 99,7 % | 60/60 (100,0 %) | 111/111 (100,0 %) |
 | `js/services/ConfirmadorPedidos.js` | 10 | 10 | 100,0 % | 2/2 (100,0 %) | 2/2 (100,0 %) |
 | `js/services/FachadaStorage.js` | 57 | 57 | 100,0 % | 18/18 (100,0 %) | 1/1 (100,0 %) |
 | `js/services/FormateadorMoneda.js` | 9 | 9 | 100,0 % | 3/3 (100,0 %) | sin ramas |
 | `js/services/ServicioCategorias.js` | 7 | 7 | 100,0 % | 4/4 (100,0 %) | sin ramas |
 | `js/services/ServicioOfertas.js` | 35 | 35 | 100,0 % | 3/3 (100,0 %) | 6/6 (100,0 %) |
-| `js/services/ServicioOpcionesPago.js` | 31 | 27 | 87,1 % | 4/4 (100,0 %) | 14/15 (93,3 %) |
+| `js/services/ServicioOpcionesPago.js` | 31 | 28 | 90,3 % | 4/4 (100,0 %) | 15/16 (93,8 %) |
 | `js/services/ValidacionCarrito.js` | 4 | 4 | 100,0 % | 2/2 (100,0 %) | sin ramas |
-| `js/utils/storage.js` | 283 | 277 | 97,9 % | 32/32 (100,0 %) | 183/185 (98,9 %) |
-| **Total** | **1506** | **1478** | **98,1 %** | **200/201 (99,5 %)** | **542/558 (97,1 %)** |
+| `js/utils/storage.js` | 283 | 283 | 100,0 % | 32/32 (100,0 %) | 186/186 (100,0 %) |
+| **Total** | **1506** | **1501** | **99,7 %** | **201/201 (100,0 %)** | **581/583 (99,7 %)** |
+
+El recuento de ramas puede variar en una o tres unidades entre corridas (en las corridas de esta versión dio 577/579, 580/582 y 581/583) porque V8 informa los bloques según cómo se compila cada función; el porcentaje se mantiene en 99,7 %. Por eso los números de ramas se leen como aproximados.
 
 `js/data/imagenesCatalogo.js` solo declara un mapa de constantes y no aparece en la tabla porque la herramienta mide `models`, `services`, `utils` y `script.js`.
 
@@ -279,12 +283,15 @@ La medición histórica anterior (94,2 %, sobre 208 specs) era **solo de líneas
 
 ### Qué falta cubrir y por qué
 
-Quedan 1 función y 16 ramas sin cubrir. Son guardas defensivas que ningún test puede alcanzar con el diseño actual, errores que se relanzan, y algunos caminos del controlador que no se probaron:
+Antes de esta corrección la tabla marcaba 98,1 % de líneas, 99,5 % de funciones y 97,1 % de ramas (394 specs). Con los 20 specs que agrega esta corrección (405 de la rama de release + 20 = 425) quedan **sin cubrir 5 líneas y 2 ramas**, y las dos ramas no se pueden alcanzar sin modificar el código de producción. Cada una se justifica con algo comprobable:
 
-- `js/script.js`: control de elementos obligatorios ausentes al cargar (líneas 38, 86 y 88: haría falta servir un `index.html` roto), `if (!destino) return;` en `mostrarMensaje` (línea 99), `if (!resultado.valido)` del filtro de precio (línea 268; el control es un rango y no admite valores inválidos desde la interfaz), `if (!pedidoPendiente)` en `confirmarPedido()` (el botón de confirmar solo existe cuando hay pedido pendiente, línea 562), el `catch` de `confirmarPedido()` (línea 587), `if (!esperandoCierreCarrito) return;` (línea 803), la rama `default` de dos `switch` de acciones (líneas 927 y 960), `if (!control) return;` (línea 1035) y `document.readyState === "loading"` (línea 1103, depende de cuándo el navegador ejecuta el módulo).
-- `js/models/Pedido.js:31`: `typeof numero !== "string"` en `numeroValido()`; `fromJSON()` ya valida el tipo antes de llamarla, por lo que la condición no se puede alcanzar desde afuera.
-- `js/services/ServicioOpcionesPago.js:23`: `throw error` para errores que no sean `TypeError` ni `RangeError`; para provocarlo habría que hacer que `Pago` lance otro tipo de error, y los módulos ES no se pueden reemplazar con un doble de prueba.
-- `js/utils/storage.js` (líneas 505 y 562): dos `catch` externos de «error inesperado» que envuelven código que ya no lanza.
+- **`js/models/Pedido.js:31`** (`typeof numero !== "string"` en `numeroValido()`): `Pedido.fromJSON()` rechaza un número que no sea una cadena *antes* de llamar a `numeroValido()` (spec de `models.spec.js` que reconstruye con un número no string y espera el error de tipo), y `fromJSON()` es el único lugar donde se la llama. Con las entradas públicas la condición nunca es verdadera; es una guarda defensiva.
+- **`js/services/ServicioOpcionesPago.js:23` (líneas 24, 25 y 27)**: el `catch` de `obtenerMetodos()` solo se ejecuta si `new Pago(100, metodo, 1)` lanza. Los dos métodos candidatos (`efectivo-transferencia` y `tarjeta`) son constantes privadas del módulo y siempre son válidos, de modo que `Pago` nunca lanza ahí. Para forzarlo habría que reemplazar el constructor `Pago` importado, y un módulo ES no se puede sustituir con un doble de prueba. El `catch` equivalente de `obtenerCuotas()` sí está cubierto: sus dos caminos (error de validación → cuota descartada, otro error → se relanza) los prueban los specs de `ServicioOpcionesPago`.
+- **`js/script.js`, líneas 1104 y 1105** (`document.readyState === "loading"`): `index.html` carga `script.js` como `<script type="module">` sin `async`, y los módulos se ejecutan una vez que el documento terminó de analizarse, así que `readyState` nunca es `"loading"` en ese momento. Un spec de «Rutas defensivas y de error» comprueba justamente que la etiqueta es de tipo módulo y no tiene `async`, que es la razón de que esa rama no se recorra. V8 puede informar la rama como cubierta o no según la corrida; las dos líneas siguen sin ejecutarse.
+
+Lo que antes figuraba como no cubierto y ahora lo prueba un spec: los elementos obligatorios ausentes al cargar (línea 38) y `estado-aplicacion` ausente, `confirmarPedido()` sin pedido pendiente (RC24), el `catch` de `confirmarPedido()` por reloj inválido, la rama `default` de los dos `switch` de acciones, `if (!esperandoCierreCarrito) return;`, `if (!control) return;`, el filtro de precio alterado a mano (RC21), la cuota inexistente, el error inesperado al generar el resumen y los `catch` externos de `guardar()`, `cargarInstancia()` y `cargarLista()` de `storage.js`.
+
+Para cinco de esos caminos se comprobó además que el spec detecta el defecto (ver las pruebas de mutación en «Herramientas y proceso»).
 
 ### Cómo se mide cada número
 
@@ -319,7 +326,8 @@ Esta sección declara qué se usó realmente, para que la documentación no diga
 - **Generación de los tests**: los specs de la cuarta entrega se escribieron con asistencia de **Claude** (modelo Claude Sonnet 5.5). Las PRs de esta etapa se revisaron con Copilot Agent (#140, #141 y #144) y con Claude (#150, #156 y #157).
 - **Ejecución**: los tests se ejecutaron con **Playwright (Chromium) por script**, abriendo `js/test/test-runner.html` y leyendo el resultado de Jasmine. **No se usó Playwright MCP**: la consigna lo menciona y este punto queda como desvío declarado. Tampoco se registra ejecución en Edge, Firefox ni Safari para los specs de Jasmine.
 - **Prompts**: los prompts con los que se generaron los specs del Tester QA **no se conservaron**, por lo que no hay evidencia de ellos en `docs/02-prompts/` para esas suites. Se declara como **no cumplido**.
-- **Verificación de que los tests detectan errores (pruebas de mutación manuales)**: se introdujo un defecto a propósito en una copia del repositorio y se comprobó que la suite, que sin el defecto no falla ningún spec, falla con él. Se probaron siete: subir el recargo de 3 cuotas de 10 % a 13 % (5 fallas), que `guardarCarrito()` no guarde (8), que la secuencia de pedidos no avance (3), quitar la regla «precio anterior mayor al actual» de `ServicioOfertas` (1), no ordenar las categorías (2), contar unidades en vez de ítems en el contador del carrito (13) y que `cargarCarrito()` ignore lo guardado (3). Los siete fueron detectados. Son pruebas manuales hechas una vez, no una herramienta de mutación automática.
+- **Verificación de que los tests detectan errores (pruebas de mutación manuales)**: se introdujo un defecto a propósito en una copia del repositorio y se comprobó que la suite, que sin el defecto no falla ningún spec, falla con él. Se probaron doce sobre la suite de 421 specs (antes del análisis de mutación automático de abajo): subir el recargo de 3 cuotas de 10 % a 13 % (5 fallas), que `guardarCarrito()` no guarde (8), que la secuencia de pedidos no avance (3), quitar la regla «precio anterior mayor al actual» de `ServicioOfertas` (1), no ordenar las categorías (2), contar unidades en vez de ítems en el contador del carrito (14) y que `cargarCarrito()` ignore lo guardado (3); y, para los specs agregados en esta corrección: que `confirmarPedido()` no avise cuando no hay pedido pendiente (1), que una cuota inexistente marque el control equivocado (1), que `obtenerCuotas()` oculte un error que no es de validación (1), y que `guardar()` y `cargarInstancia()` dejen salir el error inesperado (1 y 1). Los doce fueron detectados. Son pruebas manuales hechas una vez, no una herramienta de mutación automática.
+- **Barrida automática de mutantes (2026-11-24)**: además de las manuales, un script propio (no incluido en el repositorio; no es una herramienta de mutación estándar como Stryker) aplicó 40 mutaciones elegidas al azar sobre `js/models/` y `js/services/` (cambio de `<=`/`>=`/`===`/`&&`/`||`, de `+` por `-` y de constantes) y corrió la suite completa con cada una. La suite detectó 33 y 7 sobrevivieron. Cuatro se resolvieron con specs nuevos (fecha 0 como límite del número de pedido, total con un bit de diferencia y mensaje de validación de los ítems de `Carrito`, que fallaban sin que ningún spec lo notara; además el spec «acepta diferencias que son sólo ruido de coma flotante» sumaba `Number.EPSILON` a un total de miles, lo que no cambia el valor, y por eso no probaba nada). Los 3 restantes son equivalentes o inalcanzables: `Pedido.js:31` (guarda inalcanzable, ver «Qué falta cubrir»), `Pedido.js:45` (`>` frente a `>=` solo difiere cuando la diferencia es exactamente igual a la tolerancia) y `ServicioOpcionesPago.js:42` (el bucle hasta 13 cuotas no cambia nada porque `Pago` rechaza 13 cuotas y el `catch` la descarta). Con los 4 specs nuevos, 37 de 40 mutantes quedan detectados.
 
 ---
 
@@ -328,18 +336,18 @@ Esta sección declara qué se usó realmente, para que la documentación no diga
 Capturas tomadas con Playwright (Chromium) sobre el runner, con la corrida final sin fallos:
 
 ![Corrida completa](./capturas/captura-runner-completo.png)
-*Runner completo: 394 specs, 0 failures*
+*Runner completo: 425 specs, 0 failures*
 
 ![Modelos](./capturas/captura-models-spec.png)
-*`models.spec.js` (runner de modelos): 73 specs, 0 failures*
+*`models.spec.js` (runner de modelos): 88 specs, 0 failures*
 
 ![Storage](./capturas/captura-storage-spec.png)
-*Suite `StorageUtil` (`?spec=StorageUtil`): 186 specs, 0 failures*
+*Suite `StorageUtil` (`?spec=StorageUtil`): 189 specs, 0 failures*
 
 ![Controlador](./capturas/captura-script-spec.png)
-*Suite `Controlador` (`?spec=Controlador`): 86 specs, 0 failures*
+*Suite `Controlador` (`?spec=Controlador`): 98 specs, 0 failures*
 
-Los 49 specs de `services.spec.js` están incluidos en la corrida completa; no tienen un runner propio. No hay capturas de tests fallando porque la corrida final no tuvo fallos; la comprobación de que los specs detectan errores es la de mutación descrita en «Herramientas y proceso».
+Los 50 specs de `services.spec.js` están incluidos en la corrida completa; no tienen un runner propio. No hay capturas de tests fallando porque la corrida final no tuvo fallos; la comprobación de que los specs detectan errores es la de mutación descrita en «Herramientas y proceso».
 
 ---
 
@@ -354,7 +362,7 @@ La revisión del docente (RC3) pidió que los hallazgos de QA tengan una issue p
 | H3 | 15 de los 17 métodos de `FachadaStorage` (todos menos `cargarCarrito` y `guardarCarrito`) no los llama ningún flujo | Desarrollador JS Local y Session Storage | Integración de Web Storage / documentación coherente con el código | Baja | **Abierto**; la documentación ya lo declara |
 | H4 | Catálogo (`productosIniciales`) y datos de ofertas siguen declarados en JavaScript dentro del controlador y de `ServicioOfertas` | Desarrollador JS Eventos + DOM | Separación de responsabilidades | Baja | **Abierto** |
 | H5 | Al cancelar el pedido el mensaje «Pedido cancelado…» se escribe en `#pedido-mensaje`, que está dentro de la sección de confirmación que se oculta en ese mismo momento: el usuario no lo ve. El spec pasa porque lee el `textContent` de un elemento oculto | Desarrollador JS Eventos + DOM (código) y Tester/QA (spec) | Retroalimentación al usuario / estados de la interfaz | Baja | **Abierto** |
-| H6 | Cobertura informada solo por líneas, sin ramas ni casos borde | Tester/QA | Cobertura y casos borde de las pruebas | Media | **Resuelto** en esta corrección (se miden líneas, funciones y ramas) |
+| H6 | Cobertura informada solo por líneas, sin ramas ni casos borde | Tester/QA | Cobertura y casos borde de las pruebas | Media | **Resuelto** en esta corrección (se miden líneas, funciones y ramas: 99,7 % / 100 % / 99,7 %; las 2 ramas restantes se justifican en «Qué falta cubrir y por qué») |
 | H7 | La suite que dejó la PR #169 terminaba con 3 specs en rojo (220 specs, 3 failures): tres specs del controlador no coincidían con el comportamiento actual | Tester/QA | Aislamiento y mantenimiento de los tests | Media | **Resuelto** en esta corrección (394 specs, 0 failures; ver abajo) |
 | H8 | Sin evidencia de prompts ni de Playwright MCP para las suites del Tester QA | Tester/QA | Uso de herramientas de IA y trazabilidad | Media | **No resuelto**: declarado como desvío |
 
@@ -381,7 +389,7 @@ Además, el aislamiento del storage entre tests (guardar, borrar y restaurar las
 
 ## Limitaciones del Testing
 
-- `script.spec.js` prueba la página real en un iframe, por lo que es más lento que los otros specs (cada test carga `index.html`; la suite completa tarda unos 20 segundos) y depende de los CDN de Bootstrap.
+- `script.spec.js` prueba la página real en un iframe, por lo que es más lento que los otros specs (cada test carga `index.html`; la suite completa tarda unos 25 segundos) y depende de los CDN de Bootstrap.
 - El cierre del carrito (`offcanvas`) de Bootstrap se simula con el evento `hidden.bs.offcanvas`; no se prueba la animación real.
 - Los desplazamientos (`scrollIntoView`) no se verifican.
 - La cobertura de ramas es aproximada (ver «Cómo se mide cada número»). El script que la mide está en `js/test/herramientas/` y requiere instalar Playwright aparte (no se agrega como dependencia del proyecto).

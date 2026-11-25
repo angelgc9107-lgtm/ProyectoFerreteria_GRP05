@@ -258,6 +258,20 @@ describe("StorageUtil (js/utils/storage.js)", () => {
                 jasmine.stringContaining("No se pudo guardar"), jasmine.anything());
         });
 
+        it("guardar() no lanza si falla el propio registro del error (error inesperado)", () => {
+            // setItem falla y, al registrarlo, console.error también lanza la primera vez:
+            // la excepción sale de escribir() y la atrapa el try externo de guardar().
+            local.errorEnSetItem = new Error("fallo cualquiera");
+            let llamadas = 0;
+            console.error.and.callFake(() => {
+                llamadas++;
+                if (llamadas === 1) throw new Error("console.error roto");
+            });
+            expect(StorageUtil.guardar("app:test:k", 1)).toBeFalse();
+            expect(llamadas).toBe(2);
+            expect(console.error.calls.mostRecent().args[0]).toContain("Error inesperado al guardar");
+        });
+
         it("una función como valor devuelve false y no guarda nada", () => {
             expect(StorageUtil.guardar("app:test:k", () => {})).toBeFalse();
             expect(local.length).toBe(0);
@@ -1146,6 +1160,21 @@ describe("StorageUtil (js/utils/storage.js)", () => {
 
         it("cargarInstancia() devuelve null si no hay datos guardados", () => {
             expect(StorageUtil.cargarInstancia("app:no-hay", Modelo)).toBeNull();
+        });
+
+        it("cargarInstancia() no lanza si la propia clase falla al consultarse (error inesperado)", () => {
+            // Una clase cuyo fromJSON es un getter que lanza: el error ocurre fuera del try interno.
+            const Rota = function () {};
+            Object.defineProperty(Rota, "fromJSON", { get() { throw new Error("getter roto"); } });
+            expect(StorageUtil.cargarInstancia("app:x", Rota)).toBeNull();
+            expect(console.error.calls.mostRecent().args[0]).toContain("Error inesperado al cargar la instancia");
+        });
+
+        it("cargarLista() no lanza si la propia clase falla al consultarse (error inesperado)", () => {
+            const Rota = function () {};
+            Object.defineProperty(Rota, "fromJSON", { get() { throw new Error("getter roto"); } });
+            expect(StorageUtil.cargarLista("app:x", Rota)).toEqual([]);
+            expect(console.error.calls.mostRecent().args[0]).toContain("Error inesperado al cargar la lista");
         });
 
         it("cargarInstancia() devuelve null si fromJSON() rechaza los datos", () => {

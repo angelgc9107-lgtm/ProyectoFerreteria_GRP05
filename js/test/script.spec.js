@@ -1238,3 +1238,199 @@ describe("Controlador - eventos que no corresponden a una acción", function () 
         expect(qa("#carrito-items .is-invalid").length).toBe(0);
     });
 });
+
+// ---------------------------------------------------------------------------
+// Rutas defensivas y de error (QA: RC2, RC21, RC24)
+//
+// Cada test de esta sección ejercita un camino que antes no ejecutaba ninguna
+// prueba. Los que necesitan una página alterada (sin elementos, con un control
+// modificado) lo dicen en su nombre: el usuario puede alterar el DOM desde las
+// herramientas del navegador y el controlador no debe romperse.
+// ---------------------------------------------------------------------------
+
+describe("Controlador - rutas defensivas y de error", function () {
+    /** Inyecta un botón con data-action dentro de un contenedor de la página. */
+    function inyectarBoton(contenedor, accion) {
+        const boton = doc.createElement("button");
+        boton.type = "button";
+        boton.dataset.action = accion;
+        contenedor.append(boton);
+        return boton;
+    }
+
+    /**
+     * Abre una copia de index.html a la que se le quitó algo, en un iframe con
+     * srcdoc (mismo origen). Antes de cargar script.js se registran los errores
+     * y los console.error de esa página.
+     */
+    async function abrirAppModificada(modificar) {
+        const html = await (await fetch(URL_APP)).text();
+        const pagina = new DOMParser().parseFromString(html, "text/html");
+        modificar(pagina);
+        const base = pagina.createElement("base");
+        base.href = URL_APP;
+        const registro = pagina.createElement("script");
+        registro.textContent =
+            "window.__errores = []; window.__logs = [];" +
+            "addEventListener('error', (e) => { __errores.push(String(e.message)); e.preventDefault(); });" +
+            "console.error = (...a) => __logs.push(a.join(' '));";
+        pagina.head.prepend(registro);
+        pagina.head.prepend(base);
+
+        const iframe = document.createElement("iframe");
+        iframe.title = "app-modificada";
+        iframe.style.cssText = "position:fixed;left:-10000px;top:0;width:1280px;height:900px;border:0;";
+        const cargado = new Promise((resolve) => iframe.addEventListener("load", resolve, { once: true }));
+        iframe.srcdoc = "<!doctype html>" + pagina.documentElement.outerHTML;
+        document.body.append(iframe);
+        await cargado;
+        await pausa(50);
+        return iframe;
+    }
+
+    it("confirmar sin pedido pendiente avisa y no confirma nada (RC24)", function () {
+        irAConfirmacion();
+        // El botón real solo existe dentro del resumen, que no se generó todavía:
+        // se inyecta uno con la misma acción para disparar la guardia de confirmarPedido().
+        clic(inyectarBoton(q("#confirmacion"), "confirmar-pedido"));
+
+        expect(texto("#pedido-mensaje")).toBe("Revisa los datos y genera el resumen antes de confirmar.");
+        expect(q("#pedido-mensaje").classList).toContain("text-danger");
+        expect(q("#resumen-pedido").textContent.trim()).toBe("");
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+    });
+
+    it("una acción desconocida dentro del panel del carrito se ignora", function () {
+        agregarAlCarrito("GUANTES-001");
+        clic(inyectarBoton(q("#carrito"), "accion-que-no-existe"));
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+        expect(q("#pago").hidden).toBeTrue();
+    });
+
+    it("una acción desconocida dentro de la confirmación se ignora", function () {
+        llegarAlResumen();
+        const antes = texto("#resumen-pedido");
+        clic(inyectarBoton(q("#confirmacion"), "accion-que-no-existe"));
+        expect(texto("#resumen-pedido")).toBe(antes);
+        expect(q("#confirmacion").hidden).toBeFalse();
+    });
+
+    it("el cierre del carrito sin haber iniciado la compra no abre el pago", function () {
+        agregarAlCarrito("GUANTES-001");
+        disparar(q("#carrito"), "hidden.bs.offcanvas");
+        expect(q("#pago").hidden).toBeTrue();
+    });
+
+    it("un input que no viene de un campo del formulario del pedido no descarta el resumen", function () {
+        llegarAlResumen();
+        disparar(q("#form-pedido"), "input");
+        expect(q('#resumen-pedido [data-action="confirmar-pedido"]')).not.toBeNull();
+    });
+
+    it("si el reloj del sistema es inválido, confirmar muestra el error y permite reintentar", function () {
+        llegarAlResumen();
+        const reloj = spyOn(win.Date, "now").and.returnValue(-1);
+
+        clic(q('#resumen-pedido [data-action="confirmar-pedido"]'));
+        expect(texto("#pedido-mensaje")).toBe("La fecha o la secuencia no son validas.");
+        expect(q("#pedido-mensaje").classList).toContain("text-danger");
+        expect(q('#resumen-pedido [data-action="confirmar-pedido"]')).not.toBeNull();
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+
+        reloj.and.callThrough();
+        clic(q('#resumen-pedido [data-action="confirmar-pedido"]'));
+        expect(texto("#resumen-pedido")).toMatch(/Pedido confirmado: FL-\d+-0001/);
+    });
+
+    it("con una cuota inexistente (opción agregada a mano) marca el campo de cuotas como inválido", function () {
+        irAlPago();
+        elegir("#metodo-pago", "tarjeta");
+        const opcion = doc.createElement("option");
+        opcion.value = "99";
+        opcion.textContent = "99 cuotas";
+        q("#cuotas").append(opcion);
+        elegir("#cuotas", "99");
+        enviar("#form-pago");
+
+        expect(q("#cuotas").getAttribute("aria-invalid")).toBe("true");
+        expect(q("#metodo-pago").getAttribute("aria-invalid")).not.toBe("true");
+        expect(q("#pago-mensaje").classList).toContain("text-danger");
+        expect(q("#confirmacion").hidden).toBeTrue();
+    });
+
+    it("un error inesperado al generar el resumen no se oculta como error de validación", function () {
+        irAConfirmacion();
+        const errores = [];
+        const alError = (e) => { errores.push(e.message); e.preventDefault(); };
+        win.addEventListener("error", alError);
+        try {
+            // El campo falla con un Error común (no TypeError ni RangeError): es un bug, no un dato inválido.
+            Object.defineProperty(q("#pedido-nombre"), "value", {
+                get() { throw new Error("fallo inesperado del campo"); }
+            });
+            enviar("#form-pedido");
+        } finally {
+            win.removeEventListener("error", alError);
+        }
+        expect(errores.some((m) => m.includes("fallo inesperado del campo"))).toBeTrue();
+        expect(q("#resumen-pedido").textContent.trim()).toBe("");
+    });
+
+    it("con el filtro de precio alterado (control modificado a mano) muestra el error del modelo", function () {
+        const casilla = q("#activar-filtro-precio");
+        casilla.checked = true;
+        disparar(casilla, "change");
+        const control = q("#precio-hasta");
+        control.type = "text";               // el usuario edita el HTML desde las herramientas del navegador
+        control.value = "abc";
+        disparar(control, "input");
+
+        expect(q("#catalogo-mensaje").classList).toContain("text-danger");
+        expect(texto("#catalogo-mensaje")).not.toBe("");
+        expect(control.getAttribute("aria-invalid")).toBe("true");
+    });
+
+    it("una página a la que le falta un elemento obligatorio avisa y no registra eventos", async function () {
+        const iframe = await abrirAppModificada((pagina) => pagina.querySelector("#form-pago").remove());
+        try {
+            const ventana = iframe.contentWindow;
+            expect(ventana.__logs.some((l) => l.includes("No se encontró el elemento requerido: #form-pago"))).toBeTrue();
+            expect(ventana.__errores.some((m) => m.includes("Faltan elementos obligatorios: formPago"))).toBeTrue();
+            // Como la inicialización se detuvo, el catálogo no se dibujó.
+            expect(iframe.contentDocument.querySelectorAll("#resultados-catalogo article").length).toBe(0);
+        } finally {
+            iframe.remove();
+        }
+    });
+
+    it("una página sin el elemento opcional #estado-aplicacion funciona igual", async function () {
+        const iframe = await abrirAppModificada((pagina) => pagina.querySelector("#estado-aplicacion").remove());
+        try {
+            const ventana = iframe.contentWindow;
+            const documento = iframe.contentDocument;
+            expect(ventana.__errores).toEqual([]);
+            expect(ventana.__logs).toEqual([]);
+            documento.querySelector('#catalogo [data-action="agregar-carrito"][data-product-code="GUANTES-001"]')
+                .dispatchEvent(new ventana.MouseEvent("click", { bubbles: true }));
+            expect(documento.querySelector("#contador-carrito").textContent.trim()).toBe("1");
+            documento.querySelector('[data-action="iniciar-compra"]')
+                .dispatchEvent(new ventana.MouseEvent("click", { bubbles: true }));
+            // Sin #estado-aplicacion, el aviso de carga se muestra en el mensaje del carrito.
+            expect(documento.querySelector("#carrito-mensaje").textContent).toContain("Preparando el pago");
+        } finally {
+            iframe.remove();
+        }
+    });
+
+    it("script.js se carga como módulo diferido: por eso nunca se ejecuta con el documento en 'loading'", async function () {
+        // Justifica la rama `document.readyState === "loading"` del final de script.js (código defensivo
+        // para una carga con <script> clásico): con type="module" y sin async, el navegador espera a que
+        // termine el análisis del HTML, así que la rama de DOMContentLoaded no puede ejecutarse desde index.html.
+        const html = await (await fetch(URL_APP)).text();
+        const pagina = new DOMParser().parseFromString(html, "text/html");
+        const etiqueta = pagina.querySelector('script[src$="js/script.js"]');
+        expect(etiqueta).not.toBeNull();
+        expect(etiqueta.type).toBe("module");
+        expect(etiqueta.hasAttribute("async")).toBeFalse();
+    });
+});
