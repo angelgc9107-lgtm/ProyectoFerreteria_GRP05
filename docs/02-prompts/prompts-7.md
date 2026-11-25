@@ -2,7 +2,7 @@
 
 **Integrante:** Alan Díaz
 **Rol:** Tester QA
-**Modelo de IA:** <completar: cliente de IA usado con Playwright MCP>
+**Modelo de IA:** Claude Code
 **Método de prompt:** Role prompting
 
 ## Prompt exacto
@@ -53,4 +53,4 @@ no se modifico nada
 
 ## Aplicación en el proyecto
 
-Cumplimiento del criterio «Todos los tests se ejecutan con Playwright MCP en un navegador real» de `docs/03-specs/actividad-obligatoria-4/spec-tester-qa.md`, desde la fecha de esta ejecución (las corridas anteriores fueron con Playwright por script). Capturas del recorrido en `docs/04-testing/playwright-mcp/`.
+Cumplimiento del criterio «Todos los tests se ejecutan con Playwright MCP en un navegador real» de `docs/03-specs/actividad-obligatoria-4/spec-tester-qa.md`, desde la fecha de esta ejecución (las corridas anteriores fueron con Playwright por script).
