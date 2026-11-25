@@ -1,9 +1,9 @@
 # Prompt 6
 
-**Integrante:** Alan Díaz
-**Rol:** Tester QA
-**Modelo de IA:** Claude Code (Claude Sonnet 5.5, Anthropic)
-**Método de prompt:** Role prompting
+- **Integrante:** Alan Díaz
+- **Rol:** Tester QA
+- **Modelo de IA:** Claude Code (Claude Sonnet 5.5, Anthropic)
+- **Método de prompt:** Role prompting
 
 ## Prompt exacto
 

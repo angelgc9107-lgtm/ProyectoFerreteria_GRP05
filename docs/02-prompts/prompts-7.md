@@ -1,9 +1,9 @@
 # Prompt 7
 
-**Integrante:** Alan Díaz
-**Rol:** Tester QA
-**Modelo de IA:** Claude Code
-**Método de prompt:** Role prompting
+- **Integrante:** Alan Díaz
+- **Rol:** Tester QA
+- **Modelo de IA:** Claude Code
+- **Método de prompt:** Role prompting
 
 ## Prompt exacto
 
