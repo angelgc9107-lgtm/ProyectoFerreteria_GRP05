@@ -339,6 +339,109 @@ describe("Controlador - RC44: renderizado dinámico", function () {
 
 });
 
+describe("Controlador - RC60: separación de datos del catálogo", function () {
+
+    it("RC60 - el módulo conserva los nueve productos y sus precios originales", async function () {
+
+        const { productosIniciales } = await import(
+            "../data/productosIniciales.js"
+        );
+
+        expect(productosIniciales.length).toBe(9);
+
+        expect(
+            productosIniciales.map((producto) => [
+                producto.codigo,
+                producto.precio
+            ])
+        ).toEqual([
+            ["GUANTES-001", 4401],
+            ["DESTORNILLADOR-001", 6026],
+            ["PINZA-001", 6426],
+            ["ENCHUFE-001", 10282],
+            ["MARTILLO-001", 16000],
+            ["PALA-001", 21329],
+            ["AMOLADORA-001", 50000],
+            ["KIT-TAPONES-001", 55000],
+            ["TALADRO-001", 79999]
+        ]);
+    });
+
+
+    it("RC60 - el controlador importa los productos sin declararlos localmente", async function () {
+
+        const respuesta = await fetch(
+            new URL("../script.js", import.meta.url),
+            { cache: "no-store" }
+        );
+
+        expect(respuesta.ok).toBeTrue();
+
+        const codigo = await respuesta.text();
+
+        const codigoNormalizado = codigo
+            .replace(/\s/g, "")
+            .replaceAll("'", '"');
+
+        expect(codigoNormalizado).toContain(
+            'import{productosIniciales}from"./data/productosIniciales.js"'
+        );
+
+        expect(codigoNormalizado).not.toContain(
+            "constproductosIniciales="
+        );
+
+        expect(codigoNormalizado).not.toContain(
+            "letproductosIniciales="
+        );
+
+        expect(codigoNormalizado).not.toContain(
+            "varproductosIniciales="
+        );
+    });
+
+
+    it("RC60 - renderiza correctamente los productos del módulo de datos", async function () {
+
+        const { productosIniciales } = await import(
+            "../data/productosIniciales.js"
+        );
+
+        const formateador = new Intl.NumberFormat("es-AR", {
+            style: "currency",
+            currency: "ARS",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+
+        expect(codigosVisibles().length).toBe(9);
+        expect(qa("#tabla-precios-cuerpo tr").length).toBe(9);
+        expect(qa("#ofertas-productos article").length).toBe(3);
+
+        for (const producto of productosIniciales) {
+
+            const tarjeta = q(
+                `#resultados-catalogo article[data-product-code="${producto.codigo}"]`
+            );
+
+            expect(tarjeta).not.toBeNull();
+
+            expect(tarjeta.querySelector("h3").textContent)
+                .toBe(producto.nombre);
+
+            expect(tarjeta.textContent)
+                .toContain(producto.categoria);
+
+            expect(tarjeta.textContent)
+                .toContain(producto.descripcion);
+
+            expect(tarjeta.querySelector("strong").textContent)
+                .toBe(formateador.format(producto.precio));
+        }
+    });
+
+});
+
 
 // ---------------------------------------------------------------------------
 // Flujo 1: búsqueda y filtrado
@@ -772,6 +875,166 @@ describe("Controlador - Flujo 4: confirmación del pedido", function () {
     beforeEach(function () {
         irAConfirmacion();
     });
+    
+    // RC22 y RC59 - Validación individual durante la edición.
+    it("RC59 - valida los campos del cliente durante input", function () {
+        const casos = [
+            ["nombre", "12345"],
+            ["correo", "correo-invalido"],
+            ["direccion", "   "]
+        ];
+
+        for (const [campo, valor] of casos) {
+            const control = escribir(`#pedido-${campo}`, valor);
+
+            expect(control.classList.contains("is-invalid")).toBeTrue();
+            expect(control.getAttribute("aria-invalid")).toBe("true");
+
+            expect(texto(`#error-pedido-${campo}`))
+                .toBe(`${campo} no es valido.`);
+        }
+
+        expect(qa("#resumen-pedido *").length).toBe(0);
+    });
+
+
+    // RC22 y RC59 - Validación al abandonar un campo.
+    it("RC59 - valida los campos vacíos mediante focusout", function () {
+        const campos = ["nombre", "correo", "direccion"];
+
+        for (const campo of campos) {
+            const control = q(`#pedido-${campo}`);
+
+            expect(control.value).toBe("");
+            expect(control.classList.contains("is-invalid")).toBeFalse();
+
+            disparar(control, "focusout");
+
+            expect(control.classList.contains("is-invalid")).toBeTrue();
+            expect(control.getAttribute("aria-invalid")).toBe("true");
+
+            expect(texto(`#error-pedido-${campo}`))
+                .toBe(`${campo} no es valido.`);
+        }
+
+        expect(qa("#resumen-pedido *").length).toBe(0);
+    });
+
+
+    // RC59 - Actualización del feedback al corregir los datos.
+    it("RC59 - elimina los errores al corregir los datos del cliente", function () {
+        const casos = [
+            ["nombre", "12345", "Ana Pérez"],
+            ["correo", "correo-invalido", "ana@correo.com"],
+            ["direccion", "   ", "Calle Falsa 123"]
+        ];
+
+        for (const [campo, invalido, valido] of casos) {
+            const control = escribir(`#pedido-${campo}`, invalido);
+
+            expect(control.classList.contains("is-invalid")).toBeTrue();
+
+            escribir(control, valido);
+
+            expect(control.classList.contains("is-invalid")).toBeFalse();
+            expect(control.classList.contains("is-valid")).toBeTrue();
+            expect(control.getAttribute("aria-invalid")).toBe("false");
+            expect(texto(`#error-pedido-${campo}`)).toBe("");
+        }
+    });
+
+
+    // RC59 - Independencia entre los campos del formulario.
+    it("RC59 - valida cada campo independientemente de los demás", function () {
+        const correo = escribir("#pedido-correo", "ñandú@correo.com");
+
+        expect(q("#pedido-nombre").value).toBe("");
+        expect(q("#pedido-direccion").value).toBe("");
+
+        expect(correo.classList.contains("is-valid")).toBeTrue();
+        expect(correo.getAttribute("aria-invalid")).toBe("false");
+        expect(texto("#error-pedido-correo")).toBe("");
+
+        expect(q("#pedido-nombre").classList.contains("is-invalid"))
+            .toBeFalse();
+
+        expect(q("#pedido-direccion").classList.contains("is-invalid"))
+            .toBeFalse();
+    });
+
+
+    // RC59 - Conservación del resumen al perder el foco.
+    it("RC59 - perder el foco sin modificar datos conserva el resumen", function () {
+        completarCliente();
+        enviar("#form-pedido");
+
+        const resumenAnterior = texto("#resumen-pedido");
+
+        expect(q('[data-action="confirmar-pedido"]')).not.toBeNull();
+
+        disparar(q("#pedido-nombre"), "focusout");
+
+        expect(texto("#resumen-pedido")).toBe(resumenAnterior);
+        expect(q('[data-action="confirmar-pedido"]')).not.toBeNull();
+    });
+
+
+    // RC59 - Conservación del estado de la compra.
+    it("RC59 - validar los datos no modifica el carrito, pago ni storage", function () {
+        const totalAnterior = texto("#carrito-total");
+        const contadorAnterior = texto("#contador-carrito");
+        const condicionesAnteriores = texto("#condiciones-pago");
+
+        const localAnterior = instantanea(win.localStorage);
+        const sessionAnterior = instantanea(win.sessionStorage);
+
+        escribir("#pedido-nombre", "12345");
+        escribir("#pedido-correo", "correo-invalido");
+        disparar(q("#pedido-direccion"), "focusout");
+
+        expect(texto("#carrito-total")).toBe(totalAnterior);
+        expect(texto("#contador-carrito")).toBe(contadorAnterior);
+        expect(texto("#condiciones-pago")).toBe(condicionesAnteriores);
+
+        expect(instantanea(win.localStorage)).toEqual(localAnterior);
+        expect(instantanea(win.sessionStorage)).toEqual(sessionAnterior);
+    });
+
+
+    // RC59 - Compatibilidad con la cancelación del pedido.
+    it("RC59 - cancelar el pedido elimina los estados de validación", function () {
+        escribir("#pedido-nombre", "12345");
+        escribir("#pedido-correo", "correo-invalido");
+        disparar(q("#pedido-direccion"), "focusout");
+
+        clic(q('[data-action="cancelar-pedido"]'));
+
+        expect(q("#confirmacion").hidden).toBeTrue();
+
+        for (const campo of ["nombre", "correo", "direccion"]) {
+            const control = q(`#pedido-${campo}`);
+
+            expect(control.value).toBe("");
+            expect(control.classList.contains("is-invalid")).toBeFalse();
+            expect(control.classList.contains("is-valid")).toBeFalse();
+            expect(control.hasAttribute("aria-invalid")).toBeFalse();
+            expect(texto(`#error-pedido-${campo}`)).toBe("");
+        }
+
+        // No debe volver a validar un formulario oculto.
+        disparar(q("#pedido-nombre"), "focusout");
+
+        expect(q("#pedido-nombre").classList.contains("is-invalid"))
+            .toBeFalse();
+
+        expect(texto("#error-pedido-nombre")).toBe("");
+
+        // Comprueba que se puede volver al formulario sin errores.
+        enviar("#form-pago");
+
+        expect(q("#confirmacion").hidden).toBeFalse();
+        expect(qa("#form-pedido .is-invalid").length).toBe(0);
+    });
 
     it("valida el nombre al enviar el formulario", function () {
         completarCliente();
@@ -897,17 +1160,99 @@ describe("Controlador - Flujo 4: confirmación del pedido", function () {
         expect(texto("#resumen-pedido")).toMatch(/Total financiado: \$\s?5\.281,20/);
     });
 
-    it("cancelar el pedido conserva el carrito y las condiciones de pago", function () {
+    it("RC61 - cancelar el pedido conserva el carrito y las condiciones de pago", function () {
         completarCliente();
         enviar("#form-pedido");
+
+        const condicionesAnteriores = texto("#condiciones-pago");
+        const totalAnterior = texto("#carrito-total");
+        const metodoAnterior = q("#metodo-pago").value;
+        const cuotasAnteriores = q("#cuotas").value;
+
         clic(q('[data-action="cancelar-pedido"]'));
+
         expect(q("#confirmacion").hidden).toBeTrue();
         expect(q("#pedido-nombre").value).toBe("");
         expect(qa("#resumen-pedido *").length).toBe(0);
+
         expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+        expect(texto("#carrito-total")).toBe(totalAnterior);
+
         expect(q("#pago").hidden).toBeFalse();
-        expect(texto("#pedido-mensaje"))
+        expect(q("#metodo-pago").value).toBe(metodoAnterior);
+        expect(q("#cuotas").value).toBe(cuotasAnteriores);
+        expect(texto("#condiciones-pago")).toBe(condicionesAnteriores);
+
+        const mensaje = q("#pago-mensaje");
+
+        expect(texto("#pago-mensaje"))
             .toBe("Pedido cancelado. Se conservaron el carrito y las condiciones de pago.");
+
+        expect(mensaje.closest("[hidden]")).toBeNull();
+
+        expect(win.getComputedStyle(mensaje).display)
+            .not.toBe("none");
+
+        expect(win.getComputedStyle(mensaje).visibility)
+            .toBe("visible");
+
+        expect(mensaje.getBoundingClientRect().height)
+            .toBeGreaterThan(0);
+
+        expect(mensaje.getBoundingClientRect().width)
+            .toBeGreaterThan(0);
+
+        expect(mensaje.getAttribute("role")).toBe("status");
+        expect(mensaje.getAttribute("aria-live")).toBe("polite");
+    });
+
+    it("RC61 - muestra el mensaje al cancelar con campos invalidos", function () {
+
+        escribir("#pedido-nombre", "12345");
+        escribir("#pedido-correo", "correo-invalido");
+
+        disparar(q("#pedido-direccion"), "focusout");
+
+        expect(qa("#form-pedido .is-invalid").length).toBe(3);
+
+        clic(q('[data-action="cancelar-pedido"]'));
+
+        expect(q("#confirmacion").hidden).toBeTrue();
+
+        const mensaje = q("#pago-mensaje");
+
+        expect(texto("#pago-mensaje"))
+            .toBe("Pedido cancelado. Se conservaron el carrito y las condiciones de pago.");
+
+        expect(mensaje.closest("[hidden]")).toBeNull();
+
+        expect(win.getComputedStyle(mensaje).display)
+            .not.toBe("none");
+
+        expect(win.getComputedStyle(mensaje).visibility)
+            .toBe("visible");
+
+        expect(mensaje.getBoundingClientRect().height)
+            .toBeGreaterThan(0);
+
+        expect(qa("#form-pedido .is-invalid").length).toBe(0);
+        expect(qa("#form-pedido .is-valid").length).toBe(0);
+
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+        
+        enviar("#form-pago");
+
+        expect(q("#confirmacion").hidden).toBeFalse();
+
+        expect(q("#pedido-nombre").value).toBe("");
+        expect(q("#pedido-correo").value).toBe("");
+        expect(q("#pedido-direccion").value).toBe("");
+
+        expect(qa("#form-pedido .is-invalid").length).toBe(0);
+        expect(qa("#form-pedido .is-valid").length).toBe(0);
+
+        expect(texto("#pago-mensaje"))
+            .not.toContain("Pedido cancelado.");
     });
 
 
@@ -970,6 +1315,200 @@ describe("Controlador - Flujo 4: confirmación del pedido", function () {
 // ---------------------------------------------------------------------------
 // Transversal
 // ---------------------------------------------------------------------------
+
+describe("Controlador - RC62: persistencia de pedidos", function () {
+
+    const CLAVE_SECUENCIA = "app:pedidos:secuencia";
+    const CLAVE_HISTORIAL = "app:pedidos:historial";
+
+    it("RC62 - conserva la numeracion y el historial despues de recargar", async function () {
+        llegarAlResumen();
+        clic(q('[data-action="confirmar-pedido"]'));
+
+        expect(texto("#resumen-pedido"))
+            .toMatch(/^Pedido confirmado: FL-\d+-0001/);
+
+        const historialAntes = JSON.parse(
+            win.localStorage.getItem(CLAVE_HISTORIAL)
+        );
+
+        expect(historialAntes.length).toBe(1);
+        expect(historialAntes[0].numero).toMatch(/^FL-\d+-0001$/);
+
+        expect(JSON.parse(
+            win.localStorage.getItem(CLAVE_SECUENCIA)
+        )).toBe(2);
+
+        // Recarga real de la aplicación sin limpiar Storage.
+        await new Promise((resolve) => {
+            marco.addEventListener("load", resolve, { once: true });
+            win.location.reload();
+        });
+
+        win = marco.contentWindow;
+        doc = marco.contentDocument;
+
+        expect(JSON.parse(
+            win.localStorage.getItem(CLAVE_HISTORIAL)
+        )).toEqual(historialAntes);
+
+        expect(JSON.parse(
+            win.localStorage.getItem(CLAVE_SECUENCIA)
+        )).toBe(2);
+
+        expect(texto("#contador-carrito")).toBe("0");
+
+        llegarAlResumen();
+        clic(q('[data-action="confirmar-pedido"]'));
+
+        expect(texto("#resumen-pedido"))
+            .toMatch(/^Pedido confirmado: FL-\d+-0002/);
+
+        const historialDespues = JSON.parse(
+            win.localStorage.getItem(CLAVE_HISTORIAL)
+        );
+
+        expect(historialDespues.length).toBe(2);
+        expect(historialDespues[0]).toEqual(historialAntes[0]);
+        expect(historialDespues[1].numero).toMatch(/^FL-\d+-0002$/);
+
+        expect(JSON.parse(
+            win.localStorage.getItem(CLAVE_SECUENCIA)
+        )).toBe(3);
+
+    }, TIEMPO_CARGA_MS);
+
+
+    it("RC62 - cancelar un pedido no modifica el historial ni la secuencia", function () {
+        llegarAlResumen();
+        clic(q('[data-action="confirmar-pedido"]'));
+
+        const historialAntes =
+            win.localStorage.getItem(CLAVE_HISTORIAL);
+
+        const secuenciaAntes =
+            win.localStorage.getItem(CLAVE_SECUENCIA);
+
+        llegarAlResumen();
+        clic(q('[data-action="cancelar-pedido"]'));
+
+        expect(win.localStorage.getItem(CLAVE_HISTORIAL))
+            .toBe(historialAntes);
+
+        expect(win.localStorage.getItem(CLAVE_SECUENCIA))
+            .toBe(secuenciaAntes);
+
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+        expect(q("#confirmacion").hidden).toBeTrue();
+    });
+
+
+    it("RC62 - informa el error cuando falla el guardado de la secuencia", function () {
+        llegarAlResumen();
+
+        const setItemOriginal = win.Storage.prototype.setItem;
+
+        const espiaStorage = spyOn(
+            win.Storage.prototype, "setItem"
+        ).and.callFake(function (clave, valor) {
+            if (clave === CLAVE_SECUENCIA) {
+                throw new win.DOMException(
+                    "Cuota excedida", "QuotaExceededError"
+                );
+            }
+
+            return setItemOriginal.call(this, clave, valor);
+        });
+
+        clic(q('[data-action="confirmar-pedido"]'));
+
+        expect(texto("#pedido-mensaje"))
+            .toBe("No se pudo guardar la secuencia del pedido.");
+
+        expect(win.localStorage.getItem(CLAVE_SECUENCIA))
+            .toBeNull();
+
+        expect(win.localStorage.getItem(CLAVE_HISTORIAL))
+            .toBeNull();
+
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+
+        expect(q('[data-action="confirmar-pedido"]'))
+            .not.toBeNull();
+
+        // Restablece Storage y permite reintentar.
+        espiaStorage.and.callThrough();
+
+        clic(q('[data-action="confirmar-pedido"]'));
+
+        expect(texto("#resumen-pedido"))
+            .toMatch(/^Pedido confirmado: FL-\d+-0001/);
+
+        expect(JSON.parse(
+            win.localStorage.getItem(CLAVE_SECUENCIA)
+        )).toBe(2);
+    });
+
+
+    it("RC62 - restaura la secuencia cuando falla el guardado del historial", function () {
+        llegarAlResumen();
+        clic(q('[data-action="confirmar-pedido"]'));
+
+        const historialAntes =
+            win.localStorage.getItem(CLAVE_HISTORIAL);
+
+        const secuenciaAntes =
+            win.localStorage.getItem(CLAVE_SECUENCIA);
+
+        llegarAlResumen();
+
+        const setItemOriginal = win.Storage.prototype.setItem;
+
+        const espiaStorage = spyOn(
+            win.Storage.prototype, "setItem"
+        ).and.callFake(function (clave, valor) {
+            if (clave === CLAVE_HISTORIAL) {
+                throw new win.DOMException(
+                    "Cuota excedida", "QuotaExceededError"
+                );
+            }
+
+            return setItemOriginal.call(this, clave, valor);
+        });
+
+        clic(q('[data-action="confirmar-pedido"]'));
+
+        expect(texto("#pedido-mensaje"))
+            .toBe("No se pudo guardar el pedido.");
+
+        expect(win.localStorage.getItem(CLAVE_HISTORIAL))
+            .toBe(historialAntes);
+
+        expect(win.localStorage.getItem(CLAVE_SECUENCIA))
+            .toBe(secuenciaAntes);
+
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+
+        expect(q('[data-action="confirmar-pedido"]'))
+            .not.toBeNull();
+
+        // Reintenta sin el fallo de almacenamiento.
+        espiaStorage.and.callThrough();
+
+        clic(q('[data-action="confirmar-pedido"]'));
+
+        expect(texto("#resumen-pedido"))
+            .toMatch(/^Pedido confirmado: FL-\d+-0002/);
+
+        expect(JSON.parse(
+            win.localStorage.getItem(CLAVE_HISTORIAL)
+        ).length).toBe(2);
+
+        expect(JSON.parse(
+            win.localStorage.getItem(CLAVE_SECUENCIA)
+        )).toBe(3);
+    });
+});
 
 describe("Controlador - requisitos transversales", function () {
     it("una compra completa no usa alert(), prompt() ni confirm()", function () {
@@ -1187,33 +1726,49 @@ describe("Controlador - casos borde", function () {
 
     describe("errores del storage durante el uso", function () {
         let setItemOriginal;
-
         beforeEach(function () {
             setItemOriginal = win.Storage.prototype.setItem;
             win.Storage.prototype.setItem = function () {
                 throw new win.DOMException("Cuota excedida", "QuotaExceededError");
             };
         });
-
+        
         afterEach(function () {
             win.Storage.prototype.setItem = setItemOriginal;
         });
-
+        
         it("sigue funcionando si guardar en localStorage falla por cuota y avisa al usuario", function () {
             agregarAlCarrito("GUANTES-001");
             expect(texto("#contador-carrito")).toBe("1");
             expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
             expect(texto("#carrito-mensaje")).toMatch(/no pudo guardarse/);
         });
-
-        it("completa una compra aunque el storage rechace las escrituras", function () {
+        
+        it("RC62 - impide confirmar una compra cuando el storage rechaza las escrituras", function () {
             llegarAlResumen();
             clic(q('[data-action="confirmar-pedido"]'));
-            expect(texto("#resumen-pedido")).toMatch(/^Pedido confirmado: FL-\d+-\d{4}/);
-            expect(texto("#contador-carrito")).toBe("0");
+
+            expect(texto("#pedido-mensaje"))
+                .toBe("No se pudo guardar la secuencia del pedido.");
+
+            expect(texto("#resumen-pedido"))
+                .not.toContain("Pedido confirmado:");
+
+            expect(texto("#contador-carrito")).toBe("1");
+
+            expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+
+            expect(q('[data-action="confirmar-pedido"]'))
+                .not.toBeNull();
+
+            expect(win.localStorage.getItem("app:pedidos:secuencia"))
+                .toBeNull();
+
+            expect(win.localStorage.getItem("app:pedidos:historial"))
+                .toBeNull();
+            });     
         });
     });
-});
 
 describe("Controlador - eventos que no corresponden a una acción", function () {
     it("un clic en una zona sin acción no cambia nada", function () {

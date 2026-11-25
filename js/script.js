@@ -6,23 +6,13 @@ import { Pago } from "./models/Pago.js";
 import { Pedido } from "./models/Pedido.js";
 import { FormateadorMoneda } from "./services/FormateadorMoneda.js";
 import { validarCambioCantidad } from "./services/ValidacionCarrito.js";
-import { confirmarPedidoConNumeracion } from "./services/ConfirmadorPedidos.js";
+import { confirmarPedidoConNumeracion, ErrorPersistenciaPedido } from "./services/ConfirmadorPedidos.js";
 import { ServicioOfertas } from "./services/ServicioOfertas.js";
 import { IMAGENES_CATALOGO } from "./data/imagenesCatalogo.js";
 import { ServicioCategorias } from "./services/ServicioCategorias.js";
 import { ServicioOpcionesPago } from "./services/ServicioOpcionesPago.js";
-
-const productosIniciales = [
-    { codigo: "GUANTES-001", nombre: "Guantes moteados multiuso maxima calidad", categoria: "Herramientas manuales", descripcion: "Proteccion multiuso para trabajos de ferreteria y mantenimiento.", precio: 4401 },
-    { codigo: "DESTORNILLADOR-001", nombre: "Destornillador punta plana Black Jack 8 x 200 mm", categoria: "Herramientas manuales", descripcion: "Destornillador con punta plana para tareas de ajuste y reparacion.", precio: 6026 },
-    { codigo: "PINZA-001", nombre: "Pinza punta curva mini 5 pulgadas ideal electronica", categoria: "Herramientas manuales", descripcion: "Pinza compacta para trabajos de precision en electronica.", precio: 6426 },
-    { codigo: "ENCHUFE-001", nombre: "Enchufe adaptador cubo 5 tomas 3 patas 10 amp", categoria: "Electricidad", descripcion: "Adaptador electrico con cinco tomas para conectar herramientas y equipos.", precio: 10282 },
-    { codigo: "MARTILLO-001", nombre: "Martillo galponero mango de fibra acero forjado Black Jack", categoria: "Herramientas manuales", descripcion: "Martillo robusto para tareas de obra, reparacion y mantenimiento.", precio: 16000 },
-    { codigo: "PALA-001", nombre: "Pala de punta chapa acero estampada cabo metalico", categoria: "Jardineria", descripcion: "Herramienta de punta para tareas de jardineria y movimiento de tierra.", precio: 21329 },
-    { codigo: "AMOLADORA-001", nombre: "Amoladora angular inalambrica DeWalt Flexvolt DCG416B", categoria: "Herramientas electricas", descripcion: "Amoladora inalambrica para cortar, desbastar y trabajar distintos materiales.", precio: 50000 },
-    { codigo: "KIT-TAPONES-001", nombre: "Kit juego tapones para cano de termofusion", categoria: "Accesorios", descripcion: "Juego de tapones y obturadores para instalaciones de agua.", precio: 55000 },
-    { codigo: "TALADRO-001", nombre: "Taladro atornillador inalambrico 10 mm 20 V", categoria: "Herramientas electricas", descripcion: "Atornillador inalambrico para perforar y ajustar en distintos proyectos.", precio: 79999 }
-];
+import { validarCampoPedido } from "./services/ValidacionPedido.js";
+import { productosIniciales } from "./data/productosIniciales.js";
 
 const catalogo = new Catalogo(productosIniciales.map((datos) => new Producto(datos)));
 const carrito = FachadaStorage.cargarCarrito();
@@ -424,6 +414,27 @@ function clienteDesdeFormulario() {
     };
 }
 
+ // Actualiza el estado visual y accesible de un campo
+ // del formulario de pedido.
+function actualizarValidacionCampoPedido(control) {
+    if (elementos.seccionConfirmacion.hidden ||
+        elementos.formPedido.hidden
+    ) {
+        return;
+    }
+
+    const resultado = validarCampoPedido(
+        control.name,
+        control.value
+    );
+
+    marcarControl(
+        control,
+        resultado.exito,
+        resultado.error ?? ""
+    );
+}
+
 // Construye los elementos HTML del resumen del pedido
 // incluyendo productos, datos del cliente y condiciones de pago.
 function agregarDatosResumen(contenedor, resumen) {
@@ -584,10 +595,17 @@ function confirmarPedido() {
                 : "Pedido confirmado, pero no se pudo guardar el carrito vacío. Los productos podrían reaparecer al recargar.",
             carritoGuardado ? "success" : "error"
         );
-    } catch (error) {
-        if (!(error instanceof TypeError || error instanceof RangeError)) throw error;
+
+        } catch (error) {
+            if (!(error instanceof TypeError ||
+            error instanceof RangeError ||
+            error instanceof ErrorPersistenciaPedido)) {
+            throw error;
+        }
+
         mostrarMensaje(elementos.pedidoMensaje, error.message, "error");
     }
+
 }
 
 // Cancela la confirmación del pedido y limpia el formulario,
@@ -598,7 +616,7 @@ function cancelarPedido() {
     elementos.seccionConfirmacion.hidden = true;
     elementos.formPedido.reset();
     elementos.formPedido.querySelectorAll("input").forEach(limpiarEstadoControl);
-    mostrarMensaje(elementos.pedidoMensaje, "Pedido cancelado. Se conservaron el carrito y las condiciones de pago.", "info");
+    mostrarMensaje(elementos.pagoMensaje, "Pedido cancelado. Se conservaron el carrito y las condiciones de pago.", "info");
     elementos.seccionPago.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
@@ -1044,9 +1062,18 @@ function inicializarEventos() {
             );
         }
             
-        limpiarEstadoControl(control);
+        actualizarValidacionCampoPedido(control);
     });
-    
+
+    // Valida el campo cuando el usuario lo abandona.
+    elementos.formPedido.addEventListener("focusout", (evento) => {
+        const control = evento.target.closest("input");
+
+        if (!control) return;
+
+        actualizarValidacionCampoPedido(control);
+    });
+
 
     // Valida todos los campos antes de generar el resumen del pedido.
     elementos.formPedido.addEventListener("submit", (evento) => {

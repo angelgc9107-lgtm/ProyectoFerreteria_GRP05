@@ -18,7 +18,7 @@ Módulos testeados: `js/models/*.js`, `js/services/*.js`, `js/utils/storage.js` 
 
 ## Estado de la corrida (leer primero)
 
-Corrida completa de `test-runner.html` sobre la rama `release/cuarta-entrega` con las PR #167, #168, #169 (Desarrollador JS Eventos + DOM), #172 (Local y Session Storage) y #175 (POO) ya integradas, más los specs agregados en esta corrección de QA: **425 specs, 0 failures** (tres corridas con semillas distintas). Sin los specs de esta corrección, la rama de release tenía 405 specs, 0 failures.
+Corrida completa de `test-runner.html` sobre la rama `release/cuarta-entrega` con las PR #167, #168, #169 (Desarrollador JS Eventos + DOM), #172 (Local y Session Storage) y #175 (POO) ya integradas, más los specs agregados en esta corrección de QA: **425 specs, 0 failures** (tres corridas con semillas distintas). Sin los specs de esta corrección, la rama de release tenía 405 specs, 0 failures. Después se agregó el spec de la corrección de RC51 (`Pedido.fromJSON()` lee el número una sola vez), y la suite quedó en **426 specs, 0 failures**.
 
 Antes de esta corrección, la suite de la PR #169 tenía **220 specs y 3 failures**. Los tres eran specs desactualizados respecto del controlador (no defectos del código); se adaptaron y el detalle está en [Hallazgos e Issues](#hallazgos-e-issues). El código de producción (`js/script.js`, `index.html`, `js/models/`, `js/services/`, `js/utils/`) no fue modificado por esta corrección de QA, y tampoco la documentación de trazabilidad de los cuatro flujos que agregó la PR #169, que se conserva tal cual.
 
@@ -28,11 +28,11 @@ En la tercera entrega `js/script.js` tenía la lógica y usaba `prompt()`/`alert
 
 | Módulo | Qué contiene | Spec | Specs |
 |---|---|---|---|
-| `js/models/` (`Producto`, `Catalogo`, `Carrito`, `Pago`, `Pedido`) | Lógica de negocio con clases, sin DOM ni Storage | `js/test/models.spec.js` | 88 |
+| `js/models/` (`Producto`, `Catalogo`, `Carrito`, `Pago`, `Pedido`) | Lógica de negocio con clases, sin DOM ni Storage | `js/test/models.spec.js` | 89 |
 | `js/utils/storage.js` (`StorageUtil`) | Capa de abstracción de `localStorage`/`sessionStorage` | `js/test/storage.spec.js` | 189 |
 | `js/services/` | `FormateadorMoneda`, `ValidacionCarrito`, `ConfirmadorPedidos`, `FachadaStorage`, `ServicioOfertas`, `ServicioCategorias`, `ServicioOpcionesPago` | `js/test/services.spec.js` | 50 |
 | `js/script.js` | Controlador: eventos y DOM | `js/test/script.spec.js` | 98 |
-| | | **Total** | **425** |
+| | | **Total** | **426** |
 
 `js/test/test-runner.html` carga los cuatro specs como módulos ES. `js/test/models-test-runner.html` es el runner independiente que armó el Desarrollador JS POO para sus modelos y se conserva.
 
@@ -63,7 +63,7 @@ Requiere conexión a internet: Jasmine se carga desde `cdnjs.cloudflare.com` y `
 
 ## Suites de Tests
 
-### `models.spec.js` (88 specs)
+### `models.spec.js` (89 specs)
 
 | Suite | Specs | Qué se prueba |
 |---|---|---|
@@ -76,7 +76,7 @@ Requiere conexión a internet: Jasmine se carga desde `cdnjs.cloudflare.com` y `
 | `Pago y Pedido: validaciones restantes` | 3 | Método de pago que no es cadena, desborde a importe infinito, pago que no es instancia de `Pago` |
 | `Pedido` | 15 | Validación de cliente, coherencia con el pago, `confirmar()` determinista, `toJSON()`/`fromJSON()` |
 | `Pedido: validación de campos, confirmación y reconstrucción` | 4 + 13 | Cliente que no es objeto, campo que informa el error, segunda confirmación, parámetros inválidos de `confirmar()`; y `fromJSON()` con número mal formado, importes o condiciones de pago inconsistentes y cliente inválido (13 specs, incluidos los que agregó el análisis de mutación: fecha 0, total con un bit de diferencia y total con un centavo de diferencia) |
-| `Pago y Pedido: validaciones restantes › RC51: límites y contratos complementarios` | 11 | Specs agregados por el Desarrollador JS POO en la PR #175: validación de todos los campos textuales de `Producto`, búsqueda en la descripción, colecciones vacías o dispersas en `Catalogo`, precio cero frente al filtro omitido y tipos de criterios |
+| `Pago y Pedido: validaciones restantes › RC51: límites y contratos complementarios` | 12 | Specs agregados por el Desarrollador JS POO en la PR #175: validación de todos los campos textuales de `Producto`, búsqueda en la descripción, colecciones vacías o dispersas en `Catalogo`, precio cero frente al filtro omitido y tipos de criterios; y un spec de la corrección de RC51 que comprueba que `Pedido.fromJSON()` lee el número una sola vez y guarda el mismo valor que validó |
 | `Cadenas numéricas estrictas` | 3 | `"0x10"`, `"1e2"` y `"1e3"` se rechazan en `Carrito`, `Catalogo` y `Pago`; se aceptan dígitos con espacios |
 
 ### `storage.spec.js` (189 specs)
@@ -155,6 +155,11 @@ Requiere conexión a internet: Jasmine se carga desde `cdnjs.cloudflare.com` y `
 | Activación y desactivación del filtro de precio | Pruebas del filtro de precio |
 | Recuperación de resultados | Recupera los resultados al corregir una búsqueda sin coincidencias |
 | Recuperación después de un filtro restrictivo | Recupera los productos al quitar un filtro de precio sin coincidencias |
+| Conservación de los datos originales del catálogo | RC60 - el módulo conserva los nueve productos y sus precios originales |
+| Separación de los datos operativos del controlador | RC60 - el controlador importa los productos sin declararlos localmente |
+| Integración del módulo de datos con el DOM | RC60 - renderiza correctamente los productos del módulo de datos |
+
+**Observación:** Los datos iniciales del catálogo fueron trasladados a un módulo independiente, manteniendo en el controlador únicamente la inicialización de los modelos, la orquestación, los eventos y la manipulación del DOM. Se verificó que no se produjeran regresiones en los cuatro flujos principales ni en la corrección de RC59.
 
 **Resultado Jasmine:** 12 specs, 0 failures.
 
@@ -238,44 +243,56 @@ Requiere conexión a internet: Jasmine se carga desde `cdnjs.cloudflare.com` y `
 | Confirmación válida | Confirmar muestra el número de pedido y limpia carrito y pago |
 | Numeración de pedidos | Una segunda compra obtiene la secuencia siguiente |
 | Pago financiado | Confirmar con tarjeta en 6 cuotas refleja el recargo en el resumen |
-| Cancelación del pedido | Cancelar el pedido conserva el carrito y las condiciones de pago |
+| Cancelación del pedido y visibilidad del feedback (RC61) | RC61 - cancelar el pedido conserva el carrito y las condiciones de pago |
+| Cancelación con campos inválidos y limpieza de estados (RC59 y RC61) | RC61 - muestra el mensaje al cancelar con campos invalidos |
 | Corrección de datos inválidos | Permite corregir datos inválidos y generar el resumen |
 | Regeneración del resumen | Impide confirmar datos modificados e inválidos hasta regenerar el resumen |
+| Validación durante la edición (RC22 y RC59) | RC59 - valida los campos del cliente durante input |
+| Validación al abandonar el campo (RC22 y RC59) | RC59 - valida los campos vacíos mediante focusout |
+| Corrección del feedback visual y accesible | RC59 - elimina los errores al corregir los datos del cliente |
+| Validación individual de los campos | RC59 - valida cada campo independientemente de los demás |
+| Conservación del resumen al perder el foco | RC59 - perder el foco sin modificar datos conserva el resumen |
+| Conservación del estado de la compra | RC59 - validar los datos no modifica el carrito, pago ni storage |
+| Limpieza de estados de validación | RC59 - cancelar el pedido elimina los estados de validación |
 
 **Resultado Jasmine:** 13 specs, 0 failures.
 
 **Ejecución:** suite individual con `random=false`.
 
-**Observación:** La validación definitiva se realiza al enviar el formulario. El evento input invalida el resumen pendiente cuando se modifican los datos del cliente.
+**Observación:** La validación individual de los datos del cliente se realiza mediante los eventos `input` y `focusout`, delegando las reglas del dominio al servicio `ValidacionPedido.js`. La validación definitiva continúa realizándose mediante la clase `Pedido` al enviar el formulario.
+
+La pérdida de foco no invalida el resumen del pedido, mientras que la modificación de los datos conserva el comportamiento de invalidación existente.
+El mensaje de cancelación se presenta en la región visible `#pago-mensaje`, verificando su visibilidad y accesibilidad. Se conserva el carrito, las condiciones de pago y la posibilidad de retomar el proceso de compra.
+Se verificó la compatibilidad entre las correcciones RC59, RC60 y RC61 dentro del flujo de confirmación del pedido.
 
 
 ---
 
 ## Métricas de Cobertura
 
-Corrida completa de `test-runner.html`: **425 specs, 0 failures** (ver «Estado de la corrida»).
+Corrida completa de `test-runner.html`: **426 specs, 0 failures** (ver «Estado de la corrida»).
 
 Se miden tres cosas, con la cobertura de código de V8 (Chromium, vía Playwright) durante esa misma corrida. **No son el mismo número**, y la cobertura de ramas es una estimación, no una medición equivalente a la de Istanbul o c8 (ver más abajo).
 
 | Archivo | Líneas ejecutables | Cubiertas | Líneas | Funciones | Ramas |
 |---|---|---|---|---|---|
-| `js/models/Carrito.js` | 92 | 92 | 100,0 % | 21/21 (100,0 %) | 66/66 (100,0 %) |
+| `js/models/Carrito.js` | 92 | 92 | 100,0 % | 21/21 (100,0 %) | 68/68 (100,0 %) |
 | `js/models/Catalogo.js` | 46 | 46 | 100,0 % | 16/16 (100,0 %) | 36/36 (100,0 %) |
 | `js/models/Pago.js` | 49 | 49 | 100,0 % | 7/7 (100,0 %) | 36/36 (100,0 %) |
-| `js/models/Pedido.js` | 110 | 110 | 100,0 % | 16/16 (100,0 %) | 102/103 (99,0 %) |
-| `js/models/Producto.js` | 44 | 44 | 100,0 % | 13/13 (100,0 %) | 20/20 (100,0 %) |
-| `js/script.js` | 729 | 727 | 99,7 % | 60/60 (100,0 %) | 111/111 (100,0 %) |
+| `js/models/Pedido.js` | 110 | 110 | 100,0 % | 16/16 (100,0 %) | 96/96 (100,0 %) |
+| `js/models/Producto.js` | 44 | 44 | 100,0 % | 13/13 (100,0 %) | 19/19 (100,0 %) |
+| `js/script.js` | 729 | 727 | 99,7 % | 60/60 (100,0 %) | 112/113 (99,1 %) |
 | `js/services/ConfirmadorPedidos.js` | 10 | 10 | 100,0 % | 2/2 (100,0 %) | 2/2 (100,0 %) |
 | `js/services/FachadaStorage.js` | 57 | 57 | 100,0 % | 18/18 (100,0 %) | 1/1 (100,0 %) |
 | `js/services/FormateadorMoneda.js` | 9 | 9 | 100,0 % | 3/3 (100,0 %) | sin ramas |
 | `js/services/ServicioCategorias.js` | 7 | 7 | 100,0 % | 4/4 (100,0 %) | sin ramas |
 | `js/services/ServicioOfertas.js` | 35 | 35 | 100,0 % | 3/3 (100,0 %) | 6/6 (100,0 %) |
-| `js/services/ServicioOpcionesPago.js` | 31 | 28 | 90,3 % | 4/4 (100,0 %) | 15/16 (93,8 %) |
+| `js/services/ServicioOpcionesPago.js` | 31 | 28 | 90,3 % | 4/4 (100,0 %) | 14/15 (93,3 %) |
 | `js/services/ValidacionCarrito.js` | 4 | 4 | 100,0 % | 2/2 (100,0 %) | sin ramas |
-| `js/utils/storage.js` | 283 | 283 | 100,0 % | 32/32 (100,0 %) | 186/186 (100,0 %) |
-| **Total** | **1506** | **1501** | **99,7 %** | **201/201 (100,0 %)** | **581/583 (99,7 %)** |
+| `js/utils/storage.js` | 283 | 283 | 100,0 % | 32/32 (100,0 %) | 199/199 (100,0 %) |
+| **Total** | **1506** | **1501** | **99,7 %** | **201/201 (100,0 %)** | **589/591 (99,7 %)** |
 
-El recuento de ramas puede variar en una o tres unidades entre corridas (en las corridas de esta versión dio 577/579, 580/582 y 581/583) porque V8 informa los bloques según cómo se compila cada función; el porcentaje se mantiene en 99,7 %. Por eso los números de ramas se leen como aproximados.
+El recuento de ramas depende de cómo V8 compila cada función, así que cambia entre corridas y entre versiones de Chromium: en las corridas de la corrección de QA dio entre 577/579 y 581/583, y la corrida de esta tabla (posterior a la corrección de RC51) dio 589/591. El porcentaje se mantiene en 99,7 %. Por eso los números de ramas se leen como aproximados; las líneas y funciones no varían.
 
 `js/data/imagenesCatalogo.js` solo declara un mapa de constantes y no aparece en la tabla porque la herramienta mide `models`, `services`, `utils` y `script.js`.
 
@@ -283,13 +300,12 @@ La medición histórica anterior (94,2 %, sobre 208 specs) era **solo de líneas
 
 ### Qué falta cubrir y por qué
 
-Antes de esta corrección la tabla marcaba 98,1 % de líneas, 99,5 % de funciones y 97,1 % de ramas (394 specs). Con los 20 specs que agrega esta corrección (405 de la rama de release + 20 = 425) quedan **sin cubrir 5 líneas y 2 ramas**, y las dos ramas no se pueden alcanzar sin modificar el código de producción. Cada una se justifica con algo comprobable:
+Antes de la corrección de QA la tabla marcaba 98,1 % de líneas, 99,5 % de funciones y 97,1 % de ramas (394 specs). Con los 20 specs de esa corrección (405 de la rama de release + 20 = 425) y el spec de la corrección de RC51 (426) quedan **sin cubrir 5 líneas y 2 ramas**, y las dos ramas no se pueden alcanzar sin modificar el código de producción. Cada una se justifica con algo comprobable:
 
-- **`js/models/Pedido.js:31`** (`typeof numero !== "string"` en `numeroValido()`): `Pedido.fromJSON()` rechaza un número que no sea una cadena *antes* de llamar a `numeroValido()` (spec de `models.spec.js` que reconstruye con un número no string y espera el error de tipo), y `fromJSON()` es el único lugar donde se la llama. Con las entradas públicas la condición nunca es verdadera; es una guarda defensiva.
 - **`js/services/ServicioOpcionesPago.js:23` (líneas 24, 25 y 27)**: el `catch` de `obtenerMetodos()` solo se ejecuta si `new Pago(100, metodo, 1)` lanza. Los dos métodos candidatos (`efectivo-transferencia` y `tarjeta`) son constantes privadas del módulo y siempre son válidos, de modo que `Pago` nunca lanza ahí. Para forzarlo habría que reemplazar el constructor `Pago` importado, y un módulo ES no se puede sustituir con un doble de prueba. El `catch` equivalente de `obtenerCuotas()` sí está cubierto: sus dos caminos (error de validación → cuota descartada, otro error → se relanza) los prueban los specs de `ServicioOpcionesPago`.
 - **`js/script.js`, líneas 1104 y 1105** (`document.readyState === "loading"`): `index.html` carga `script.js` como `<script type="module">` sin `async`, y los módulos se ejecutan una vez que el documento terminó de analizarse, así que `readyState` nunca es `"loading"` en ese momento. Un spec de «Rutas defensivas y de error» comprueba justamente que la etiqueta es de tipo módulo y no tiene `async`, que es la razón de que esa rama no se recorra. V8 puede informar la rama como cubierta o no según la corrida; las dos líneas siguen sin ejecutarse.
 
-Lo que antes figuraba como no cubierto y ahora lo prueba un spec: los elementos obligatorios ausentes al cargar (línea 38) y `estado-aplicacion` ausente, `confirmarPedido()` sin pedido pendiente (RC24), el `catch` de `confirmarPedido()` por reloj inválido, la rama `default` de los dos `switch` de acciones, `if (!esperandoCierreCarrito) return;`, `if (!control) return;`, el filtro de precio alterado a mano (RC21), la cuota inexistente, el error inesperado al generar el resumen y los `catch` externos de `guardar()`, `cargarInstancia()` y `cargarLista()` de `storage.js`.
+Lo que antes figuraba como no cubierto y ahora lo prueba un spec: los elementos obligatorios ausentes al cargar (línea 38) y `estado-aplicacion` ausente, `confirmarPedido()` sin pedido pendiente (RC24), el `catch` de `confirmarPedido()` por reloj inválido, la rama `default` de los dos `switch` de acciones, `if (!esperandoCierreCarrito) return;`, `if (!control) return;`, el filtro de precio alterado a mano (RC21), la cuota inexistente, el error inesperado al generar el resumen y los `catch` externos de `guardar()`, `cargarInstancia()` y `cargarLista()` de `storage.js`. La rama de `js/models/Pedido.js:31` (`typeof numero !== "string"` en `numeroValido()`), que antes figuraba como inalcanzable, se eliminó en la corrección de RC51: `Pedido.fromJSON()` ahora lee `datos.numero` una sola vez y valida su tipo antes de llamar a `numeroValido()`, así que esa guarda repetía una validación ya hecha. Además, antes se leía `datos.numero` tres veces (validar el tipo, validar el formato y guardarlo), y un spec comprueba ahora que se lee una sola vez y que se guarda el mismo valor que se validó.
 
 Para cinco de esos caminos se comprobó además que el spec detecta el defecto (ver las pruebas de mutación en «Herramientas y proceso»).
 
@@ -327,7 +343,7 @@ Esta sección declara qué se usó realmente, para que la documentación no diga
 - **Ejecución**: los tests se ejecutaron con **Playwright (Chromium) por script**, abriendo `js/test/test-runner.html` y leyendo el resultado de Jasmine. **No se usó Playwright MCP**: la consigna lo menciona y este punto queda como desvío declarado. Tampoco se registra ejecución en Edge, Firefox ni Safari para los specs de Jasmine.
 - **Prompts**: los prompts con los que se generaron los specs del Tester QA **no se conservaron**, por lo que no hay evidencia de ellos en `docs/02-prompts/` para esas suites. Se declara como **no cumplido**.
 - **Verificación de que los tests detectan errores (pruebas de mutación manuales)**: se introdujo un defecto a propósito en una copia del repositorio y se comprobó que la suite, que sin el defecto no falla ningún spec, falla con él. Se probaron doce sobre la suite de 421 specs (antes del análisis de mutación automático de abajo): subir el recargo de 3 cuotas de 10 % a 13 % (5 fallas), que `guardarCarrito()` no guarde (8), que la secuencia de pedidos no avance (3), quitar la regla «precio anterior mayor al actual» de `ServicioOfertas` (1), no ordenar las categorías (2), contar unidades en vez de ítems en el contador del carrito (14) y que `cargarCarrito()` ignore lo guardado (3); y, para los specs agregados en esta corrección: que `confirmarPedido()` no avise cuando no hay pedido pendiente (1), que una cuota inexistente marque el control equivocado (1), que `obtenerCuotas()` oculte un error que no es de validación (1), y que `guardar()` y `cargarInstancia()` dejen salir el error inesperado (1 y 1). Los doce fueron detectados. Son pruebas manuales hechas una vez, no una herramienta de mutación automática.
-- **Barrida automática de mutantes (2026-11-24)**: además de las manuales, un script propio (no incluido en el repositorio; no es una herramienta de mutación estándar como Stryker) aplicó 40 mutaciones elegidas al azar sobre `js/models/` y `js/services/` (cambio de `<=`/`>=`/`===`/`&&`/`||`, de `+` por `-` y de constantes) y corrió la suite completa con cada una. La suite detectó 33 y 7 sobrevivieron. Cuatro se resolvieron con specs nuevos (fecha 0 como límite del número de pedido, total con un bit de diferencia y mensaje de validación de los ítems de `Carrito`, que fallaban sin que ningún spec lo notara; además el spec «acepta diferencias que son sólo ruido de coma flotante» sumaba `Number.EPSILON` a un total de miles, lo que no cambia el valor, y por eso no probaba nada). Los 3 restantes son equivalentes o inalcanzables: `Pedido.js:31` (guarda inalcanzable, ver «Qué falta cubrir»), `Pedido.js:45` (`>` frente a `>=` solo difiere cuando la diferencia es exactamente igual a la tolerancia) y `ServicioOpcionesPago.js:42` (el bucle hasta 13 cuotas no cambia nada porque `Pago` rechaza 13 cuotas y el `catch` la descarta). Con los 4 specs nuevos, 37 de 40 mutantes quedan detectados.
+- **Barrida automática de mutantes (2026-11-24)**: además de las manuales, un script propio (no incluido en el repositorio; no es una herramienta de mutación estándar como Stryker) aplicó 40 mutaciones elegidas al azar sobre `js/models/` y `js/services/` (cambio de `<=`/`>=`/`===`/`&&`/`||`, de `+` por `-` y de constantes) y corrió la suite completa con cada una. La suite detectó 33 y 7 sobrevivieron. Cuatro se resolvieron con specs nuevos (fecha 0 como límite del número de pedido, total con un bit de diferencia y mensaje de validación de los ítems de `Carrito`, que fallaban sin que ningún spec lo notara; además el spec «acepta diferencias que son sólo ruido de coma flotante» sumaba `Number.EPSILON` a un total de miles, lo que no cambia el valor, y por eso no probaba nada). Los 3 restantes son equivalentes o inalcanzables: `Pedido.js:31` (guarda inalcanzable en ese momento; se eliminó en la corrección de RC51, ver «Qué falta cubrir»), `Pedido.js:45` (`>` frente a `>=` solo difiere cuando la diferencia es exactamente igual a la tolerancia) y `ServicioOpcionesPago.js:42` (el bucle hasta 13 cuotas no cambia nada porque `Pago` rechaza 13 cuotas y el `catch` la descarta). Con los 4 specs nuevos, 37 de 40 mutantes quedan detectados.
 
 ---
 
@@ -429,5 +445,5 @@ La suite de la tercera entrega (143 tests sobre funciones con `prompt()` y `aler
 
 ---
 
-**Última Actualización:** 2026-11-23 (correcciones de la revisión de la cuarta entrega, sobre la rama de release con las PR #167, #168 y #169)
+**Última Actualización:** 2026-11-25 (corrección de RC51: `Pedido.fromJSON()` y cobertura de modelos; antes, 2026-11-23, correcciones de la revisión de la cuarta entrega sobre la rama de release con las PR #167, #168 y #169)
 **Tester/QA Engineer:** Alan Diaz (@alandox1)
