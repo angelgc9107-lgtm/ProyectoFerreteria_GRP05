@@ -133,7 +133,7 @@ export class Pedido {
                 typeof datos.total !== "number" || !Object.hasOwn(datos, "numero")) {
             throw new TypeError("Los datos del pedido son invalidos.");
         }
-                // Se lee una sola vez: lo que se valida es exactamente lo que se guarda.
+        // Se lee una sola vez: lo que se valida es exactamente lo que se guarda.
         const numero = datos.numero;
         if (numero !== null && typeof numero !== "string") {
             throw new TypeError("El numero del pedido debe ser una cadena o null.");
