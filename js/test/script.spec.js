@@ -339,6 +339,109 @@ describe("Controlador - RC44: renderizado dinámico", function () {
 
 });
 
+describe("Controlador - RC60: separación de datos del catálogo", function () {
+
+    it("RC60 - el módulo conserva los nueve productos y sus precios originales", async function () {
+
+        const { productosIniciales } = await import(
+            "../data/productosIniciales.js"
+        );
+
+        expect(productosIniciales.length).toBe(9);
+
+        expect(
+            productosIniciales.map((producto) => [
+                producto.codigo,
+                producto.precio
+            ])
+        ).toEqual([
+            ["GUANTES-001", 4401],
+            ["DESTORNILLADOR-001", 6026],
+            ["PINZA-001", 6426],
+            ["ENCHUFE-001", 10282],
+            ["MARTILLO-001", 16000],
+            ["PALA-001", 21329],
+            ["AMOLADORA-001", 50000],
+            ["KIT-TAPONES-001", 55000],
+            ["TALADRO-001", 79999]
+        ]);
+    });
+
+
+    it("RC60 - el controlador importa los productos sin declararlos localmente", async function () {
+
+        const respuesta = await fetch(
+            new URL("../script.js", import.meta.url),
+            { cache: "no-store" }
+        );
+
+        expect(respuesta.ok).toBeTrue();
+
+        const codigo = await respuesta.text();
+
+        const codigoNormalizado = codigo
+            .replace(/\s/g, "")
+            .replaceAll("'", '"');
+
+        expect(codigoNormalizado).toContain(
+            'import{productosIniciales}from"./data/productosIniciales.js"'
+        );
+
+        expect(codigoNormalizado).not.toContain(
+            "constproductosIniciales="
+        );
+
+        expect(codigoNormalizado).not.toContain(
+            "letproductosIniciales="
+        );
+
+        expect(codigoNormalizado).not.toContain(
+            "varproductosIniciales="
+        );
+    });
+
+
+    it("RC60 - renderiza correctamente los productos del módulo de datos", async function () {
+
+        const { productosIniciales } = await import(
+            "../data/productosIniciales.js"
+        );
+
+        const formateador = new Intl.NumberFormat("es-AR", {
+            style: "currency",
+            currency: "ARS",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+
+        expect(codigosVisibles().length).toBe(9);
+        expect(qa("#tabla-precios-cuerpo tr").length).toBe(9);
+        expect(qa("#ofertas-productos article").length).toBe(3);
+
+        for (const producto of productosIniciales) {
+
+            const tarjeta = q(
+                `#resultados-catalogo article[data-product-code="${producto.codigo}"]`
+            );
+
+            expect(tarjeta).not.toBeNull();
+
+            expect(tarjeta.querySelector("h3").textContent)
+                .toBe(producto.nombre);
+
+            expect(tarjeta.textContent)
+                .toContain(producto.categoria);
+
+            expect(tarjeta.textContent)
+                .toContain(producto.descripcion);
+
+            expect(tarjeta.querySelector("strong").textContent)
+                .toBe(formateador.format(producto.precio));
+        }
+    });
+
+});
+
 
 // ---------------------------------------------------------------------------
 // Flujo 1: búsqueda y filtrado
