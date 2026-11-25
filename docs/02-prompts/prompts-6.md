@@ -6,6 +6,12 @@
 **Método de prompt:** Role prompting
 
 ## Prompt exacto
+
+⚠ Aviso: estos NO son los prompts originales
+```
+Los prompts con los que se generaron las suites (models.spec.js, storage.spec.js, services.spec.js y script.spec.js) se perdieron: no se guardaron el texto, las capturas ni las respuestas de esas conversaciones. Los textos de abajo fueron reconstruidos a partir de lo que las suites hacen hoy y de lo que se le pidió a la IA. Son una aproximación al pedido original, no una copia. No hay captura del prompt ni del resultado original, y no se afirma que estos textos, ejecutados de nuevo, produzcan exactamente los mismos specs. Lo que sí es verificable es el resultado: las suites están en el repositorio, con su historial de commits y con la corrida actual.
+```
+
 ```
 Actuá como Tester QA de FerroLab. Solo lectura, no modifiques nada.
 Leé docs/03-specs/actividad-obligatoria-4/spec-tester-qa.md (criterios de aceptación), las suites
