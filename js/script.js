@@ -6,7 +6,7 @@ import { Pago } from "./models/Pago.js";
 import { Pedido } from "./models/Pedido.js";
 import { FormateadorMoneda } from "./services/FormateadorMoneda.js";
 import { validarCambioCantidad } from "./services/ValidacionCarrito.js";
-import { confirmarPedidoConNumeracion } from "./services/ConfirmadorPedidos.js";
+import { confirmarPedidoConNumeracion, ErrorPersistenciaPedido } from "./services/ConfirmadorPedidos.js";
 import { ServicioOfertas } from "./services/ServicioOfertas.js";
 import { IMAGENES_CATALOGO } from "./data/imagenesCatalogo.js";
 import { ServicioCategorias } from "./services/ServicioCategorias.js";
@@ -595,10 +595,17 @@ function confirmarPedido() {
                 : "Pedido confirmado, pero no se pudo guardar el carrito vacío. Los productos podrían reaparecer al recargar.",
             carritoGuardado ? "success" : "error"
         );
-    } catch (error) {
-        if (!(error instanceof TypeError || error instanceof RangeError)) throw error;
+
+        } catch (error) {
+            if (!(error instanceof TypeError ||
+            error instanceof RangeError ||
+            error instanceof ErrorPersistenciaPedido)) {
+            throw error;
+        }
+
         mostrarMensaje(elementos.pedidoMensaje, error.message, "error");
     }
+
 }
 
 // Cancela la confirmación del pedido y limpia el formulario,

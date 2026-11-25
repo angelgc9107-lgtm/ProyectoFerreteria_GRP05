@@ -39,6 +39,8 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 - [fix/rc51-cobertura-pedido] [A4] Corrección de la revisión del profesor (RC51): `Pedido.fromJSON()` lee el número una sola vez, se elimina la validación de tipo repetida de `numeroValido()`, spec nuevo y `testing-doc.md` con la cobertura medida (modelos al 100 % de líneas, funciones y ramas; 426 specs, 0 failures) PR: [#185](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/185) — Issue: [#184](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/184) — @Piastrellini (Desarrollador JS Local y Session Storage)
 - [fix/controlador-eventos-dom] [A4] Correcciones del controlador JavaScript PR: [#186](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/186) — Issue: [#187](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/187) — @angelgc9107-lgtm (Desarrollador JavaScript Eventos + DOM)
 
+- [fix/persistencia-pedidos] [A4] persistencia de numeración e historial de pedidos confirmados PR: [#188](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/188) — Issue: [#189](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/189) — @angelgc9107-lgtm (Desarrollador JavaScript Eventos + DOM)
+
 ## [Actividad N°3] - 2026-11-02
 
 ### Added
