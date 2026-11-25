@@ -155,6 +155,11 @@ Requiere conexión a internet: Jasmine se carga desde `cdnjs.cloudflare.com` y `
 | Activación y desactivación del filtro de precio | Pruebas del filtro de precio |
 | Recuperación de resultados | Recupera los resultados al corregir una búsqueda sin coincidencias |
 | Recuperación después de un filtro restrictivo | Recupera los productos al quitar un filtro de precio sin coincidencias |
+| Conservación de los datos originales del catálogo | RC60 - el módulo conserva los nueve productos y sus precios originales |
+| Separación de los datos operativos del controlador | RC60 - el controlador importa los productos sin declararlos localmente |
+| Integración del módulo de datos con el DOM | RC60 - renderiza correctamente los productos del módulo de datos |
+
+**Observación:** Los datos iniciales del catálogo fueron trasladados a un módulo independiente, manteniendo en el controlador únicamente la inicialización de los modelos, la orquestación, los eventos y la manipulación del DOM. Se verificó que no se produjeran regresiones en los cuatro flujos principales ni en la corrección de RC59.
 
 **Resultado Jasmine:** 12 specs, 0 failures.
 
@@ -238,15 +243,27 @@ Requiere conexión a internet: Jasmine se carga desde `cdnjs.cloudflare.com` y `
 | Confirmación válida | Confirmar muestra el número de pedido y limpia carrito y pago |
 | Numeración de pedidos | Una segunda compra obtiene la secuencia siguiente |
 | Pago financiado | Confirmar con tarjeta en 6 cuotas refleja el recargo en el resumen |
-| Cancelación del pedido | Cancelar el pedido conserva el carrito y las condiciones de pago |
+| Cancelación del pedido y visibilidad del feedback (RC61) | RC61 - cancelar el pedido conserva el carrito y las condiciones de pago |
+| Cancelación con campos inválidos y limpieza de estados (RC59 y RC61) | RC61 - muestra el mensaje al cancelar con campos invalidos |
 | Corrección de datos inválidos | Permite corregir datos inválidos y generar el resumen |
 | Regeneración del resumen | Impide confirmar datos modificados e inválidos hasta regenerar el resumen |
+| Validación durante la edición (RC22 y RC59) | RC59 - valida los campos del cliente durante input |
+| Validación al abandonar el campo (RC22 y RC59) | RC59 - valida los campos vacíos mediante focusout |
+| Corrección del feedback visual y accesible | RC59 - elimina los errores al corregir los datos del cliente |
+| Validación individual de los campos | RC59 - valida cada campo independientemente de los demás |
+| Conservación del resumen al perder el foco | RC59 - perder el foco sin modificar datos conserva el resumen |
+| Conservación del estado de la compra | RC59 - validar los datos no modifica el carrito, pago ni storage |
+| Limpieza de estados de validación | RC59 - cancelar el pedido elimina los estados de validación |
 
 **Resultado Jasmine:** 13 specs, 0 failures.
 
 **Ejecución:** suite individual con `random=false`.
 
-**Observación:** La validación definitiva se realiza al enviar el formulario. El evento input invalida el resumen pendiente cuando se modifican los datos del cliente.
+**Observación:** La validación individual de los datos del cliente se realiza mediante los eventos `input` y `focusout`, delegando las reglas del dominio al servicio `ValidacionPedido.js`. La validación definitiva continúa realizándose mediante la clase `Pedido` al enviar el formulario.
+
+La pérdida de foco no invalida el resumen del pedido, mientras que la modificación de los datos conserva el comportamiento de invalidación existente.
+El mensaje de cancelación se presenta en la región visible `#pago-mensaje`, verificando su visibilidad y accesibilidad. Se conserva el carrito, las condiciones de pago y la posibilidad de retomar el proceso de compra.
+Se verificó la compatibilidad entre las correcciones RC59, RC60 y RC61 dentro del flujo de confirmación del pedido.
 
 
 ---
