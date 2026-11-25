@@ -1160,17 +1160,99 @@ describe("Controlador - Flujo 4: confirmación del pedido", function () {
         expect(texto("#resumen-pedido")).toMatch(/Total financiado: \$\s?5\.281,20/);
     });
 
-    it("cancelar el pedido conserva el carrito y las condiciones de pago", function () {
+    it("RC61 - cancelar el pedido conserva el carrito y las condiciones de pago", function () {
         completarCliente();
         enviar("#form-pedido");
+
+        const condicionesAnteriores = texto("#condiciones-pago");
+        const totalAnterior = texto("#carrito-total");
+        const metodoAnterior = q("#metodo-pago").value;
+        const cuotasAnteriores = q("#cuotas").value;
+
         clic(q('[data-action="cancelar-pedido"]'));
+
         expect(q("#confirmacion").hidden).toBeTrue();
         expect(q("#pedido-nombre").value).toBe("");
         expect(qa("#resumen-pedido *").length).toBe(0);
+
         expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+        expect(texto("#carrito-total")).toBe(totalAnterior);
+
         expect(q("#pago").hidden).toBeFalse();
-        expect(texto("#pedido-mensaje"))
+        expect(q("#metodo-pago").value).toBe(metodoAnterior);
+        expect(q("#cuotas").value).toBe(cuotasAnteriores);
+        expect(texto("#condiciones-pago")).toBe(condicionesAnteriores);
+
+        const mensaje = q("#pago-mensaje");
+
+        expect(texto("#pago-mensaje"))
             .toBe("Pedido cancelado. Se conservaron el carrito y las condiciones de pago.");
+
+        expect(mensaje.closest("[hidden]")).toBeNull();
+
+        expect(win.getComputedStyle(mensaje).display)
+            .not.toBe("none");
+
+        expect(win.getComputedStyle(mensaje).visibility)
+            .toBe("visible");
+
+        expect(mensaje.getBoundingClientRect().height)
+            .toBeGreaterThan(0);
+
+        expect(mensaje.getBoundingClientRect().width)
+            .toBeGreaterThan(0);
+
+        expect(mensaje.getAttribute("role")).toBe("status");
+        expect(mensaje.getAttribute("aria-live")).toBe("polite");
+    });
+
+    it("RC61 - muestra el mensaje al cancelar con campos invalidos", function () {
+
+        escribir("#pedido-nombre", "12345");
+        escribir("#pedido-correo", "correo-invalido");
+
+        disparar(q("#pedido-direccion"), "focusout");
+
+        expect(qa("#form-pedido .is-invalid").length).toBe(3);
+
+        clic(q('[data-action="cancelar-pedido"]'));
+
+        expect(q("#confirmacion").hidden).toBeTrue();
+
+        const mensaje = q("#pago-mensaje");
+
+        expect(texto("#pago-mensaje"))
+            .toBe("Pedido cancelado. Se conservaron el carrito y las condiciones de pago.");
+
+        expect(mensaje.closest("[hidden]")).toBeNull();
+
+        expect(win.getComputedStyle(mensaje).display)
+            .not.toBe("none");
+
+        expect(win.getComputedStyle(mensaje).visibility)
+            .toBe("visible");
+
+        expect(mensaje.getBoundingClientRect().height)
+            .toBeGreaterThan(0);
+
+        expect(qa("#form-pedido .is-invalid").length).toBe(0);
+        expect(qa("#form-pedido .is-valid").length).toBe(0);
+
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+        
+        enviar("#form-pago");
+
+        expect(q("#confirmacion").hidden).toBeFalse();
+
+        expect(q("#pedido-nombre").value).toBe("");
+        expect(q("#pedido-correo").value).toBe("");
+        expect(q("#pedido-direccion").value).toBe("");
+
+        expect(qa("#form-pedido .is-invalid").length).toBe(0);
+        expect(qa("#form-pedido .is-valid").length).toBe(0);
+
+        expect(texto("#pago-mensaje"))
+            .not.toContain("Pedido cancelado.");
     });
 
 

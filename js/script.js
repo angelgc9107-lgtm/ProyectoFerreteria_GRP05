@@ -609,7 +609,7 @@ function cancelarPedido() {
     elementos.seccionConfirmacion.hidden = true;
     elementos.formPedido.reset();
     elementos.formPedido.querySelectorAll("input").forEach(limpiarEstadoControl);
-    mostrarMensaje(elementos.pedidoMensaje, "Pedido cancelado. Se conservaron el carrito y las condiciones de pago.", "info");
+    mostrarMensaje(elementos.pagoMensaje, "Pedido cancelado. Se conservaron el carrito y las condiciones de pago.", "info");
     elementos.seccionPago.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
