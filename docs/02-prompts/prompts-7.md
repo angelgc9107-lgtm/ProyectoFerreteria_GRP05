@@ -1,11 +1,17 @@
 # Prompt 7
 
-**Integrante:** Alan Díaz
-**Rol:** Tester QA
-**Modelo de IA:** Claude Code
-**Método de prompt:** Role prompting
+- **Integrante:** Alan Díaz
+- **Rol:** Tester QA
+- **Modelo de IA:** Claude Code
+- **Método de prompt:** Role prompting
 
 ## Prompt exacto
+
+⚠ Aviso: estos NO son los prompts originales
+```
+Los prompts con los que se generaron las suites (models.spec.js, storage.spec.js, services.spec.js y script.spec.js) se perdieron: no se guardaron el texto, las capturas ni las respuestas de esas conversaciones. Los textos de abajo fueron reconstruidos a partir de lo que las suites hacen hoy y de lo que se le pidió a la IA. Son una aproximación al pedido original, no una copia. No hay captura del prompt ni del resultado original, y no se afirma que estos textos, ejecutados de nuevo, produzcan exactamente los mismos specs. Lo que sí es verificable es el resultado: las suites están en el repositorio, con su historial de commits y con la corrida actual.
+```
+
 ```
 Actuá como Tester QA de FerroLab (HTML + JS con módulos ES, sin backend). Usá Playwright MCP.
 No toques archivos del repo, solo probá y reportá.
@@ -31,7 +37,7 @@ Cerrá con una tabla resumen y la lista de lo que no coincide (sin arreglarlo).
 ```
 
 **Captura de pantalla del prompt solicitado:**
-![Prompt en el cliente con Playwright MCP](./images/prompt-7-TesterQA-1.png)
+![Prompt en el cliente con Playwright](./images/prompt-7-TesterQA-1.png)
 
 ## Resultado esperado
 
@@ -45,7 +51,7 @@ En su lugar, la IA instaló la librería `playwright` 1.65.1 fuera del repo y ej
 que maneja Google Chrome 158.0.8127.88 (headless). No se modificó ningún archivo del repo.
 
 **Captura de pantalla del resultado obtenido:**
-![Resultado de Playwright MCP](./images/prompt-7-TesterQA-2.png)
+![Resultado](./images/prompt-7-TesterQA-2.png)
 
 ## Correcciones manuales realizadas
 
