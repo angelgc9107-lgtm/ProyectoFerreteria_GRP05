@@ -1316,6 +1316,200 @@ describe("Controlador - Flujo 4: confirmación del pedido", function () {
 // Transversal
 // ---------------------------------------------------------------------------
 
+describe("Controlador - RC62: persistencia de pedidos", function () {
+
+    const CLAVE_SECUENCIA = "app:pedidos:secuencia";
+    const CLAVE_HISTORIAL = "app:pedidos:historial";
+
+    it("RC62 - conserva la numeracion y el historial despues de recargar", async function () {
+        llegarAlResumen();
+        clic(q('[data-action="confirmar-pedido"]'));
+
+        expect(texto("#resumen-pedido"))
+            .toMatch(/^Pedido confirmado: FL-\d+-0001/);
+
+        const historialAntes = JSON.parse(
+            win.localStorage.getItem(CLAVE_HISTORIAL)
+        );
+
+        expect(historialAntes.length).toBe(1);
+        expect(historialAntes[0].numero).toMatch(/^FL-\d+-0001$/);
+
+        expect(JSON.parse(
+            win.localStorage.getItem(CLAVE_SECUENCIA)
+        )).toBe(2);
+
+        // Recarga real de la aplicación sin limpiar Storage.
+        await new Promise((resolve) => {
+            marco.addEventListener("load", resolve, { once: true });
+            win.location.reload();
+        });
+
+        win = marco.contentWindow;
+        doc = marco.contentDocument;
+
+        expect(JSON.parse(
+            win.localStorage.getItem(CLAVE_HISTORIAL)
+        )).toEqual(historialAntes);
+
+        expect(JSON.parse(
+            win.localStorage.getItem(CLAVE_SECUENCIA)
+        )).toBe(2);
+
+        expect(texto("#contador-carrito")).toBe("0");
+
+        llegarAlResumen();
+        clic(q('[data-action="confirmar-pedido"]'));
+
+        expect(texto("#resumen-pedido"))
+            .toMatch(/^Pedido confirmado: FL-\d+-0002/);
+
+        const historialDespues = JSON.parse(
+            win.localStorage.getItem(CLAVE_HISTORIAL)
+        );
+
+        expect(historialDespues.length).toBe(2);
+        expect(historialDespues[0]).toEqual(historialAntes[0]);
+        expect(historialDespues[1].numero).toMatch(/^FL-\d+-0002$/);
+
+        expect(JSON.parse(
+            win.localStorage.getItem(CLAVE_SECUENCIA)
+        )).toBe(3);
+
+    }, TIEMPO_CARGA_MS);
+
+
+    it("RC62 - cancelar un pedido no modifica el historial ni la secuencia", function () {
+        llegarAlResumen();
+        clic(q('[data-action="confirmar-pedido"]'));
+
+        const historialAntes =
+            win.localStorage.getItem(CLAVE_HISTORIAL);
+
+        const secuenciaAntes =
+            win.localStorage.getItem(CLAVE_SECUENCIA);
+
+        llegarAlResumen();
+        clic(q('[data-action="cancelar-pedido"]'));
+
+        expect(win.localStorage.getItem(CLAVE_HISTORIAL))
+            .toBe(historialAntes);
+
+        expect(win.localStorage.getItem(CLAVE_SECUENCIA))
+            .toBe(secuenciaAntes);
+
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+        expect(q("#confirmacion").hidden).toBeTrue();
+    });
+
+
+    it("RC62 - informa el error cuando falla el guardado de la secuencia", function () {
+        llegarAlResumen();
+
+        const setItemOriginal = win.Storage.prototype.setItem;
+
+        const espiaStorage = spyOn(
+            win.Storage.prototype, "setItem"
+        ).and.callFake(function (clave, valor) {
+            if (clave === CLAVE_SECUENCIA) {
+                throw new win.DOMException(
+                    "Cuota excedida", "QuotaExceededError"
+                );
+            }
+
+            return setItemOriginal.call(this, clave, valor);
+        });
+
+        clic(q('[data-action="confirmar-pedido"]'));
+
+        expect(texto("#pedido-mensaje"))
+            .toBe("No se pudo guardar la secuencia del pedido.");
+
+        expect(win.localStorage.getItem(CLAVE_SECUENCIA))
+            .toBeNull();
+
+        expect(win.localStorage.getItem(CLAVE_HISTORIAL))
+            .toBeNull();
+
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+
+        expect(q('[data-action="confirmar-pedido"]'))
+            .not.toBeNull();
+
+        // Restablece Storage y permite reintentar.
+        espiaStorage.and.callThrough();
+
+        clic(q('[data-action="confirmar-pedido"]'));
+
+        expect(texto("#resumen-pedido"))
+            .toMatch(/^Pedido confirmado: FL-\d+-0001/);
+
+        expect(JSON.parse(
+            win.localStorage.getItem(CLAVE_SECUENCIA)
+        )).toBe(2);
+    });
+
+
+    it("RC62 - restaura la secuencia cuando falla el guardado del historial", function () {
+        llegarAlResumen();
+        clic(q('[data-action="confirmar-pedido"]'));
+
+        const historialAntes =
+            win.localStorage.getItem(CLAVE_HISTORIAL);
+
+        const secuenciaAntes =
+            win.localStorage.getItem(CLAVE_SECUENCIA);
+
+        llegarAlResumen();
+
+        const setItemOriginal = win.Storage.prototype.setItem;
+
+        const espiaStorage = spyOn(
+            win.Storage.prototype, "setItem"
+        ).and.callFake(function (clave, valor) {
+            if (clave === CLAVE_HISTORIAL) {
+                throw new win.DOMException(
+                    "Cuota excedida", "QuotaExceededError"
+                );
+            }
+
+            return setItemOriginal.call(this, clave, valor);
+        });
+
+        clic(q('[data-action="confirmar-pedido"]'));
+
+        expect(texto("#pedido-mensaje"))
+            .toBe("No se pudo guardar el pedido.");
+
+        expect(win.localStorage.getItem(CLAVE_HISTORIAL))
+            .toBe(historialAntes);
+
+        expect(win.localStorage.getItem(CLAVE_SECUENCIA))
+            .toBe(secuenciaAntes);
+
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+
+        expect(q('[data-action="confirmar-pedido"]'))
+            .not.toBeNull();
+
+        // Reintenta sin el fallo de almacenamiento.
+        espiaStorage.and.callThrough();
+
+        clic(q('[data-action="confirmar-pedido"]'));
+
+        expect(texto("#resumen-pedido"))
+            .toMatch(/^Pedido confirmado: FL-\d+-0002/);
+
+        expect(JSON.parse(
+            win.localStorage.getItem(CLAVE_HISTORIAL)
+        ).length).toBe(2);
+
+        expect(JSON.parse(
+            win.localStorage.getItem(CLAVE_SECUENCIA)
+        )).toBe(3);
+    });
+});
+
 describe("Controlador - requisitos transversales", function () {
     it("una compra completa no usa alert(), prompt() ni confirm()", function () {
         llegarAlResumen();
@@ -1532,33 +1726,49 @@ describe("Controlador - casos borde", function () {
 
     describe("errores del storage durante el uso", function () {
         let setItemOriginal;
-
         beforeEach(function () {
             setItemOriginal = win.Storage.prototype.setItem;
             win.Storage.prototype.setItem = function () {
                 throw new win.DOMException("Cuota excedida", "QuotaExceededError");
             };
         });
-
+        
         afterEach(function () {
             win.Storage.prototype.setItem = setItemOriginal;
         });
-
+        
         it("sigue funcionando si guardar en localStorage falla por cuota y avisa al usuario", function () {
             agregarAlCarrito("GUANTES-001");
             expect(texto("#contador-carrito")).toBe("1");
             expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
             expect(texto("#carrito-mensaje")).toMatch(/no pudo guardarse/);
         });
-
-        it("completa una compra aunque el storage rechace las escrituras", function () {
+        
+        it("RC62 - impide confirmar una compra cuando el storage rechaza las escrituras", function () {
             llegarAlResumen();
             clic(q('[data-action="confirmar-pedido"]'));
-            expect(texto("#resumen-pedido")).toMatch(/^Pedido confirmado: FL-\d+-\d{4}/);
-            expect(texto("#contador-carrito")).toBe("0");
+
+            expect(texto("#pedido-mensaje"))
+                .toBe("No se pudo guardar la secuencia del pedido.");
+
+            expect(texto("#resumen-pedido"))
+                .not.toContain("Pedido confirmado:");
+
+            expect(texto("#contador-carrito")).toBe("1");
+
+            expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+
+            expect(q('[data-action="confirmar-pedido"]'))
+                .not.toBeNull();
+
+            expect(win.localStorage.getItem("app:pedidos:secuencia"))
+                .toBeNull();
+
+            expect(win.localStorage.getItem("app:pedidos:historial"))
+                .toBeNull();
+            });     
         });
     });
-});
 
 describe("Controlador - eventos que no corresponden a una acción", function () {
     it("un clic en una zona sin acción no cambia nada", function () {
