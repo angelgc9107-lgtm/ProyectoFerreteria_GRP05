@@ -596,6 +596,13 @@ describe("Carrito: validación de instantáneas y casos borde", function () {
         });
     });
 
+    it("rechaza ítems que no son objetos con el mensaje propio de la validación", function () {
+        // Sin esta comprobación, null o undefined fallarían más adelante con el error nativo de JS.
+        [null, undefined, 5, "x", [], [1]].forEach((item) => {
+            expect(() => new Carrito([item])).toThrowError(TypeError, "Cada item debe ser un objeto.");
+        });
+    });
+
     it("rechaza campos de texto que no son cadenas o están vacíos", function () {
         ["codigo", "nombre", "categoria"].forEach((campo) => {
             expect(() => new Carrito([{ ...base, [campo]: 5 }])).toThrowError(TypeError, new RegExp(campo));
@@ -764,6 +771,34 @@ describe("Pedido: validación de campos, confirmación y reconstrucción", funct
             const subtotal = datosValidos();
             subtotal.productos[0].subtotal += 1;
             expect(() => Pedido.fromJSON(subtotal)).toThrowError(RangeError, /inconsistentes/);
+        });
+
+        it("fromJSON() acepta un pedido confirmado con fecha 0 (límite inferior del número)", function () {
+            const { pedido } = crearPedido();
+            expect(pedido.confirmar(0, 1)).toBe("FL-0-0001");
+            const copia = Pedido.fromJSON(JSON.parse(JSON.stringify(pedido)));
+            expect(copia.toJSON()).toEqual(pedido.toJSON());
+        });
+
+        it("acepta un total que difiere en un solo bit (el siguiente double) del recalculado", function () {
+            // Number.EPSILON (2,2e-16) es menor que un bit de un importe grande, así que sumarlo no cambia el
+            // total: el spec anterior no probaba nada para importes de miles. Se usa el siguiente double.
+            const siguiente = (x) => {
+                const f = new Float64Array([x]);
+                new BigInt64Array(f.buffer)[0] += 1n;
+                return f[0];
+            };
+            const datos = datosValidos();
+            const original = datos.total;
+            datos.total = siguiente(original);
+            expect(datos.total).not.toBe(original);
+            expect(() => Pedido.fromJSON(datos)).not.toThrow();
+        });
+
+        it("rechaza un total que difiere de lo recalculado en un centavo", function () {
+            const datos = datosValidos();
+            datos.total = Math.round((datos.total + 0.01) * 100) / 100;
+            expect(() => Pedido.fromJSON(datos)).toThrowError(RangeError);
         });
 
         it("acepta diferencias que son sólo ruido de coma flotante", function () {

@@ -180,10 +180,10 @@ Tomadas con Playwright (Chromium) sobre `js/test/test-runner.html` y sobre un ru
 
 | Captura | Resultado |
 |---|---|
-| `captura-runner-completo.png` | 394 specs, 0 failures |
-| `captura-models-spec.png` | 73 specs, 0 failures |
-| `captura-storage-spec.png` | 186 specs, 0 failures |
-| `captura-script-spec.png` | 86 specs, 0 failures |
+| `captura-runner-completo.png` | 425 specs, 0 failures |
+| `captura-models-spec.png` | 88 specs, 0 failures |
+| `captura-storage-spec.png` | 189 specs, 0 failures |
+| `captura-script-spec.png` | 98 specs, 0 failures |
 
 ### Criterios no cumplidos (declaración explícita)
 
@@ -221,7 +221,7 @@ Tomadas con Playwright (Chromium) sobre `js/test/test-runner.html` y sobre un ru
 
 ## Actualización — correcciones de la revisión del docente (2026-11-23)
 
-Estado de la suite sobre `release/cuarta-entrega` con las PR #167, #168 y #169 integradas: **394 specs, 0 failures** (73 de modelos, 186 de storage, 49 de servicios, 86 del controlador), en tres corridas con semillas distintas. Antes de esta corrección la suite de la PR #169 tenía 220 specs y 3 failures. Cobertura medida con V8 (`js/test/herramientas/cobertura-v8.js`): **98,1 % de líneas, 99,5 % de funciones y 97,1 % de ramas** (esta última es una estimación; ver `js/test/testing-doc.md`). Las cifras anteriores (208 specs, 94,2 %) eran de líneas solamente.
+Estado de la suite sobre `release/cuarta-entrega` con las PR #167, #168, #169, #172 y #175 integradas y los specs de la segunda corrección de QA: **425 specs, 0 failures** (88 de modelos, 189 de storage, 50 de servicios, 98 del controlador), en tres corridas con semillas distintas. Antes de la primera corrección la suite de la PR #169 tenía 220 specs y 3 failures. Cobertura medida con V8 (`js/test/herramientas/cobertura-v8.js`): **99,7 % de líneas, 100 % de funciones y 99,7 % de ramas** (esta última es una estimación; ver `js/test/testing-doc.md`). Las cifras anteriores (208 specs, 94,2 %) eran de líneas solamente.
 
 Cambios de esta corrección (no se modificó código de producción ni la documentación de trazabilidad de la PR #169):
 
@@ -229,7 +229,8 @@ Cambios de esta corrección (no se modificó código de producción ni la docume
 - Persistencia: suite «Persistencia del carrito en Web Storage» (8 specs) que recarga la página y comprueba que el carrito se restaura.
 - Aislamiento del storage entre tests: lo incorporó el Desarrollador Eventos + DOM en la PR #169 (guarda, borra y restaura las claves `app:`) y se conservó sin cambios.
 - Tres specs del controlador que quedaban en rojo tras la PR #169 se adaptaron al comportamiento actual (detalle en el hallazgo H7 de `testing-doc.md`): el filtro de la búsqueda vuelve a dibujar el catálogo, la validación del cliente ocurre al enviar y la compra ahora escribe el carrito en `localStorage`.
-- Se verificó por mutación manual que los tests detectan defectos (siete cambios, todos detectados; detalle en `testing-doc.md`).
+- Se verificó por mutación manual que los tests detectan defectos (doce cambios, todos detectados; detalle en `testing-doc.md`). Además, una barrida automática de 40 mutantes al azar sobre `js/models/` y `js/services/` dio 33 detectados y 7 sobrevivientes; 4 se resolvieron con specs nuevos y 3 son equivalentes o inalcanzables (detalle en `testing-doc.md`).
+- Segunda revisión del docente (RC2, RC21, RC24, RC52): 20 specs nuevos, en su mayoría en la suite «Controlador - rutas defensivas y de error» (confirmar sin pedido pendiente, filtro de precio alterado a mano, reloj inválido, acciones desconocidas, página sin un elemento obligatorio) y en las ramas de error inesperado de `StorageUtil` y `ServicioOpcionesPago`. Quedan 2 ramas sin cubrir, inalcanzables sin modificar el código de producción, justificadas con evidencia en `testing-doc.md`.
 - Se detectó y corrigió un error de la herramienta de cobertura de ramas, que subestimaba el valor (69,5 % antes de sumar tests).
 - Hallazgos asentados con rol y criterio (RC3): H1 a H8 en `testing-doc.md`.
 - **Siguen sin cumplirse:** ejecución con Playwright MCP y evidencia de los prompts de las suites (ver «Criterios no cumplidos»). No se modifica esa declaración.

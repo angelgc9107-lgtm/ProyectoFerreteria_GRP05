@@ -185,8 +185,8 @@ capa de storage y del controlador.
   - `js/test/services.spec.js`: servicios (fachada de storage, confirmación de pedidos, ofertas, categorías, opciones de pago, formateo y validación de cantidades).
   - `js/test/storage.spec.js`: operaciones CRUD y manejo de errores de storage (cuota, lectura, `key()`/`length`, `limpiar()`, storage sin `getItem()`).
   - `js/test/script.spec.js`: controlador principal. Abre el `index.html` real en un iframe por test y recorre los cuatro flujos (búsqueda, carrito, pago y confirmación), la persistencia del carrito al recargar y los casos borde (carrito vacío, acciones repetidas, storage que rechaza escrituras).
-- **Resultado actual:** 394 specs, 0 failures (73 de modelos, 186 de storage, 49 de servicios y 86 del controlador).
-- **Cobertura** (V8 de Chromium; procedimiento y limitaciones en `js/test/testing-doc.md`): 98,1 % de líneas, 99,5 % de funciones y 97,1 % de ramas. La cobertura de ramas es una estimación a partir de los bloques que informa V8, no equivale a la de Istanbul; lo que falta cubrir son guardas defensivas y está detallado en el documento.
+- **Resultado actual:** 425 specs, 0 failures (88 de modelos, 189 de storage, 50 de servicios y 98 del controlador).
+- **Cobertura** (V8 de Chromium; procedimiento y limitaciones en `js/test/testing-doc.md`): 99,7 % de líneas, 100 % de funciones y 99,7 % de ramas. La cobertura de ramas es una estimación a partir de los bloques que informa V8, no equivale a la de Istanbul; las 2 ramas y las 5 líneas que quedan sin cubrir son guardas defensivas inalcanzables sin modificar el código de producción, y cada una está justificada en el documento.
 - **Documentación:** [`js/test/testing-doc.md`](js/test/testing-doc.md), con la estructura de testing, las instrucciones para ejecutar cada módulo, las métricas de cobertura y las capturas de resultados.
 ## ⚠️ Limitaciones conocidas
  
