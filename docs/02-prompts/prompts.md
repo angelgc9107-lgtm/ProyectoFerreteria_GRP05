@@ -8,3 +8,4 @@
 - [Prompt 6 — Análisis de huecos de las suites con IA (Tester QA)](./prompts-6.md)
 - [Prompt 7 — Recorrido de los 4 flujos con Playwright (Tester QA)](./prompts-7.md)
 - [Prompt 8 — Reconstrucción aproximada de los prompts de las suites (Tester QA): NO son los originales, que se perdieron](./prompts-8.md)
+- [Prompt 9 — Generación de spec-dev-async-fetch.md (Desarrollador JS Asíncrono)](./prompts-9.md)
