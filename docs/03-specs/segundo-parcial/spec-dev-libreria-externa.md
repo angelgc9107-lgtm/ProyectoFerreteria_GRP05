@@ -132,20 +132,130 @@ _Esta sección se completa **después** de integrar la librería, con el conteni
 
 ## 1. Prompt exacto utilizado
 
-_Pendiente._
+**Herramienta:** Claude Code (Anthropic), en una sesión nueva dentro de VS Code, sobre la rama `feature/dev-libreria-externa-sweetalert2` con el spec BEFORE ya commiteado. El prompt se redactó con ayuda de Claude (claude.ai) a partir de este spec. Captura: `docs/02-prompts/images/<captura-del-prompt>.png`.
+
+```text
+Actuá como un desarrollador senior de JavaScript (ES6, módulos, sin frameworks) y especialista en accesibilidad.
+
+CONTEXTO
+Proyecto FerroLab (ferretería), Programación Web I – Segundo Parcial. Mi rol: Desarrollador JS Librerías Externas.
+Leé antes de escribir código:
+- docs/03-specs/segundo-parcial/spec-dev-libreria-externa.md (sección BEFORE: es la especificación a cumplir)
+- index.html, js/script.js, css/styles.css, css/components.css
+- js/services/FachadaStorage.js (como ejemplo del estilo de wrapper del proyecto)
+- js/test/script.spec.js y js/test/test-runner.html
+
+TAREA
+Integrar SweetAlert2 11.26.25 por CDN para pedir confirmación antes de:
+1. Eliminar un producto del carrito (data-action="eliminar-carrito").
+2. Confirmar el pedido (data-action="confirmar-pedido"), mostrando total financiado, método de pago y cuotas.
+3. Cancelar el pedido (data-action="cancelar-pedido").
+
+REQUISITOS
+- index.html: CSS y JS de jsDelivr con versión fija, integrity, crossorigin y defer, usando exactamente
+  los hashes SRI del spec. El CSS de la librería va antes del CSS propio; el script, antes de js/script.js.
+- Crear js/services/ServicioDialogos.js como wrapper: confirmar(opciones) → Promise<boolean> y
+  disponible() → boolean. script.js nunca usa Swal directamente.
+- Si la librería no cargó, la acción se ejecuta como hoy, sin confirmación, sin lanzar excepciones.
+  Si Swal.fire() falla, registrar el error y dejar continuar la acción.
+- Seguridad: mostrar los textos con la opción text, nunca html (llevan nombres de productos).
+- Accesibilidad: foco inicial en "Cancelar" en acciones que pierden datos, Esc cancela, el foco vuelve
+  al botón que abrió el diálogo, respetar prefers-reduced-motion. El carrito es un Offcanvas de
+  Bootstrap que atrapa el foco: verificá que el diálogo se pueda usar con teclado desde ahí y que
+  Esc cierre solo el diálogo y no el carrito.
+- Estética: buttonsStyling: false + customClass con clases propias definidas en css/components.css,
+  usando las variables de css/styles.css (colores, tipografía, espaciados). No modificar el CSS de la librería.
+- El caso "confirmar sin resumen pendiente" debe seguir mostrando su error actual sin abrir el diálogo (RC24).
+- JSDoc en todas las funciones nuevas. Sin alert(), confirm() ni prompt().
+
+TESTS
+- La suite actual (js/test/test-runner.html) tiene que seguir en 0 failures. Los specs de los flujos
+  esperan que eliminar, confirmar y cancelar tengan efecto inmediato: proponé cómo mantenerlos sin
+  debilitarlos.
+- Agregar en script.spec.js una suite que pruebe los 3 puntos con un doble de Swal: confirmar,
+  cancelar, contenido del diálogo, el caso RC24, la falla de la librería y la carga del CDN con SRI.
+
+NO HACER
+- No modificar js/models/, js/utils/storage.js ni otros servicios.
+- No agregar dependencias ni archivos fuera de los mencionados.
+
+SALIDA
+Hacé los cambios en el repo y al final mostrame: lista de archivos tocados, decisiones que tomaste
+y por qué, y cómo verificar a mano cada punto de integración.
+```
 
 ## 2. Código de integración final
 
-_Pendiente._
+**Wrapper** (`js/services/ServicioDialogos.js`, fragmento):
+
+```javascript
+function construirOpciones({ titulo, texto, textoConfirmar, textoCancelar, peligroso, origen }) {
+    const opciones = {
+        titleText: titulo,
+        text: texto,
+        icon: peligroso ? "warning" : "question",
+        showCancelButton: true,
+        confirmButtonText: textoConfirmar,
+        cancelButtonText: textoCancelar,
+        reverseButtons: true,
+        focusCancel: peligroso,
+        allowEscapeKey: true,
+        // Esc cancela el diálogo y no se propaga: el Offcanvas que lo contiene sigue abierto.
+        stopKeydownPropagation: true,
+        returnFocus: true,
+        buttonsStyling: false,
+        customClass: { ...CLASES, confirmButton: peligroso ? BOTON_PELIGRO : BOTON_CONFIRMAR },
+        target: obtenerDestino(origen)
+    };
+    // ...
+}
+```
+
+**Uso en el controlador** (`js/script.js`, fragmento):
+
+```javascript
+async function ejecutarConConfirmacion(opciones, accion) {
+    if (confirmacionEnCurso) return false;
+    confirmacionEnCurso = true;
+
+    try {
+        if (!(await ServicioDialogos.confirmar(opciones))) return false;
+        accion();
+        return true;
+    } finally {
+        confirmacionEnCurso = false;
+    }
+}
+```
+
+El código completo de los tres puntos y la configuración están en `docs/07-librerias/libreria-doc.md`.
 
 ## 3. Ajustes manuales realizados
 
-_Pendiente._
+Sobre el código que generó Claude Code no se hicieron cambios manuales: se revisó y se aceptó como estaba. Lo que sí se hizo a mano fue la revisión y la verificación:
+
+| Ajuste / verificación | Justificación |
+|---|---|
+| Revisión del diff de los 5 archivos contra el prompt y el spec BEFORE: solo se tocaron `index.html` (2 etiquetas en el `<head>`), `css/components.css` (bloque nuevo), `js/script.js`, `js/services/ServicioDialogos.js` (nuevo) y `js/test/script.spec.js`. | Comprobar que no modificara modelos, storage ni otros servicios, como pedía el prompt. |
+| Corrida de la suite completa: **468 specs, 0 failures**. | Comprobar que la integración no rompe los flujos existentes. |
+| Verificación manual de los tres puntos en el navegador, incluido el uso con teclado desde el carrito y con el CDN de SweetAlert2 bloqueado en DevTools. | Comprobar el comportamiento real, no solo los tests. |
+| Se aceptaron tres decisiones que el BEFORE no tenía: `titleText` en lugar de `title` (en SweetAlert2 `title` se interpreta como HTML), protección contra doble clic mientras el diálogo está abierto, y que cancelar con el formulario vacío no pregunte. | Las dos primeras corrigen riesgos reales (inyección de HTML y acciones repetidas); la tercera evita preguntar cuando no hay datos que perder. |
+| Se aceptó `console.error` (y no `console.warn`) cuando la librería no cargó, como decía el BEFORE. | Es lo especificado en la sección 4. |
+| Claude Code cambió la base de la rama: salía de un `develop` local desactualizado y la rebasó sobre `origin/develop` antes de empezar, conservando el commit del spec. Se verificó con `git log` antes de publicar la rama. | Sin `js/services/` ni el `script.js` actual, la integración no se podía hacer sobre la base anterior. |
 
 ## 4. Resumen de los puntos de integración y mejora de la experiencia
 
-_Pendiente._
+| Punto | Antes | Después |
+|---|---|---|
+| Carrito — eliminar un producto | Se eliminaba con un clic. | Pregunta «¿Eliminar *[producto]* del carrito?» con la cantidad; foco en «Cancelar»; `Esc` cierra solo el diálogo y el carrito queda abierto. |
+| Confirmación — confirmar el pedido | Se confirmaba con un clic, de forma irreversible. | Muestra total financiado, método y cuotas; «Seguir revisando» vuelve al resumen sin consumir número de pedido. |
+| Confirmación — cancelar el pedido | Se borraban los datos del cliente con un clic. | Si hay datos, pregunta antes de descartarlos; con el formulario vacío cancela directo. |
+
+En los tres casos un doble clic no repite la acción. Si el CDN no carga, la aplicación funciona igual que antes de la integración.
 
 ## 5. Coordinación e issues respondidas
 
-_Pendiente._
+- **Tester QA/JS:** `script.spec.js` instala un doble de `Swal` en cada test (`instalarDobleSwal()`) y las acciones con diálogo se esperan con `clicYEsperar()`. Se le pasan esas funciones y la API del wrapper (`confirmar`, `disponible`) para `library.spec.js` y para el Test Case 13 de Lighthouse (post-librería).
+- **Desarrollador JS Asíncrono:** el diálogo de «Eliminar» toma el nombre del producto del modelo `Carrito` y lo muestra como texto plano, así que funciona igual con productos que vengan de la API.
+- **Coordinador/DevOps:** carpeta `docs/07-librerias/`, como en su spec del Segundo Parcial. La PR se mergea después de la de Fetch.
+- **Issue asociada:** [#209](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/209).
