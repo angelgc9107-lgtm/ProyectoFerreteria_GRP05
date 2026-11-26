@@ -13,79 +13,50 @@
     <link rel="stylesheet" href="css/bootstrap-overrides.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous" defer></script>
 </head>
-<body data-iniciar-menu>
+<body>
     <!-- CSS futuro: organizar la cabecera en una barra superior oscura con logo, buscador, carrito y acceso a la cuenta, respetando la jerarquia visual del mockup. -->
     <header id="inicio">
         <a href="#inicio" aria-label="Ir al inicio de FerroLab">
             <img src="assets/images/logo.png" alt="Logo de FerroLab">
         </a>
 
-        <!-- JavaScript futuro: buscar productos del catalogo al enviar este formulario y mostrar los resultados correspondientes. -->
-        <form action="#catalogo" method="get" role="search">
+        <form id="form-busqueda" action="#catalogo" method="get" role="search">
             <label for="busqueda">Buscar productos</label>
             <input type="search" id="busqueda" name="busqueda" placeholder="Que estas buscando?">
             <button type="submit">Buscar</button>
         </form>
 
         <button type="button" aria-label="Ver carrito de compras" data-bs-toggle="offcanvas" data-bs-target="#carrito" aria-controls="carrito">
-            Carrito (2)
+            Carrito (<span id="contador-carrito"></span>)
         </button>
         <span>Iniciar sesion</span>
 
         <nav aria-label="Navegacion principal">
-            <a href="#catalogo">Catalogo</a>
+            <div class="dropdown">
+                <button
+                    class="btn dropdown-toggle"
+                    type="button"
+                    id="catalogo-dropdown"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    Catálogo
+                </button>
+                
+                <ul class="dropdown-menu" id="menu-categorias" aria-labelledby="catalogo-dropdown"></ul>
+            </div>
             <a href="#inicio">Inicio</a>
             <a href="#ofertas">Ofertas</a>
             <a href="#ubicacion">Donde estamos</a>
 
-            <div class="dropdown">
-                <button class="btn dropdown-toggle" type="button" id="categorias-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    Categorías
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="categorias-dropdown">
-                    <li><a class="dropdown-item" href="#catalogo">Accesorios</a></li>
-                    <li><a class="dropdown-item" href="#catalogo">Herramientas manuales</a></li>
-                    <li><a class="dropdown-item" href="#catalogo">Herramientas electricas</a></li>
-                    <li><a class="dropdown-item" href="#catalogo">Electricidad</a></li>
-                    <li><a class="dropdown-item" href="#catalogo">Jardineria</a></li>
-                </ul>
-            </div>
         </nav>
     </header>
+
+    <p id="estado-aplicacion" role="status" aria-live="polite"></p>
 
     <main>
         <section id="ofertas" aria-labelledby="titulo-ofertas">
             <h1 id="titulo-ofertas">Ofertas</h1>
-            <div class="row">
-                <div class="col-12 col-md-6 col-lg-4">
-                    <article class="h-100">
-                        <img src="assets/images/amoladora.png" alt="Amoladora angular inalambrica DeWalt Flexvolt DCG416B">
-                        <h2>Amoladora angular inalambrica DeWalt Flexvolt DCG416B</h2>
-                        <p>Amoladora inalambrica para cortar, desbastar y trabajar distintos materiales.</p>
-                        <p><del>$65.000</del> <strong>$50.000</strong> por unidad</p>
-                        <!-- JavaScript futuro: agregar este producto al carrito y actualizar su contador. -->
-                        <button type="button">Comprar</button>
-                    </article>
-                </div>
-                <div class="col-12 col-md-6 col-lg-4">
-                    <article class="h-100">
-                        <img src="assets/images/kit-juego-tapones.png" alt="Kit de juego de tapones para cano de termofusion">
-                        <h2>Kit juego tapones para cano de termofusion</h2>
-                        <p>Juego de tapones y obturadores para instalaciones de agua.</p>
-                        <p><del>$99.000</del> <strong>$55.000</strong> por unidad</p>
-                        <button type="button">Comprar</button>
-                    </article>
-                </div>
-                <div class="col-12 col-md-6 col-lg-4">
-                    <article class="h-100">
-                        <img src="assets/images/martillo-galponero.png" alt="Martillo galponero con mango de fibra y acero forjado Black Jack">
-                        <h2>Martillo galponero mango de fibra acero forjado Black Jack</h2>
-                        <p>Martillo robusto para tareas de obra, reparacion y mantenimiento.</p>
-                        <p><del>$25.000</del> <strong>$16.000</strong> por unidad</p>
-                        <button type="button">Comprar</button>
-                    </article>
-                </div>
-            </div>
+            <div id="ofertas-productos" class="row"></div>
         </section>
 
         <section aria-label="Servicios de FerroLab">
@@ -112,129 +83,98 @@
 
         <section id="catalogo" aria-labelledby="titulo-catalogo">
             <h2 id="titulo-catalogo">Catalogo de productos</h2>
-            <!-- JavaScript futuro: aplicar el orden seleccionado, filtrar por categoria y limitar los productos al precio maximo elegido en el control deslizante. -->
             <div class="row">
             <div class="col-12 col-md-4 col-lg-3 align-self-md-start">
             <aside aria-label="Filtros del catalogo">
                 <h3 class="filter-heading--sort">Ordenar por</h3>
                 <label for="orden">Orden de productos</label>
                 <select id="orden" name="orden">
-                    <option>Precio: menor a mayor</option>
-                    <option>Precio: mayor a menor</option>
+                    <option value="asc">Precio: menor a mayor</option>
+                    <option value="desc">Precio: mayor a menor</option>
                 </select>
                 <h3 class="filter-heading--category">Categorias</h3>
-                <ul>
-                    <li><a href="#catalogo">Accesorios</a></li>
-                    <li><a href="#catalogo">Herramientas manuales</a></li>
-                    <li><a href="#catalogo">Herramientas electricas</a></li>
-                    <li><a href="#catalogo">Electricidad</a></li>
-                    <li><a href="#catalogo">Jardineria</a></li>
-                </ul>
+                <label for="categoria">Filtrar por categoria</label>
+                <select id="categoria" name="categoria"></select>
                 <h3 class="filter-heading--price">Precio</h3>
-                <label for="precio-hasta">Hasta: <output id="precio-hasta-valor" for="precio-hasta">$80.000</output></label>
-                <input type="range" class="form-range" id="precio-hasta" name="precio-hasta" min="0" max="80000" step="1000" value="80000">
+                <label for="activar-filtro-precio">
+                    <input type="checkbox" id="activar-filtro-precio" name="activar-filtro-precio">
+                    Aplicar precio maximo
+                </label>
+                <label for="precio-hasta">Hasta: <output id="precio-hasta-valor" for="precio-hasta">Sin limite</output></label>
+                <input type="range" class="form-range" id="precio-hasta" name="precio-hasta" min="0" max="80000" step="1000" value="80000" disabled>
             </aside>
             </div>
 
             <div class="col-12 col-md-8 col-lg-9">
-                <div class="row">
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <article class="h-100">
-                            <img src="assets/images/guantes-moteados.png" alt="Guantes moteados multiuso de maxima calidad">
-                            <p>Herramientas manuales</p>
-                            <h3>Guantes moteados multiuso maxima calidad</h3>
-                            <p>Proteccion multiuso para trabajos de ferreteria y mantenimiento.</p>
-                            <p><strong>$4.401</strong> por unidad</p>
-                            <button type="button">Comprar</button>
-                        </article>
-                    </div>
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <article class="h-100">
-                            <img src="assets/images/destornillador-punta-plana.png" alt="Destornillador de punta plana Black Jack de 8 por 200 milimetros">
-                            <p>Herramientas manuales</p>
-                            <h3>Destornillador punta plana Black Jack 8 x 200 mm</h3>
-                            <p>Destornillador con punta plana para tareas de ajuste y reparacion.</p>
-                            <p><strong>$6.026</strong> por unidad</p>
-                            <button type="button">Comprar</button>
-                        </article>
-                    </div>
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <article class="h-100">
-                            <img src="assets/images/pinza-punta-curva.png" alt="Pinza de punta curva mini de 5 pulgadas para electronica">
-                            <p>Herramientas manuales</p>
-                            <h3>Pinza punta curva mini 5 pulgadas ideal electronica</h3>
-                            <p>Pinza compacta para trabajos de precision en electronica.</p>
-                            <p><strong>$6.426</strong> por unidad</p>
-                            <button type="button">Comprar</button>
-                        </article>
-                    </div>
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <article class="h-100">
-                            <img src="assets/images/enchufe-adaptador.png" alt="Enchufe adaptador cubo de 5 tomas y 3 patas de 10 amperes">
-                            <p>Electricidad</p>
-                            <h3>Enchufe adaptador cubo 5 tomas 3 patas 10 amp</h3>
-                            <p>Adaptador electrico con cinco tomas para conectar herramientas y equipos.</p>
-                            <p><strong>$10.282</strong> por unidad</p>
-                            <button type="button">Comprar</button>
-                        </article>
-                    </div>
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <article class="h-100">
-                            <img src="assets/images/martillo-galponero.png" alt="Martillo galponero con mango de fibra y acero forjado Black Jack">
-                            <p>Herramientas manuales</p>
-                            <h3>Martillo galponero mango de fibra acero forjado Black Jack</h3>
-                            <p>Martillo robusto para tareas de obra, reparacion y mantenimiento.</p>
-                            <p><strong>$16.000</strong> por unidad</p>
-                            <button type="button">Comprar</button>
-                        </article>
-                    </div>
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <article class="h-100">
-                            <img src="assets/images/pala-de-punta.png" alt="Pala de punta de chapa de acero estampada con cabo metalico">
-                            <p>Jardineria</p>
-                            <h3>Pala de punta chapa acero estampada cabo metalico</h3>
-                            <p>Herramienta de punta para tareas de jardineria y movimiento de tierra.</p>
-                            <p><strong>$21.329</strong> por unidad</p>
-                            <button type="button">Comprar</button>
-                        </article>
-                    </div>
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <article class="h-100">
-                            <img src="assets/images/amoladora.png" alt="Amoladora angular inalambrica DeWalt Flexvolt DCG416B">
-                            <p>Herramientas electricas</p>
-                            <h3>Amoladora angular inalambrica DeWalt Flexvolt DCG416B</h3>
-                            <p>Amoladora inalambrica para cortar, desbastar y trabajar distintos materiales.</p>
-                            <p><del>$65.000</del> <strong>$50.000</strong> por unidad</p>
-                            <button type="button">Comprar</button>
-                        </article>
-                    </div>
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <article class="h-100">
-                            <img src="assets/images/kit-juego-tapones.png" alt="Kit de juego de tapones para cano de termofusion y obturador de agua">
-                            <p>Accesorios</p>
-                            <h3>Kit juego tapones para cano de termofusion</h3>
-                            <p>Juego de tapones y obturadores para instalaciones de agua.</p>
-                            <p><del>$99.000</del> <strong>$55.000</strong> por unidad</p>
-                            <button type="button">Comprar</button>
-                        </article>
-                    </div>
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <article class="h-100">
-                            <img src="assets/images/atornillador.png" alt="Taladro atornillador inalambrico de 10 milimetros y 20 voltios">
-                            <p>Herramientas electricas</p>
-                            <h3>Taladro atornillador inalambrico 10 mm 20 V</h3>
-                            <p>Atornillador inalambrico para perforar y ajustar en distintos proyectos.</p>
-                            <p><strong>$79.999</strong> por unidad</p>
-                            <button type="button">Comprar</button>
-                        </article>
-                    </div>
-                </div>
+                <p id="catalogo-mensaje" role="status" aria-live="polite"></p>
+                <div class="row" id="resultados-catalogo"></div>
             </div>
             </div>
         </section>
 
+        <section id="pago" aria-labelledby="titulo-pago" hidden>
+            <h2 id="titulo-pago">Metodo de pago y cuotas</h2>
+            <p id="pago-mensaje" role="status" aria-live="polite"></p>
+            <form id="form-pago" novalidate>
+                <p>
+                    <label for="metodo-pago">Metodo de pago</label>
+                    <select id="metodo-pago" name="metodo-pago" class="form-select" required></select>
+                </p>
+                <p>
+                    <label for="cuotas">Cuotas</label>
+                    <select id="cuotas" name="cuotas" class="form-select" required disabled></select>
+                </p>
+                <div id="condiciones-pago" aria-live="polite"></div>
+                <button type="submit">Ver condiciones y continuar</button>
+                <button type="button" data-action="cancelar-pago">Cancelar pago</button>
+            </form>
+        </section>
+
+        <section id="confirmacion" aria-labelledby="titulo-confirmacion" hidden>
+            <h2 id="titulo-confirmacion">Datos y confirmacion del pedido</h2>
+            <p id="pedido-mensaje" role="status" aria-live="polite"></p>
+            <form id="form-pedido" novalidate>
+                <p>
+                    <label for="pedido-nombre">Nombre y apellido</label>
+                    <input 
+                        type="text"
+                        class="form-control"
+                        id="pedido-nombre"
+                        name="nombre"
+                        required
+                        pattern="(?=.*\S)(?!\s*\d+(?:[.,]\d+)?\s*$).*"
+                        aria-describedby="error-pedido-nombre"
+                    >
+                    <span id="error-pedido-nombre" class="field-error" aria-live="polite"></span>
+                </p>
+                <p>
+                    <label for="pedido-correo">Correo electronico</label>
+                    <input
+                        type="text"
+                        inputmode="email"
+                        autocomplete="email"
+                        class="form-control"
+                        id="pedido-correo"
+                        name="correo"
+                        required
+                        pattern="[^\s@]+@[^\s@]+\.[^\s@]+"
+                        aria-describedby="error-pedido-correo"
+                    >
+                    <span id="error-pedido-correo" class="field-error" aria-live="polite"></span>
+                </p>
+                <p>
+                    <label for="pedido-direccion">Direccion de envio</label>
+                    <input type="text" class="form-control" id="pedido-direccion" name="direccion" required aria-describedby="error-pedido-direccion">
+                    <span id="error-pedido-direccion" class="field-error" aria-live="polite"></span>
+                </p>
+                <button type="submit">Revisar resumen del pedido</button>
+                <button type="button" data-action="cancelar-pedido">Cancelar pedido</button>
+            </form>
+            <div id="resumen-pedido" aria-live="polite"></div>
+        </section>
+
         <section aria-labelledby="tabla-productos">
-            <h2 id="tabla-productos">Precios destacados</h2>
+            <h2 id="tabla-productos">Lista de precios</h2>
             <table>
                 <caption>Productos de FerroLab y precios por unidad</caption>
                 <thead>
@@ -244,12 +184,7 @@
                         <th scope="col">Precio por unidad</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr><td>Guantes moteados multiuso</td><td>Herramientas manuales</td><td>$4.401</td></tr>
-                    <tr><td>Destornillador punta plana Black Jack</td><td>Herramientas manuales</td><td>$6.026</td></tr>
-                    <tr><td>Enchufe adaptador cubo 5 tomas</td><td>Electricidad</td><td>$10.282</td></tr>
-                    <tr><td>Taladro atornillador inalambrico</td><td>Herramientas electricas</td><td>$79.999</td></tr>
-                </tbody>
+                <tbody id="tabla-precios-cuerpo"></tbody>
             </table>
         </section>
 
@@ -259,29 +194,10 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Cerrar carrito"></button>
             </div>
             <div class="offcanvas-body">
-                <!-- JavaScript futuro: agregar productos, eliminar productos y modificar cantidades desde cada articulo del carrito. -->
-                <!-- JavaScript futuro: recalcular subtotales y total cuando cambien productos o cantidades. -->
-                <article class="cart-item--grinder">
-                    <h3>Amoladora angular inalambrica DeWalt Flexvolt DCG416B</h3>
-                    <p>Precio unitario: $50.000</p>
-                    <label for="cantidad-amoladora">Cantidad</label>
-                    <input type="number" id="cantidad-amoladora" value="1" min="1">
-                    <p>Subtotal representativo: $50.000</p>
-                    <button type="button">Eliminar</button>
-                </article>
-                <article class="cart-item--hammer">
-                    <h3>Martillo galponero mango de fibra Black Jack</h3>
-                    <p>Precio unitario: $16.000</p>
-                    <label for="cantidad-martillo">Cantidad</label>
-                    <input type="number" id="cantidad-martillo" value="1" min="1">
-                    <p>Subtotal representativo: $16.000</p>
-                    <button type="button">Eliminar</button>
-                </article>
-                <p>Subtotal (sin envio): $66.000</p>
-                <p>Subtotal (con envio): $75.000</p>
-                <p>Total: $75.000</p>
-                <!-- JavaScript futuro: habilitar el inicio de compra y conectar el resumen con los metodos de pago en una etapa posterior. -->
-                <button type="button">Iniciar compra</button>
+                <p id="carrito-mensaje" role="status" aria-live="polite"></p>
+                <div id="carrito-items"></div>
+                <p>Total: <strong id="carrito-total"></strong></p>
+                <button type="button" data-action="iniciar-compra" data-bs-dismiss="offcanvas" disabled>Iniciar compra</button>
             </div>
         </aside>
 
@@ -336,12 +252,6 @@
             </section>
         </div>
     </footer>
-    <script>
-        document.getElementById('precio-hasta').addEventListener('input', function () {
-            document.getElementById('precio-hasta-valor').textContent =
-                '$' + Number(this.value).toLocaleString('es-AR');
-        });
-    </script>
-    <script src="js/script.js"></script>
+    <script type="module" src="js/script.js"></script>
 </body>
 </html>

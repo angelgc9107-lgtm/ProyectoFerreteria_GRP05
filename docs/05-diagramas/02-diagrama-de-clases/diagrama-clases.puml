@@ -1,0 +1,192 @@
+@startuml diagrama-clases
+title FerroLab - Clases de lógica de negocio y servicios
+
+left to right direction
+scale 1.4
+skinparam defaultFontName Arial
+skinparam classAttributeIconSize 0
+skinparam classBackgroundColor #FFF9F7
+skinparam classBorderColor #C0392B
+skinparam classHeaderBackgroundColor #FDECEA
+skinparam arrowColor #444444
+skinparam noteBackgroundColor #FFFDF5
+skinparam noteBorderColor #B3A58A
+
+class Producto {
+  - #codigo : string
+  - #nombre : string
+  - #categoria : string
+  - #descripcion : string
+  - #precio : number
+  --
+s  + constructor(datos : DatosProducto)
+  + get codigo() : string
+  + get nombre() : string
+  + get categoria() : string
+  + get descripcion() : string
+  + get precio() : number
+  + coincide(criterios : FiltrosProducto = {}) : boolean
+  + toJSON() : DatosProducto
+  + {static} fromJSON(datos : DatosProducto) : Producto
+}
+
+class Catalogo {
+  - #productos : Producto[]
+  --
+  + constructor(productos : Producto[] = [])
+  + obtenerProductos() : Producto[]
+  + obtenerPorCodigo(codigo : string) : Producto | null
+  + buscar(criterios : FiltrosCatalogo = {}) : ResultadoBusqueda
+  + toJSON() : DatosCatalogo
+  + {static} fromJSON(datos : DatosCatalogo) : Catalogo
+}
+
+class Carrito {
+  - #items : Item[]
+  --
+  + constructor(items : Item[] = [])
+  - #actualizar(items : Item[]) : ResultadoOperacion
+  + agregar(catalogo : Catalogo, codigo : string, cantidad : number | string) : ResultadoOperacion
+  + cambiarCantidad(codigo : string, cantidad : number | string) : ResultadoOperacion
+  + eliminar(codigo : string) : ResultadoOperacion
+  + resumir() : ResumenCarrito
+  + vaciar() : void
+  + toJSON() : DatosCarrito
+  + {static} fromJSON(datos : DatosCarrito) : Carrito
+}
+
+class Pago {
+  - #totalOriginal : number
+  - #metodoPago : "efectivo-transferencia" | "tarjeta"
+  - #cuotas : number
+  - #porcentajeRecargo : number
+  --
+  + constructor(total : number | string, metodoPago : MetodoPago, cantidadCuotas? : number | string)
+  + calcular() : CondicionesPago
+  + toJSON() : DatosPago
+  + {static} admiteCuotas(metodoPago : string) : boolean
+  + {static} fromJSON(datos : DatosPago) : Pago
+}
+
+class Pedido {
+  - #cliente : Cliente
+  - #productos : ItemConSubtotal[]
+  - #total : number
+  - #pago : CondicionesPago
+  - #numero : string | null
+  --
+  + constructor(carrito : Carrito, pago : Pago, cliente : Cliente)
+  + resumir() : ResumenPedido
+  + confirmar(fechaEnMilisegundos : number, secuencia : number) : string
+  + toJSON() : DatosPedido
+  + {static} fromJSON(datos : DatosPedido) : Pedido
+}
+
+package "js/services y js/utils (módulos, sin estado de instancia)" {
+  class FachadaStorage <<objeto congelado>> {
+    + cargarCarrito() : Carrito
+    + guardarCarrito(carrito : Carrito) : boolean
+    + cargarPedidos() / guardarPedidos()
+    + cargarSecuenciaPedidos() / guardarSecuenciaPedidos()
+    + cargarPreferencias() / guardarPreferencias()
+    + cargarCatalogo() / guardarCatalogo()
+    + cargarBorrador() / guardarBorrador() / eliminarBorrador()
+    + cargarFiltros() / guardarFiltros()
+    + bienvenidaVista() / guardarBienvenidaVista()
+  }
+  class ConfirmadorPedidos <<módulo>> {
+    + confirmarPedidoConNumeracion(pedido : Pedido) : string
+  }
+  class ValidacionCarrito <<módulo>> {
+    + validarCambioCantidad(carrito : Carrito, codigo : string, cantidad : number | string) : object
+  }
+  class FormateadorMoneda {
+    - {static} #formateador : Intl.NumberFormat
+    + {static} formatear(importe : number) : string
+  }
+  class ServicioOfertas {
+    + {static} obtenerOfertas(catalogo : Catalogo) : object[]
+  }
+  class ServicioCategorias {
+    + {static} obtenerCategorias(catalogo : Catalogo) : string[]
+  }
+  class ServicioOpcionesPago {
+    + {static} obtenerMetodos() : object[]
+    + {static} obtenerCuotas(metodo : string) : object[]
+  }
+  class StorageUtil <<módulo>> {
+    + guardar() / obtener() / eliminar() ...
+    + guardarInstancia() / cargarInstancia()
+    + guardarLista() / cargarLista()
+  }
+}
+
+Catalogo "0..*" o-- "0..*" Producto : contiene
+Carrito ..> Catalogo : consulta al agregar
+Carrito ..> Producto : obtiene datos del resultado de Catalogo
+Pedido ..> Carrito : usa al construir y restaurar
+Pedido ..> Pago : usa al construir y restaurar
+FachadaStorage ..> StorageUtil
+FachadaStorage ..> Carrito : guarda y restaura
+FachadaStorage ..> Pedido : guarda y restaura (sin uso en la página)
+FachadaStorage ..> Catalogo : caché (sin uso en la página)
+ConfirmadorPedidos ..> Pedido : confirma
+ValidacionCarrito ..> Carrito : copia temporal
+ServicioOfertas ..> Catalogo : consulta precios
+ServicioCategorias ..> Catalogo : consulta productos
+ServicioOpcionesPago ..> Pago : construye pagos para consultar opciones
+
+note bottom of Carrito
+  Cada carrito contiene 0..* ítems
+  propios: objetos con código, nombre,
+  categoría, precio y cantidad.
+  Son copias, no instancias de Producto.
+end note
+
+note bottom of Pedido
+  Conserva copias del cliente, ítems
+  con subtotal y condiciones de pago;
+  no retiene el carrito ni el Pago.
+end note
+
+note bottom of Producto
+  Funciones exportadas del módulo:
+  normalizarTexto(string) : string
+  normalizarCodigo(string) : string
+  coincide recibe filtros ya normalizados.
+end note
+
+note bottom of Catalogo
+  Usa normalizarTexto y normalizarCodigo.
+end note
+
+note bottom of Pago
+  RECARGOS es una constante del módulo:
+  1 -> 0, 3 -> 10, 6 -> 20.
+end note
+
+note bottom of Pedido
+  Auxiliares del módulo:
+  validarCliente(cliente) : Cliente
+  numeroValido(numero) : boolean
+  importesIguales(actual, esperado) : boolean
+end note
+
+note bottom of Carrito
+  Auxiliares del módulo:
+  cantidadValida(valor) : boolean
+  calcularResumen(items) : ResumenCarrito
+  Usa normalizarCodigo.
+end note
+
+legend bottom
+  + público   - privado   <u>subrayado</u> estático
+  El prefijo # indica un miembro privado de JavaScript.
+  Los nombres de tipos de datos son alias descriptivos de objetos planos, no clases.
+  Sus campos, parámetros opcionales y estructuras completas se detallan en la documentación.
+  <<módulo>> / <<objeto congelado>>: módulo ES con funciones o un objeto de funciones, no una clase instanciable.
+  Las clases de servicios con {static} no se instancian.
+  js/script.js (controlador) usa estos servicios y los modelos; no se dibuja porque no define clases.
+  La página solo usa cargarCarrito() y guardarCarrito() de FachadaStorage.
+endlegend
+@enduml

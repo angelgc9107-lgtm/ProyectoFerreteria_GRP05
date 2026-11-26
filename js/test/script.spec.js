@@ -1,1084 +1,1991 @@
 /**
- * Suites de Jasmine para la lógica de negocio de js/script.js (FerroLab).
- * Se ejecuta en el navegador con js/test/test-runner.html.
- * Las suites "(lógica pura)" prueban funciones que reciben parámetros y devuelven un resultado.
- * Las suites "(interacción)" prueban ejecutar*, solicitarDatoValido y preguntarSiNo
- * reemplazando prompt() y alert() con espías de Jasmine (spyOn): no se abre ningún cuadro real.
+ * Suites de Jasmine para el controlador js/script.js (eventos y DOM) de FerroLab.
+ *
+ * script.js ya no exporta funciones: al cargarse registra sus eventos sobre el
+ * index.html real. Por eso cada test abre una copia nueva de index.html en un
+ * <iframe> (mismo origen), dispara eventos reales sobre sus controles y comprueba
+ * lo que queda en el DOM. Así el estado interno del controlador (carrito, pago,
+ * pedido) empieza limpio en cada test y no se necesita storage simulado.
+ *
+ * Se ejecuta con js/test/test-runner.html, servido por HTTP desde la raíz del repo.
  */
 
-// Catálogo mínimo controlado, independiente del catálogo real.
-var catalogoPrueba = [
-    { codigo: "A-001", nombre: "Martillo Grande", categoria: "Herramientas manuales", descripcion: "Para obra", precio: 1000 },
-    { codigo: "B-002", nombre: "Taladro Eléctrico", categoria: "Herramientas electricas", descripcion: "Perfora hormigón", precio: 5000 },
-    { codigo: "C-003", nombre: "Pala", categoria: "Jardineria", descripcion: "Para tierra", precio: 300 }
+const { describe, it, expect, beforeEach, afterEach } = globalThis;
+
+const URL_APP = new URL("../../index.html", import.meta.url).href;
+const TIEMPO_CARGA_MS = 30000;
+
+let marco;
+let win;
+let doc;
+let espiaAlert;
+let espiaPrompt;
+let espiaConfirm;
+let espiaConsoleLog;
+let espiaConsoleError;
+let storageAntes;
+
+const CLAVES_STORAGE_PRUEBAS = [
+    "app:carrito:items",
+    "app:pedidos:secuencia",
+    "app:pedidos:historial"
 ];
 
-var clienteValido = { nombre: "Juan Pérez", correo: "juan@correo.com", direccion: "Calle 123" };
+let valoresOriginalesStorage;
 
-describe("Flujo 1 - Búsqueda y filtrado (lógica pura)", function () {
+// ---------------------------------------------------------------------------
+// Utilidades
+// ---------------------------------------------------------------------------
 
-    describe("normalizarTexto", function () {
-        it("pasa a minúsculas, quita tildes y recorta espacios", function () {
-            expect(normalizarTexto("  ÁRBOL Eléctrico ")).toBe("arbol electrico");
-        });
-        it("devuelve string vacío para null, undefined y vacío", function () {
-            expect(normalizarTexto(null)).toBe("");
-            expect(normalizarTexto(undefined)).toBe("");
-            expect(normalizarTexto("")).toBe("");
-        });
+function abrirApp() {
+    return new Promise((resolve) => {
+        const iframe = document.createElement("iframe");
+        iframe.title = "app-bajo-prueba";
+        iframe.style.cssText =
+            "position:fixed;left:-10000px;top:0;width:1280px;height:900px;border:0;";
+        iframe.addEventListener("load", () => resolve(iframe), { once: true });
+        iframe.src = URL_APP;
+        document.body.append(iframe);
+    });
+}
+
+const q = (selector) => doc.querySelector(selector);
+const qa = (selector) => Array.from(doc.querySelectorAll(selector));
+const texto = (selector) => q(selector).textContent.replace(/\s+/g, " ").trim();
+const pausa = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+function disparar(elemento, tipo, opciones = {}) {
+    const evento = new win.Event(tipo, { bubbles: true, cancelable: true, ...opciones });
+    elemento.dispatchEvent(evento);
+    return evento;
+}
+
+function clic(elemento) {
+    elemento.dispatchEvent(new win.MouseEvent("click", { bubbles: true, cancelable: true }));
+}
+
+function escribir(selectorOControl, valor) {
+    const control = typeof selectorOControl === "string" ? q(selectorOControl) : selectorOControl;
+    control.value = valor;
+    disparar(control, "input");
+    return control;
+}
+
+function elegir(selectorOControl, valor) {
+    const control = typeof selectorOControl === "string" ? q(selectorOControl) : selectorOControl;
+    control.value = valor;
+    disparar(control, "change");
+    return control;
+}
+
+function enviar(selector) {
+    return disparar(q(selector), "submit");
+}
+
+function botonAgregar(codigo) {
+    return q(`#catalogo [data-action="agregar-carrito"][data-product-code="${codigo}"]`);
+}
+
+function agregarAlCarrito(codigo) {
+    clic(botonAgregar(codigo));
+}
+
+function codigosVisibles() {
+    return qa("#resultados-catalogo article[data-product-code]")
+        .filter((tarjeta) => !tarjeta.parentElement.hidden)
+        .map((tarjeta) => tarjeta.dataset.productCode);
+}
+
+function cantidadEnCarrito(codigo) {
+    const control = q(`#carrito-items [data-action="cambiar-cantidad"][data-product-code="${codigo}"]`);
+    return control ? control.value : null;
+}
+
+function iniciarCompra() {
+    clic(q('[data-action="iniciar-compra"]'));
+}
+
+/** Copia el contenido de un Web Storage para compararlo después. */
+function instantanea(almacen) {
+    return Object.fromEntries(
+        Array.from({ length: almacen.length }, (_, i) => almacen.key(i))
+            .filter((clave) => clave !== null)
+            .map((clave) => [clave, almacen.getItem(clave)])
+    );
+}
+
+function irAlPago(codigo = "GUANTES-001") {
+    agregarAlCarrito(codigo);
+    iniciarCompra();
+}
+
+function irAConfirmacion(metodo = "efectivo-transferencia", cuotas = "1") {
+    irAlPago();
+    elegir("#metodo-pago", metodo);
+    if (metodo === "tarjeta") elegir("#cuotas", cuotas);
+    enviar("#form-pago");
+}
+
+function completarCliente(
+    nombre = "Ana Pérez", correo = "ana@correo.com", direccion = "Calle Falsa 123"
+) {
+    escribir("#pedido-nombre", nombre);
+    escribir("#pedido-correo", correo);
+    escribir("#pedido-direccion", direccion);
+}
+
+function llegarAlResumen() {
+    irAConfirmacion();
+    completarCliente();
+    enviar("#form-pedido");
+}
+
+// ---------------------------------------------------------------------------
+// Preparación común: una copia nueva de la página para cada test
+// ---------------------------------------------------------------------------
+
+
+beforeEach(async function () {
+    // Guarda los datos originales del usuario.
+    valoresOriginalesStorage = new Map(
+        CLAVES_STORAGE_PRUEBAS.map((clave) => [
+            clave,
+            window.localStorage.getItem(clave)
+        ])
+    );
+
+    // Cada prueba debe comenzar sin carrito ni pedidos anteriores.
+    CLAVES_STORAGE_PRUEBAS.forEach((clave) => {
+        window.localStorage.removeItem(clave);
     });
 
-    describe("validarPrecioMaximo", function () {
-        it("acepta números y strings numéricos mayores o iguales a cero", function () {
-            expect(validarPrecioMaximo(100)).toEqual({ valido: true, valor: 100 });
-            expect(validarPrecioMaximo("250.5").valor).toBe(250.5);
-        });
-        it("acepta el valor límite 0", function () {
-            expect(validarPrecioMaximo(0).valido).toBeTruthy();
-            expect(validarPrecioMaximo("0").valor).toBe(0);
-        });
-        it("rechaza negativos, texto e infinito", function () {
-            expect(validarPrecioMaximo(-1).valido).toBeFalsy();
-            expect(validarPrecioMaximo("abc").valido).toBeFalsy();
-            expect(validarPrecioMaximo(Infinity).valido).toBeFalsy();
-        });
-        it("permite omitir el precio máximo (vacío, espacios, null o undefined)", function () {
-            expect(validarPrecioMaximo("")).toEqual({ valido: true, valor: null });
-            expect(validarPrecioMaximo("   ").valido).toBeTruthy();
-            expect(validarPrecioMaximo(null).valido).toBeTruthy();
-            expect(validarPrecioMaximo(undefined).valor).toBeNull();
-        });
-        it("informa un mensaje de error y valor null cuando es inválido", function () {
-            var r = validarPrecioMaximo("x");
-            expect(r.valor).toBeNull();
-            expect(r.error).toContain("precio maximo");
-        });
+    // Carga una instancia limpia de la aplicación.
+    marco = await abrirApp();
+    win = marco.contentWindow;
+    doc = marco.contentDocument;
+
+    espiaAlert = jasmine.createSpy("alert");
+    espiaPrompt = jasmine.createSpy("prompt");
+    espiaConfirm = jasmine.createSpy("confirm");
+
+    win.alert = espiaAlert;
+    win.prompt = espiaPrompt;
+    win.confirm = espiaConfirm;
+
+    espiaConsoleLog = spyOn(win.console, "log");
+    espiaConsoleError = spyOn(win.console, "error");
+
+    storageAntes = {
+        local: instantanea(win.localStorage),
+        session: instantanea(win.sessionStorage)
+    };
+}, TIEMPO_CARGA_MS);
+
+
+afterEach(function () {
+    if (marco) {
+        marco.remove();
+    }
+
+    // Restaura los datos originales del localStorage.
+    if (valoresOriginalesStorage) {
+        for (const [clave, valor] of valoresOriginalesStorage) {
+            if (valor === null) {
+                window.localStorage.removeItem(clave);
+            } else {
+                window.localStorage.setItem(clave, valor);
+            }
+        }
+    }
+
+    valoresOriginalesStorage = null;
+    marco = win = doc = null;
+});
+
+/**
+ * Cierra la página y la abre de nuevo SIN borrar el storage, como una recarga del
+ * navegador. Se usa en las pruebas de persistencia; el aislamiento entre tests lo
+ * siguen resolviendo el beforeEach y el afterEach de arriba.
+ */
+async function recargarApp() {
+    marco.remove();
+    marco = await abrirApp();
+    win = marco.contentWindow;
+    doc = marco.contentDocument;
+
+    espiaAlert = jasmine.createSpy("alert");
+    espiaPrompt = jasmine.createSpy("prompt");
+    espiaConfirm = jasmine.createSpy("confirm");
+    win.alert = espiaAlert;
+    win.prompt = espiaPrompt;
+    win.confirm = espiaConfirm;
+
+    espiaConsoleLog = spyOn(win.console, "log");
+    espiaConsoleError = spyOn(win.console, "error");
+}
+
+// ---------------------------------------------------------------------------
+// Carga inicial
+// ---------------------------------------------------------------------------
+
+describe("Controlador - carga inicial", function () {
+    it("muestra los 9 productos del catálogo y el mensaje de resultados", function () {
+        expect(codigosVisibles().length).toBe(9);
+        expect(texto("#catalogo-mensaje")).toBe("9 producto(s) encontrado(s).");
     });
 
-    describe("buscarProductos", function () {
-        it("filtra por texto sin distinguir mayúsculas ni tildes", function () {
-            var r = buscarProductos(catalogoPrueba, { texto: "electrico", categoria: "", precioMaximo: 10000 });
-            expect(r.valido).toBeTruthy();
-            expect(r.resultados.length).toBe(1);
-            expect(r.resultados[0].codigo).toBe("B-002");
-        });
-        it("filtra por categoría", function () {
-            var r = buscarProductos(catalogoPrueba, { texto: "", categoria: "jardineria", precioMaximo: 10000 });
-            expect(r.resultados.map(function (p) { return p.codigo; })).toEqual(["C-003"]);
-        });
-        it("ordena los resultados por precio ascendente", function () {
-            var r = buscarProductos(catalogoPrueba, { texto: "", categoria: "", precioMaximo: 10000 });
-            expect(r.resultados.map(function (p) { return p.precio; })).toEqual([300, 1000, 5000]);
-        });
-        it("incluye un producto cuyo precio es exactamente el máximo", function () {
-            var r = buscarProductos(catalogoPrueba, { texto: "", categoria: "", precioMaximo: 1000 });
-            expect(r.resultados.map(function (p) { return p.codigo; })).toContain("A-001");
-            expect(r.resultados.length).toBe(2);
-        });
-        it("devuelve lista vacía válida cuando nada coincide", function () {
-            var r = buscarProductos(catalogoPrueba, { texto: "inexistente", categoria: "", precioMaximo: 10000 });
-            expect(r.valido).toBeTruthy();
-            expect(r.resultados).toEqual([]);
-        });
-        it("con precio máximo 0 no devuelve productos", function () {
-            var r = buscarProductos(catalogoPrueba, { texto: "", categoria: "", precioMaximo: 0 });
-            expect(r.resultados.length).toBe(0);
-        });
-        it("informa error cuando el precio máximo es inválido", function () {
-            var r = buscarProductos(catalogoPrueba, { texto: "", categoria: "", precioMaximo: "abc" });
-            expect(r.valido).toBeFalsy();
-            expect(r.resultados).toEqual([]);
-            expect(r.error).toBeTruthy();
-        });
-        it("con criterios null o undefined no falla y devuelve todo el catálogo", function () {
-            expect(buscarProductos(catalogoPrueba, null).resultados.length).toBe(3);
-            expect(buscarProductos(catalogoPrueba, undefined).valido).toBeTruthy();
-        });
-        it("sin precio máximo no filtra por precio", function () {
-            var r = buscarProductos(catalogoPrueba, { texto: "", categoria: "", precioMaximo: "" });
-            expect(r.valido).toBeTruthy();
-            expect(r.resultados.map(function (p) { return p.codigo; })).toEqual(["C-003", "A-001", "B-002"]);
-        });
-        it("lanza error si el catálogo es null", function () {
-            expect(function () {
-                buscarProductos(null, { texto: "", categoria: "", precioMaximo: 100 });
-            }).toThrow();
-        });
-        it("no modifica el catálogo original", function () {
-            var copia = JSON.stringify(catalogoPrueba);
-            buscarProductos(catalogoPrueba, { texto: "", categoria: "", precioMaximo: 10000 });
-            expect(JSON.stringify(catalogoPrueba)).toBe(copia);
-        });
+    it("arranca con el carrito vacío y el botón de compra deshabilitado", function () {
+        expect(texto("#contador-carrito")).toBe("0");
+        expect(texto("#carrito-total")).toMatch(/^\$\s?0,00$/);
+        expect(texto("#carrito-mensaje")).toBe("El carrito esta vacio.");
+        expect(q('[data-action="iniciar-compra"]').disabled).toBeTrue();
+        expect(qa("#carrito-items article").length).toBe(0);
+    });
+
+    it("mantiene ocultas las secciones de pago y confirmación", function () {
+        expect(q("#pago").hidden).toBeTrue();
+        expect(q("#confirmacion").hidden).toBeTrue();
+    });
+
+    it("el filtro de precio máximo arranca desactivado", function () {
+        expect(q("#activar-filtro-precio").checked).toBeFalse();
+        expect(q("#precio-hasta").disabled).toBeTrue();
+        expect(texto("#precio-hasta-valor")).toBe("Sin limite");
     });
 });
 
-describe("Flujo 2 - Gestión del carrito (lógica pura)", function () {
 
-    describe("validarCantidad", function () {
-        it("acepta enteros mayores o iguales a 1, también como string", function () {
-            expect(validarCantidad(1)).toBeTruthy();
-            expect(validarCantidad("5")).toBeTruthy();
-        });
-        it("rechaza 0, negativos y decimales", function () {
-            expect(validarCantidad(0)).toBeFalsy();
-            expect(validarCantidad(-3)).toBeFalsy();
-            expect(validarCantidad(2.5)).toBeFalsy();
-            expect(validarCantidad("2.5")).toBeFalsy();
-        });
-        it("rechaza null, undefined, vacío, texto y números fuera de rango seguro", function () {
-            expect(validarCantidad(null)).toBeFalsy();
-            expect(validarCantidad(undefined)).toBeFalsy();
-            expect(validarCantidad("")).toBeFalsy();
-            expect(validarCantidad("abc")).toBeFalsy();
-            expect(validarCantidad(1e20)).toBeFalsy();
-        });
+/**
+ *  - Flujo 1 Pruebas de renderizado dinámico del DOM.
+ */
+describe("Controlador - RC44: renderizado dinámico", function () {
+
+    it("el HTML original no contiene tarjetas ni filas de productos", async function () {
+        const respuesta = await fetch(URL_APP, { cache: "no-store" });
+        expect(respuesta.ok).toBeTrue();
+
+        const html = await respuesta.text();
+        const documentoOriginal = new DOMParser().parseFromString(
+            html,
+            "text/html"
+        );
+
+        expect(
+            documentoOriginal.querySelectorAll("#resultados-catalogo article").length
+        ).toBe(0);
+
+        expect(
+            documentoOriginal.querySelectorAll("#ofertas-productos article").length
+        ).toBe(0);
+
+        expect(
+            documentoOriginal.querySelectorAll("#tabla-precios-cuerpo tr").length
+        ).toBe(0);
+
+        expect(
+            documentoOriginal.querySelectorAll("#carrito-items article").length
+        ).toBe(0);
     });
 
-    describe("agregarProductoAlCarrito", function () {
-        it("agrega un producto nuevo con su cantidad", function () {
-            var r = agregarProductoAlCarrito([], catalogoPrueba, "A-001", 2);
-            expect(r.exito).toBeTruthy();
-            expect(r.error).toBeNull();
-            expect(r.carrito.length).toBe(1);
-            expect(r.carrito[0].codigo).toBe("A-001");
-            expect(r.carrito[0].cantidad).toBe(2);
-            expect(r.carrito[0].precio).toBe(1000);
-        });
-        it("suma la cantidad si el producto ya estaba en el carrito", function () {
-            var inicial = agregarProductoAlCarrito([], catalogoPrueba, "A-001", 2).carrito;
-            var r = agregarProductoAlCarrito(inicial, catalogoPrueba, "A-001", 3);
-            expect(r.carrito.length).toBe(1);
-            expect(r.carrito[0].cantidad).toBe(5);
-        });
-        it("reconoce el código sin importar mayúsculas ni espacios", function () {
-            var r = agregarProductoAlCarrito([], catalogoPrueba, "  a-001 ", 1);
-            expect(r.exito).toBeTruthy();
-            expect(r.carrito[0].codigo).toBe("A-001");
-        });
-        it("no modifica el carrito original (inmutabilidad)", function () {
-            var original = [];
-            agregarProductoAlCarrito(original, catalogoPrueba, "A-001", 1);
-            expect(original.length).toBe(0);
-        });
-        it("falla si el producto no existe en el catálogo", function () {
-            var r = agregarProductoAlCarrito([], catalogoPrueba, "ZZZ", 1);
-            expect(r.exito).toBeFalsy();
-            expect(r.error).toContain("no existe");
-        });
-        it("falla con código null o undefined", function () {
-            expect(agregarProductoAlCarrito([], catalogoPrueba, null, 1).exito).toBeFalsy();
-            expect(agregarProductoAlCarrito([], catalogoPrueba, undefined, 1).exito).toBeFalsy();
-        });
-        it("falla con cantidad 0, negativa, decimal o inválida", function () {
-            expect(agregarProductoAlCarrito([], catalogoPrueba, "A-001", 0).exito).toBeFalsy();
-            expect(agregarProductoAlCarrito([], catalogoPrueba, "A-001", -1).exito).toBeFalsy();
-            expect(agregarProductoAlCarrito([], catalogoPrueba, "A-001", 1.5).exito).toBeFalsy();
-            expect(agregarProductoAlCarrito([], catalogoPrueba, "A-001", "x").exito).toBeFalsy();
-        });
-        it("falla si la cantidad total supera el límite entero seguro", function () {
-            var carrito = [{ codigo: "A-001", nombre: "Martillo Grande", categoria: "Herramientas manuales", precio: 1000, cantidad: Number.MAX_SAFE_INTEGER }];
-            var r = agregarProductoAlCarrito(carrito, catalogoPrueba, "A-001", 1);
-            expect(r.exito).toBeFalsy();
-            expect(r.error).toContain("limite");
-        });
+    it("el controlador genera las tarjetas, ofertas y tabla de precios", function () {
+        expect(
+            qa("#resultados-catalogo article[data-product-code]").length
+        ).toBe(9);
+
+        expect(
+            qa("#ofertas-productos article[data-product-code]").length
+        ).toBe(3);
+
+        expect(
+            qa("#tabla-precios-cuerpo tr").length
+        ).toBe(9);
+
+        expect(
+            q('#resultados-catalogo [data-product-code="GUANTES-001"]')
+        ).not.toBeNull();
     });
 
-    describe("cambiarCantidadCarrito", function () {
-        var carrito;
-        beforeEach(function () {
-            carrito = agregarProductoAlCarrito([], catalogoPrueba, "A-001", 2).carrito;
-        });
-        it("reemplaza la cantidad de un producto del carrito", function () {
-            var r = cambiarCantidadCarrito(carrito, "A-001", 7);
-            expect(r.exito).toBeTruthy();
-            expect(r.carrito[0].cantidad).toBe(7);
-        });
-        it("no modifica el carrito original", function () {
-            cambiarCantidadCarrito(carrito, "A-001", 7);
-            expect(carrito[0].cantidad).toBe(2);
-        });
-        it("falla si el producto no está en el carrito", function () {
-            var r = cambiarCantidadCarrito(carrito, "B-002", 3);
-            expect(r.exito).toBeFalsy();
-            expect(r.error).toContain("no esta en el carrito");
-        });
-        it("falla con cantidad inválida (0, negativa, null)", function () {
-            expect(cambiarCantidadCarrito(carrito, "A-001", 0).exito).toBeFalsy();
-            expect(cambiarCantidadCarrito(carrito, "A-001", -2).exito).toBeFalsy();
-            expect(cambiarCantidadCarrito(carrito, "A-001", null).exito).toBeFalsy();
-        });
+    it("la búsqueda actualiza dinámicamente las tarjetas del catálogo", function () {
+        const tarjetaOriginal = q(
+            '#resultados-catalogo article[data-product-code="GUANTES-001"]'
+        );
+
+        escribir("#busqueda", "guantes");
+
+        expect(codigosVisibles()).toEqual(["GUANTES-001"]);
+
+        const tarjetaNueva = q(
+            '#resultados-catalogo article[data-product-code="GUANTES-001"]'
+        );
+
+        expect(tarjetaNueva).not.toBeNull();
+        expect(tarjetaNueva).not.toBe(tarjetaOriginal);
     });
 
-    describe("eliminarProductoDelCarrito", function () {
-        it("quita el producto indicado", function () {
-            var carrito = agregarProductoAlCarrito([], catalogoPrueba, "A-001", 1).carrito;
-            carrito = agregarProductoAlCarrito(carrito, catalogoPrueba, "B-002", 1).carrito;
-            var r = eliminarProductoDelCarrito(carrito, "A-001");
-            expect(r.exito).toBeTruthy();
-            expect(r.carrito.length).toBe(1);
-            expect(r.carrito[0].codigo).toBe("B-002");
-        });
-        it("falla si el producto no está en el carrito o el carrito está vacío", function () {
-            expect(eliminarProductoDelCarrito([], "A-001").exito).toBeFalsy();
-            var carrito = agregarProductoAlCarrito([], catalogoPrueba, "A-001", 1).carrito;
-            expect(eliminarProductoDelCarrito(carrito, "ZZZ").exito).toBeFalsy();
-        });
-        it("falla con código null o undefined", function () {
-            var carrito = agregarProductoAlCarrito([], catalogoPrueba, "A-001", 1).carrito;
-            expect(eliminarProductoDelCarrito(carrito, null).exito).toBeFalsy();
-            expect(eliminarProductoDelCarrito(carrito, undefined).exito).toBeFalsy();
-        });
+    it("genera dinámicamente las categorías y las opciones de pago", function () {
+        expect(qa("#menu-categorias li").length).toBe(6);
+        expect(qa("#categoria option").length).toBe(6);
+
+        expect(
+            Array.from(q("#metodo-pago").options).map((opcion) => opcion.value)
+        ).toEqual(["", "efectivo-transferencia", "tarjeta"]);
+
+        elegir("#metodo-pago", "tarjeta");
+
+        expect(
+            Array.from(q("#cuotas").options).map((opcion) => opcion.value)
+        ).toEqual(["1", "3", "6"]);
     });
 
-    describe("calcularResumenCarrito", function () {
-        it("calcula subtotales y total", function () {
-            var carrito = agregarProductoAlCarrito([], catalogoPrueba, "A-001", 2).carrito;
-            carrito = agregarProductoAlCarrito(carrito, catalogoPrueba, "C-003", 3).carrito;
-            var r = calcularResumenCarrito(carrito);
-            expect(r.items[0].subtotal).toBe(2000);
-            expect(r.items[1].subtotal).toBe(900);
-            expect(r.total).toBe(2900);
-            expect(r.cantidadItems).toBe(2);
-        });
-        it("devuelve total 0 y sin ítems para un carrito vacío", function () {
-            expect(calcularResumenCarrito([])).toEqual({ items: [], total: 0, cantidadItems: 0 });
-        });
-        it("no modifica los ítems del carrito original", function () {
-            var carrito = agregarProductoAlCarrito([], catalogoPrueba, "A-001", 1).carrito;
-            calcularResumenCarrito(carrito);
-            expect(carrito[0].subtotal).toBeUndefined();
-                });
+});
+
+describe("Controlador - RC60: separación de datos del catálogo", function () {
+
+    it("RC60 - el módulo conserva los nueve productos y sus precios originales", async function () {
+
+        const { productosIniciales } = await import(
+            "../data/productosIniciales.js"
+        );
+
+        expect(productosIniciales.length).toBe(9);
+
+        expect(
+            productosIniciales.map((producto) => [
+                producto.codigo,
+                producto.precio
+            ])
+        ).toEqual([
+            ["GUANTES-001", 4401],
+            ["DESTORNILLADOR-001", 6026],
+            ["PINZA-001", 6426],
+            ["ENCHUFE-001", 10282],
+            ["MARTILLO-001", 16000],
+            ["PALA-001", 21329],
+            ["AMOLADORA-001", 50000],
+            ["KIT-TAPONES-001", 55000],
+            ["TALADRO-001", 79999]
+        ]);
     });
 
-    describe("formatearMoneda", function () {
-        it("formatea con símbolo $, separador de miles y dos decimales (es-AR)", function () {
-            expect(formatearMoneda(1234.5)).toBe("$1.234,50");
-            expect(formatearMoneda(1234567.891)).toBe("$1.234.567,89");
-        });
-        it("formatea el cero y acepta strings numéricos", function () {
-            expect(formatearMoneda(0)).toBe("$0,00");
-            expect(formatearMoneda("250")).toBe("$250,00");
-        });
+
+    it("RC60 - el controlador importa los productos sin declararlos localmente", async function () {
+
+        const respuesta = await fetch(
+            new URL("../script.js", import.meta.url),
+            { cache: "no-store" }
+        );
+
+        expect(respuesta.ok).toBeTrue();
+
+        const codigo = await respuesta.text();
+
+        const codigoNormalizado = codigo
+            .replace(/\s/g, "")
+            .replaceAll("'", '"');
+
+        expect(codigoNormalizado).toContain(
+            'import{productosIniciales}from"./data/productosIniciales.js"'
+        );
+
+        expect(codigoNormalizado).not.toContain(
+            "constproductosIniciales="
+        );
+
+        expect(codigoNormalizado).not.toContain(
+            "letproductosIniciales="
+        );
+
+        expect(codigoNormalizado).not.toContain(
+            "varproductosIniciales="
+        );
     });
 
-    describe("formatearResumenCarrito", function () {
-        it("avisa que el carrito está vacío", function () {
-            expect(formatearResumenCarrito(calcularResumenCarrito([]))).toBe("El carrito esta vacio.");
+
+    it("RC60 - renderiza correctamente los productos del módulo de datos", async function () {
+
+        const { productosIniciales } = await import(
+            "../data/productosIniciales.js"
+        );
+
+        const formateador = new Intl.NumberFormat("es-AR", {
+            style: "currency",
+            currency: "ARS",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
         });
-        it("arma una línea por producto y el total", function () {
-            var carrito = agregarProductoAlCarrito([], catalogoPrueba, "A-001", 2).carrito;
-            carrito = agregarProductoAlCarrito(carrito, catalogoPrueba, "C-003", 3).carrito;
-            var texto = formatearResumenCarrito(calcularResumenCarrito(carrito));
-            expect(texto).toBe(
-                "Martillo Grande | 2 x $1.000,00 = $2.000,00\n" +
-                "Pala | 3 x $300,00 = $900,00\n" +
-                "Total: $2.900,00"
+
+        expect(codigosVisibles().length).toBe(9);
+        expect(qa("#tabla-precios-cuerpo tr").length).toBe(9);
+        expect(qa("#ofertas-productos article").length).toBe(3);
+
+        for (const producto of productosIniciales) {
+
+            const tarjeta = q(
+                `#resultados-catalogo article[data-product-code="${producto.codigo}"]`
             );
-        });
+
+            expect(tarjeta).not.toBeNull();
+
+            expect(tarjeta.querySelector("h3").textContent)
+                .toBe(producto.nombre);
+
+            expect(tarjeta.textContent)
+                .toContain(producto.categoria);
+
+            expect(tarjeta.textContent)
+                .toContain(producto.descripcion);
+
+            expect(tarjeta.querySelector("strong").textContent)
+                .toBe(formateador.format(producto.precio));
+        }
     });
 
 });
 
-describe("Flujo 3 - Pago y cálculo de cuotas (lógica pura)", function () {
 
-    it("efectivo/transferencia: 1 cuota y 0% de recargo", function () {
-        var r = calcularCondicionesPago(10000, "efectivo-transferencia");
-        expect(r.valido).toBeTruthy();
-        expect(r.cuotas).toBe(1);
-        expect(r.porcentajeRecargo).toBe(0);
-        expect(r.interes).toBe(0);
-        expect(r.totalFinanciado).toBe(10000);
-        expect(r.valorCuota).toBe(10000);
+// ---------------------------------------------------------------------------
+// Flujo 1: búsqueda y filtrado
+// ---------------------------------------------------------------------------
+
+describe("Controlador - Flujo 1: búsqueda y filtrado", function () {
+    it("filtra por texto mientras se escribe", function () {
+        escribir("#busqueda", "taladro");
+        expect(codigosVisibles()).toEqual(["TALADRO-001"]);
+        expect(texto("#catalogo-mensaje")).toBe("1 producto(s) encontrado(s).");
     });
-    it("tarjeta en 3 cuotas aplica 10% de recargo", function () {
-        var r = calcularCondicionesPago(10000, "tarjeta", 3);
-        expect(r.valido).toBeTruthy();
-        expect(r.porcentajeRecargo).toBe(10);
-        expect(r.interes).toBe(1000);
-        expect(r.totalFinanciado).toBe(11000);
-        expect(r.valorCuota).toBeCloseTo(3666.67, 2);
+
+    it("ignora mayúsculas y tildes", function () {
+        escribir("#busqueda", "AMOLADORA");
+        expect(codigosVisibles()).toEqual(["AMOLADORA-001"]);
+        escribir("#busqueda", "inalámbric");
+        expect(codigosVisibles()).toEqual(["AMOLADORA-001", "TALADRO-001"]);
     });
-    it("tarjeta en 6 cuotas aplica 20% de recargo", function () {
-        var r = calcularCondicionesPago(6000, "tarjeta", 6);
-        expect(r.interes).toBe(1200);
-        expect(r.totalFinanciado).toBe(7200);
-        expect(r.valorCuota).toBe(1200);
+
+    it("muestra «Sin coincidencias.» cuando no hay resultados", function () {
+        escribir("#busqueda", "zzzzzz");
+        expect(codigosVisibles()).toEqual([]);
+        expect(texto("#catalogo-mensaje")).toBe("Sin coincidencias.");
     });
-    it("tarjeta en 1 cuota no tiene recargo", function () {
-        var r = calcularCondicionesPago(5000, "tarjeta", 1);
-        expect(r.valido).toBeTruthy();
-        expect(r.totalFinanciado).toBe(5000);
+
+    it("al enviar el formulario evita la recarga y aplica el filtro", function () {
+        q("#busqueda").value = "pala";
+        const evento = enviar("#form-busqueda");
+        expect(evento.defaultPrevented).toBeTrue();
+        expect(codigosVisibles()).toEqual(["PALA-001"]);
     });
-    it("acepta cuotas indicadas como string", function () {
-        expect(calcularCondicionesPago(1000, "tarjeta", "3").cuotas).toBe(3);
+
+    it("filtra por categoría", function () {
+        elegir("#categoria", "Jardineria");
+        expect(codigosVisibles()).toEqual(["PALA-001"]);
+        elegir("#categoria", "Electricidad");
+        expect(codigosVisibles()).toEqual(["ENCHUFE-001"]);
+        elegir("#categoria", "");
+        expect(codigosVisibles().length).toBe(9);
     });
-    it("redondea a dos decimales", function () {
-        var r = calcularCondicionesPago(100.555, "tarjeta", 3);
-        expect(r.totalOriginal).toBe(100.56);
-        expect(r.valorCuota).toBe(Math.round((r.totalFinanciado / 3) * 100) / 100);
+
+    it("combina texto y categoría", function () {
+        elegir("#categoria", "Herramientas manuales");
+        escribir("#busqueda", "pinza");
+        expect(codigosVisibles()).toEqual(["PINZA-001"]);
     });
-    it("funciona con totales muy grandes", function () {
-        var r = calcularCondicionesPago(1000000000, "tarjeta", 6);
-        expect(r.totalFinanciado).toBe(1200000000);
+
+    it("ordena por precio ascendente y descendente", function () {
+        const asc = codigosVisibles();
+        expect(asc[0]).toBe("GUANTES-001");
+        expect(asc[asc.length - 1]).toBe("TALADRO-001");
+        elegir("#orden", "desc");
+        const desc = codigosVisibles();
+        expect(desc[0]).toBe("TALADRO-001");
+        expect(desc[desc.length - 1]).toBe("GUANTES-001");
     });
-    it("rechaza total 0, negativo, null, undefined o no numérico", function () {
-        expect(calcularCondicionesPago(0, "efectivo-transferencia").valido).toBeFalsy();
-        expect(calcularCondicionesPago(-100, "efectivo-transferencia").valido).toBeFalsy();
-        expect(calcularCondicionesPago(null, "efectivo-transferencia").valido).toBeFalsy();
-        expect(calcularCondicionesPago(undefined, "efectivo-transferencia").valido).toBeFalsy();
-        expect(calcularCondicionesPago("abc", "efectivo-transferencia").valido).toBeFalsy();
+
+    it("activar el filtro de precio habilita el rango y actualiza el indicador", function () {
+        const activar = q("#activar-filtro-precio");
+        activar.checked = true;
+        disparar(activar, "change");
+        expect(q("#precio-hasta").disabled).toBeFalse();
+        expect(texto("#precio-hasta-valor")).toMatch(/80\.000,00/);
+        escribir("#precio-hasta", "10000");
+        expect(texto("#precio-hasta-valor")).toMatch(/10\.000,00/);
+        expect(codigosVisibles()).toEqual(["GUANTES-001", "DESTORNILLADOR-001", "PINZA-001"]);
     });
-    it("rechaza un método de pago inválido, null o undefined", function () {
-        expect(calcularCondicionesPago(1000, "bitcoin").error).toContain("metodo");
-        expect(calcularCondicionesPago(1000, null).valido).toBeFalsy();
-        expect(calcularCondicionesPago(1000, undefined).valido).toBeFalsy();
+
+    it("desactivar el filtro de precio vuelve a mostrar todo", function () {
+        const activar = q("#activar-filtro-precio");
+        activar.checked = true;
+        disparar(activar, "change");
+        escribir("#precio-hasta", "5000");
+        expect(codigosVisibles()).toEqual(["GUANTES-001"]);
+        activar.checked = false;
+        disparar(activar, "change");
+        expect(q("#precio-hasta").disabled).toBeTrue();
+        expect(texto("#precio-hasta-valor")).toBe("Sin limite");
+        expect(codigosVisibles().length).toBe(9);
     });
-    it("rechaza cantidades de cuotas no ofrecidas con tarjeta", function () {
-        expect(calcularCondicionesPago(1000, "tarjeta", 12).valido).toBeFalsy();
-        expect(calcularCondicionesPago(1000, "tarjeta", 0).valido).toBeFalsy();
-        expect(calcularCondicionesPago(1000, "tarjeta", -3).valido).toBeFalsy();
-        expect(calcularCondicionesPago(1000, "tarjeta", undefined).valido).toBeFalsy();
-        expect(calcularCondicionesPago(1000, "tarjeta", "abc").valido).toBeFalsy();
+
+    it("el menú de categorías filtra, limpia la búsqueda y evita la navegación", function () {
+        escribir("#busqueda", "algo que no existe");
+        const enlace = q('nav [data-categoria="Jardineria"]');
+        const evento = new win.MouseEvent("click", { bubbles: true, cancelable: true });
+        enlace.dispatchEvent(evento);
+        expect(evento.defaultPrevented).toBeTrue();
+        expect(q("#busqueda").value).toBe("");
+        expect(q("#categoria").value).toBe("Jardineria");
+        expect(codigosVisibles()).toEqual(["PALA-001"]);
+        clic(q('nav [data-categoria=""]'));
+        expect(codigosVisibles().length).toBe(9);
+        
     });
-    it("la tabla opcionesCuotas ofrece 1, 3 y 6 cuotas", function () {
-        expect(Object.keys(opcionesCuotas)).toEqual(["1", "3", "6"]);
+
+    it("recupera los resultados al corregir una búsqueda sin coincidencias", function () {
+    escribir("#busqueda", "producto-inexistente");
+
+    expect(codigosVisibles()).toEqual([]);
+    expect(texto("#catalogo-mensaje")).toBe("Sin coincidencias.");
+
+    escribir("#busqueda", "taladro");
+
+    expect(codigosVisibles()).toEqual(["TALADRO-001"]);
+    expect(texto("#catalogo-mensaje"))
+        .toBe("1 producto(s) encontrado(s).");
+
+    escribir("#busqueda", "");
+
+    expect(codigosVisibles().length).toBe(9);
+    });
+
+    it("recupera los productos al quitar un filtro de precio sin coincidencias", function () {
+        elegir("#categoria", "Jardineria");
+
+        const activar = q("#activar-filtro-precio");
+        activar.checked = true;
+        disparar(activar, "change");
+
+        escribir("#precio-hasta", "10000");
+
+        expect(codigosVisibles()).toEqual([]);
+        expect(texto("#catalogo-mensaje")).toBe("Sin coincidencias.");
+
+        activar.checked = false;
+        disparar(activar, "change");
+
+        expect(codigosVisibles()).toEqual(["PALA-001"]);
+        expect(texto("#catalogo-mensaje"))
+            .toBe("1 producto(s) encontrado(s).");
+
     });
 });
 
-describe("Flujo 4 - Confirmación del pedido (lógica pura)", function () {
+// ---------------------------------------------------------------------------
+// Flujo 2: carrito
+// ---------------------------------------------------------------------------
 
-    describe("validaciones de datos del cliente", function () {
-        it("validarNombre acepta nombres con letras", function () {
-            expect(validarNombre("Juan Pérez")).toBeTruthy();
-            expect(validarNombre("  Ana ")).toBeTruthy();
-        });
-        it("validarNombre rechaza vacío, solo espacios y solo números", function () {
-            expect(validarNombre("")).toBeFalsy();
-            expect(validarNombre("   ")).toBeFalsy();
-            expect(validarNombre("12345")).toBeFalsy();
-            expect(validarNombre("12,5")).toBeFalsy();
-        });
-        it("validarNombre rechaza null y undefined", function () {
-            expect(validarNombre(null)).toBeFalsy();
-            expect(validarNombre(undefined)).toBeFalsy();
-        });
-        it("validarCorreo acepta un correo con usuario, arroba y dominio", function () {
-            expect(validarCorreo("a@b.com")).toBeTruthy();
-            expect(validarCorreo("  juan@correo.com ")).toBeTruthy();
-        });
-        it("validarCorreo rechaza formatos inválidos, null y undefined", function () {
-            expect(validarCorreo("sinarroba.com")).toBeFalsy();
-            expect(validarCorreo("a@b")).toBeFalsy();
-            expect(validarCorreo("@b.com")).toBeFalsy();
-            expect(validarCorreo("a b@c.com")).toBeFalsy();
-            expect(validarCorreo(null)).toBeFalsy();
-            expect(validarCorreo(undefined)).toBeFalsy();
-        });
-        it("validarDireccion acepta texto y rechaza vacío, espacios, null y undefined", function () {
-            expect(validarDireccion("Calle 123")).toBeTruthy();
-            expect(validarDireccion("")).toBeFalsy();
-            expect(validarDireccion("   ")).toBeFalsy();
-            expect(validarDireccion(null)).toBeFalsy();
-            expect(validarDireccion(undefined)).toBeFalsy();
-        });
-        it("validarDatosCliente exige nombre, correo y dirección válidos", function () {
-            expect(validarDatosCliente(clienteValido)).toBeTruthy();
-            expect(validarDatosCliente({ nombre: "Juan", correo: "mal", direccion: "x" })).toBeFalsy();
-            expect(validarDatosCliente({ nombre: "Juan", correo: "j@c.com" })).toBeFalsy();
-        });
-        it("validarDatosCliente rechaza null, undefined y objeto vacío", function () {
-            expect(validarDatosCliente(null)).toBeFalsy();
-            expect(validarDatosCliente(undefined)).toBeFalsy();
-            expect(validarDatosCliente({})).toBeFalsy();
-        });
+describe("Controlador - Flujo 2: carrito", function () {
+    it("agrega un producto desde el catálogo y actualiza contador, total y botón", function () {
+        agregarAlCarrito("GUANTES-001");
+        expect(texto("#contador-carrito")).toBe("1");
+        expect(texto("#carrito-total")).toMatch(/4\.401,00/);
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+        expect(q('[data-action="iniciar-compra"]').disabled).toBeFalse();
+        expect(texto("#carrito-mensaje")).toBe("1 producto(s) en el carrito.");
+        expect(texto("#estado-aplicacion")).toBe("Carrito actualizado.");
     });
 
-    describe("crearResumenPedido", function () {
-        var carrito, pago;
-        beforeEach(function () {
-            carrito = agregarProductoAlCarrito([], catalogoPrueba, "A-001", 2).carrito;
-            pago = calcularCondicionesPago(calcularResumenCarrito(carrito).total, "tarjeta", 3);
-        });
-        it("arma el resumen con productos, total y pago", function () {
-            var r = crearResumenPedido(carrito, pago, clienteValido);
-            expect(r.valido).toBeTruthy();
-            expect(r.total).toBe(2000);
-            expect(r.productos[0].subtotal).toBe(2000);
-            expect(r.pago.cuotas).toBe(3);
-            expect(r.cliente.nombre).toBe("Juan Pérez");
-        });
-        it("recorta los espacios de los datos del cliente", function () {
-            var r = crearResumenPedido(carrito, pago, { nombre: " Ana ", correo: " a@b.com ", direccion: " Calle 1 " });
-            expect(r.cliente).toEqual({ nombre: "Ana", correo: "a@b.com", direccion: "Calle 1" });
-        });
-        it("es inválido con carrito vacío", function () {
-            expect(crearResumenPedido([], pago, clienteValido).valido).toBeFalsy();
-        });
-        it("es inválido sin condiciones de pago válidas (null o inválidas)", function () {
-            expect(crearResumenPedido(carrito, null, clienteValido).valido).toBeFalsy();
-            expect(crearResumenPedido(carrito, { valido: false }, clienteValido).valido).toBeFalsy();
-        });
-        it("es inválido con datos de cliente incompletos o null", function () {
-            expect(crearResumenPedido(carrito, pago, {}).valido).toBeFalsy();
-            expect(crearResumenPedido(carrito, pago, null).valido).toBeFalsy();
-        });
-        it("no comparte la referencia del objeto de pago", function () {
-            var r = crearResumenPedido(carrito, pago, clienteValido);
-            r.pago.cuotas = 99;
-            expect(pago.cuotas).toBe(3);
-        });
+    it("agrega un producto desde la sección de ofertas", function () {
+        clic(q('#ofertas [data-action="agregar-carrito"][data-product-code="AMOLADORA-001"]'));
+        expect(cantidadEnCarrito("AMOLADORA-001")).toBe("1");
+        expect(texto("#carrito-total")).toMatch(/50\.000,00/);
     });
 
-    describe("crearNumeroPedido", function () {
-        it("genera el formato FL-tiempo-secuencia con 4 dígitos", function () {
-            expect(crearNumeroPedido(1700000000000, 7)).toBe("FL-1700000000000-0007");
-        });
-        it("no recorta secuencias de más de 4 dígitos", function () {
-            expect(crearNumeroPedido(1, 12345)).toBe("FL-1-12345");
-        });
-        it("genera números distintos para secuencias distintas", function () {
-            expect(crearNumeroPedido(100, 1)).not.toBe(crearNumeroPedido(100, 2));
-        });
+    it("agregar dos veces el mismo producto suma la cantidad y no duplica el ítem", function () {
+        agregarAlCarrito("GUANTES-001");
+        agregarAlCarrito("GUANTES-001");
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("2");
+        expect(texto("#contador-carrito")).toBe("1");
+        expect(texto("#carrito-total")).toMatch(/8\.802,00/);
+    });
+
+    it("suma varios productos distintos", function () {
+        agregarAlCarrito("GUANTES-001");
+        agregarAlCarrito("DESTORNILLADOR-001");
+        expect(texto("#contador-carrito")).toBe("2");
+        expect(texto("#carrito-total")).toMatch(/10\.427,00/);
+    });
+
+    it("cambia la cantidad y recalcula subtotal y total", function () {
+        agregarAlCarrito("GUANTES-001");
+        elegir(q('[data-action="cambiar-cantidad"]'), "3");
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("3");
+        expect(texto("#carrito-total")).toMatch(/13\.203,00/);
+        expect(texto("#carrito-items")).toMatch(/Subtotal: \$\s?13\.203,00/);
+    });
+
+    it("una cantidad inválida se marca en el campo sin modificar el carrito", function () {
+        agregarAlCarrito("GUANTES-001");
+        const control = q('[data-action="cambiar-cantidad"]');
+        escribir(control, "0");
+        expect(control.classList.contains("is-invalid")).toBeTrue();
+        expect(texto("#error-cantidad-guantes-001"))
+            .toBe("La cantidad debe ser un entero seguro mayor o igual a uno.");
+        elegir(control, "0");
+        expect(texto("#carrito-total")).toMatch(/4\.401,00/);
+        expect(texto("#carrito-mensaje")).toMatch(/entero seguro mayor o igual a uno/);
+    });
+
+    it("una cantidad en notación científica se rechaza (no se interpreta como 100)", function () {
+        agregarAlCarrito("GUANTES-001");
+        elegir(q('[data-action="cambiar-cantidad"]'), "1e2");
+        expect(texto("#carrito-total")).toMatch(/4\.401,00/);
+        expect(texto("#carrito-total")).not.toMatch(/440\.100,00/);
+    });
+
+
+    it("una cantidad decimal se rechaza y deja el carrito igual", function () {
+        agregarAlCarrito("GUANTES-001");
+
+        const control = q(
+            '[data-action="cambiar-cantidad"][data-product-code="GUANTES-001"]'
+        );
+
+        // Verifica el estado inicial.
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+        expect(texto("#carrito-total")).toMatch(/4\.401,00/);
+
+        // Intenta ingresar una cantidad decimal.
+        control.value = "1.5";
+
+        expect(control.value).toBe("1.5");
+
+        disparar(control, "change");
+
+        // La cantidad decimal debe rechazarse.
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+        expect(texto("#carrito-total")).toMatch(/4\.401,00/);
+
+        expect(
+            q('[data-action="cambiar-cantidad"]').classList.contains("is-invalid")
+        ).toBeTrue();
+    });
+
+
+    it("elimina un producto y vuelve al estado vacío", function () {
+        agregarAlCarrito("GUANTES-001");
+        clic(q('[data-action="eliminar-carrito"]'));
+        expect(texto("#contador-carrito")).toBe("0");
+        expect(qa("#carrito-items article").length).toBe(0);
+        expect(texto("#carrito-mensaje")).toBe("El carrito esta vacio.");
+        expect(q('[data-action="iniciar-compra"]').disabled).toBeTrue();
+    });
+
+    it("eliminar un producto conserva los demás", function () {
+        agregarAlCarrito("GUANTES-001");
+        agregarAlCarrito("PINZA-001");
+        clic(q('[data-action="eliminar-carrito"][data-product-code="GUANTES-001"]'));
+        expect(cantidadEnCarrito("GUANTES-001")).toBeNull();
+        expect(cantidadEnCarrito("PINZA-001")).toBe("1");
+        expect(texto("#carrito-total")).toMatch(/6\.426,00/);
+    });
+
+        // Trazabilidad - Flujo 2: validación y actualización
+    it("valida la cantidad con input sin modificar el total hasta change", function () {
+        agregarAlCarrito("GUANTES-001");
+
+        const control = q(
+            '[data-action="cambiar-cantidad"][data-product-code="GUANTES-001"]'
+        );
+
+        escribir(control, "2");
+
+        expect(control.classList.contains("is-valid")).toBeTrue();
+        expect(texto("#carrito-total")).toMatch(/4\.401,00/);
+
+        elegir(control, "2");
+
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("2");
+        expect(texto("#carrito-total")).toMatch(/8\.802,00/);
+    });
+
+    // Trazabilidad - Flujo 2: invalidación del pago
+    it("modificar la cantidad después de elegir el pago invalida la confirmación", function () {
+        irAConfirmacion("tarjeta", "3");
+
+        expect(q("#confirmacion").hidden).toBeFalse();
+
+        const cantidad = q(
+            '[data-action="cambiar-cantidad"][data-product-code="GUANTES-001"]'
+        );
+
+        elegir(cantidad, "2");
+
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("2");
+        expect(q("#pago").hidden).toBeTrue();
+        expect(q("#confirmacion").hidden).toBeTrue();
+        expect(texto("#condiciones-pago")).toBe("");
+        expect(texto("#carrito-mensaje"))
+            .toBe("Carrito actualizado; el pago debe seleccionarse nuevamente.");
+    });
+
+});
+
+// ---------------------------------------------------------------------------
+// Flujo 3: pago y cuotas
+// ---------------------------------------------------------------------------
+
+describe("Controlador - Flujo 3: pago y cuotas", function () {
+    it("iniciar la compra muestra la sección de pago y el indicador de carga", function () {
+        irAlPago();
+        expect(q("#pago").hidden).toBeFalse();
+        expect(texto("#pago-mensaje")).toBe("Selecciona el metodo de pago.");
+        expect(texto("#estado-aplicacion")).toBe("Preparando el pago...");
+        expect(q("#estado-aplicacion").classList.contains("is-loading")).toBeTrue();
+        expect(q("#cuotas").disabled).toBeTrue();
+        expect(q("#cuotas").value).toBe("");
+    });
+
+    it("al cerrarse el carrito el indicador pasa a «Pago listo para completar.»", async function () {
+        irAlPago();
+        q("#carrito").dispatchEvent(new win.Event("hidden.bs.offcanvas"));
+        await pausa(1100);
+        expect(texto("#estado-aplicacion")).toBe("Pago listo para completar.");
+        expect(q("#estado-aplicacion").classList.contains("is-loading")).toBeFalse();
+    });
+
+    it("efectivo o transferencia: una cuota y sin recargo", function () {
+        irAlPago();
+        elegir("#metodo-pago", "efectivo-transferencia");
+        const condiciones = texto("#condiciones-pago");
+        expect(condiciones).toMatch(/Total original\s*\$\s?4\.401,00/);
+        expect(condiciones).toMatch(/Cuotas\s*1/);
+        expect(condiciones).toMatch(/0% \(\$\s?0,00\)/);
+        expect(condiciones).toMatch(/Total financiado\s*\$\s?4\.401,00/);
+        expect(texto("#pago-mensaje")).toBe("Condiciones calculadas. Revisa el resumen antes de continuar.");
+        expect(q("#cuotas").disabled).toBeTrue();
+    });
+
+    it("tarjeta en 3 cuotas aplica 10 % de recargo", function () {
+        irAlPago();
+        elegir("#metodo-pago", "tarjeta");
+        expect(q("#cuotas").disabled).toBeFalse();
+        elegir("#cuotas", "3");
+        const condiciones = texto("#condiciones-pago");
+        expect(condiciones).toMatch(/Cuotas\s*3/);
+        expect(condiciones).toMatch(/10% \(\$\s?440,10\)/);
+        expect(condiciones).toMatch(/Total financiado\s*\$\s?4\.841,10/);
+        expect(condiciones).toMatch(/Valor de cada cuota\s*\$\s?1\.613,70/);
+    });
+
+    it("tarjeta en 6 cuotas aplica 20 % de recargo", function () {
+        irAlPago();
+        elegir("#metodo-pago", "tarjeta");
+        elegir("#cuotas", "6");
+        const condiciones = texto("#condiciones-pago");
+        expect(condiciones).toMatch(/20% \(\$\s?880,20\)/);
+        expect(condiciones).toMatch(/Total financiado\s*\$\s?5\.281,20/);
+        expect(condiciones).toMatch(/Valor de cada cuota\s*\$\s?880,20/);
+    });
+
+    it("cambiar las cuotas recalcula y avisa que hay que revisar las condiciones", function () {
+        irAlPago();
+        elegir("#metodo-pago", "tarjeta");
+        elegir("#cuotas", "3");
+        expect(texto("#pago-mensaje"))
+            .toBe("Cambiaste las cuotas. Revisá las condiciones y continuá nuevamente.");
+    });
+
+    it("volver a efectivo deshabilita las cuotas y las reinicia a 1", function () {
+        irAlPago();
+        elegir("#metodo-pago", "tarjeta");
+        elegir("#cuotas", "6");
+        elegir("#metodo-pago", "efectivo-transferencia");
+        expect(q("#cuotas").disabled).toBeTrue();
+        expect(q("#cuotas").value).toBe("1");
+        expect(texto("#condiciones-pago")).toMatch(/Cuotas\s*1/);
+    });
+
+    it("continuar sin elegir método muestra el error y no avanza", function () {
+        irAlPago();
+        enviar("#form-pago");
+        expect(texto("#pago-mensaje")).toBe("El metodo de pago no es valido.");
+        expect(q("#metodo-pago").classList.contains("is-invalid")).toBeTrue();
+        expect(q("#confirmacion").hidden).toBeTrue();
+    });
+
+    it("continuar con un método válido habilita los datos del cliente", function () {
+        irAConfirmacion();
+        expect(q("#confirmacion").hidden).toBeFalse();
+        expect(texto("#pedido-mensaje")).toBe("Completa tus datos para revisar el pedido.");
+    });
+
+    it("un cambio en el carrito descarta el pago anterior", function () {
+        irAConfirmacion("tarjeta", "3");
+        agregarAlCarrito("PINZA-001");
+        expect(q("#pago").hidden).toBeTrue();
+        expect(q("#confirmacion").hidden).toBeTrue();
+        expect(texto("#condiciones-pago")).toBe("");
+        expect(texto("#carrito-mensaje"))
+            .toBe("Carrito actualizado; el pago debe seleccionarse nuevamente.");
+    });
+
+    it("cancelar el pago oculta la sección y conserva el carrito", function () {
+        irAConfirmacion();
+        clic(q('[data-action="cancelar-pago"]'));
+        expect(q("#pago").hidden).toBeTrue();
+        expect(q("#confirmacion").hidden).toBeTrue();
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+        expect(texto("#carrito-mensaje")).toBe("Pago cancelado. El carrito se conserva.");
+    });
+
+    // Trazabilidad - Flujo 3: tarjeta en una cuota
+    it("tarjeta en una cuota no aplica recargo", function () {
+        irAlPago();
+
+        elegir("#metodo-pago", "tarjeta");
+        elegir("#cuotas", "1");
+
+        const condiciones = texto("#condiciones-pago");
+
+        expect(q("#cuotas").disabled).toBeFalse();
+        expect(condiciones).toMatch(/Cuotas\s*1/);
+        expect(condiciones).toMatch(/0% \(\$\s?0,00\)/);
+        expect(condiciones).toMatch(/Total financiado\s*\$\s?4\.401,00/);
+    });
+
+    // Trazabilidad - Flujo 3: cambio de método después de continuar
+    it("cambiar el método de pago invalida la confirmación anterior", function () {
+        irAConfirmacion("tarjeta", "3");
+
+        expect(q("#confirmacion").hidden).toBeFalse();
+
+        elegir("#metodo-pago", "efectivo-transferencia");
+
+        expect(q("#cuotas").disabled).toBeTrue();
+        expect(q("#cuotas").value).toBe("1");
+        expect(q("#confirmacion").hidden).toBeTrue();
+        expect(texto("#resumen-pedido")).toBe("");
+        expect(texto("#condiciones-pago")).toMatch(/Cuotas\s*1/);
+    });
+
+});
+
+// ---------------------------------------------------------------------------
+// Flujo 4: datos del cliente y confirmación del pedido
+// ---------------------------------------------------------------------------
+
+describe("Controlador - Flujo 4: confirmación del pedido", function () {
+    beforeEach(function () {
+        irAConfirmacion();
     });
     
-    describe("formatearResumenPedido", function () {
-        var carrito;
-        beforeEach(function () {
-            carrito = agregarProductoAlCarrito([], catalogoPrueba, "A-001", 2).carrito;
-        });
-        it("detalla productos, pago en tarjeta, cuotas, recargo y envío", function () {
-            var pago = calcularCondicionesPago(2000, "tarjeta", 3);
-            var texto = formatearResumenPedido(crearResumenPedido(carrito, pago, clienteValido));
-            expect(texto).toBe(
-                "Martillo Grande | 2 x $1.000,00 = $2.000,00\n" +
-                "Total original: $2.000,00\n" +
-                "Metodo: Tarjeta de credito\n" +
-                "Cuotas: 3\n" +
-                "Recargo: 10% ($200,00)\n" +
-                "Total financiado: $2.200,00\n" +
-                "Valor de cada cuota: $733,33\n" +
-                "Envio a: Calle 123"
-            );
-        });
-        it("indica efectivo / transferencia, 1 cuota y 0% de recargo", function () {
-            var pago = calcularCondicionesPago(2000, "efectivo-transferencia");
-            var texto = formatearResumenPedido(crearResumenPedido(carrito, pago, clienteValido));
-            expect(texto).toContain("Metodo: Efectivo / transferencia");
-            expect(texto).toContain("Cuotas: 1");
-            expect(texto).toContain("Recargo: 0% ($0,00)");
-        });
-    });
-});
+    // RC22 y RC59 - Validación individual durante la edición.
+    it("RC59 - valida los campos del cliente durante input", function () {
+        const casos = [
+            ["nombre", "12345"],
+            ["correo", "correo-invalido"],
+            ["direccion", "   "]
+        ];
 
-// ---------------------------------------------------------------------------
-// Suites de interacción: prompt() y alert() se reemplazan con espías.
-// ---------------------------------------------------------------------------
+        for (const [campo, valor] of casos) {
+            const control = escribir(`#pedido-${campo}`, valor);
 
-/** Restablece el estado compartido de script.js (carrito, pago y número de pedido). */
-function reiniciarEstado() {
-    carritoActual = [];
-    condicionesPagoActuales = null;
-    secuenciaPedidos = 1;
-}
+            expect(control.classList.contains("is-invalid")).toBeTrue();
+            expect(control.getAttribute("aria-invalid")).toBe("true");
 
-/** Simula las respuestas del usuario a los prompt(), en orden. Falla si se piden más de las previstas. */
-function responderPrompts(respuestas) {
-    var indice = 0;
-    if (!jasmine.isSpy(window.prompt)) {
-        spyOn(window, "prompt");
-    }
-    window.prompt.calls.reset();
-    window.prompt.and.callFake(function () {
-        if (indice >= respuestas.length) {
-            throw new Error("prompt() se llamó más veces de las esperadas (" + respuestas.length + ")");
+            expect(texto(`#error-pedido-${campo}`))
+                .toBe(`${campo} no es valido.`);
         }
-        return respuestas[indice++];
+
+        expect(qa("#resumen-pedido *").length).toBe(0);
     });
-}
 
-/** Devuelve los mensajes mostrados con alert(), en orden. */
-function mensajesAlert() {
-    return window.alert.calls.allArgs().map(function (args) { return String(args[0]); });
-}
 
-/** Indica si algún alert() mostró un mensaje que contiene el texto indicado. */
-function alertContiene(texto) {
-    return mensajesAlert().some(function (mensaje) { return mensaje.indexOf(texto) !== -1; });
-}
+    // RC22 y RC59 - Validación al abandonar un campo.
+    it("RC59 - valida los campos vacíos mediante focusout", function () {
+        const campos = ["nombre", "correo", "direccion"];
 
-/** Carga el carrito con un producto del catálogo real, usando la lógica pura ya testeada. */
-function cargarCarrito(codigo, cantidad) {
-    carritoActual = agregarProductoAlCarrito(carritoActual, catalogoProductos, codigo, cantidad).carrito;
-}
+        for (const campo of campos) {
+            const control = q(`#pedido-${campo}`);
 
-/** Deja un pago por efectivo elegido, como si el usuario hubiera pasado por el Flujo 3. */
-function cargarPagoEfectivo() {
-    condicionesPagoActuales = calcularCondicionesPago(calcularResumenCarrito(carritoActual).total, "efectivo-transferencia", 1);
-}
+            expect(control.value).toBe("");
+            expect(control.classList.contains("is-invalid")).toBeFalse();
 
-function prepararEspias() {
-    reiniciarEstado();
-    spyOn(window, "alert");
-    spyOn(console, "log");
-}
+            disparar(control, "focusout");
 
-describe("Flujo 1 - Búsqueda y filtrado (interacción)", function () {
-    beforeEach(prepararEspias);
+            expect(control.classList.contains("is-invalid")).toBeTrue();
+            expect(control.getAttribute("aria-invalid")).toBe("true");
 
-    describe("preguntarSiNo", function () {
-        it("devuelve true para SI, S y Sí, sin importar mayúsculas ni espacios", function () {
-            ["SI", " s ", "Sí", "si"].forEach(function (respuesta) {
-                responderPrompts([respuesta]);
-                expect(preguntarSiNo("¿?")).toBe(true);
+            expect(texto(`#error-pedido-${campo}`))
+                .toBe(`${campo} no es valido.`);
+        }
+
+        expect(qa("#resumen-pedido *").length).toBe(0);
+    });
+
+
+    // RC59 - Actualización del feedback al corregir los datos.
+    it("RC59 - elimina los errores al corregir los datos del cliente", function () {
+        const casos = [
+            ["nombre", "12345", "Ana Pérez"],
+            ["correo", "correo-invalido", "ana@correo.com"],
+            ["direccion", "   ", "Calle Falsa 123"]
+        ];
+
+        for (const [campo, invalido, valido] of casos) {
+            const control = escribir(`#pedido-${campo}`, invalido);
+
+            expect(control.classList.contains("is-invalid")).toBeTrue();
+
+            escribir(control, valido);
+
+            expect(control.classList.contains("is-invalid")).toBeFalse();
+            expect(control.classList.contains("is-valid")).toBeTrue();
+            expect(control.getAttribute("aria-invalid")).toBe("false");
+            expect(texto(`#error-pedido-${campo}`)).toBe("");
+        }
+    });
+
+
+    // RC59 - Independencia entre los campos del formulario.
+    it("RC59 - valida cada campo independientemente de los demás", function () {
+        const correo = escribir("#pedido-correo", "ñandú@correo.com");
+
+        expect(q("#pedido-nombre").value).toBe("");
+        expect(q("#pedido-direccion").value).toBe("");
+
+        expect(correo.classList.contains("is-valid")).toBeTrue();
+        expect(correo.getAttribute("aria-invalid")).toBe("false");
+        expect(texto("#error-pedido-correo")).toBe("");
+
+        expect(q("#pedido-nombre").classList.contains("is-invalid"))
+            .toBeFalse();
+
+        expect(q("#pedido-direccion").classList.contains("is-invalid"))
+            .toBeFalse();
+    });
+
+
+    // RC59 - Conservación del resumen al perder el foco.
+    it("RC59 - perder el foco sin modificar datos conserva el resumen", function () {
+        completarCliente();
+        enviar("#form-pedido");
+
+        const resumenAnterior = texto("#resumen-pedido");
+
+        expect(q('[data-action="confirmar-pedido"]')).not.toBeNull();
+
+        disparar(q("#pedido-nombre"), "focusout");
+
+        expect(texto("#resumen-pedido")).toBe(resumenAnterior);
+        expect(q('[data-action="confirmar-pedido"]')).not.toBeNull();
+    });
+
+
+    // RC59 - Conservación del estado de la compra.
+    it("RC59 - validar los datos no modifica el carrito, pago ni storage", function () {
+        const totalAnterior = texto("#carrito-total");
+        const contadorAnterior = texto("#contador-carrito");
+        const condicionesAnteriores = texto("#condiciones-pago");
+
+        const localAnterior = instantanea(win.localStorage);
+        const sessionAnterior = instantanea(win.sessionStorage);
+
+        escribir("#pedido-nombre", "12345");
+        escribir("#pedido-correo", "correo-invalido");
+        disparar(q("#pedido-direccion"), "focusout");
+
+        expect(texto("#carrito-total")).toBe(totalAnterior);
+        expect(texto("#contador-carrito")).toBe(contadorAnterior);
+        expect(texto("#condiciones-pago")).toBe(condicionesAnteriores);
+
+        expect(instantanea(win.localStorage)).toEqual(localAnterior);
+        expect(instantanea(win.sessionStorage)).toEqual(sessionAnterior);
+    });
+
+
+    // RC59 - Compatibilidad con la cancelación del pedido.
+    it("RC59 - cancelar el pedido elimina los estados de validación", function () {
+        escribir("#pedido-nombre", "12345");
+        escribir("#pedido-correo", "correo-invalido");
+        disparar(q("#pedido-direccion"), "focusout");
+
+        clic(q('[data-action="cancelar-pedido"]'));
+
+        expect(q("#confirmacion").hidden).toBeTrue();
+
+        for (const campo of ["nombre", "correo", "direccion"]) {
+            const control = q(`#pedido-${campo}`);
+
+            expect(control.value).toBe("");
+            expect(control.classList.contains("is-invalid")).toBeFalse();
+            expect(control.classList.contains("is-valid")).toBeFalse();
+            expect(control.hasAttribute("aria-invalid")).toBeFalse();
+            expect(texto(`#error-pedido-${campo}`)).toBe("");
+        }
+
+        // No debe volver a validar un formulario oculto.
+        disparar(q("#pedido-nombre"), "focusout");
+
+        expect(q("#pedido-nombre").classList.contains("is-invalid"))
+            .toBeFalse();
+
+        expect(texto("#error-pedido-nombre")).toBe("");
+
+        // Comprueba que se puede volver al formulario sin errores.
+        enviar("#form-pago");
+
+        expect(q("#confirmacion").hidden).toBeFalse();
+        expect(qa("#form-pedido .is-invalid").length).toBe(0);
+    });
+
+    it("valida el nombre al enviar el formulario", function () {
+        completarCliente();
+        escribir("#pedido-nombre", "12345");
+        enviar("#form-pedido");
+
+        expect(q("#pedido-nombre").classList.contains("is-invalid")).toBeTrue();
+        expect(texto("#error-pedido-nombre")).toBe("nombre no es valido.");
+        expect(qa("#resumen-pedido *").length).toBe(0);
+
+        escribir("#pedido-nombre", "Ana Pérez");
+        enviar("#form-pedido");
+
+        expect(q('#resumen-pedido [data-action="confirmar-pedido"]'))
+            .not.toBeNull();
+    });
+
+    it("valida el correo al enviar el formulario", function () {
+        completarCliente();
+
+        escribir("#pedido-correo", "ana@correo");
+        enviar("#form-pedido");
+
+        expect(q("#pedido-correo").classList.contains("is-invalid")).toBeTrue();
+        expect(texto("#error-pedido-correo")).toBe("correo no es valido.");
+        expect(qa("#resumen-pedido *").length).toBe(0);
+
+        escribir("#pedido-correo", "ana@correo.com");
+        enviar("#form-pedido");
+
+        expect(q('#resumen-pedido [data-action="confirmar-pedido"]'))
+            .not.toBeNull();
+        expect(texto("#resumen-pedido")).toContain("ana@correo.com");
+    });
+
+    it("acepta correos con caracteres no ASCII", function () {
+        completarCliente("Ana Pérez", "ñandú@correo.com", "Calle Falsa 123");
+
+        enviar("#form-pedido");
+
+        expect(q('#resumen-pedido [data-action="confirmar-pedido"]'))
+            .not.toBeNull();
+        expect(texto("#resumen-pedido")).toContain("ñandú@correo.com");
+    });
+
+    it("valida la dirección al enviar el formulario", function () {
+        completarCliente();
+        escribir("#pedido-direccion", "   ");
+
+        enviar("#form-pedido");
+
+        expect(q("#pedido-direccion").classList.contains("is-invalid"))
+            .toBeTrue();
+        expect(texto("#error-pedido-direccion")).toBe("direccion no es valido.");
+        expect(qa("#resumen-pedido *").length).toBe(0);
+
+        escribir("#pedido-direccion", "Calle Falsa 123");
+        enviar("#form-pedido");
+
+        expect(q('#resumen-pedido [data-action="confirmar-pedido"]'))
+            .not.toBeNull();
+    });
+
+    it("enviar con campos vacíos muestra el error y no genera resumen", function () {
+        enviar("#form-pedido");
+        expect(texto("#pedido-mensaje")).toBe("nombre no es valido.");
+        expect(qa("#resumen-pedido *").length).toBe(0);
+        expect(q("#pedido-nombre").classList.contains("is-invalid")).toBeTrue();
+    });
+
+    it("enviar con datos válidos genera el resumen previo con el botón de confirmar", function () {
+        completarCliente();
+        enviar("#form-pedido");
+        const resumen = texto("#resumen-pedido");
+        expect(resumen).toMatch(/Resumen del pedido/);
+        expect(resumen).toMatch(/Cliente: Ana Pérez · ana@correo\.com · Envio a: Calle Falsa 123/);
+        expect(resumen).toMatch(/1 x \$\s?4\.401,00 = \$\s?4\.401,00/);
+        expect(q('#resumen-pedido [data-action="confirmar-pedido"]')).not.toBeNull();
+        expect(texto("#pedido-mensaje")).toBe("Revisa el resumen y confirma o cancela el pedido.");
+    });
+
+    it("modificar los datos después del resumen lo invalida", function () {
+        completarCliente();
+        enviar("#form-pedido");
+        escribir("#pedido-nombre", "Ana María Pérez");
+        expect(qa("#resumen-pedido *").length).toBe(0);
+        expect(texto("#pedido-mensaje"))
+            .toBe("Los datos del cliente cambiaron. Revisá nuevamente el resumen antes de confirmar.");
+    });
+
+    it("confirmar muestra el número de pedido y limpia carrito y pago", function () {
+        completarCliente();
+        enviar("#form-pedido");
+        clic(q('[data-action="confirmar-pedido"]'));
+        expect(texto("#resumen-pedido")).toMatch(/^Pedido confirmado: FL-\d+-0001/);
+        expect(q('#resumen-pedido [data-action="confirmar-pedido"]')).toBeNull();
+        expect(texto("#pedido-mensaje")).toBe("La operacion se realizo correctamente.");
+        expect(texto("#contador-carrito")).toBe("0");
+        expect(qa("#carrito-items article").length).toBe(0);
+        expect(q("#pago").hidden).toBeTrue();
+        expect(q("#form-pedido").hidden).toBeTrue();
+    });
+
+    it("una segunda compra obtiene la secuencia siguiente", function () {
+        completarCliente();
+        enviar("#form-pedido");
+        clic(q('[data-action="confirmar-pedido"]'));
+        irAConfirmacion();
+        expect(q("#form-pedido").hidden).toBeFalse();
+        completarCliente("Luis Gómez", "luis@correo.com", "Av. Siempreviva 742");
+        enviar("#form-pedido");
+        clic(q('[data-action="confirmar-pedido"]'));
+        expect(texto("#resumen-pedido")).toMatch(/^Pedido confirmado: FL-\d+-0002/);
+    });
+
+    it("confirmar con tarjeta en 6 cuotas refleja el recargo en el resumen", function () {
+        elegir("#metodo-pago", "tarjeta");
+        elegir("#cuotas", "6");
+        enviar("#form-pago");
+        completarCliente();
+        enviar("#form-pedido");
+        expect(texto("#resumen-pedido")).toMatch(/6 cuota\(s\) · Recargo: 20%/);
+        expect(texto("#resumen-pedido")).toMatch(/Total financiado: \$\s?5\.281,20/);
+    });
+
+    it("RC61 - cancelar el pedido conserva el carrito y las condiciones de pago", function () {
+        completarCliente();
+        enviar("#form-pedido");
+
+        const condicionesAnteriores = texto("#condiciones-pago");
+        const totalAnterior = texto("#carrito-total");
+        const metodoAnterior = q("#metodo-pago").value;
+        const cuotasAnteriores = q("#cuotas").value;
+
+        clic(q('[data-action="cancelar-pedido"]'));
+
+        expect(q("#confirmacion").hidden).toBeTrue();
+        expect(q("#pedido-nombre").value).toBe("");
+        expect(qa("#resumen-pedido *").length).toBe(0);
+
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+        expect(texto("#carrito-total")).toBe(totalAnterior);
+
+        expect(q("#pago").hidden).toBeFalse();
+        expect(q("#metodo-pago").value).toBe(metodoAnterior);
+        expect(q("#cuotas").value).toBe(cuotasAnteriores);
+        expect(texto("#condiciones-pago")).toBe(condicionesAnteriores);
+
+        const mensaje = q("#pago-mensaje");
+
+        expect(texto("#pago-mensaje"))
+            .toBe("Pedido cancelado. Se conservaron el carrito y las condiciones de pago.");
+
+        expect(mensaje.closest("[hidden]")).toBeNull();
+
+        expect(win.getComputedStyle(mensaje).display)
+            .not.toBe("none");
+
+        expect(win.getComputedStyle(mensaje).visibility)
+            .toBe("visible");
+
+        expect(mensaje.getBoundingClientRect().height)
+            .toBeGreaterThan(0);
+
+        expect(mensaje.getBoundingClientRect().width)
+            .toBeGreaterThan(0);
+
+        expect(mensaje.getAttribute("role")).toBe("status");
+        expect(mensaje.getAttribute("aria-live")).toBe("polite");
+    });
+
+    it("RC61 - muestra el mensaje al cancelar con campos invalidos", function () {
+
+        escribir("#pedido-nombre", "12345");
+        escribir("#pedido-correo", "correo-invalido");
+
+        disparar(q("#pedido-direccion"), "focusout");
+
+        expect(qa("#form-pedido .is-invalid").length).toBe(3);
+
+        clic(q('[data-action="cancelar-pedido"]'));
+
+        expect(q("#confirmacion").hidden).toBeTrue();
+
+        const mensaje = q("#pago-mensaje");
+
+        expect(texto("#pago-mensaje"))
+            .toBe("Pedido cancelado. Se conservaron el carrito y las condiciones de pago.");
+
+        expect(mensaje.closest("[hidden]")).toBeNull();
+
+        expect(win.getComputedStyle(mensaje).display)
+            .not.toBe("none");
+
+        expect(win.getComputedStyle(mensaje).visibility)
+            .toBe("visible");
+
+        expect(mensaje.getBoundingClientRect().height)
+            .toBeGreaterThan(0);
+
+        expect(qa("#form-pedido .is-invalid").length).toBe(0);
+        expect(qa("#form-pedido .is-valid").length).toBe(0);
+
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+        
+        enviar("#form-pago");
+
+        expect(q("#confirmacion").hidden).toBeFalse();
+
+        expect(q("#pedido-nombre").value).toBe("");
+        expect(q("#pedido-correo").value).toBe("");
+        expect(q("#pedido-direccion").value).toBe("");
+
+        expect(qa("#form-pedido .is-invalid").length).toBe(0);
+        expect(qa("#form-pedido .is-valid").length).toBe(0);
+
+        expect(texto("#pago-mensaje"))
+            .not.toContain("Pedido cancelado.");
+    });
+
+
+    // Trazabilidad - Flujo 4: corrección de datos inválidos
+    it("permite corregir datos inválidos y generar el resumen", function () {
+        enviar("#form-pedido");
+
+        expect(qa("#resumen-pedido *").length).toBe(0);
+        expect(q("#pedido-nombre").classList.contains("is-invalid"))
+            .toBeTrue();
+
+        completarCliente();
+
+        enviar("#form-pedido");
+
+        expect(q("#pedido-nombre").classList.contains("is-invalid"))
+            .toBeFalse();
+
+        expect(
+            q('#resumen-pedido [data-action="confirmar-pedido"]')
+        ).not.toBeNull();
+
+        expect(texto("#resumen-pedido"))
+            .toMatch(/Cliente: Ana Pérez/);
+    });
+
+    // Trazabilidad - Flujo 4: invalidación y regeneración del resumen
+    it("impide confirmar datos modificados e inválidos hasta regenerar el resumen", function () {
+        completarCliente();
+        enviar("#form-pedido");
+
+        expect(
+            q('#resumen-pedido [data-action="confirmar-pedido"]')
+        ).not.toBeNull();
+
+        escribir("#pedido-correo", "correo-invalido");
+
+        expect(qa("#resumen-pedido *").length).toBe(0);
+
+        enviar("#form-pedido");
+
+        expect(q("#pedido-correo").classList.contains("is-invalid"))
+            .toBeTrue();
+        expect(texto("#error-pedido-correo")).toBe("correo no es valido.");
+        expect(qa("#resumen-pedido *").length).toBe(0);
+
+        escribir("#pedido-correo", "ana@correo.com");
+        enviar("#form-pedido");
+
+        expect(
+            q('#resumen-pedido [data-action="confirmar-pedido"]')
+        ).not.toBeNull();
+
+        expect(texto("#resumen-pedido"))
+            .toMatch(/ana@correo\.com/);
+    });
+
+});
+
+// ---------------------------------------------------------------------------
+// Transversal
+// ---------------------------------------------------------------------------
+
+describe("Controlador - RC62: persistencia de pedidos", function () {
+
+    const CLAVE_SECUENCIA = "app:pedidos:secuencia";
+    const CLAVE_HISTORIAL = "app:pedidos:historial";
+
+    it("RC62 - conserva la numeracion y el historial despues de recargar", async function () {
+        llegarAlResumen();
+        clic(q('[data-action="confirmar-pedido"]'));
+
+        expect(texto("#resumen-pedido"))
+            .toMatch(/^Pedido confirmado: FL-\d+-0001/);
+
+        const historialAntes = JSON.parse(
+            win.localStorage.getItem(CLAVE_HISTORIAL)
+        );
+
+        expect(historialAntes.length).toBe(1);
+        expect(historialAntes[0].numero).toMatch(/^FL-\d+-0001$/);
+
+        expect(JSON.parse(
+            win.localStorage.getItem(CLAVE_SECUENCIA)
+        )).toBe(2);
+
+        // Recarga real de la aplicación sin limpiar Storage.
+        await new Promise((resolve) => {
+            marco.addEventListener("load", resolve, { once: true });
+            win.location.reload();
+        });
+
+        win = marco.contentWindow;
+        doc = marco.contentDocument;
+
+        expect(JSON.parse(
+            win.localStorage.getItem(CLAVE_HISTORIAL)
+        )).toEqual(historialAntes);
+
+        expect(JSON.parse(
+            win.localStorage.getItem(CLAVE_SECUENCIA)
+        )).toBe(2);
+
+        expect(texto("#contador-carrito")).toBe("0");
+
+        llegarAlResumen();
+        clic(q('[data-action="confirmar-pedido"]'));
+
+        expect(texto("#resumen-pedido"))
+            .toMatch(/^Pedido confirmado: FL-\d+-0002/);
+
+        const historialDespues = JSON.parse(
+            win.localStorage.getItem(CLAVE_HISTORIAL)
+        );
+
+        expect(historialDespues.length).toBe(2);
+        expect(historialDespues[0]).toEqual(historialAntes[0]);
+        expect(historialDespues[1].numero).toMatch(/^FL-\d+-0002$/);
+
+        expect(JSON.parse(
+            win.localStorage.getItem(CLAVE_SECUENCIA)
+        )).toBe(3);
+
+    }, TIEMPO_CARGA_MS);
+
+
+    it("RC62 - cancelar un pedido no modifica el historial ni la secuencia", function () {
+        llegarAlResumen();
+        clic(q('[data-action="confirmar-pedido"]'));
+
+        const historialAntes =
+            win.localStorage.getItem(CLAVE_HISTORIAL);
+
+        const secuenciaAntes =
+            win.localStorage.getItem(CLAVE_SECUENCIA);
+
+        llegarAlResumen();
+        clic(q('[data-action="cancelar-pedido"]'));
+
+        expect(win.localStorage.getItem(CLAVE_HISTORIAL))
+            .toBe(historialAntes);
+
+        expect(win.localStorage.getItem(CLAVE_SECUENCIA))
+            .toBe(secuenciaAntes);
+
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+        expect(q("#confirmacion").hidden).toBeTrue();
+    });
+
+
+    it("RC62 - informa el error cuando falla el guardado de la secuencia", function () {
+        llegarAlResumen();
+
+        const setItemOriginal = win.Storage.prototype.setItem;
+
+        const espiaStorage = spyOn(
+            win.Storage.prototype, "setItem"
+        ).and.callFake(function (clave, valor) {
+            if (clave === CLAVE_SECUENCIA) {
+                throw new win.DOMException(
+                    "Cuota excedida", "QuotaExceededError"
+                );
+            }
+
+            return setItemOriginal.call(this, clave, valor);
+        });
+
+        clic(q('[data-action="confirmar-pedido"]'));
+
+        expect(texto("#pedido-mensaje"))
+            .toBe("No se pudo guardar la secuencia del pedido.");
+
+        expect(win.localStorage.getItem(CLAVE_SECUENCIA))
+            .toBeNull();
+
+        expect(win.localStorage.getItem(CLAVE_HISTORIAL))
+            .toBeNull();
+
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+
+        expect(q('[data-action="confirmar-pedido"]'))
+            .not.toBeNull();
+
+        // Restablece Storage y permite reintentar.
+        espiaStorage.and.callThrough();
+
+        clic(q('[data-action="confirmar-pedido"]'));
+
+        expect(texto("#resumen-pedido"))
+            .toMatch(/^Pedido confirmado: FL-\d+-0001/);
+
+        expect(JSON.parse(
+            win.localStorage.getItem(CLAVE_SECUENCIA)
+        )).toBe(2);
+    });
+
+
+    it("RC62 - restaura la secuencia cuando falla el guardado del historial", function () {
+        llegarAlResumen();
+        clic(q('[data-action="confirmar-pedido"]'));
+
+        const historialAntes =
+            win.localStorage.getItem(CLAVE_HISTORIAL);
+
+        const secuenciaAntes =
+            win.localStorage.getItem(CLAVE_SECUENCIA);
+
+        llegarAlResumen();
+
+        const setItemOriginal = win.Storage.prototype.setItem;
+
+        const espiaStorage = spyOn(
+            win.Storage.prototype, "setItem"
+        ).and.callFake(function (clave, valor) {
+            if (clave === CLAVE_HISTORIAL) {
+                throw new win.DOMException(
+                    "Cuota excedida", "QuotaExceededError"
+                );
+            }
+
+            return setItemOriginal.call(this, clave, valor);
+        });
+
+        clic(q('[data-action="confirmar-pedido"]'));
+
+        expect(texto("#pedido-mensaje"))
+            .toBe("No se pudo guardar el pedido.");
+
+        expect(win.localStorage.getItem(CLAVE_HISTORIAL))
+            .toBe(historialAntes);
+
+        expect(win.localStorage.getItem(CLAVE_SECUENCIA))
+            .toBe(secuenciaAntes);
+
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+
+        expect(q('[data-action="confirmar-pedido"]'))
+            .not.toBeNull();
+
+        // Reintenta sin el fallo de almacenamiento.
+        espiaStorage.and.callThrough();
+
+        clic(q('[data-action="confirmar-pedido"]'));
+
+        expect(texto("#resumen-pedido"))
+            .toMatch(/^Pedido confirmado: FL-\d+-0002/);
+
+        expect(JSON.parse(
+            win.localStorage.getItem(CLAVE_HISTORIAL)
+        ).length).toBe(2);
+
+        expect(JSON.parse(
+            win.localStorage.getItem(CLAVE_SECUENCIA)
+        )).toBe(3);
+    });
+});
+
+describe("Controlador - requisitos transversales", function () {
+    it("una compra completa no usa alert(), prompt() ni confirm()", function () {
+        llegarAlResumen();
+        clic(q('[data-action="confirmar-pedido"]'));
+        expect(espiaAlert).not.toHaveBeenCalled();
+        expect(espiaPrompt).not.toHaveBeenCalled();
+        expect(espiaConfirm).not.toHaveBeenCalled();
+    });
+
+    it("los flujos de búsqueda, carrito, pago y cancelaciones tampoco los usan", function () {
+        escribir("#busqueda", "zzz");           // sin resultados: el catálogo se vuelve a dibujar sin tarjetas
+        escribir("#busqueda", "");
+        elegir("#categoria", "Jardineria");
+        agregarAlCarrito("PALA-001");
+        elegir(q('[data-action="cambiar-cantidad"]'), "0");
+        clic(q('[data-action="eliminar-carrito"]'));
+        elegir("#categoria", "");               // el catálogo ya no conserva las tarjetas filtradas
+        irAConfirmacion();
+        clic(q('[data-action="cancelar-pago"]'));
+        expect(espiaAlert).not.toHaveBeenCalled();
+        expect(espiaPrompt).not.toHaveBeenCalled();
+        expect(espiaConfirm).not.toHaveBeenCalled();
+    });
+
+    it("no escribe en la consola durante una compra completa", function () {
+        llegarAlResumen();
+        clic(q('[data-action="confirmar-pedido"]'));
+        expect(espiaConsoleLog).not.toHaveBeenCalled();
+        expect(espiaConsoleError).not.toHaveBeenCalled();
+    });
+
+    it("una compra completa solo escribe claves de la app en localStorage y no toca sessionStorage", function () {
+        llegarAlResumen();
+        clic(q('[data-action="confirmar-pedido"]'));
+        expect(instantanea(win.sessionStorage)).toEqual(storageAntes.session);
+        const ajenas = Object.keys(instantanea(win.localStorage))
+            .filter((clave) => !clave.startsWith("app:"))
+            .filter((clave) => !(clave in storageAntes.local));
+        expect(ajenas).toEqual([]);
+        expect(Object.keys(instantanea(win.localStorage)).every(
+            (clave) => CLAVES_STORAGE_PRUEBAS.includes(clave) || clave in storageAntes.local
+        )).toBeTrue();
+    });
+
+    it("los eventos se registran con addEventListener, sin manejadores en línea", function () {
+        expect(qa("[onclick],[onchange],[oninput],[onsubmit],[onkeyup]").length).toBe(0);
+        expect(q('script[type="module"][src$="js/script.js"]')).not.toBeNull();
+    });
+
+    it("los mensajes de estado son regiones accesibles (role=status)", function () {
+        for (const id of ["catalogo-mensaje", "carrito-mensaje", "pago-mensaje", "pedido-mensaje", "estado-aplicacion"]) {
+            expect(q(`#${id}`).getAttribute("role")).toBe("status");
+        }
+    });
+
+    it("los campos con error quedan asociados a su mensaje (aria-describedby / aria-invalid)", function () {
+        irAConfirmacion();
+        completarCliente();
+        const correo = escribir("#pedido-correo", "mal");
+        enviar("#form-pedido");                 // desde #167 el controlador valida al enviar, no al escribir
+        expect(correo.getAttribute("aria-invalid")).toBe("true");
+        const idMensaje = correo.getAttribute("aria-describedby");
+        expect(q(`#${idMensaje}`).textContent).not.toBe("");
+    });
+});
+
+// ---------------------------------------------------------------------------
+// Persistencia del carrito (FachadaStorage → StorageUtil → localStorage)
+// ---------------------------------------------------------------------------
+
+describe("Controlador - persistencia del carrito en Web Storage", function () {
+    const CLAVE_CARRITO = "app:carrito:items";
+
+    it("guarda el carrito en localStorage al agregar un producto", function () {
+        agregarAlCarrito("GUANTES-001");
+        const guardado = JSON.parse(win.localStorage.getItem(CLAVE_CARRITO));
+        expect(guardado.items.length).toBe(1);
+        expect(guardado.items[0].codigo).toBe("GUANTES-001");
+        expect(guardado.items[0].cantidad).toBe(1);
+    });
+
+    it("restaura el carrito al recargar la página", async function () {
+        agregarAlCarrito("GUANTES-001");
+        agregarAlCarrito("GUANTES-001");
+        agregarAlCarrito("PALA-001");
+        await recargarApp();
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("2");
+        expect(cantidadEnCarrito("PALA-001")).toBe("1");
+        expect(texto("#contador-carrito")).toBe("2");
+        expect(q('[data-action="iniciar-compra"]').disabled).toBeFalse();
+    });
+
+    it("conserva los cambios de cantidad y las eliminaciones tras recargar", async function () {
+        agregarAlCarrito("GUANTES-001");
+        agregarAlCarrito("PALA-001");
+        elegir(q('[data-action="cambiar-cantidad"][data-product-code="GUANTES-001"]'), "4");
+        clic(q('[data-action="eliminar-carrito"][data-product-code="PALA-001"]'));
+        await recargarApp();
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("4");
+        expect(cantidadEnCarrito("PALA-001")).toBeNull();
+    });
+
+    it("al vaciar el carrito y recargar, la página arranca con el carrito vacío", async function () {
+        agregarAlCarrito("GUANTES-001");
+        clic(q('[data-action="eliminar-carrito"]'));
+        await recargarApp();
+        expect(texto("#contador-carrito")).toBe("0");
+        expect(q('[data-action="iniciar-compra"]').disabled).toBeTrue();
+    });
+
+    it("inicia con el carrito vacío si el dato guardado está corrupto", async function () {
+        agregarAlCarrito("GUANTES-001");
+        win.localStorage.setItem(CLAVE_CARRITO, "{esto no es json");
+        await recargarApp();
+        expect(qa("#carrito-items [data-action='cambiar-cantidad']").length).toBe(0);
+        expect(q('[data-action="iniciar-compra"]').disabled).toBeTrue();
+    });
+
+    it("inicia con el carrito vacío si el dato guardado tiene una estructura inválida", async function () {
+        win.localStorage.setItem(CLAVE_CARRITO, JSON.stringify({ items: [{ codigo: "X", cantidad: -3 }] }));
+        await recargarApp();
+        expect(qa("#carrito-items [data-action='cambiar-cantidad']").length).toBe(0);
+    });
+
+    it("al confirmar un pedido el carrito queda vacío también después de recargar", async function () {
+        llegarAlResumen();
+        clic(q('[data-action="confirmar-pedido"]'));
+        await recargarApp();
+        expect(texto("#contador-carrito")).toBe("0");
+    });
+
+    it("no guarda nada en sessionStorage", function () {
+        agregarAlCarrito("GUANTES-001");
+        expect(instantanea(win.sessionStorage)).toEqual({});
+    });
+});
+
+// ---------------------------------------------------------------------------
+// Casos borde: carrito vacío, acciones repetidas y errores de storage
+// ---------------------------------------------------------------------------
+
+describe("Controlador - casos borde", function () {
+    describe("carrito vacío", function () {
+        it("no permite iniciar la compra y no muestra la sección de pago", function () {
+            iniciarCompra();
+            expect(q("#pago").hidden).toBeTrue();
+            expect(q('[data-action="iniciar-compra"]').disabled).toBeTrue();
+        });
+
+        it("enviar el formulario de pago sin productos avisa y no abre la confirmación", function () {
+            enviar("#form-pago");
+            expect(texto("#pago-mensaje")).toBe("No hay productos para pagar.");
+            expect(q("#confirmacion").hidden).toBeTrue();
+        });
+
+        it("el pedido no se puede enviar sin haber elegido un pago", function () {
+            enviar("#form-pedido");
+            expect(qa("#resumen-pedido *").length).toBe(0);
+        });
+
+        it("vaciar el carrito en medio del pago descarta las condiciones calculadas", function () {
+            irAConfirmacion();
+            clic(q('[data-action="eliminar-carrito"]'));
+            expect(texto("#contador-carrito")).toBe("0");
+            expect(q("#pago").hidden).toBeTrue();
+            expect(q("#confirmacion").hidden).toBeTrue();
+            expect(texto("#condiciones-pago")).toBe("");
+        });
+    });
+
+    describe("acciones repetidas", function () {
+        it("enviar dos veces el formulario de pago deja una sola confirmación abierta", function () {
+            irAlPago();
+            elegir("#metodo-pago", "efectivo-transferencia");
+            enviar("#form-pago");
+            enviar("#form-pago");
+            expect(q("#confirmacion").hidden).toBeFalse();
+            expect(qa("#condiciones-pago dl").length).toBe(1);
+        });
+
+        it("generar el resumen dos veces no duplica el botón de confirmar", function () {
+            irAConfirmacion();
+            completarCliente();
+            enviar("#form-pedido");
+            enviar("#form-pedido");
+            expect(qa('#resumen-pedido [data-action="confirmar-pedido"]').length).toBe(1);
+        });
+
+        it("confirmar dos veces el mismo pedido muestra un único número de pedido", function () {
+            llegarAlResumen();
+            const boton = q('[data-action="confirmar-pedido"]');
+            clic(boton);
+            clic(boton);
+            expect(texto("#resumen-pedido")).toMatch(/^Pedido confirmado: FL-\d+-0001/);
+            expect(texto("#contador-carrito")).toBe("0");
+        });
+
+        it("cancelar dos veces el pedido no cambia el estado", function () {
+            llegarAlResumen();
+            clic(q('[data-action="cancelar-pedido"]'));
+            clic(q('[data-action="cancelar-pedido"]'));
+            expect(q("#confirmacion").hidden).toBeTrue();
+            expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+        });
+
+        it("iniciar la compra dos veces seguidas no duplica el formulario de pago", function () {
+            agregarAlCarrito("GUANTES-001");
+            iniciarCompra();
+            iniciarCompra();
+            expect(q("#pago").hidden).toBeFalse();
+            expect(qa("#form-pago").length).toBe(1);
+        });
+    });
+
+    describe("errores del storage durante el uso", function () {
+        let setItemOriginal;
+        beforeEach(function () {
+            setItemOriginal = win.Storage.prototype.setItem;
+            win.Storage.prototype.setItem = function () {
+                throw new win.DOMException("Cuota excedida", "QuotaExceededError");
+            };
+        });
+        
+        afterEach(function () {
+            win.Storage.prototype.setItem = setItemOriginal;
+        });
+        
+        it("sigue funcionando si guardar en localStorage falla por cuota y avisa al usuario", function () {
+            agregarAlCarrito("GUANTES-001");
+            expect(texto("#contador-carrito")).toBe("1");
+            expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+            expect(texto("#carrito-mensaje")).toMatch(/no pudo guardarse/);
+        });
+        
+        it("RC62 - impide confirmar una compra cuando el storage rechaza las escrituras", function () {
+            llegarAlResumen();
+            clic(q('[data-action="confirmar-pedido"]'));
+
+            expect(texto("#pedido-mensaje"))
+                .toBe("No se pudo guardar la secuencia del pedido.");
+
+            expect(texto("#resumen-pedido"))
+                .not.toContain("Pedido confirmado:");
+
+            expect(texto("#contador-carrito")).toBe("1");
+
+            expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+
+            expect(q('[data-action="confirmar-pedido"]'))
+                .not.toBeNull();
+
+            expect(win.localStorage.getItem("app:pedidos:secuencia"))
+                .toBeNull();
+
+            expect(win.localStorage.getItem("app:pedidos:historial"))
+                .toBeNull();
+            });     
+        });
+    });
+
+describe("Controlador - eventos que no corresponden a una acción", function () {
+    it("un clic en una zona sin acción no cambia nada", function () {
+        irAConfirmacion();
+        const estado = () => [texto("#contador-carrito"), q("#pago").hidden, q("#confirmacion").hidden,
+            texto("#pago-mensaje"), texto("#pedido-mensaje")];
+        const antes = estado();
+        ["#catalogo", "#pago", "#confirmacion", "#carrito-items", "nav"].forEach((selector) => {
+            const zona = q(selector);
+            if (zona) clic(zona);
+        });
+        expect(estado()).toEqual(antes);
+        expect(qa(".is-invalid").length).toBe(0);
+    });
+
+    it("un input o change en el panel del carrito que no viene de una cantidad se ignora", function () {
+        agregarAlCarrito("GUANTES-001");
+        const contenedor = q("#carrito-items");
+        disparar(contenedor, "input");
+        disparar(contenedor, "change");
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+        expect(qa("#carrito-items .is-invalid").length).toBe(0);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// Rutas defensivas y de error (QA: RC2, RC21, RC24)
+//
+// Cada test de esta sección ejercita un camino que antes no ejecutaba ninguna
+// prueba. Los que necesitan una página alterada (sin elementos, con un control
+// modificado) lo dicen en su nombre: el usuario puede alterar el DOM desde las
+// herramientas del navegador y el controlador no debe romperse.
+// ---------------------------------------------------------------------------
+
+describe("Controlador - rutas defensivas y de error", function () {
+    /** Inyecta un botón con data-action dentro de un contenedor de la página. */
+    function inyectarBoton(contenedor, accion) {
+        const boton = doc.createElement("button");
+        boton.type = "button";
+        boton.dataset.action = accion;
+        contenedor.append(boton);
+        return boton;
+    }
+
+    /**
+     * Abre una copia de index.html a la que se le quitó algo, en un iframe con
+     * srcdoc (mismo origen). Antes de cargar script.js se registran los errores
+     * y los console.error de esa página.
+     */
+    async function abrirAppModificada(modificar) {
+        const html = await (await fetch(URL_APP)).text();
+        const pagina = new DOMParser().parseFromString(html, "text/html");
+        modificar(pagina);
+        const base = pagina.createElement("base");
+        base.href = URL_APP;
+        const registro = pagina.createElement("script");
+        registro.textContent =
+            "window.__errores = []; window.__logs = [];" +
+            "addEventListener('error', (e) => { __errores.push(String(e.message)); e.preventDefault(); });" +
+            "console.error = (...a) => __logs.push(a.join(' '));";
+        pagina.head.prepend(registro);
+        pagina.head.prepend(base);
+
+        const iframe = document.createElement("iframe");
+        iframe.title = "app-modificada";
+        iframe.style.cssText = "position:fixed;left:-10000px;top:0;width:1280px;height:900px;border:0;";
+        const cargado = new Promise((resolve) => iframe.addEventListener("load", resolve, { once: true }));
+        iframe.srcdoc = "<!doctype html>" + pagina.documentElement.outerHTML;
+        document.body.append(iframe);
+        await cargado;
+        await pausa(50);
+        return iframe;
+    }
+
+    it("confirmar sin pedido pendiente avisa y no confirma nada (RC24)", function () {
+        irAConfirmacion();
+        // El botón real solo existe dentro del resumen, que no se generó todavía:
+        // se inyecta uno con la misma acción para disparar la guardia de confirmarPedido().
+        clic(inyectarBoton(q("#confirmacion"), "confirmar-pedido"));
+
+        expect(texto("#pedido-mensaje")).toBe("Revisa los datos y genera el resumen antes de confirmar.");
+        expect(q("#pedido-mensaje").classList).toContain("text-danger");
+        expect(q("#resumen-pedido").textContent.trim()).toBe("");
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+    });
+
+    it("una acción desconocida dentro del panel del carrito se ignora", function () {
+        agregarAlCarrito("GUANTES-001");
+        clic(inyectarBoton(q("#carrito"), "accion-que-no-existe"));
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+        expect(q("#pago").hidden).toBeTrue();
+    });
+
+    it("una acción desconocida dentro de la confirmación se ignora", function () {
+        llegarAlResumen();
+        const antes = texto("#resumen-pedido");
+        clic(inyectarBoton(q("#confirmacion"), "accion-que-no-existe"));
+        expect(texto("#resumen-pedido")).toBe(antes);
+        expect(q("#confirmacion").hidden).toBeFalse();
+    });
+
+    it("el cierre del carrito sin haber iniciado la compra no abre el pago", function () {
+        agregarAlCarrito("GUANTES-001");
+        disparar(q("#carrito"), "hidden.bs.offcanvas");
+        expect(q("#pago").hidden).toBeTrue();
+    });
+
+    it("un input que no viene de un campo del formulario del pedido no descarta el resumen", function () {
+        llegarAlResumen();
+        disparar(q("#form-pedido"), "input");
+        expect(q('#resumen-pedido [data-action="confirmar-pedido"]')).not.toBeNull();
+    });
+
+    it("si el reloj del sistema es inválido, confirmar muestra el error y permite reintentar", function () {
+        llegarAlResumen();
+        const reloj = spyOn(win.Date, "now").and.returnValue(-1);
+
+        clic(q('#resumen-pedido [data-action="confirmar-pedido"]'));
+        expect(texto("#pedido-mensaje")).toBe("La fecha o la secuencia no son validas.");
+        expect(q("#pedido-mensaje").classList).toContain("text-danger");
+        expect(q('#resumen-pedido [data-action="confirmar-pedido"]')).not.toBeNull();
+        expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+
+        reloj.and.callThrough();
+        clic(q('#resumen-pedido [data-action="confirmar-pedido"]'));
+        expect(texto("#resumen-pedido")).toMatch(/Pedido confirmado: FL-\d+-0001/);
+    });
+
+    it("con una cuota inexistente (opción agregada a mano) marca el campo de cuotas como inválido", function () {
+        irAlPago();
+        elegir("#metodo-pago", "tarjeta");
+        const opcion = doc.createElement("option");
+        opcion.value = "99";
+        opcion.textContent = "99 cuotas";
+        q("#cuotas").append(opcion);
+        elegir("#cuotas", "99");
+        enviar("#form-pago");
+
+        expect(q("#cuotas").getAttribute("aria-invalid")).toBe("true");
+        expect(q("#metodo-pago").getAttribute("aria-invalid")).not.toBe("true");
+        expect(q("#pago-mensaje").classList).toContain("text-danger");
+        expect(q("#confirmacion").hidden).toBeTrue();
+    });
+
+    it("un error inesperado al generar el resumen no se oculta como error de validación", function () {
+        irAConfirmacion();
+        const errores = [];
+        const alError = (e) => { errores.push(e.message); e.preventDefault(); };
+        win.addEventListener("error", alError);
+        try {
+            // El campo falla con un Error común (no TypeError ni RangeError): es un bug, no un dato inválido.
+            Object.defineProperty(q("#pedido-nombre"), "value", {
+                get() { throw new Error("fallo inesperado del campo"); }
             });
-        });
-        it("devuelve false para NO y N", function () {
-            ["NO", "n", " No "].forEach(function (respuesta) {
-                responderPrompts([respuesta]);
-                expect(preguntarSiNo("¿?")).toBe(false);
-            });
-        });
-        it("devuelve null al cancelar, sin mostrar mensajes", function () {
-            responderPrompts([null]);
-            expect(preguntarSiNo("¿?")).toBeNull();
-            expect(window.alert).not.toHaveBeenCalled();
-        });
-        it("avisa y vuelve a preguntar si la respuesta no es SI ni NO", function () {
-            responderPrompts(["tal vez", "SI"]);
-            expect(preguntarSiNo("¿?")).toBe(true);
-            expect(window.prompt).toHaveBeenCalledTimes(2);
-            expect(alertContiene("Ingresa SI o NO")).toBe(true);
-        });
+            enviar("#form-pedido");
+        } finally {
+            win.removeEventListener("error", alError);
+        }
+        expect(errores.some((m) => m.includes("fallo inesperado del campo"))).toBeTrue();
+        expect(q("#resumen-pedido").textContent.trim()).toBe("");
     });
 
-    describe("solicitarDatoValido", function () {
-        var noVacio = function (texto) { return texto.trim() !== ""; };
+    it("con el filtro de precio alterado (control modificado a mano) muestra el error del modelo", function () {
+        const casilla = q("#activar-filtro-precio");
+        casilla.checked = true;
+        disparar(casilla, "change");
+        const control = q("#precio-hasta");
+        control.type = "text";               // el usuario edita el HTML desde las herramientas del navegador
+        control.value = "abc";
+        disparar(control, "input");
 
-        it("devuelve la respuesta recortada cuando es válida", function () {
-            responderPrompts(["  Ana  "]);
-            expect(solicitarDatoValido("Nombre:", noVacio, "error")).toBe("Ana");
-            expect(window.alert).not.toHaveBeenCalled();
-        });
-        it("muestra el error y repite la pregunta hasta recibir un dato válido", function () {
-            responderPrompts(["   ", "", "Ana"]);
-            expect(solicitarDatoValido("Nombre:", noVacio, "Dato inválido")).toBe("Ana");
-            expect(window.prompt).toHaveBeenCalledTimes(3);
-            expect(mensajesAlert()).toEqual(["Dato inválido", "Dato inválido"]);
-        });
-        it("devuelve null al cancelar", function () {
-            responderPrompts([null]);
-            expect(solicitarDatoValido("Nombre:", noVacio, "error")).toBeNull();
-        });
+        expect(q("#catalogo-mensaje").classList).toContain("text-danger");
+        expect(texto("#catalogo-mensaje")).not.toBe("");
+        expect(control.getAttribute("aria-invalid")).toBe("true");
     });
 
-    describe("ejecutarBusquedaYFiltrado", function () {
-        it("busca por texto, informa los resultados y finaliza con NO", function () {
-            responderPrompts(["martillo", "", "", "NO"]);
-            ejecutarBusquedaYFiltrado();
-            expect(window.prompt).toHaveBeenCalledTimes(4);
-            expect(alertContiene("Resultados ordenados por precio")).toBe(true);
-            expect(alertContiene("Martillo galponero")).toBe(true);
-            expect(console.log).toHaveBeenCalledWith("Productos encontrados:", jasmine.any(Array));
-        });
-        it("filtra por categoría", function () {
-            responderPrompts(["", "Jardineria", "", "NO"]);
-            ejecutarBusquedaYFiltrado();
-            expect(alertContiene("Pala de punta")).toBe(true);
-            expect(alertContiene("Martillo")).toBe(false);
-        });
-        it("filtra por precio máximo y ordena por precio", function () {
-            responderPrompts(["", "", "7000", "NO"]);
-            ejecutarBusquedaYFiltrado();
-            var mensaje = mensajesAlert()[0];
-            expect(mensaje).toContain("Guantes");
-            expect(mensaje).toContain("Destornillador");
-            expect(mensaje).toContain("Pinza");
-            expect(mensaje).not.toContain("Martillo");
-            expect(mensaje.indexOf("Guantes")).toBeLessThan(mensaje.indexOf("Destornillador"));
-            expect(mensaje.indexOf("Destornillador")).toBeLessThan(mensaje.indexOf("Pinza"));
-        });
-        it("con los tres filtros vacíos muestra todo el catálogo", function () {
-            responderPrompts(["", "", "", "NO"]);
-            ejecutarBusquedaYFiltrado();
-            var mensaje = mensajesAlert()[0];
-            expect(mensaje.split("\n").length - 1).toBe(catalogoProductos.length);
-        });
-        it("informa 'Sin coincidencias' cuando nada cumple los filtros", function () {
-            responderPrompts(["producto inexistente", "", "", "NO"]);
-            ejecutarBusquedaYFiltrado();
-            expect(mensajesAlert()).toEqual(["Sin coincidencias."]);
-            expect(console.log).not.toHaveBeenCalled();
-        });
-        it("con precio inválido muestra el error y permite reintentar con otra búsqueda", function () {
-            responderPrompts(["", "", "abc", "SI", "", "", "5000", "NO"]);
-            ejecutarBusquedaYFiltrado();
-            var mensajes = mensajesAlert();
-            expect(mensajes[0]).toBe("El precio maximo debe ser un numero mayor o igual a cero.");
-            expect(mensajes[1]).toContain("Guantes");
-            expect(window.prompt).toHaveBeenCalledTimes(8);
-        });
-        it("con precio negativo muestra el error de validación", function () {
-            responderPrompts(["", "", "-5", "NO"]);
-            ejecutarBusquedaYFiltrado();
-            expect(alertContiene("mayor o igual a cero")).toBe(true);
-        });
-        it("repite la búsqueda mientras el usuario responda SI", function () {
-            responderPrompts(["pala", "", "", "SI", "pinza", "", "", "SI", "", "Accesorios", "", "NO"]);
-            ejecutarBusquedaYFiltrado();
-            expect(window.prompt).toHaveBeenCalledTimes(12);
-            expect(window.alert).toHaveBeenCalledTimes(3);
-        });
-        it("si el usuario cancela la pregunta de repetir, vuelve al menú", function () {
-            responderPrompts(["pala", "", "", null]);
-            ejecutarBusquedaYFiltrado();
-            expect(window.prompt).toHaveBeenCalledTimes(4);
-        });
-        it("si el usuario cancela el prompt del texto, vuelve al menú sin mostrar nada", function () {
-            responderPrompts([null]);
-            ejecutarBusquedaYFiltrado();
-            expect(window.prompt).toHaveBeenCalledTimes(1);
-            expect(window.alert).not.toHaveBeenCalled();
-        });
-        it("si el usuario cancela el prompt de la categoría, vuelve al menú sin mostrar nada", function () {
-            responderPrompts(["pala", null]);
-            ejecutarBusquedaYFiltrado();
-            expect(window.prompt).toHaveBeenCalledTimes(2);
-            expect(window.alert).not.toHaveBeenCalled();
-        });
-        it("si el usuario cancela el prompt del precio, vuelve al menú sin mostrar nada", function () {
-            responderPrompts(["pala", "", null]);
-            ejecutarBusquedaYFiltrado();
-            expect(window.prompt).toHaveBeenCalledTimes(3);
-            expect(window.alert).not.toHaveBeenCalled();
-        });
-    });
-});
-
-describe("Flujo 2 - Gestión del carrito (interacción)", function () {
-    beforeEach(prepararEspias);
-
-    describe("mostrarCarrito", function () {
-        it("informa que el carrito está vacío", function () {
-            mostrarCarrito();
-            expect(mensajesAlert()).toEqual(["El carrito esta vacio."]);
-        });
-        it("muestra los ítems, el subtotal y el total", function () {
-            cargarCarrito("GUANTES-001", 2);
-            mostrarCarrito();
-            expect(alertContiene("2 x " + formatearMoneda(4401) + " = " + formatearMoneda(8802))).toBe(true);
-            expect(alertContiene("Total: " + formatearMoneda(8802))).toBe(true);
-        });
+    it("una página a la que le falta un elemento obligatorio avisa y no registra eventos", async function () {
+        const iframe = await abrirAppModificada((pagina) => pagina.querySelector("#form-pago").remove());
+        try {
+            const ventana = iframe.contentWindow;
+            expect(ventana.__logs.some((l) => l.includes("No se encontró el elemento requerido: #form-pago"))).toBeTrue();
+            expect(ventana.__errores.some((m) => m.includes("Faltan elementos obligatorios: formPago"))).toBeTrue();
+            // Como la inicialización se detuvo, el catálogo no se dibujó.
+            expect(iframe.contentDocument.querySelectorAll("#resultados-catalogo article").length).toBe(0);
+        } finally {
+            iframe.remove();
+        }
     });
 
-    describe("ejecutarGestionCarrito", function () {
-        it("agrega un producto válido, informa la actualización y muestra el carrito", function () {
-            responderPrompts(["1", "GUANTES-001", "2", "0"]);
-            ejecutarGestionCarrito();
-            expect(carritoActual.length).toBe(1);
-            expect(carritoActual[0].cantidad).toBe(2);
-            expect(alertContiene("Carrito actualizado.")).toBe(true);
-            expect(alertContiene("Total: " + formatearMoneda(8802))).toBe(true);
-        });
-        it("suma la cantidad cuando el producto ya estaba en el carrito", function () {
-            responderPrompts(["1", "GUANTES-001", "2", "1", "guantes-001", "1", "0"]);
-            ejecutarGestionCarrito();
-            expect(carritoActual.length).toBe(1);
-            expect(carritoActual[0].cantidad).toBe(3);
-        });
-        it("rechaza un producto inexistente y deja el carrito sin cambios", function () {
-            responderPrompts(["1", "NO-EXISTE", "1", "0"]);
-            ejecutarGestionCarrito();
-            expect(carritoActual).toEqual([]);
-            expect(alertContiene("El producto no existe en el catalogo.")).toBe(true);
-        });
-        it("rechaza cantidades inválidas (0, decimal, texto)", function () {
-            responderPrompts(["1", "GUANTES-001", "0", "1", "GUANTES-001", "1.5", "1", "GUANTES-001", "abc", "0"]);
-            ejecutarGestionCarrito();
-            expect(carritoActual).toEqual([]);
-            var errores = mensajesAlert().filter(function (m) { return m.indexOf("entero mayor o igual a uno") !== -1; });
-            expect(errores.length).toBe(3);
-        });
-        it("cambia la cantidad de un ítem del carrito", function () {
-            cargarCarrito("PALA-001", 1);
-            responderPrompts(["2", "PALA-001", "4", "0"]);
-            ejecutarGestionCarrito();
-            expect(carritoActual[0].cantidad).toBe(4);
-        });
-        it("rechaza cambiar la cantidad de un producto que no está en el carrito o con cantidad inválida", function () {
-            cargarCarrito("PALA-001", 1);
-            responderPrompts(["2", "PINZA-001", "2", "2", "PALA-001", "0", "0"]);
-            ejecutarGestionCarrito();
-            expect(carritoActual[0].cantidad).toBe(1);
-            expect(alertContiene("El producto no esta en el carrito.")).toBe(true);
-            expect(alertContiene("entero mayor o igual a uno")).toBe(true);
-        });
-        it("elimina un ítem del carrito y luego muestra el carrito vacío", function () {
-            cargarCarrito("PALA-001", 1);
-            responderPrompts(["3", "PALA-001", "0"]);
-            ejecutarGestionCarrito();
-            expect(carritoActual).toEqual([]);
-            expect(alertContiene("El carrito esta vacio.")).toBe(true);
-        });
-        it("informa si se intenta eliminar un producto que no está en el carrito", function () {
-            responderPrompts(["3", "PALA-001", "0"]);
-            ejecutarGestionCarrito();
-            expect(alertContiene("El producto no esta en el carrito.")).toBe(true);
-        });
-        it("avisa ante una opción inválida y vuelve a mostrar el menú", function () {
-            responderPrompts(["9", "0"]);
-            ejecutarGestionCarrito();
-            expect(alertContiene("Opcion invalida.")).toBe(true);
-            expect(window.prompt).toHaveBeenCalledTimes(2);
-        });
-        it("cancelar el prompt del código no modifica el carrito ni informa actualizaciones ni errores", function () {
-            cargarCarrito("PALA-001", 1);
-            responderPrompts(["1", null, "2", null, "3", null, "0"]);
-            ejecutarGestionCarrito();
-            expect(carritoActual.length).toBe(1);
-            expect(carritoActual[0].cantidad).toBe(1);
-            // El único alert es el que muestra el carrito al salir con la opción 0.
-            expect(window.alert).toHaveBeenCalledTimes(1);
-            expect(alertContiene("Carrito actualizado.")).toBe(false);
-        });
-        it("cancelar el prompt de la cantidad no modifica el carrito", function () {
-            responderPrompts(["1", "PALA-001", null, "0"]);
-            ejecutarGestionCarrito();
-            expect(carritoActual).toEqual([]);
-            cargarCarrito("PALA-001", 1);
-            responderPrompts(["2", "PALA-001", null, "0"]);
-            ejecutarGestionCarrito();
-            expect(carritoActual[0].cantidad).toBe(1);
-            expect(alertContiene("Carrito actualizado.")).toBe(false);
-        });
-        it("cancelar el menú equivale a salir y conserva el carrito", function () {
-            cargarCarrito("PALA-001", 2);
-            responderPrompts([null]);
-            ejecutarGestionCarrito();
-            expect(window.prompt).toHaveBeenCalledTimes(1);
-            expect(carritoActual[0].cantidad).toBe(2);
-        });
-        it("la opción 0 vuelve al menú principal sin pasar al pago", function () {
-            cargarCarrito("PALA-001", 1);
-            responderPrompts(["0"]);
-            ejecutarGestionCarrito();
-            expect(window.prompt).toHaveBeenCalledTimes(1);
-            expect(condicionesPagoActuales).toBeNull();
-        });
-        it("si cambia el total y había un pago elegido, lo descarta y avisa", function () {
-            cargarCarrito("GUANTES-001", 1);
-            responderPrompts(["1"]);
-            ejecutarPago();
-            expect(condicionesPagoActuales).not.toBeNull();
-            window.alert.calls.reset();
-
-            responderPrompts(["1", "PALA-001", "1", "0"]);
-            ejecutarGestionCarrito();
-            expect(condicionesPagoActuales).toBeNull();
-            expect(alertContiene("Debes seleccionar nuevamente el metodo de pago y las cuotas.")).toBe(true);
-        });
-        it("si el total no cambia, conserva el pago elegido", function () {
-            cargarCarrito("GUANTES-001", 1);
-            responderPrompts(["1"]);
-            ejecutarPago();
-            var pagoAntes = condicionesPagoActuales;
-
-            responderPrompts(["2", "GUANTES-001", "1", "0"]);
-            ejecutarGestionCarrito();
-            expect(condicionesPagoActuales).toBe(pagoAntes);
-        });
-        it("'Comprar' con el carrito vacío informa y permanece en el menú del carrito", function () {
-            responderPrompts(["4", "0"]);
-            ejecutarGestionCarrito();
-            expect(alertContiene("No se puede comprar con el carrito vacio.")).toBe(true);
-            expect(window.prompt).toHaveBeenCalledTimes(2);
-            expect(alertContiene("Metodo de pago")).toBe(false);
-        });
-        it("'Comprar' con ítems sale del menú y continúa en el flujo de pago (transición Comprar → Pago)", function () {
-            responderPrompts(["1", "GUANTES-001", "1", "4", "1"]);
-            ejecutarGestionCarrito();
-            // La 5.ª llamada a prompt() es la del método de pago: el menú del carrito no se vuelve a mostrar.
-            expect(window.prompt).toHaveBeenCalledTimes(5);
-            expect(window.prompt.calls.argsFor(4)[0]).toContain("Metodo de pago");
-            expect(alertContiene("Condiciones de pago")).toBe(true);
-            expect(condicionesPagoActuales).not.toBeNull();
-            expect(condicionesPagoActuales.metodoPago).toBe("efectivo-transferencia");
-        });
-        it("'Comprar' deja el carrito intacto al pasar al pago", function () {
-            responderPrompts(["1", "PALA-001", "2", "4", "1"]);
-            ejecutarGestionCarrito();
-            expect(carritoActual.length).toBe(1);
-            expect(carritoActual[0].cantidad).toBe(2);
-        });
-        it("si el usuario cancela en el pago iniciado desde 'Comprar', no se guarda ningún pago", function () {
-            cargarCarrito("PALA-001", 1);
-            responderPrompts(["4", null]);
-            ejecutarGestionCarrito();
-            expect(condicionesPagoActuales).toBeNull();
-            expect(carritoActual.length).toBe(1);
-        });
-    });
-});
-
-describe("Flujo 3 - Pago y cálculo de cuotas (interacción)", function () {
-    beforeEach(prepararEspias);
-
-    it("con el carrito vacío informa que no hay productos para pagar y no pide el método", function () {
-        responderPrompts([]);
-        ejecutarPago();
-        expect(mensajesAlert()).toEqual(["No hay productos para pagar."]);
-        expect(window.prompt).not.toHaveBeenCalled();
-        expect(condicionesPagoActuales).toBeNull();
-    });
-    it("efectivo/transferencia: 1 cuota sin recargo, con resumen y pago guardado", function () {
-        cargarCarrito("GUANTES-001", 10);
-        responderPrompts(["1"]);
-        ejecutarPago();
-        var resumen = mensajesAlert()[0];
-        expect(resumen).toContain("Condiciones de pago");
-        expect(resumen).toContain("Total original: " + formatearMoneda(44010));
-        expect(resumen).toContain("Cuotas: 1");
-        expect(resumen).toContain("Interes: " + formatearMoneda(0));
-        expect(resumen).toContain("Total financiado: " + formatearMoneda(44010));
-        expect(resumen).toContain("Valor de cada cuota: " + formatearMoneda(44010));
-        expect(condicionesPagoActuales).toEqual(jasmine.objectContaining({
-            metodoPago: "efectivo-transferencia", cuotas: 1, porcentajeRecargo: 0, totalFinanciado: 44010
-        }));
-    });
-    it("tarjeta en 1 cuota: sin recargo", function () {
-        cargarCarrito("GUANTES-001", 10);
-        responderPrompts(["2", "1"]);
-        ejecutarPago();
-        expect(condicionesPagoActuales).toEqual(jasmine.objectContaining({
-            metodoPago: "tarjeta", cuotas: 1, interes: 0, totalFinanciado: 44010, valorCuota: 44010
-        }));
-    });
-    it("tarjeta en 3 cuotas: recargo del 10 %", function () {
-        cargarCarrito("GUANTES-001", 10);
-        responderPrompts(["2", "3"]);
-        ejecutarPago();
-        expect(condicionesPagoActuales).toEqual(jasmine.objectContaining({
-            cuotas: 3, porcentajeRecargo: 10, interes: 4401, totalFinanciado: 48411, valorCuota: 16137
-        }));
-        expect(alertContiene("Valor de cada cuota: " + formatearMoneda(16137))).toBe(true);
-    });
-    it("tarjeta en 6 cuotas: recargo del 20 %", function () {
-        cargarCarrito("GUANTES-001", 10);
-        responderPrompts(["2", "6"]);
-        ejecutarPago();
-        expect(condicionesPagoActuales).toEqual(jasmine.objectContaining({
-            cuotas: 6, porcentajeRecargo: 20, interes: 8802, totalFinanciado: 52812, valorCuota: 8802
-        }));
-    });
-    it("método de pago inválido: avisa y vuelve a pedirlo", function () {
-        cargarCarrito("GUANTES-001", 1);
-        responderPrompts(["9", "", "abc", "1"]);
-        ejecutarPago();
-        var errores = mensajesAlert().filter(function (m) { return m === "Opcion de pago invalida."; });
-        expect(errores.length).toBe(3);
-        expect(window.prompt).toHaveBeenCalledTimes(4);
-        expect(condicionesPagoActuales.metodoPago).toBe("efectivo-transferencia");
-    });
-    it("cuotas no ofrecidas: avisa y vuelve a pedirlas", function () {
-        cargarCarrito("GUANTES-001", 1);
-        responderPrompts(["2", "2", "12", "abc", "3"]);
-        ejecutarPago();
-        var errores = mensajesAlert().filter(function (m) { return m === "Selecciona 1, 3 o 6 cuotas."; });
-        expect(errores.length).toBe(3);
-        expect(condicionesPagoActuales.cuotas).toBe(3);
-    });
-    it("cancelar el método de pago no guarda condiciones ni muestra el resumen", function () {
-        cargarCarrito("GUANTES-001", 1);
-        responderPrompts([null]);
-        ejecutarPago();
-        expect(condicionesPagoActuales).toBeNull();
-        expect(window.alert).not.toHaveBeenCalled();
-    });
-    it("cancelar las cuotas no guarda condiciones ni muestra el resumen", function () {
-        cargarCarrito("GUANTES-001", 1);
-        responderPrompts(["2", null]);
-        ejecutarPago();
-        expect(condicionesPagoActuales).toBeNull();
-        expect(window.alert).not.toHaveBeenCalled();
-    });
-    it("al cancelar, el carrito no se modifica", function () {
-        cargarCarrito("GUANTES-001", 3);
-        responderPrompts(["2", null]);
-        ejecutarPago();
-        expect(carritoActual.length).toBe(1);
-        expect(carritoActual[0].cantidad).toBe(3);
-    });
-    it("al elegir de nuevo el pago reemplaza las condiciones anteriores", function () {
-        cargarCarrito("GUANTES-001", 10);
-        responderPrompts(["2", "6"]);
-        ejecutarPago();
-        responderPrompts(["1"]);
-        ejecutarPago();
-        expect(condicionesPagoActuales.metodoPago).toBe("efectivo-transferencia");
-        expect(condicionesPagoActuales.cuotas).toBe(1);
-    });
-});
-
-describe("Flujo 4 - Confirmación del pedido (interacción)", function () {
-    var mensajeCancelado = "Pedido cancelado. Se conservaron el carrito y las condiciones de pago.";
-
-    beforeEach(function () {
-        prepararEspias();
-        cargarCarrito("GUANTES-001", 2);
-        cargarPagoEfectivo();
+    it("una página sin el elemento opcional #estado-aplicacion funciona igual", async function () {
+        const iframe = await abrirAppModificada((pagina) => pagina.querySelector("#estado-aplicacion").remove());
+        try {
+            const ventana = iframe.contentWindow;
+            const documento = iframe.contentDocument;
+            expect(ventana.__errores).toEqual([]);
+            expect(ventana.__logs).toEqual([]);
+            documento.querySelector('#catalogo [data-action="agregar-carrito"][data-product-code="GUANTES-001"]')
+                .dispatchEvent(new ventana.MouseEvent("click", { bubbles: true }));
+            expect(documento.querySelector("#contador-carrito").textContent.trim()).toBe("1");
+            documento.querySelector('[data-action="iniciar-compra"]')
+                .dispatchEvent(new ventana.MouseEvent("click", { bubbles: true }));
+            // Sin #estado-aplicacion, el aviso de carga se muestra en el mensaje del carrito.
+            expect(documento.querySelector("#carrito-mensaje").textContent).toContain("Preparando el pago");
+        } finally {
+            iframe.remove();
+        }
     });
 
-    it("con el carrito vacío informa que falta completar y no pide datos", function () {
-        reiniciarEstado();
-        responderPrompts([]);
-        ejecutarConfirmacionPedido();
-        expect(mensajesAlert()).toEqual(["Falta completar el carrito o elegir un metodo de pago."]);
-        expect(window.prompt).not.toHaveBeenCalled();
-    });
-    it("sin método de pago elegido informa que falta completar y no pide datos", function () {
-        condicionesPagoActuales = null;
-        responderPrompts([]);
-        ejecutarConfirmacionPedido();
-        expect(mensajesAlert()).toEqual(["Falta completar el carrito o elegir un metodo de pago."]);
-        expect(window.prompt).not.toHaveBeenCalled();
-        expect(carritoActual.length).toBe(1);
-    });
-    it("nombre vacío o numérico: avisa y vuelve a pedirlo", function () {
-        responderPrompts(["   ", "123", "Juan Pérez", "juan@correo.com", "Calle 123", "SI"]);
-        ejecutarConfirmacionPedido();
-        var errores = mensajesAlert().filter(function (m) { return m.indexOf("El nombre no puede estar vacio") === 0; });
-        expect(errores.length).toBe(2);
-        expect(alertContiene("Pedido confirmado")).toBe(true);
-    });
-    it("correo inválido: avisa y vuelve a pedirlo", function () {
-        responderPrompts(["Juan Pérez", "juan", "juan@", "juan@correo.com", "Calle 123", "SI"]);
-        ejecutarConfirmacionPedido();
-        var errores = mensajesAlert().filter(function (m) { return m.indexOf("Ingresa un correo valido") === 0; });
-        expect(errores.length).toBe(2);
-    });
-    it("dirección vacía: avisa y vuelve a pedirla", function () {
-        responderPrompts(["Juan Pérez", "juan@correo.com", "  ", "Calle 123", "SI"]);
-        ejecutarConfirmacionPedido();
-        expect(alertContiene("La direccion no puede estar vacia.")).toBe(true);
-        expect(window.prompt).toHaveBeenCalledTimes(5);
-    });
-    it("muestra el resumen con cliente, productos, importes, pago y envío antes de confirmar", function () {
-        responderPrompts(["  Juan Pérez ", "juan@correo.com", " Calle 123 ", "NO"]);
-        ejecutarConfirmacionPedido();
-        var resumen = mensajesAlert()[0];
-        expect(resumen).toContain("Resumen del pedido para Juan Pérez");
-        expect(resumen).toContain("2 x " + formatearMoneda(4401) + " = " + formatearMoneda(8802));
-        expect(resumen).toContain("Total original: " + formatearMoneda(8802));
-        expect(resumen).toContain("Metodo: Efectivo / transferencia");
-        expect(resumen).toContain("Envio a: Calle 123");
-        expect(resumen).toContain("Correo: juan@correo.com");
-    });
-    it("al confirmar con SI genera el número de pedido y muestra la confirmación", function () {
-        spyOn(Date, "now").and.returnValue(1700000000000);
-        responderPrompts(["Juan Pérez", "juan@correo.com", "Calle 123", "SI"]);
-        ejecutarConfirmacionPedido();
-        expect(alertContiene("Pedido confirmado: FL-1700000000000-0001")).toBe(true);
-        expect(secuenciaPedidos).toBe(2);
-    });
-    it("al confirmar vacía el carrito y el método de pago", function () {
-        responderPrompts(["Juan Pérez", "juan@correo.com", "Calle 123", "s"]);
-        ejecutarConfirmacionPedido();
-        expect(carritoActual).toEqual([]);
-        expect(condicionesPagoActuales).toBeNull();
-    });
-    it("después de confirmar no se puede confirmar de nuevo el mismo pedido", function () {
-        responderPrompts(["Juan Pérez", "juan@correo.com", "Calle 123", "SI"]);
-        ejecutarConfirmacionPedido();
-        window.alert.calls.reset();
-        responderPrompts([]);
-        ejecutarConfirmacionPedido();
-        expect(mensajesAlert()).toEqual(["Falta completar el carrito o elegir un metodo de pago."]);
-    });
-    it("el número de pedido aumenta en pedidos consecutivos", function () {
-        spyOn(Date, "now").and.returnValue(1700000000000);
-        responderPrompts(["Juan Pérez", "juan@correo.com", "Calle 123", "SI"]);
-        ejecutarConfirmacionPedido();
-        cargarCarrito("PALA-001", 1);
-        cargarPagoEfectivo();
-        responderPrompts(["Juan Pérez", "juan@correo.com", "Calle 123", "SI"]);
-        ejecutarConfirmacionPedido();
-        expect(alertContiene("FL-1700000000000-0001")).toBe(true);
-        expect(alertContiene("FL-1700000000000-0002")).toBe(true);
-    });
-    it("responder NO cancela el pedido y conserva el carrito y el pago", function () {
-        var pagoAntes = condicionesPagoActuales;
-        responderPrompts(["Juan Pérez", "juan@correo.com", "Calle 123", "NO"]);
-        ejecutarConfirmacionPedido();
-        expect(mensajesAlert()[mensajesAlert().length - 1]).toBe(mensajeCancelado);
-        expect(carritoActual.length).toBe(1);
-        expect(condicionesPagoActuales).toBe(pagoAntes);
-        expect(alertContiene("Pedido confirmado")).toBe(false);
-    });
-    it("cancelar el prompt de SI/NO cancela el pedido y conserva el estado", function () {
-        responderPrompts(["Juan Pérez", "juan@correo.com", "Calle 123", null]);
-        ejecutarConfirmacionPedido();
-        expect(alertContiene(mensajeCancelado)).toBe(true);
-        expect(carritoActual.length).toBe(1);
-        expect(condicionesPagoActuales).not.toBeNull();
-    });
-    it("cancelar el nombre cancela el pedido y conserva el estado", function () {
-        responderPrompts([null]);
-        ejecutarConfirmacionPedido();
-        expect(mensajesAlert()).toEqual([mensajeCancelado]);
-        expect(window.prompt).toHaveBeenCalledTimes(1);
-        expect(carritoActual.length).toBe(1);
-        expect(condicionesPagoActuales).not.toBeNull();
-    });
-    it("cancelar el correo cancela el pedido y conserva el estado", function () {
-        responderPrompts(["Juan Pérez", null]);
-        ejecutarConfirmacionPedido();
-        expect(mensajesAlert()).toEqual([mensajeCancelado]);
-        expect(window.prompt).toHaveBeenCalledTimes(2);
-        expect(carritoActual.length).toBe(1);
-        expect(condicionesPagoActuales).not.toBeNull();
-    });
-    it("cancelar la dirección cancela el pedido y conserva el estado", function () {
-        responderPrompts(["Juan Pérez", "juan@correo.com", null]);
-        ejecutarConfirmacionPedido();
-        expect(mensajesAlert()).toEqual([mensajeCancelado]);
-        expect(window.prompt).toHaveBeenCalledTimes(3);
-        expect(carritoActual.length).toBe(1);
-        expect(condicionesPagoActuales).not.toBeNull();
-    });
-});
-
-describe("Menú principal - integración de los flujos", function () {
-    beforeEach(prepararEspias);
-
-    it("la opción 0 y cancelar el menú terminan sin mostrar mensajes", function () {
-        responderPrompts(["0"]);
-        iniciarMenuPrincipal();
-        responderPrompts([null]);
-        iniciarMenuPrincipal();
-        expect(window.alert).not.toHaveBeenCalled();
-    });
-    it("una opción inválida avisa y vuelve a mostrar el menú", function () {
-        responderPrompts(["7", "0"]);
-        iniciarMenuPrincipal();
-        expect(alertContiene("Opcion invalida.")).toBe(true);
-        expect(window.prompt).toHaveBeenCalledTimes(2);
-    });
-    it("cada opción del menú abre su flujo", function () {
-        responderPrompts(["1", null, "2", "0", "3", "4", "0"]);
-        iniciarMenuPrincipal();
-        expect(alertContiene("No hay productos para pagar.")).toBe(true);
-        expect(alertContiene("Falta completar el carrito o elegir un metodo de pago.")).toBe(true);
-    });
-    it("recorrido completo: agregar al carrito, Comprar, pago y confirmación del pedido", function () {
-        spyOn(Date, "now").and.returnValue(1700000000000);
-        responderPrompts([
-            "2", "1", "GUANTES-001", "1", "4", "2", "3",   // carrito → Comprar → tarjeta en 3 cuotas
-            "4", "Juan Pérez", "juan@correo.com", "Calle 123", "SI", // confirmar pedido
-            "0"                                                // salir
-        ]);
-        iniciarMenuPrincipal();
-        expect(alertContiene("Condiciones de pago")).toBe(true);
-        expect(alertContiene("Pedido confirmado: FL-1700000000000-0001")).toBe(true);
-        expect(carritoActual).toEqual([]);
-        expect(condicionesPagoActuales).toBeNull();
+    it("script.js se carga como módulo diferido: por eso nunca se ejecuta con el documento en 'loading'", async function () {
+        // Justifica la rama `document.readyState === "loading"` del final de script.js (código defensivo
+        // para una carga con <script> clásico): con type="module" y sin async, el navegador espera a que
+        // termine el análisis del HTML, así que la rama de DOMContentLoaded no puede ejecutarse desde index.html.
+        const html = await (await fetch(URL_APP)).text();
+        const pagina = new DOMParser().parseFromString(html, "text/html");
+        const etiqueta = pagina.querySelector('script[src$="js/script.js"]');
+        expect(etiqueta).not.toBeNull();
+        expect(etiqueta.type).toBe("module");
+        expect(etiqueta.hasAttribute("async")).toBeFalse();
     });
 });
