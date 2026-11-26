@@ -80,9 +80,9 @@ Ejecutar las auditorías sobre el sitio en los siguientes momentos:
 
 | Test case | Momento | Comparación |
 |---|---|---|
-| 11 — Baseline inicial | Antes de integrar las nuevas funcionalidades. | Punto de referencia inicial. |
-| 12 — Post Fetch | Después de integrar la funcionalidad asíncrona en `develop`. | Comparar con el baseline del TC-11. |
-| 13 — Post Library | Después de integrar la librería externa en `develop`. | Comparar con el post-fetch del TC-12. |
+| 11 — Baseline inicial | Sobre la rama `develop`, después del backport aprobado de la Actividad Obligatoria N.º 4 y antes de incorporar Fetch o la librería externa. | Punto de referencia inicial para TC-12 y TC-13. |
+| 12 — Post Fetch | Después de integrar la funcionalidad asíncrona en `develop`. | Comparar numéricamente puntajes y métricas con el baseline del TC-11; analizar impacto y recomendaciones Lighthouse. |
+| 13 — Post Library | Después de integrar la librería externa en `develop`. | Comparar numéricamente puntajes y métricas con TC-12; analizar impacto y recomendaciones Lighthouse. |
 
 En cada auditoría registrar:
 
@@ -100,11 +100,15 @@ En cada auditoría registrar:
 - Problemas encontrados, capturas del informe y enlaces a las Issues asociadas.
 
 Documentar cada resultado en su test case y guardar sus capturas en
-`docs/04-testing/screenshots/`. En TC-12 y TC-13 registrar las diferencias de
-puntajes y métricas respecto del momento anterior, identificar mejoras o
-regresiones y aclarar las limitaciones cuando las condiciones no permitan una
-comparación directa. Coordinar y verificar las correcciones necesarias ante
-hallazgos o puntajes inferiores a los umbrales.
+`docs/04-testing/screenshots/`. En TC-12 y TC-13 analizar el impacto de cada
+nueva funcionalidad sobre el rendimiento, la accesibilidad, las buenas
+prácticas y el SEO; identificar mejoras y regresiones respecto de la auditoría
+anterior; documentar las recomendaciones de optimización proporcionadas por
+Lighthouse; comparar numéricamente las diferencias de puntajes y métricas; y
+documentar las limitaciones de comparabilidad. Reportar los problemas
+detectados mediante Issues asignadas al responsable correspondiente y
+coordinar y verificar las correcciones necesarias ante hallazgos o puntajes
+inferiores a los umbrales.
 
 ### Herramientas
 
@@ -121,15 +125,21 @@ hallazgos o puntajes inferiores a los umbrales.
    trabajo tendrá como destino `develop`.
 2. Coordinar con el **Desarrollador JS Asíncrono** la API elegida, contratos,
    procesamiento, manejo de errores, integración en DOM y disponibilidad de
-   su implementación para pruebas. Realizar el TC-11 antes de integrar las
-   nuevas funcionalidades.
+   su implementación para pruebas. Realizar TC-11 sobre la rama `develop`,
+   después del backport aprobado de la Actividad Obligatoria N.º 4 y antes de
+   incorporar Fetch o la librería externa.
 3. Coordinar con el **Desarrollador JS Librerías Externas** la librería elegida,
    inicialización, configuración, comportamiento, errores y puntos de
    integración, así como su disponibilidad para pruebas.
 4. Coordinar con el **Coordinador/DevOps** el orden de integración en
    `develop`, las condiciones reproducibles de auditoría, la carga de los
    nuevos specs en el runner y el seguimiento de Issues y PR. Ejecutar TC-12
-   después del merge de Fetch y TC-13 después del merge de la librería.
+   después del merge de Fetch y TC-13 después del merge de la librería;
+   analizar en ambas auditorías el impacto en rendimiento, accesibilidad,
+   buenas prácticas y SEO, las mejoras y regresiones y las recomendaciones de
+   optimización de Lighthouse; comparar numéricamente puntajes y métricas,
+   documentar limitaciones de comparabilidad y reportar los problemas
+   mediante Issues asignadas al responsable correspondiente.
 5. Implementar y ejecutar las suites sobre los contratos reales, revisar
    regresiones, documentar evidencias, comparar auditorías y completar AT CLOSE.
 
@@ -164,15 +174,22 @@ la corrección con el responsable.
 - [ ] Los nuevos specs se ejecutan en el runner Jasmine; la suite existente
       sigue pasando y `script.spec.js` y `models.spec.js` se actualizan si
       corresponde, manteniendo o mejorando la cobertura existente.
-- [ ] TC-11 se realizó antes de las integraciones; TC-12 después de Fetch en
-      `develop`; TC-13 después de la librería en `develop`.
+- [ ] TC-11 se realizó sobre la rama `develop`, después del backport aprobado
+      de la Actividad Obligatoria N.º 4 y antes de incorporar Fetch o la
+      librería externa; TC-12 después de Fetch en `develop`; TC-13 después de
+      la librería en `develop`.
 - [ ] Cada auditoría registra las cuatro puntuaciones, FCP, LCP, TBT, CLS,
       Speed Index, condiciones de medición, problemas y capturas.
 - [ ] En cada auditoría Performance, Accessibility, Best Practices y SEO
       alcanzan al menos 95 puntos; los resultados y correcciones están
       respaldados por evidencia.
-- [ ] TC-12 compara sus resultados con TC-11 y TC-13 con TC-12, indicando
-      diferencias y posibles limitaciones de comparabilidad.
+- [ ] TC-12 compara numéricamente sus puntajes y métricas con TC-11, y TC-13
+      con TC-12; ambas auditorías analizan el impacto de cada funcionalidad
+      sobre rendimiento, accesibilidad, buenas prácticas y SEO, identifican
+      mejoras y regresiones, documentan las recomendaciones de optimización de
+      Lighthouse y las limitaciones de comparabilidad.
+- [ ] Los problemas detectados en TC-12 y TC-13 están reportados mediante
+      Issues asignadas al responsable correspondiente.
 - [ ] Todos los problemas encontrados están reportados en Issues detalladas,
       asignadas al responsable correspondiente, con estado y verificación.
 - [ ] Los documentos de testing, test cases, capturas y `changelog.md` están
