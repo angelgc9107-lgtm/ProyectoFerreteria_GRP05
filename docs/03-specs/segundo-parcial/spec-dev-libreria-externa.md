@@ -20,6 +20,8 @@
 
 # BEFORE — Se completa antes de integrar la librería
 
+> **Actualización por la revisión de la PR #216 (RC01, RC02 y RC03):** se agregaron el orden de integración a `develop` con TC-12 (sección 6), la matriz de regresión de los cuatro flujos (sección 6) y los criterios de compatibilidad con Bootstrap (secciones 4 y 5). El resto del BEFORE se mantiene como se commiteó antes de la integración.
+
 ## 1. Necesidad del proyecto
 
 Tres acciones de la aplicación se ejecutan con un solo clic y sin ninguna confirmación previa, aunque tienen consecuencias que el usuario no puede deshacer desde la interfaz:
@@ -87,6 +89,7 @@ Motivos:
 - La configuración (textos, clases, accesibilidad) queda en un solo lugar y los tres puntos se ven iguales.
 - Si se cambia de librería, solo cambia el wrapper.
 - El Tester QA puede reemplazar `globalThis.Swal` por un doble de prueba en `library.spec.js` y en `script.spec.js`.
+- `ServicioDialogos.confirmar()` solo muestra el diálogo y devuelve la respuesta del usuario: no contiene reglas de negocio. Qué se elimina, se confirma o se cancela lo sigue decidiendo `script.js` con los modelos.
 
 **Si la librería no carga** (CDN caído o bloqueado): `globalThis.Swal` no existe. El wrapper lo detecta, lo registra con `console.error` y devuelve `true`, de modo que la acción sigue como hoy, sin confirmación. Se elige no bloquear la compra por una falla de un recurso externo. El wrapper nunca lanza excepciones hacia `script.js`.
 
@@ -97,6 +100,12 @@ Motivos:
 - Si el usuario tiene activado `prefers-reduced-motion`, se desactivan las animaciones de entrada y salida.
 
 **Accesibilidad:** SweetAlert2 ya marca el diálogo con `role="dialog"` y `aria-modal="true"`, atrapa el foco, cierra con `Esc` (equivale a cancelar) y devuelve el foco al elemento que lo abrió. Se mantienen esos valores por defecto.
+
+**Compatibilidad con Bootstrap (RC03):** el botón «Eliminar» está dentro del carrito, que es un `Offcanvas` de Bootstrap. Ese componente atrapa el foco dentro del panel y se cierra con `Esc`, así que el diálogo puede chocar con él. Se verifica:
+- que desde el carrito abierto el diálogo reciba el foco y se pueda usar solo con teclado (`Tab` no sale del diálogo);
+- que `Esc` cierre solo el diálogo y el carrito quede abierto, y que el foco vuelva al botón que abrió el diálogo;
+- que el diálogo quede por encima del carrito y del resto de la página (apilamiento / `z-index`), en escritorio y en celular;
+- que la suite completa siga en 0 failures, como prueba de que no hay conflictos con Bootstrap ni con los módulos existentes.
 
 **Asincronía:** los manejadores de los tres botones pasan a ser `async` y esperan `await ServicioDialogos.confirmar(...)` antes de ejecutar la acción. Mientras el diálogo está abierto, el fondo no recibe clics, lo que además evita confirmaciones dobles.
 
@@ -111,6 +120,10 @@ Motivos:
 - [X] Cancelar el diálogo deja el estado de la aplicación sin cambios.
 - [X] Si la librería no carga, la aplicación sigue funcionando sin confirmación y el error queda registrado en consola, sin excepciones.
 - [X] Los diálogos mantienen la estética del sitio (botones, colores y tipografía) y respetan `prefers-reduced-motion`.
+- [X] Desde el carrito (`Offcanvas` de Bootstrap) el diálogo se usa con teclado: foco inicial en «Cancelar», `Tab` no sale del diálogo, `Esc` cierra solo el diálogo (el carrito queda abierto) y el foco vuelve al botón que lo abrió.
+- [X] El diálogo se muestra por encima del carrito y del resto de la página (apilamiento / `z-index`) en escritorio y en 390 px de ancho.
+- [X] SweetAlert2 no introduce conflictos con Bootstrap ni con los módulos existentes: la suite completa de `js/test/test-runner.html` sigue en 0 failures.
+- [ ] La PR se mergea a `develop` recién después de que Fetch esté integrado y TC-12 esté ejecutado y documentado (sección 6).
 - [X] `docs/07-librerias/libreria-doc.md` completo: nombre, versión, propósito, instalación, ejemplos de uso, enlaces a la documentación oficial y capturas en `docs/07-librerias/screenshots/`.
 - [X] Código documentado con JSDoc, sin `alert()`, `confirm()` ni `prompt()`.
 - [ ] Rama `feature/dev-libreria-externa-sweetalert2`, issue asociada, PR hacia `develop` revisada por el Coordinador/DevOps y entrada en `changelog.md`.
@@ -120,9 +133,28 @@ Motivos:
 **Herramienta:** Claude (Anthropic), en lugar de GitHub Copilot en modo Agente, con este archivo, `index.html`, `js/script.js` y la suite de `js/test/` como contexto. Se deja constancia de que esto difiere de lo que pide la consigna (§4.2).
 
 **Coordinación:**
-- **Tester QA/JS:** `library.spec.js` (inicialización, configuración, funcionalidad, errores e interacción) y el doble de `globalThis.Swal` que necesitan los specs de `script.spec.js` que eliminan del carrito o confirman el pedido, porque esos flujos pasan a esperar el diálogo. También el Test Case 3 de Lighthouse (post-integración de la librería).
+- **Tester QA/JS:** `library.spec.js` (inicialización, configuración, funcionalidad, errores e interacción) y el doble de `globalThis.Swal` que necesitan los specs de `script.spec.js` que eliminan del carrito o confirman el pedido, porque esos flujos pasan a esperar el diálogo. También TC-13 de Lighthouse (post-integración de la librería), que se compara con TC-12.
 - **Desarrollador JS Asíncrono:** si el catálogo pasa a cargarse desde una API, el diálogo del punto 1 muestra el nombre del producto que venga de esos datos; se acuerda que el nombre llegue ya validado por el modelo `Producto`.
 - **Coordinador/DevOps:** carpeta `docs/07-librerias/`, revisión de la PR y respuesta a las issues sobre la librería.
+
+**Orden de integración a `develop` (RC01):**
+
+1. Fetch integrado y revisado en `develop` (PR #211).
+2. El Tester QA/JS ejecuta y documenta **TC-12** (Lighthouse post-Fetch) sobre `develop`.
+3. Recién entonces se mergea esta PR a `develop`.
+4. El Tester QA/JS ejecuta **TC-13** (Lighthouse post-librería) y lo compara con TC-12.
+
+El código de la librería se desarrolla en la rama `feature/dev-libreria-externa-sweetalert2` y no cambia `develop` hasta el merge, así que no altera la medición de TC-12.
+
+**Matriz de regresión de los cuatro flujos (RC02):** además de la suite propia de la librería, el Tester QA/JS verifica que los flujos existentes de `js/test/script.spec.js` sigan pasando sin debilitar sus comprobaciones:
+
+| Flujo | Suite de `script.spec.js` | ¿Pasa por un diálogo? | Qué se tiene que mantener |
+|---|---|---|---|
+| 1. Búsqueda y filtrado | «Flujo 1: búsqueda y filtrado» | No | Filtros por texto, categoría, precio y orden; recuperación de resultados. Debe pasar sin cambios. |
+| 2. Carrito | «Flujo 2: carrito» y «persistencia del carrito en Web Storage» | Sí (eliminar) | Agregar, cambiar cantidad, eliminar y persistencia. Eliminar pasa por el diálogo con el doble de `Swal`. |
+| 3. Pago y cuotas | «Flujo 3: pago y cuotas» | No | Métodos, cuotas, recargos, invalidación y cancelación del pago. Debe pasar sin cambios. |
+| 4. Resumen y confirmación | «Flujo 4: confirmación del pedido» y «RC62: persistencia de pedidos» | Sí (confirmar y cancelar) | Validación, resumen, confirmación con número, numeración y cancelación. Confirmar y cancelar pasan por el diálogo con el doble de `Swal`; RC24 sigue sin diálogo. |
+| Transversales | «casos borde», «rutas defensivas y de error», «requisitos transversales» | Algunos | Doble clic, acciones repetidas, storage que rechaza escrituras y sin `alert()`/`confirm()`/`prompt()`. |
 
 ---
 
@@ -241,6 +273,8 @@ Sobre el código que generó Claude Code no se hicieron cambios manuales: se rev
 | Verificación manual de los tres puntos en el navegador, incluido el uso con teclado desde el carrito y con el CDN de SweetAlert2 bloqueado en DevTools. | Comprobar el comportamiento real, no solo los tests. |
 | Se aceptaron tres decisiones que el BEFORE no tenía: `titleText` en lugar de `title` (en SweetAlert2 `title` se interpreta como HTML), protección contra doble clic mientras el diálogo está abierto, y que cancelar con el formulario vacío no pregunte. | Las dos primeras corrigen riesgos reales (inyección de HTML y acciones repetidas); la tercera evita preguntar cuando no hay datos que perder. |
 | Se aceptó `console.error` (y no `console.warn`) cuando la librería no cargó, como decía el BEFORE. | Es lo especificado en la sección 4. |
+| Actualización del BEFORE por la revisión de la PR #216: orden de integración con TC-12 (RC01), matriz de regresión de los cuatro flujos (RC02) y criterios de compatibilidad con Bootstrap (RC03). | Pedido del Coordinador/DevOps en la revisión. Los agregados están marcados en el BEFORE con su RC. |
+| Orden real de trabajo: el código se escribió en la rama el 26/11 a las 12:30, antes del merge de Fetch a `develop` (18:16). El merge de esta PR queda condicionado a TC-12 (criterio de la sección 5, todavía sin tildar). | Se deja constancia para que el orden de integración a `develop` no se confunda con el orden de desarrollo en la rama. |
 | Claude Code cambió la base de la rama: salía de un `develop` local desactualizado y la rebasó sobre `origin/develop` antes de empezar, conservando el commit del spec. Se verificó con `git log` antes de publicar la rama. | Sin `js/services/` ni el `script.js` actual, la integración no se podía hacer sobre la base anterior. |
 
 ## 4. Resumen de los puntos de integración y mejora de la experiencia
@@ -252,6 +286,15 @@ Sobre el código que generó Claude Code no se hicieron cambios manuales: se rev
 | Confirmación — cancelar el pedido | Se borraban los datos del cliente con un clic. | Si hay datos, pregunta antes de descartarlos; con el formulario vacío cancela directo. |
 
 En los tres casos un doble clic no repite la acción. Si el CDN no carga, la aplicación funciona igual que antes de la integración.
+
+### Compatibilidad con Bootstrap (resultado de las verificaciones)
+
+| Verificación | Resultado | Evidencia |
+|---|---|---|
+| Foco desde el carrito abierto | El diálogo se inserta dentro del `Offcanvas` (`target`); el foco arranca en «Cancelar» y `Tab` no sale del diálogo. Con `target: "body"` la trampa de foco de Bootstrap le quitaba el foco. | Spec «con la librería real: desde el carrito abierto: foco en Cancelar, Esc cierra solo el diálogo y el foco vuelve al botón»; prueba manual con teclado. |
+| `Esc` | Cierra solo el diálogo (`stopKeydownPropagation`); el carrito queda abierto y el foco vuelve a «Eliminar». | Mismo spec; prueba manual. |
+| Apilamiento / `z-index` | El diálogo y su fondo quedan por encima del carrito y de la página, en escritorio y en 390 px. | Capturas `01-confirmar-eliminar-producto.png` y `05-confirmar-eliminar-movil.png` de `docs/07-librerias/screenshots/`. |
+| Conflictos con módulos existentes | Ninguno: la suite completa queda en 468 specs, 0 failures, con los cuatro flujos de la matriz de regresión. | Corrida de `js/test/test-runner.html`. |
 
 ## 5. Coordinación e issues respondidas
 
