@@ -6,7 +6,7 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 ### Added
 
-- [feature/tester-qa-js-testing-suite] [Segundo Parcial] Registrar ejecución manual de TC-11 Lighthouse Baseline: Performance 92, Accessibility 100, Best Practices 77, SEO 100 y 11 capturas; borradores de Issues documentados, no creados — 2026-11-26
+- [feature/tester-qa-js-testing-suite] [Segundo Parcial] Tester QA/JS - Ejecución y documentación Lighthouse Baseline (TC-11) - PR: [#215](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/215) - Issue: [#212](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/212) - Issue: [#213](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/213) - Issue: [#214](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/214) - @LuchoBarrionuevo13 (Tester QA/JS - Testing Avanzado)
 - [feature/tester-qa-js-testing-suite] [Segundo Parcial] SPEC inicial - Tester QA/JS - Testing Avanzado - PR: [#208](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/208) - Issue: [#207](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/207) - @LuchoBarrionuevo13 (Tester QA/JS - Testing Avanzado)
 
 ## [Release Actividad Obligatoria N°4] - 2026-11-22
