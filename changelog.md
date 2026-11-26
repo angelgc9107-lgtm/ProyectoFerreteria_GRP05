@@ -2,7 +2,9 @@
 
 Este archivo se actualiza con cada Pull Request para registrar avances y correcciones.
 
-## [Actividad N°4] - Released
+## [Unreleased]
+
+## [Release Actividad Obligatoria N°4] - 2026-11-22
 
 ### Added
 - [feature/dev-poo-logica-negocio] [A4] Desarrollador JS POO (Lógica de Negocio) - Implementación de 5 clases y diagrama UML - PR: [#150](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/150) - Issue: [#149](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/149) - @LuchoBarrionuevo13 (Desarrollador JS POO)
