@@ -180,17 +180,17 @@ Tomadas con Playwright (Chromium) sobre `js/test/test-runner.html` y sobre un ru
 
 | Captura | Resultado |
 |---|---|
-| `captura-runner-completo.png` | 425 specs, 0 failures |
-| `captura-models-spec.png` | 88 specs, 0 failures |
+| `captura-runner-completo.png` | 451 specs, 0 failures |
+| `captura-models-spec.png` | 89 specs, 0 failures |
 | `captura-storage-spec.png` | 189 specs, 0 failures |
-| `captura-script-spec.png` | 98 specs, 0 failures |
+| `captura-script-spec.png` | 116 specs, 0 failures |
 
 ### Criterios no cumplidos (declaración explícita)
 
 | Criterio | Estado | Motivo |
 |---|---|---|
 | Ejecución en `test-runner.html` con Playwright MCP y recorrido manual de los 4 flujos con MCP | **No cumplido** | Se usó Playwright (Chromium) por script. Las capturas muestran resultados del runner, pero no prueban el uso de MCP |
-| Evidencia de los prompts utilizados | **No cumplido** | No se conservan los prompts exactos; no se presenta ningún mensaje como evidencia de generación de las suites |
+| Evidencia de los prompts utilizados | **No cumplido** | Los prompts originales de las suites se perdieron y no se pueden recuperar; no se presenta ningún mensaje como evidencia de su generación. Se documenta una reconstrucción aproximada, marcada como NO original, en `docs/02-prompts/prompts-8.md` |
 | Prueba de persistencia del carrito (comprar, recargar, restaurar) | **Cumplido (corrección del 2026-11-23)** | Al integrarse la persistencia del carrito (`FachadaStorage`, PR #168) se agregó la suite «persistencia del carrito en Web Storage» de `script.spec.js` (8 specs) y la suite `FachadaStorage` de `services.spec.js`. Estado anterior: pendiente, porque `script.js` no usaba `StorageUtil` |
 | Bugs encontrados reportados como issues | **Cumplido** | Issue #164 de seguimiento de `script.js` / `StorageUtil`: severidad media, etiqueta `bug`, rol responsable Desarrollador JS Eventos + DOM (asignada), pasos para reproducir y test propuesto |
 | PR con aprobación de otro integrante | **Pendiente** | La aprobación y el merge se completan después de esta entrega |
@@ -221,7 +221,7 @@ Tomadas con Playwright (Chromium) sobre `js/test/test-runner.html` y sobre un ru
 
 ## Actualización — correcciones de la revisión del docente (2026-11-23)
 
-Estado de la suite sobre `release/cuarta-entrega` con las PR #167, #168, #169, #172 y #175 integradas y los specs de la segunda corrección de QA: **425 specs, 0 failures** (88 de modelos, 189 de storage, 50 de servicios, 98 del controlador), en tres corridas con semillas distintas. Antes de la primera corrección la suite de la PR #169 tenía 220 specs y 3 failures. Cobertura medida con V8 (`js/test/herramientas/cobertura-v8.js`): **99,7 % de líneas, 100 % de funciones y 99,7 % de ramas** (esta última es una estimación; ver `js/test/testing-doc.md`). Las cifras anteriores (208 specs, 94,2 %) eran de líneas solamente.
+Estado de la suite sobre `release/cuarta-entrega` con las PR #167, #168, #169, #172 y #175 integradas y los specs de la segunda corrección de QA: **451 specs, 0 failures** (89 de modelos, 189 de storage, 57 de servicios, 116 del controlador), en tres corridas con semillas distintas. Antes de la primera corrección la suite de la PR #169 tenía 220 specs y 3 failures. Cobertura medida con V8 (`js/test/herramientas/cobertura-v8.js`): **99,7 % de líneas, 100 % de funciones y 99,7 % de ramas** (esta última es una estimación; ver `js/test/testing-doc.md`). Las cifras anteriores (208 specs, 94,2 %) eran de líneas solamente.
 
 Cambios de esta corrección (no se modificó código de producción ni la documentación de trazabilidad de la PR #169):
 
