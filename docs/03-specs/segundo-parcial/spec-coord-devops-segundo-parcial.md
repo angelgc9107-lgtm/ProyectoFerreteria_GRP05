@@ -44,9 +44,11 @@ Implementación del consumo asíncrono mediante Fetch API y promesas, utilizando
 - `docs/03-specs/segundo-parcial/spec-dev-async-fetch.md`.
 - `changelog.md`.
 
-#### Criterios de revisión y aprobación
-
+#### Criterios de revisión y aprobación — Planificación
 - [ ] El BEFORE del spec se encuentra commiteado antes de escribir código e incluye la selección y justificación de la fuente de datos, el diseño de los estados de carga, las funciones de orden superior previstas y los criterios de aceptación.
+- [ ] El BEFORE define la estructura y responsabilidades de apiService.js, la estrategia de gestión de errores, reintentos y fallbacks, la validación y sanitización de datos, y la integración con el DOM, POO y Storage, respetando las responsabilidades de js/script.js como controlador.
+- [ ] Se planifican los casos de prueba en coordinación con el Tester QA y las verificaciones necesarias para evitar regresiones en los cuatro flujos existentes.
+#### Criterios de revisión y aprobación
 - [ ] Se implementa el consumo asíncrono de datos mediante `fetch()` y promesas.
 - [ ] Se verifica el estado de la respuesta HTTP y se procesa correctamente el JSON.
 - [ ] Se implementa `try-catch` para gestionar los errores de las operaciones asíncronas, incluyendo errores HTTP y de red.
@@ -86,9 +88,11 @@ Selección e integración mediante CDN de al menos una librería externa de Java
 - `docs/03-specs/segundo-parcial/spec-dev-libreria-externa.md`.
 - `changelog.md`.
 
-#### Criterios de revisión y aprobación
-
+#### Criterios de revisión y aprobación — Planificación
 - [ ] El BEFORE del spec se encuentra commiteado antes de integrar la librería e incluye la necesidad, justificación, nombre, versión, CDN, al menos dos puntos de integración, decisiones de arquitectura, consistencia visual y criterios de aceptación.
+- [ ] El BEFORE define la estrategia de integración y configuración de la librería, la necesidad de un módulo wrapper, la compatibilidad con Bootstrap y los módulos existentes, respetando las responsabilidades de js/script.js como controlador.
+- [ ] Se planifican los casos de prueba en coordinación con el Tester QA, las verificaciones necesarias para evitar regresiones en los cuatro flujos existentes y la coordinación con el Desarrollador JS Asíncrono cuando corresponda.
+#### Criterios de revisión y aprobación
 - [ ] La necesidad que justifica la librería se encuentra identificada y documentada.
 - [ ] La librería aporta una funcionalidad no resuelta mediante código propio; no se limita a sustituir una funcionalidad existente.
 - [ ] Se identifica el nombre y la versión utilizada.
@@ -133,8 +137,8 @@ Implementación de las suites de Jasmine para Fetch y la librería externa, actu
 
 #### Criterios de revisión y aprobación — Planificación
 
-- [ ] El BEFORE del spec se encuentra commiteado antes de escribir tests o ejecutar Lighthouse.
-- [ ] Se definen los casos de prueba de Fetch y de la librería externa, los tres momentos de auditoría, los umbrales mínimos, las herramientas a utilizar y su justificación, y los criterios de aceptación.
+- [X] El BEFORE del spec se encuentra commiteado antes de escribir tests o ejecutar Lighthouse.
+- [X] Se definen los casos de prueba de Fetch y de la librería externa, los tres momentos de auditoría, los umbrales mínimos, las herramientas a utilizar y su justificación, y los criterios de aceptación.
 
 #### Criterios de revisión y aprobación — Jasmine
 
