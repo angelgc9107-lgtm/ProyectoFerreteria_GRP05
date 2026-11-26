@@ -7,11 +7,6 @@
 
 ## Prompt exacto
 
-⚠ Aviso: estos NO son los prompts originales
-```
-Los prompts con los que se generaron las suites (models.spec.js, storage.spec.js, services.spec.js y script.spec.js) se perdieron: no se guardaron el texto, las capturas ni las respuestas de esas conversaciones. Los textos de abajo fueron reconstruidos a partir de lo que las suites hacen hoy y de lo que se le pidió a la IA. Son una aproximación al pedido original, no una copia. No hay captura del prompt ni del resultado original, y no se afirma que estos textos, ejecutados de nuevo, produzcan exactamente los mismos specs. Lo que sí es verificable es el resultado: las suites están en el repositorio, con su historial de commits y con la corrida actual.
-```
-
 ```
 Actuá como Tester QA de FerroLab (HTML + JS con módulos ES, sin backend). Usá Playwright MCP.
 No toques archivos del repo, solo probá y reportá.
@@ -59,4 +54,6 @@ no se modifico nada
 
 ## Aplicación en el proyecto
 
-Cumplimiento del criterio «Todos los tests se ejecutan con Playwright MCP en un navegador real» de `docs/03-specs/actividad-obligatoria-4/spec-tester-qa.md`, desde la fecha de esta ejecución (las corridas anteriores fueron con Playwright por script).
+Respaldo de la trazabilidad de los cuatro flujos de la aplicación (búsqueda y filtrado, carrito, pago y cuotas, y confirmación del pedido): se recorrieron sobre `index.html` con la librería `playwright` ejecutada por script desde Claude Code, y se compararon con lo esperado.
+
+**Criterio de Playwright MCP: no cumplido.** No se usó `@playwright/mcp` (no estaba conectado en la sesión, ver «Resultado obtenido»), por lo que esta ejecución no acredita el criterio «Todos los tests se ejecutan con Playwright MCP» de `docs/03-specs/actividad-obligatoria-4/spec-tester-qa.md`; ese punto queda declarado como desvío en `js/test/testing-doc.md`.
