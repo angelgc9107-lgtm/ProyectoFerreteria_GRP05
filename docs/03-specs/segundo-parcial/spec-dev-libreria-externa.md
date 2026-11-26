@@ -104,15 +104,15 @@ Motivos:
 
 ## 5. Criterios de aceptación
 
-- [ ] SweetAlert2 11.26.25 integrada en `index.html` vía CDN, con `integrity` y `crossorigin`, y funcionando.
-- [ ] Configurada según la documentación oficial (`Swal.fire` con opciones y `customClass`), sin modificar archivos de la librería.
-- [ ] `js/services/ServicioDialogos.js` encapsula la librería; `script.js` no usa `Swal` directamente.
-- [ ] Integrada en al menos 2 puntos diferentes de la aplicación (eliminar del carrito y confirmar pedido).
-- [ ] Cancelar el diálogo deja el estado de la aplicación sin cambios.
-- [ ] Si la librería no carga, la aplicación sigue funcionando sin confirmación y el error queda registrado en consola, sin excepciones.
-- [ ] Los diálogos mantienen la estética del sitio (botones, colores y tipografía) y respetan `prefers-reduced-motion`.
-- [ ] `docs/07-librerias/libreria-doc.md` completo: nombre, versión, propósito, instalación, ejemplos de uso, enlaces a la documentación oficial y capturas en `docs/07-librerias/screenshots/`.
-- [ ] Código documentado con JSDoc, sin `alert()`, `confirm()` ni `prompt()`.
+- [X] SweetAlert2 11.26.25 integrada en `index.html` vía CDN, con `integrity` y `crossorigin`, y funcionando.
+- [X] Configurada según la documentación oficial (`Swal.fire` con opciones y `customClass`), sin modificar archivos de la librería.
+- [X] `js/services/ServicioDialogos.js` encapsula la librería; `script.js` no usa `Swal` directamente.
+- [X] Integrada en al menos 2 puntos diferentes de la aplicación (eliminar del carrito y confirmar pedido).
+- [X] Cancelar el diálogo deja el estado de la aplicación sin cambios.
+- [X] Si la librería no carga, la aplicación sigue funcionando sin confirmación y el error queda registrado en consola, sin excepciones.
+- [X] Los diálogos mantienen la estética del sitio (botones, colores y tipografía) y respetan `prefers-reduced-motion`.
+- [X] `docs/07-librerias/libreria-doc.md` completo: nombre, versión, propósito, instalación, ejemplos de uso, enlaces a la documentación oficial y capturas en `docs/07-librerias/screenshots/`.
+- [X] Código documentado con JSDoc, sin `alert()`, `confirm()` ni `prompt()`.
 - [ ] Rama `feature/dev-libreria-externa-sweetalert2`, issue asociada, PR hacia `develop` revisada por el Coordinador/DevOps y entrada en `changelog.md`.
 
 ## 6. Herramientas y coordinación
