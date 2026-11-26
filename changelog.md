@@ -2,10 +2,7 @@
 
 Este archivo se actualiza con cada Pull Request para registrar avances y correcciones.
 
-## [Unreleased]
-
-
- ## [Release Actividad Obligatoria N°4] - 2026-11-22
+## [Actividad N°4] - Released
 
 ### Added
 - [feature/dev-poo-logica-negocio] [A4] Desarrollador JS POO (Lógica de Negocio) - Implementación de 5 clases y diagrama UML - PR: [#150](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/150) - Issue: [#149](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/149) - @LuchoBarrionuevo13 (Desarrollador JS POO)
@@ -45,7 +42,9 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 - [fix/qa-cobertura]Fix/qa-cobertura PR: [#193](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/193) — Issue: [#182](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/182) — @alandox1 (Coordinador / DevOps y Tester QA)
 - [fix/trazabilidad-changelog]fix: corrección de trazabilidad de Pull Requests e Issues en changelog PR: [#197](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/197) — Issue: [#196](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/196) — @angelgc9107-lgtm (Desarrollador JavaScript Eventos + DOM)
 - [fix/limpieza-changelog]Corrección de títulos y eliminación de duplicados del changelog PR: [#199](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/199) — Issue: [#198](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/198) — @angelgc9107-lgtm (Desarrollador JavaScript Eventos + DOM)
-- [fix/qa-testing-doc-vigente] Fix/qa-testing-doc-vigente PR: [#202] (https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/202) - @alandox1 (Coordinador / DevOps y Tester QA)
+- [fix/trazabilidad-testing-doc]Actualización de la trazabilidad de hallazgos en testing-doc PR: [#201](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/201) — Issue: [#200](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/200) — @angelgc9107-lgtm (Desarrollador JavaScript Eventos + DOM)
+- [fix/qa-testing-doc-vigente] Fix/qa-testing-doc-vigente PR: [#202](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/202) — Issue: [#182](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/182) — @alandox1 (Coordinador / DevOps y Tester QA)
+
 ## [Actividad N°3] - 2026-11-02
 
 ### Added

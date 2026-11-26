@@ -18,7 +18,7 @@ Módulos testeados: `js/models/*.js`, `js/services/*.js`, `js/utils/storage.js` 
 
 ## Estado de la corrida (leer primero)
 
-Corrida completa de `test-runner.html` sobre la rama `release/cuarta-entrega` con las PR #167, #168, #169 (Desarrollador JS Eventos + DOM), #172 (Local y Session Storage) y #175 (POO) ya integradas, más los specs agregados en esta corrección de QA: **425 specs, 0 failures** (tres corridas con semillas distintas). Sin los specs de esta corrección, la rama de release tenía 405 specs, 0 failures. Después se agregó el spec de la corrección de RC51 (`Pedido.fromJSON()` lee el número una sola vez), y la suite quedó en **426 specs, 0 failures**.
+Corrida completa de `test-runner.html` sobre la rama `release/cuarta-entrega` con las PR #167, #168, #169 (Desarrollador JS Eventos + DOM), #172 (Local y Session Storage) y #175 (POO) ya integradas, más los specs agregados en esta corrección de QA: **425 specs, 0 failures** (tres corridas con semillas distintas). Sin los specs de esta corrección, la rama de release tenía 405 specs, 0 failures. Después se agregó el spec de la corrección de RC51 (`Pedido.fromJSON()` lee el número una sola vez), y la suite quedó en **426 specs, 0 failures**. Con las PR #186 y #188 (Eventos + DOM) integradas pasó a 441 specs, y con los 10 specs agregados en esta corrección (RC81 a RC84: 3 de fallos de persistencia de `ConfirmadorPedidos`, 4 de `ValidacionPedido` y 3 del controlador) quedó en **451 specs, 0 failures** (tres corridas con semillas distintas).
 
 Antes de esta corrección, la suite de la PR #169 tenía **220 specs y 3 failures**. Los tres eran specs desactualizados respecto del controlador (no defectos del código); se adaptaron y el detalle está en [Hallazgos e Issues](#hallazgos-e-issues). El código de producción (`js/script.js`, `index.html`, `js/models/`, `js/services/`, `js/utils/`) no fue modificado por esta corrección de QA, y tampoco la documentación de trazabilidad de los cuatro flujos que agregó la PR #169, que se conserva tal cual.
 
@@ -30,9 +30,9 @@ En la tercera entrega `js/script.js` tenía la lógica y usaba `prompt()`/`alert
 |---|---|---|---|
 | `js/models/` (`Producto`, `Catalogo`, `Carrito`, `Pago`, `Pedido`) | Lógica de negocio con clases, sin DOM ni Storage | `js/test/models.spec.js` | 89 |
 | `js/utils/storage.js` (`StorageUtil`) | Capa de abstracción de `localStorage`/`sessionStorage` | `js/test/storage.spec.js` | 189 |
-| `js/services/` | `FormateadorMoneda`, `ValidacionCarrito`, `ConfirmadorPedidos`, `FachadaStorage`, `ServicioOfertas`, `ServicioCategorias`, `ServicioOpcionesPago` | `js/test/services.spec.js` | 50 |
-| `js/script.js` | Controlador: eventos y DOM | `js/test/script.spec.js` | 98 |
-| | | **Total** | **426** |
+| `js/services/` | `FormateadorMoneda`, `ValidacionCarrito`, `ConfirmadorPedidos`, `FachadaStorage`, `ServicioOfertas`, `ServicioCategorias`, `ServicioOpcionesPago`, `ValidacionPedido` | `js/test/services.spec.js` | 57 |
+| `js/script.js` | Controlador: eventos y DOM | `js/test/script.spec.js` | 116 |
+| | | **Total** | **451** |
 
 `js/test/test-runner.html` carga los cuatro specs como módulos ES. `js/test/models-test-runner.html` es el runner independiente que armó el Desarrollador JS POO para sus modelos y se conserva.
 
@@ -108,19 +108,21 @@ Requiere conexión a internet: Jasmine se carga desde `cdnjs.cloudflare.com` y `
 | Ninguna operación lanza excepciones hacia afuera | 12 | Se verifica para cada operación |
 | Web Storage real del navegador | 3 | Ciclo completo sin dejar claves |
 
-### `services.spec.js` (50 specs)
+### `services.spec.js` (57 specs)
 
 | Suite | Specs | Qué se prueba |
 |---|---|---|
 | `FormateadorMoneda` | 3 | Pesos argentinos con dos decimales, redondeo, importes negativos |
 | `ValidacionCarrito.validarCambioCantidad` | 3 | Acepta sin modificar el carrito, rechaza cantidades inválidas y códigos inexistentes |
 | `ConfirmadorPedidos.confirmarPedidoConNumeracion` | 5 | Confirma y devuelve el número, números consecutivos, rechaza lo que no es `Pedido`, no confirma dos veces, un rechazo no consume número |
+| `ConfirmadorPedidos: fallos de persistencia` | 3 | Con un storage en memoria que rechaza escrituras: falla la secuencia (no se guarda el historial), falla el historial (se restaura la secuencia) y falla el historial sin poder restaurarla |
+| `ValidacionPedido.validarCampoPedido` | 4 | Valor válido en cada campo, mensaje del modelo para un valor inválido, campo desconocido (`RangeError`) y error inesperado que no se oculta como error de validación |
 | `FachadaStorage` | 23 | Congelada; carrito (round trip, vacío, datos corruptos o con estructura inválida, storage lleno, valor no serializable); historial y secuencia (round trip, corrupto, no es lista, storage lleno); preferencias y caché del catálogo; datos de sesión (borrador, filtros, bienvenida, en `sessionStorage` y no en `localStorage`); storage bloqueado (`SecurityError`) |
 | `ServicioOfertas.obtenerOfertas` | 6 | Las tres ofertas con datos del catálogo, precio actual tomado del catálogo, precio anterior mayor, catálogo inválido (`TypeError`), producto ausente y precio anterior no mayor (`RangeError`) |
 | `ServicioCategorias.obtenerCategorias` | 3 | Únicas y ordenadas, orden del español (`Á`, `Ñ`), catálogo vacío |
 | `ServicioOpcionesPago` | 7 | Métodos aceptados por `Pago`, cuotas por método (1 para efectivo/transferencia; 1, 3 y 6 para tarjeta con su recargo), sin método → `[]`, método inexistente → `[]` y un error que no es de validación (ni `TypeError` ni `RangeError`) que se relanza en lugar de ocultarse |
 
-### `script.spec.js` (98 specs)
+### `script.spec.js` (116 specs)
 
 | Suite | Specs | Qué se prueba |
 |---|---|---|
@@ -129,12 +131,14 @@ Requiere conexión a internet: Jasmine se carga desde `cdnjs.cloudflare.com` y `
 | Flujo 1: búsqueda y filtrado | 12 | Texto, tildes y mayúsculas, ausencia de coincidencias, envío del formulario, categoría, orden asc/desc, rango de precio, menú de categorías y recuperación de resultados |
 | Flujo 2: carrito | 12 | Agregar productos, actualizar cantidades, validar con input, confirmar cambios con change, rechazar cantidades inválidas, eliminar productos e invalidar el pago |
 | Flujo 3: pago y cuotas | 13 | Efectivo/transferencia, tarjeta en 1, 3 y 6 cuotas, cálculo de recargos, validación del método, cambios de cuotas, invalidación de confirmación y cancelación |
-| Flujo 4: confirmación del pedido | 13 | Validación al enviar el formulario, corrección de errores, generación del resumen, invalidación y regeneración, confirmación, numeración y cancelación |
+| Flujo 4: confirmación del pedido | 21 | Validación por campo mientras se escribe (`input`) y al salir (`focusout`), validación al enviar el formulario, corrección de errores, generación del resumen, invalidación y regeneración, confirmación, numeración y cancelación con el mensaje visible en `#pago-mensaje` (RC59 y RC61) |
+| RC60: separación de datos del catálogo | 3 | El catálogo se arma desde `js/data/productosIniciales.js` y el controlador no lo declara |
+| RC62: persistencia de pedidos | 4 | La numeración y el historial se conservan al recargar, cancelar no modifica el historial ni la secuencia, y la secuencia se restaura si falla el guardado del historial |
 | Requisitos transversales | 7 | Uso del DOM y eventos, accesibilidad, mensajes de estado y controles sobre interacciones del navegador |
 | Persistencia del carrito en Web Storage | 8 | Guarda el carrito al agregar, lo restaura al recargar la página, conserva cambios de cantidad y eliminaciones, carrito vacío tras vaciar y tras confirmar, ignora datos corruptos o con estructura inválida, nada en `sessionStorage` |
 | Casos borde | 11 | Carrito vacío (4: iniciar compra, pago, pedido sin pago, vaciar a mitad del pago), acciones repetidas (5: doble envío del pago, doble resumen, doble confirmación, doble cancelación, doble inicio de compra), storage que rechaza escrituras (2: se avisa al usuario y la compra se completa igual) |
 | Eventos que no corresponden a una acción | 2 | Clics fuera de un botón de acción e `input`/`change` en el panel del carrito que no vienen de una cantidad: no cambian nada |
-| Rutas defensivas y de error | 12 | Confirmar sin pedido pendiente (RC24), acciones desconocidas en el carrito y en la confirmación, cierre del carrito sin compra iniciada, `input` ajeno al formulario del pedido, reloj del sistema inválido y reintento, filtro de precio alterado a mano, cuota inexistente agregada a mano, error inesperado al generar el resumen (no se oculta), página sin un elemento obligatorio (`#form-pago`) que avisa y no registra eventos, página sin `#estado-aplicacion` que sigue funcionando y comprobación de que `index.html` carga `script.js` como módulo diferido |
+| Rutas defensivas y de error | 15 | Confirmar sin pedido pendiente (RC24), acciones desconocidas en el carrito y en la confirmación, cierre del carrito sin compra iniciada, `input` ajeno al formulario del pedido, reloj del sistema inválido y reintento, filtro de precio alterado a mano, cuota inexistente agregada a mano, error inesperado al generar el resumen (no se oculta), página sin un elemento obligatorio (`#form-pago`) que avisa y no registra eventos, página sin `#estado-aplicacion` que sigue funcionando, comprobación de que `index.html` carga `script.js` como módulo diferido, `focusout` que no viene de un campo del formulario, carrito vacío que no se puede guardar tras confirmar el pedido (se informa como error) y error inesperado al confirmar (no se oculta) |
 
 
 ### Trazabilidad del Flujo 1
@@ -270,42 +274,43 @@ Se verificó la compatibilidad entre las correcciones RC59, RC60 y RC61 dentro d
 
 ## Métricas de Cobertura
 
-Corrida completa de `test-runner.html`: **426 specs, 0 failures** (ver «Estado de la corrida»).
+Corrida completa de `test-runner.html`: **451 specs, 0 failures** (ver «Estado de la corrida»).
 
 Se miden tres cosas, con la cobertura de código de V8 (Chromium, vía Playwright) durante esa misma corrida. **No son el mismo número**, y la cobertura de ramas es una estimación, no una medición equivalente a la de Istanbul o c8 (ver más abajo).
 
 | Archivo | Líneas ejecutables | Cubiertas | Líneas | Funciones | Ramas |
 |---|---|---|---|---|---|
-| `js/models/Carrito.js` | 92 | 92 | 100,0 % | 21/21 (100,0 %) | 68/68 (100,0 %) |
+| `js/models/Carrito.js` | 92 | 92 | 100,0 % | 21/21 (100,0 %) | 66/66 (100,0 %) |
 | `js/models/Catalogo.js` | 46 | 46 | 100,0 % | 16/16 (100,0 %) | 36/36 (100,0 %) |
-| `js/models/Pago.js` | 49 | 49 | 100,0 % | 7/7 (100,0 %) | 36/36 (100,0 %) |
-| `js/models/Pedido.js` | 110 | 110 | 100,0 % | 16/16 (100,0 %) | 96/96 (100,0 %) |
-| `js/models/Producto.js` | 44 | 44 | 100,0 % | 13/13 (100,0 %) | 19/19 (100,0 %) |
-| `js/script.js` | 729 | 727 | 99,7 % | 60/60 (100,0 %) | 112/113 (99,1 %) |
-| `js/services/ConfirmadorPedidos.js` | 10 | 10 | 100,0 % | 2/2 (100,0 %) | 2/2 (100,0 %) |
+| `js/models/Pago.js` | 49 | 49 | 100,0 % | 7/7 (100,0 %) | 39/39 (100,0 %) |
+| `js/models/Pedido.js` | 110 | 110 | 100,0 % | 16/16 (100,0 %) | 102/102 (100,0 %) |
+| `js/models/Producto.js` | 44 | 44 | 100,0 % | 13/13 (100,0 %) | 21/21 (100,0 %) |
+| `js/script.js` | 741 | 739 | 99,7 % | 62/62 (100,0 %) | 119/119 (100,0 %) |
+| `js/services/ConfirmadorPedidos.js` | 23 | 23 | 100,0 % | 2/2 (100,0 %) | 12/12 (100,0 %) |
 | `js/services/FachadaStorage.js` | 57 | 57 | 100,0 % | 18/18 (100,0 %) | 1/1 (100,0 %) |
 | `js/services/FormateadorMoneda.js` | 9 | 9 | 100,0 % | 3/3 (100,0 %) | sin ramas |
 | `js/services/ServicioCategorias.js` | 7 | 7 | 100,0 % | 4/4 (100,0 %) | sin ramas |
 | `js/services/ServicioOfertas.js` | 35 | 35 | 100,0 % | 3/3 (100,0 %) | 6/6 (100,0 %) |
-| `js/services/ServicioOpcionesPago.js` | 31 | 28 | 90,3 % | 4/4 (100,0 %) | 14/15 (93,3 %) |
+| `js/services/ServicioOpcionesPago.js` | 31 | 28 | 90,3 % | 4/4 (100,0 %) | 15/16 (93,8 %) |
 | `js/services/ValidacionCarrito.js` | 4 | 4 | 100,0 % | 2/2 (100,0 %) | sin ramas |
-| `js/utils/storage.js` | 283 | 283 | 100,0 % | 32/32 (100,0 %) | 199/199 (100,0 %) |
-| **Total** | **1506** | **1501** | **99,7 %** | **201/201 (100,0 %)** | **589/591 (99,7 %)** |
+| `js/services/ValidacionPedido.js` | 37 | 37 | 100,0 % | 2/2 (100,0 %) | 6/6 (100,0 %) |
+| `js/utils/storage.js` | 283 | 283 | 100,0 % | 32/32 (100,0 %) | 187/187 (100,0 %) |
+| **Total** | **1568** | **1563** | **99,7 %** | **205/205 (100,0 %)** | **610/611 (99,8 %)** |
 
-El recuento de ramas depende de cómo V8 compila cada función, así que cambia entre corridas y entre versiones de Chromium: en las corridas de la corrección de QA dio entre 577/579 y 581/583, y la corrida de esta tabla (posterior a la corrección de RC51) dio 589/591. El porcentaje se mantiene en 99,7 %. Por eso los números de ramas se leen como aproximados; las líneas y funciones no varían.
+El recuento de ramas depende de cómo V8 compila cada función, así que cambia entre corridas y entre versiones de Chromium: en las corridas de la corrección de QA dio entre 577/579 y 581/583, y la corrida de esta tabla (451 specs, con las PR #186 y #188 y los specs de RC81 a RC84) dio 610/611; en otras corridas con la misma suite dio entre 606/608 y 611/612. El porcentaje se mantiene en 99,7 % - 99,8 %. Por eso los números de ramas se leen como aproximados; las líneas y funciones no varían.
 
 `js/data/imagenesCatalogo.js` solo declara un mapa de constantes y no aparece en la tabla porque la herramienta mide `models`, `services`, `utils` y `script.js`.
 
-La medición histórica anterior (94,2 %, sobre 208 specs) era **solo de líneas** y sobre menos archivos; no incluía los servicios nuevos ni medía funciones ni ramas, y por eso se reemplaza. Una cobertura alta no significa que la aplicación esté bien: los 15 métodos de `FachadaStorage` que la página no usa figuran como cubiertos por sus tests propios aunque ningún flujo real los llama.
+La medición histórica anterior (94,2 %, sobre 208 specs) era **solo de líneas** y sobre menos archivos; no incluía los servicios nuevos ni medía funciones ni ramas, y por eso se reemplaza. Una cobertura alta no significa que la aplicación esté bien: los 11 métodos de `FachadaStorage` que la página no usa figuran como cubiertos por sus tests propios aunque ningún flujo real los llama.
 
 ### Qué falta cubrir y por qué
 
-Antes de la corrección de QA la tabla marcaba 98,1 % de líneas, 99,5 % de funciones y 97,1 % de ramas (394 specs). Con los 20 specs de esa corrección (405 de la rama de release + 20 = 425) y el spec de la corrección de RC51 (426) quedan **sin cubrir 5 líneas y 2 ramas**, y las dos ramas no se pueden alcanzar sin modificar el código de producción. Cada una se justifica con algo comprobable:
+Antes de la corrección de QA la tabla marcaba 98,1 % de líneas, 99,5 % de funciones y 97,1 % de ramas (394 specs). Con los 20 specs de esa corrección (405 de la rama de release + 20 = 425) y el spec de la corrección de RC51 (426) quedaban **5 líneas y 2 ramas sin cubrir**. Al integrarse las PR #186 y #188 (441 specs) apareció código nuevo (`ValidacionPedido.js`, la persistencia de pedidos en `ConfirmadorPedidos.js` y rutas de error del controlador) y la medición bajó a 99,4 % de líneas y 99,2 % de ramas (595/600). Con los 10 specs de RC81 a RC84 (451 specs) vuelven a quedar **sin cubrir 5 líneas y 1 o 2 ramas** (según la corrida), y no se pueden alcanzar sin modificar el código de producción. Cada una se justifica con algo comprobable:
 
 - **`js/services/ServicioOpcionesPago.js:23` (líneas 24, 25 y 27)**: el `catch` de `obtenerMetodos()` solo se ejecuta si `new Pago(100, metodo, 1)` lanza. Los dos métodos candidatos (`efectivo-transferencia` y `tarjeta`) son constantes privadas del módulo y siempre son válidos, de modo que `Pago` nunca lanza ahí. Para forzarlo habría que reemplazar el constructor `Pago` importado, y un módulo ES no se puede sustituir con un doble de prueba. El `catch` equivalente de `obtenerCuotas()` sí está cubierto: sus dos caminos (error de validación → cuota descartada, otro error → se relanza) los prueban los specs de `ServicioOpcionesPago`.
-- **`js/script.js`, líneas 1104 y 1105** (`document.readyState === "loading"`): `index.html` carga `script.js` como `<script type="module">` sin `async`, y los módulos se ejecutan una vez que el documento terminó de analizarse, así que `readyState` nunca es `"loading"` en ese momento. Un spec de «Rutas defensivas y de error» comprueba justamente que la etiqueta es de tipo módulo y no tiene `async`, que es la razón de que esa rama no se recorra. V8 puede informar la rama como cubierta o no según la corrida; las dos líneas siguen sin ejecutarse.
+- **`js/script.js`, líneas 1131 y 1132** (`document.readyState === "loading"`): `index.html` carga `script.js` como `<script type="module">` sin `async`, y los módulos se ejecutan una vez que el documento terminó de analizarse, así que `readyState` nunca es `"loading"` en ese momento. Un spec de «Rutas defensivas y de error» comprueba justamente que la etiqueta es de tipo módulo y no tiene `async`, que es la razón de que esa rama no se recorra. V8 puede informar la rama como cubierta o no según la corrida; las dos líneas siguen sin ejecutarse.
 
-Lo que antes figuraba como no cubierto y ahora lo prueba un spec: los elementos obligatorios ausentes al cargar (línea 38) y `estado-aplicacion` ausente, `confirmarPedido()` sin pedido pendiente (RC24), el `catch` de `confirmarPedido()` por reloj inválido, la rama `default` de los dos `switch` de acciones, `if (!esperandoCierreCarrito) return;`, `if (!control) return;`, el filtro de precio alterado a mano (RC21), la cuota inexistente, el error inesperado al generar el resumen y los `catch` externos de `guardar()`, `cargarInstancia()` y `cargarLista()` de `storage.js`. La rama de `js/models/Pedido.js:31` (`typeof numero !== "string"` en `numeroValido()`), que antes figuraba como inalcanzable, se eliminó en la corrección de RC51: `Pedido.fromJSON()` ahora lee `datos.numero` una sola vez y valida su tipo antes de llamar a `numeroValido()`, así que esa guarda repetía una validación ya hecha. Además, antes se leía `datos.numero` tres veces (validar el tipo, validar el formato y guardarlo), y un spec comprueba ahora que se lee una sola vez y que se guarda el mismo valor que se validó.
+Lo que antes figuraba como no cubierto y ahora lo prueba un spec: los elementos obligatorios ausentes al cargar (línea 38) y `estado-aplicacion` ausente, `confirmarPedido()` sin pedido pendiente (RC24), el `catch` de `confirmarPedido()` por reloj inválido, la rama `default` de los dos `switch` de acciones, `if (!esperandoCierreCarrito) return;`, `if (!control) return;`, el filtro de precio alterado a mano (RC21), la cuota inexistente, el error inesperado al generar el resumen y los `catch` externos de `guardar()`, `cargarInstancia()` y `cargarLista()` de `storage.js`. Con RC81 a RC84 se agregaron además los de `ValidacionPedido.js` (campo desconocido y error inesperado), `ConfirmadorPedidos.js` (fallo al guardar la secuencia, el historial o su restauración) y `script.js` (`focusout` fuera de un campo, carrito vacío que no se puede guardar tras confirmar, y error inesperado al confirmar). La rama de `js/models/Pedido.js:31` (`typeof numero !== "string"` en `numeroValido()`), que antes figuraba como inalcanzable, se eliminó en la corrección de RC51: `Pedido.fromJSON()` ahora lee `datos.numero` una sola vez y valida su tipo antes de llamar a `numeroValido()`, así que esa guarda repetía una validación ya hecha. Además, antes se leía `datos.numero` tres veces (validar el tipo, validar el formato y guardarlo), y un spec comprueba ahora que se lee una sola vez y que se guarda el mismo valor que se validó.
 
 Para cinco de esos caminos se comprobó además que el spec detecta el defecto (ver las pruebas de mutación en «Herramientas y proceso»).
 
@@ -341,7 +346,7 @@ Esta sección declara qué se usó realmente, para que la documentación no diga
 
 - **Generación de los tests**: los specs de la cuarta entrega se escribieron con asistencia de **Claude** (modelo Claude Sonnet 5.5). Las PRs de esta etapa se revisaron con Copilot Agent (#140, #141 y #144) y con Claude (#150, #156 y #157).
 - **Ejecución**: los tests se ejecutaron con **Playwright (Chromium) por script**, abriendo `js/test/test-runner.html` y leyendo el resultado de Jasmine. **No se usó Playwright MCP**: la consigna lo menciona y este punto queda como desvío declarado. Tampoco se registra ejecución en Edge, Firefox ni Safari para los specs de Jasmine.
-- **Prompts**: los prompts con los que se generaron los specs del Tester QA **no se conservaron**, por lo que no hay evidencia de ellos en `docs/02-prompts/` para esas suites. Se declara como **no cumplido**.
+- **Prompts**: los prompts originales con los que se generaron las suites del Tester QA (`models`, `storage`, `services` y `script`) **se perdieron** y no se pueden recuperar. En su lugar se documenta una reconstrucción aproximada, identificada como tal, en `docs/02-prompts/prompts-8.md`: no son los originales y no hay capturas de los originales. Desde el 2026-11-24 los prompts del Tester QA se conservan con el formato completo (`prompts-6.md` y `prompts-7.md`). El criterio de conservar los prompts originales se declara como **no cumplido** para las suites anteriores a esa fecha.
 - **Verificación de que los tests detectan errores (pruebas de mutación manuales)**: se introdujo un defecto a propósito en una copia del repositorio y se comprobó que la suite, que sin el defecto no falla ningún spec, falla con él. Se probaron doce sobre la suite de 421 specs (antes del análisis de mutación automático de abajo): subir el recargo de 3 cuotas de 10 % a 13 % (5 fallas), que `guardarCarrito()` no guarde (8), que la secuencia de pedidos no avance (3), quitar la regla «precio anterior mayor al actual» de `ServicioOfertas` (1), no ordenar las categorías (2), contar unidades en vez de ítems en el contador del carrito (14) y que `cargarCarrito()` ignore lo guardado (3); y, para los specs agregados en esta corrección: que `confirmarPedido()` no avise cuando no hay pedido pendiente (1), que una cuota inexistente marque el control equivocado (1), que `obtenerCuotas()` oculte un error que no es de validación (1), y que `guardar()` y `cargarInstancia()` dejen salir el error inesperado (1 y 1). Los doce fueron detectados. Son pruebas manuales hechas una vez, no una herramienta de mutación automática.
 - **Barrida automática de mutantes (2026-11-24)**: además de las manuales, un script propio (no incluido en el repositorio; no es una herramienta de mutación estándar como Stryker) aplicó 40 mutaciones elegidas al azar sobre `js/models/` y `js/services/` (cambio de `<=`/`>=`/`===`/`&&`/`||`, de `+` por `-` y de constantes) y corrió la suite completa con cada una. La suite detectó 33 y 7 sobrevivieron. Cuatro se resolvieron con specs nuevos (fecha 0 como límite del número de pedido, total con un bit de diferencia y mensaje de validación de los ítems de `Carrito`, que fallaban sin que ningún spec lo notara; además el spec «acepta diferencias que son sólo ruido de coma flotante» sumaba `Number.EPSILON` a un total de miles, lo que no cambia el valor, y por eso no probaba nada). Los 3 restantes son equivalentes o inalcanzables: `Pedido.js:31` (guarda inalcanzable en ese momento; se eliminó en la corrección de RC51, ver «Qué falta cubrir»), `Pedido.js:45` (`>` frente a `>=` solo difiere cuando la diferencia es exactamente igual a la tolerancia) y `ServicioOpcionesPago.js:42` (el bucle hasta 13 cuotas no cambia nada porque `Pago` rechaza 13 cuotas y el `catch` la descarta). Con los 4 specs nuevos, 37 de 40 mutantes quedan detectados.
 
@@ -352,16 +357,16 @@ Esta sección declara qué se usó realmente, para que la documentación no diga
 Capturas tomadas con Playwright (Chromium) sobre el runner, con la corrida final sin fallos:
 
 ![Corrida completa](./capturas/captura-runner-completo.png)
-*Runner completo: 425 specs, 0 failures*
+*Runner completo: 451 specs, 0 failures*
 
 ![Modelos](./capturas/captura-models-spec.png)
-*`models.spec.js` (runner de modelos): 88 specs, 0 failures*
+*`models.spec.js` (runner de modelos): 89 specs, 0 failures*
 
 ![Storage](./capturas/captura-storage-spec.png)
 *Suite `StorageUtil` (`?spec=StorageUtil`): 189 specs, 0 failures*
 
 ![Controlador](./capturas/captura-script-spec.png)
-*Suite `Controlador` (`?spec=Controlador`): 98 specs, 0 failures*
+*Suite `Controlador` (`?spec=Controlador`): 116 specs, 0 failures*
 
 Los 50 specs de `services.spec.js` están incluidos en la corrida completa; no tienen un runner propio. No hay capturas de tests fallando porque la corrida final no tuvo fallos; la comprobación de que los specs detectan errores es la de mutación descrita en «Herramientas y proceso».
 
@@ -373,11 +378,11 @@ La revisión del docente (RC3) pidió que los hallazgos de QA tengan una issue p
 
 | # | Caso | Rol responsable | Criterio afectado | Severidad | Estado |
 |---|---|---|---|---|---|
-| H1 | La validación de los datos del cliente se hacía solo al enviar el formulario, mientras que el spec del rol (`spec-dev-eventos-dom.md`) pide «validaciones en tiempo real» | Desarrollador JS Eventos + DOM | Validación de formularios y manejo de errores | Baja | **Resuelto**: el controlador valida cada campo del pedido en `input` (mientras se escribe) y en `focusout` (al salir del campo) con `actualizarValidacionCampoPedido()`, y vuelve a validar con `Pedido` al enviar. Lo prueban los specs «RC59 - valida los campos vacíos mediante focusout», los de `aria-invalid` / `is-invalid` y «los campos con error quedan asociados a su mensaje (`aria-describedby` / `aria-invalid`)» |
-| H2 | Los pedidos y la secuencia no se guardaban: `ConfirmadorPedidos` numeraba en memoria y la numeración volvía a `0001` al recargar | Desarrollador JS Local y Session Storage y Desarrollador JS Eventos + DOM | Integración de Web Storage en la aplicación | Media | **Resuelto en la PR #188** (issue #176 cerrada): `ConfirmadorPedidos` persiste el historial y la secuencia con `FachadaStorage` (`guardarPedidos()` / `guardarSecuenciaPedidos()`) y restaura la secuencia si falla el guardado. Lo prueban «RC62 - conserva la numeracion y el historial despues de recargar», «RC62 - cancelar un pedido no modifica el historial ni la secuencia» y «RC62 - restaura la secuencia cuando falla el guardado del historial» (`script.spec.js`), y «un rechazo no consume número de secuencia» (`services.spec.js`) |
+| H1 | Inicialmente, la validación de los datos del cliente se realizaba al enviar el formulario. Actualmente, el controlador implementa la validación individual mediante los eventos `input` y `focusout`, delegando las reglas de validación al servicio `ValidacionPedido.js` y proporcionando feedback visual y accesible. La validación definitiva al enviar el formulario continúa a cargo de la clase `Pedido`. La suite `script.spec.js` contempla las pruebas correspondientes a RC59. | Desarrollador JS Eventos + DOM | Validación de formularios y manejo de errores | Baja | **Resuelto** mediante la PR [#186](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/186) (RC22 y RC59). Trazabilidad actualizada según RC81 |
+| H2 | Inicialmente, los pedidos y su secuencia no se persistían y la numeración volvía a `0001` al recargar la página. Actualmente, `ConfirmadorPedidos` recupera y almacena el historial y la secuencia mediante `FachadaStorage` en `localStorage`, utilizando las claves `app:pedidos:historial` y `app:pedidos:secuencia`. La suite `script.spec.js` contempla pruebas de persistencia después de recargar, cancelación y manejo de errores de almacenamiento. | Desarrollador JS Local y Session Storage y Desarrollador JS Eventos + DOM | Integración de Web Storage en la aplicación | Media | **Resuelto** mediante la PR [#188](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/188) (RC62). Issue [#176](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/176) cerrada según la revisión del docente. Trazabilidad actualizada según RC82 |
 | H3 | 11 de los 17 métodos de `FachadaStorage` no los llama ningún flujo de la aplicación: solo se usan los del carrito (`cargarCarrito`, `guardarCarrito`) y los del historial y la secuencia de pedidos (`cargarPedidos`, `guardarPedidos`, `cargarSecuenciaPedidos`, `guardarSecuenciaPedidos`) | Desarrollador JS Local y Session Storage | Integración de Web Storage / documentación coherente con el código | Baja | **Abierto**; la documentación ya lo declara |
-| H4 | El catálogo (`productosIniciales`) y los datos de ofertas estaban declarados en JavaScript dentro del controlador y de `ServicioOfertas` | Desarrollador JS Eventos + DOM | Separación de responsabilidades | Baja | **Resuelto en lo que pedía el hallazgo para el catálogo**: `productosIniciales` ya está en `js/data/productosIniciales.js` y el controlador lo importa. La configuración de ofertas (`OFERTAS`: código, precio anterior e imagen) sigue como constante de `ServicioOfertas.js`; el precio actual y los datos del producto se obtienen de `Catalogo`, y no se considera pendiente |
-| H5 | Al cancelar el pedido el mensaje «Pedido cancelado…» se escribía en `#pedido-mensaje`, dentro de la sección de confirmación que se oculta en ese momento, y el usuario no lo veía | Desarrollador JS Eventos + DOM (código) y Tester/QA (spec) | Retroalimentación al usuario / estados de la interfaz | Baja | **Resuelto**: `cancelarPedido()` muestra el mensaje en `#pago-mensaje`, una región `role="status"` de la sección de pago, que queda visible. La suite lo verifica con «RC61 - cancelar el pedido conserva el carrito y las condiciones de pago» y con el spec de cancelación con errores: el mensaje no está dentro de ningún elemento `hidden`, su `display` no es `none`, su `visibility` es `visible` y su alto es mayor que cero (ya no solo se lee el `textContent`) |
+| H4 | Inicialmente, los datos del catálogo (`productosIniciales`) se encontraban declarados dentro del controlador. Actualmente, los datos se encuentran en el módulo independiente `js/data/productosIniciales.js` y se importan desde `js/script.js`. La configuración de ofertas permanece encapsulada en `ServicioOfertas.js`, fuera del controlador, y los datos de los productos se recuperan desde el catálogo. La suite `script.spec.js` contempla pruebas de separación de responsabilidades, conservación de los datos originales y renderizado dinámico. | Desarrollador JS Eventos + DOM | Separación de responsabilidades | Baja | **Resuelto respecto de la separación de los datos del catálogo** mediante la PR [#186](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/186) (RC60). Trazabilidad actualizada según RC83 |
+| H5 | Inicialmente, al cancelar el pedido, el mensaje se mostraba en `#pedido-mensaje`, dentro de la sección de confirmación que se ocultaba. Actualmente, `cancelarPedido()` muestra el mensaje en la región visible `#pago-mensaje`, conservando el carrito y las condiciones de pago y limpiando los estados de validación del formulario. La suite `script.spec.js` contempla pruebas que verifican el contenido, la visibilidad y los atributos de accesibilidad del mensaje, además de la posibilidad de retomar el proceso de compra. | Desarrollador JS Eventos + DOM (código) y Tester/QA (spec) | Retroalimentación al usuario / estados de la interfaz | Baja | **Resuelto** mediante la PR [#186](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/186) (RC61). Trazabilidad actualizada según RC84 |
 | H6 | Cobertura informada solo por líneas, sin ramas ni casos borde | Tester/QA | Cobertura y casos borde de las pruebas | Media | **Resuelto** en esta corrección (se miden líneas, funciones y ramas: 99,7 % / 100 % / 99,7 %; las 2 ramas restantes se justifican en «Qué falta cubrir y por qué») |
 | H7 | La suite que dejó la PR #169 terminaba con 3 specs en rojo (220 specs, 3 failures): tres specs del controlador no coincidían con el comportamiento actual | Tester/QA | Aislamiento y mantenimiento de los tests | Media | **Resuelto** en esta corrección (394 specs, 0 failures; ver abajo) |
 | H8 | Sin evidencia de prompts ni de Playwright MCP para las suites del Tester QA | Tester/QA | Uso de herramientas de IA y trazabilidad | Media | **No resuelto**: declarado como desvío |
@@ -389,7 +394,7 @@ Se corrió la suite sobre el commit de la PR #169 (`c4fd0dc`) antes de tocar nad
 | Spec | Por qué fallaba | Cambio |
 |---|---|---|
 | Requisitos transversales › los flujos de búsqueda, carrito, pago y cancelaciones tampoco los usan | Tras buscar «zzz» y filtrar por categoría, el catálogo se vuelve a dibujar y las tarjetas que no coinciden ya no existen (`TypeError … reading 'dispatchEvent'`) | Se borra la búsqueda y se vuelve a «todas las categorías» antes del paso que necesita las tarjetas |
-| Requisitos transversales › los campos con error quedan asociados a su mensaje (`aria-describedby` / `aria-invalid`) | Escribía un correo inválido y esperaba `aria-invalid="true"`, pero la validación ocurre al enviar (decisión de la PR #169, H1) | Completa los demás datos, escribe el correo inválido y envía el formulario; verifica el mismo `aria-invalid` y el mismo mensaje |
+| Requisitos transversales › los campos con error quedan asociados a su mensaje (`aria-describedby` / `aria-invalid`) | Escribía un correo inválido y esperaba `aria-invalid="true"`, pero en la versión correspondiente a la PR #169 la validación se realizaba al enviar el formulario (estado histórico de H1, corregido posteriormente mediante RC59) | Completa los demás datos, escribe el correo inválido y envía el formulario; verifica el mismo `aria-invalid` y el mismo mensaje |
 | Requisitos transversales › no modifica `localStorage` ni `sessionStorage` durante una compra completa | La aplicación ahora guarda el carrito en `localStorage`, por lo que la afirmación «no modifica nada» ya no es cierta | Pasa a «una compra completa solo escribe claves de la app en `localStorage` y no toca `sessionStorage`» |
 
 Además, el aislamiento del storage entre tests (guardar, borrar y restaurar las claves `app:`) es el que agregó el Desarrollador Eventos + DOM en la PR #169; se conservó tal cual.
@@ -413,7 +418,7 @@ Además, el aislamiento del storage entre tests (guardar, borrar y restaurar las
 - Los tests no se corrieron en Firefox, Safari ni Edge; solo en Chromium.
 - No se usó Playwright MCP ni se conservaron los prompts de las suites del Tester QA (ver «Herramientas y proceso»).
 - El mapa de Google de `index.html` no se carga ni se prueba.
-- No hay tests de persistencia de pedidos ni de secuencia en la página porque la aplicación todavía no los persiste (H2).
+- La limitación identificada originalmente en H2 fue resuelta mediante RC62 en la PR [#188](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/188). Actualmente, `script.spec.js` incluye pruebas de persistencia del historial y la secuencia después de recargar la página, cancelación de pedidos sin modificar los datos almacenados y manejo de errores durante el almacenamiento.
 
 ---
 
