@@ -47,19 +47,25 @@ El contenido de los 9 productos se toma tal cual de `js/data/productosIniciales.
 
 ## 2. Diseño de los estados de carga
 
-El catálogo pasa a tener tres estados visibles. Se reutilizan los elementos que ya existen en `index.html`: `#catalogo-mensaje` (`role="status"`, `aria-live="polite"`) y `#resultados-catalogo`.
+Se distinguen **dos cosas diferentes** que no deben confundirse:
 
-| Estado | Qué ve el usuario | Dónde |
-|---|---|---|
-| **loading** | Mensaje «Cargando catálogo…» con el indicador de carga que ya genera `mostrarMensaje()` con el tipo `loading` (spinner de Bootstrap). Los controles de búsqueda y filtros quedan deshabilitados. | `#catalogo-mensaje`, `#resultados-catalogo` con `aria-busy="true"` |
-| **success** | Se quitan el indicador y `aria-busy`; se renderizan las tarjetas (flujo actual) y el mensaje indica «N producto(s) cargado(s)» con el resumen del catálogo (sección 3). Los controles se habilitan. | `#catalogo-mensaje`, `#resultados-catalogo` |
-| **error** | Mensaje amigable, sin detalles técnicos («No pudimos cargar el catálogo. Mostramos la última versión guardada» o «…Reintentá en unos minutos»), según el caso de la sección 4, y botón **«Reintentar»**. | `#catalogo-mensaje` (tipo `error`) |
+- **Disponibilidad del catálogo** (el dato): si hay un catálogo usable para los cuatro flujos. Es `cargando` mientras se espera la respuesta y pasa a **`disponible` en cuanto `cargarCatalogo` devuelve un `ResultadoCarga`, sea cual sea su `origen`** (`red`, `cache` o `local`). Nunca queda «no disponible», porque el catálogo local siempre existe.
+- **Estado visual del mensaje** (la interfaz): lo que muestra `#catalogo-mensaje`: `loading`, `success` o `error`. Depende de `origen`: `success` si los datos vinieron de la red; `error`, como **advertencia**, si hubo que usar la caché o el catálogo local.
+
+Un mensaje de error por usar un fallback **no significa que el catálogo no esté disponible**: con `cache` o `local` el catálogo está disponible, los controles se habilitan y los cuatro flujos funcionan igual. Se reutilizan los elementos que ya existen en `index.html`: `#catalogo-mensaje` (`role="status"`, `aria-live="polite"`) y `#resultados-catalogo`.
+
+| Situación | Disponibilidad del catálogo | Estado visual del mensaje | Controles y tarjetas | Dónde |
+|---|---|---|---|---|
+| **Cargando** | `cargando` | **loading**: «Cargando catálogo…» con el indicador que ya genera `mostrarMensaje()` con el tipo `loading` (spinner de Bootstrap) | Controles de búsqueda y filtros deshabilitados | `#catalogo-mensaje`; `#resultados-catalogo` con `aria-busy="true"` |
+| **Datos de la red** (`origen: "red"`) | `disponible` | **success**: «N producto(s) cargado(s)» con el resumen del catálogo (sección 3) | Se quitan el indicador y `aria-busy`; se renderizan las tarjetas (flujo actual); controles habilitados | `#catalogo-mensaje`, `#resultados-catalogo` |
+| **Respaldo** (`origen: "cache"` o `"local"`) | `disponible` | **error** (advertencia): mensaje amigable y sin detalles técnicos, según la matriz de 4.2 (por ejemplo «No pudimos actualizar el catálogo. Mostramos la última versión guardada.»), y botón **«Reintentar»** | Igual que en la fila anterior: tarjetas renderizadas, controles habilitados y los cuatro flujos operativos | `#catalogo-mensaje` (tipo `error`) |
 
 Reglas:
 - El detalle técnico (código HTTP, causa) va a `console.error`, no a la pantalla.
 - Se reutiliza `mostrarMensaje()` y los tipos `info` / `success` / `error` / `loading` que ya existen, sin tocar su comportamiento.
 - Tiempo máximo de espera por intento: 8 segundos (`AbortController`); pasado ese tiempo se considera error de red.
 - Un solo pedido en vuelo: mientras hay una carga en curso, «Reintentar» no inicia otra.
+- La búsqueda inicial (`buscarYMostrarCatalogo`) se ejecuta cuando el catálogo queda **disponible**, con cualquier `origen`; no espera al mensaje `success`.
 
 ## 3. Funciones de orden superior
 
@@ -121,6 +127,8 @@ El mensaje que ve el usuario **no** viaja en `ErrorApi`: lo elige `script.js` se
 | `resumen` | `{ total, porCategoria, precioMinimo, precioMaximo }` | Resultado de `resumirCatalogo` |
 | `error` | `ErrorApi` \| `null` | El error que obligó a usar un fallback (`null` si `origen` es `"red"`) |
 
+`cargarCatalogo` siempre devuelve un catálogo usable: **la disponibilidad no depende de `origen`**. Los campos `origen` y `error` solo informan de dónde salieron los datos, para que `script.js` elija el mensaje (sección 2).
+
 **Exportaciones de `js/services/ProcesadorCatalogo.js`** (funciones puras: sin DOM, sin red y sin storage):
 
 | Nombre | Parámetros | Retorno |
@@ -139,7 +147,7 @@ El mensaje que ve el usuario **no** viaja en `ErrorApi`: lo elige `script.js` se
 | Validar y descartar registros, construir `Producto`, resumir | — | ✅ | — |
 | Elegir la fuente: red → caché → local, y guardar la caché | ✅ | — | — |
 | Lanzar / capturar `ErrorApi` | ✅ | — | — |
-| Mostrar loading / success / error, mensajes y botón «Reintentar» | — | — | ✅ |
+| Mostrar el estado visual del mensaje (loading / success / error), los textos y el botón «Reintentar» | — | — | ✅ |
 | Habilitar o deshabilitar controles, `aria-busy` | — | — | ✅ |
 | Renderizar tarjetas y ejecutar la búsqueda inicial | — | — | ✅ |
 | Escribir en el DOM | ❌ nunca | ❌ nunca | ✅ |
@@ -175,6 +183,8 @@ Los errores `ErrorApi` de tipo `datos` (lista vacía o sin registros válidos) l
 
 Orden de respaldo cuando la carga remota falla: **caché** (`FachadaStorage.cargarCatalogo()`, solo si existe y tiene productos) → **catálogo local** (`productosIniciales`, siempre disponible). Los textos de la columna «Mensaje» son los que muestra `script.js` en `#catalogo-mensaje`; el detalle técnico va a `console.error`. Cuando `origen` no es `"red"`, `script.js` muestra el botón «Reintentar».
 
+**El tipo `error` de la columna «Mensaje» es un aviso visual** (advertencia por usar un respaldo), no indica que el catálogo no esté disponible: con `cache` o `local` el catálogo está disponible y los cuatro flujos funcionan (sección 2).
+
 | Escenario | `tipo` | ¿Reintenta? | ¿Usa la caché? | ¿Usa el catálogo local? | ¿`ErrorApi`? | Mensaje al usuario |
 |---|---|---|---|---|---|---|
 | **Error de red** (sin conexión, CORS, fetch rechazado) o **tiempo agotado** (8 s) | `red` | Sí: 2 reintentos (500 ms y 1000 ms) | Sí, si existe | Sí, si no hay caché | Se lanza al agotar los reintentos; la captura `cargarCatalogo` | Durante los reintentos: «No pudimos conectarnos. Reintentando…» (`loading`). Al agotarlos, con caché: «No pudimos actualizar el catálogo. Mostramos la última versión guardada.»; sin caché: «No pudimos conectarnos. Mostramos el catálogo local.» (`error`) |
@@ -206,7 +216,7 @@ Orden de respaldo cuando la carga remota falla: **caché** (`FachadaStorage.carg
 - **Clases POO (`js/models/`):** `construirProductos` crea instancias de `Producto` y se arma un `Catalogo` con ellas, igual que hoy; no se modifican `Producto.js` ni `Catalogo.js`.
 - **Storage (`js/utils/storage.js` y `FachadaStorage`):** al cargar con éxito desde la red, el catálogo se guarda con `FachadaStorage.guardarCatalogo()`; si la red falla, se lee con `cargarCatalogo()`. No se agregan claves nuevas ni se cambia el módulo de Thiago.
 - **`script.js` sigue siendo solo eventos y DOM:** el `fetch` vive únicamente en `js/api/apiService.js`. El cambio en `script.js` es que el catálogo deja de crearse al importar el módulo y pasa a cargarse al iniciar con `await`.
-  - Riesgo conocido: hoy `catalogo` es una constante que existe desde el primer instante y la suite `script.spec.js` (que abre `index.html` en un iframe) asume eso. Con la carga asíncrona, los tests tendrán que esperar al estado «success» antes de buscar. Se coordina con el Tester QA/JS.
+  - Riesgo conocido: hoy `catalogo` es una constante que existe desde el primer instante y la suite `script.spec.js` (que abre `index.html` en un iframe) asume eso. Con la carga asíncrona, los tests tendrán que esperar a que el catálogo esté **disponible** (con cualquier `origen`) antes de buscar. Se coordina con el Tester QA/JS.
 - **SweetAlert2 (Desarrollador JS Librerías Externas):** el diálogo de «Eliminar del carrito» muestra el nombre del producto; con este rol ese nombre llega siempre ya validado por `Producto`, como se acordó en su spec.
 - **Estructura de archivos:**
 
@@ -227,18 +237,41 @@ js/
 
 Para `js/test/api.spec.js` (el Tester QA/JS los escribe; este rol deja los módulos listos para ser probados con un `fetch` simulado):
 
-| # | Caso | Resultado esperado |
-|---|---|---|
-| 1 | `fetch` exitoso con JSON válido | Devuelve los productos y llama a `guardarCatalogo` |
-| 2 | Error HTTP 404 | Lanza `ErrorApi` con `tipo: "http"`, sin reintentar |
-| 3 | Error HTTP 500 | Reintenta 2 veces y luego lanza `ErrorApi` |
-| 4 | Error de red (`fetch` rechazado) | Reintenta y, si sigue fallando, usa el fallback |
-| 5 | Tiempo agotado | Aborta y se trata como error de red |
-| 6 | Respuesta que no es JSON / estructura inesperada | `ErrorApi` con `tipo: "formato"` |
-| 7 | Registros inválidos mezclados con válidos | Descarta solo los inválidos y reporta cuántos |
-| 8 | `map` / `filter` / `reduce` de `ProcesadorCatalogo` | Resultados correctos con casos normales y de borde (lista vacía, un solo elemento, categorías repetidas) |
-| 9 | Integración con el DOM | Los tres estados (loading / success / error) se ven y el botón «Reintentar» vuelve a cargar |
-| 10 | Fallbacks | Con red caída y caché disponible usa la caché; sin caché usa `productosIniciales` |
+Cada caso indica la **función bajo prueba**, porque no todas se comportan igual ante un error: `obtenerJson` y `obtenerCatalogoRemoto` **lanzan** `ErrorApi`; `cargarCatalogo` **nunca lo lanza**: lo captura, aplica el respaldo y lo deja en `resultado.error` (sección 4.1). Los casos con `fetch` usan dobles de prueba (`fetchFn`, `esperarFn`).
+
+**A. Capa de red — `obtenerJson` y `obtenerCatalogoRemoto` (rechazan con `ErrorApi`)**
+
+| # | Función bajo prueba | Caso | Resultado esperado |
+|---|---|---|---|
+| A1 | `obtenerJson` | Respuesta 200 con JSON válido | Resuelve con el JSON ya parseado; 1 solo intento |
+| A2 | `obtenerJson` | Error HTTP 404 | Rechaza con `ErrorApi` (`tipo: "http"`, `estado: 404`), sin reintentar |
+| A3 | `obtenerJson` | Error HTTP 500 | Reintenta 2 veces (3 intentos en total) y rechaza con `ErrorApi` (`tipo: "http"`, `estado: 500`) |
+| A4 | `obtenerJson` | Error de red (`fetch` rechazado) | Reintenta 2 veces y rechaza con `ErrorApi` (`tipo: "red"`) |
+| A5 | `obtenerJson` | Tiempo agotado | Aborta el intento y se trata como error de red: `ErrorApi` (`tipo: "red"`) con `causa` = `AbortError` |
+| A6 | `obtenerJson` | El cuerpo no es JSON | Rechaza con `ErrorApi` (`tipo: "formato"`), sin reintentar |
+| A7 | `obtenerCatalogoRemoto` | JSON válido pero sin `productos` o que no es un arreglo | Rechaza con `ErrorApi` (`tipo: "formato"`) |
+| A8 | `obtenerCatalogoRemoto` | JSON con la estructura esperada | Resuelve con `{ version, registros }` |
+
+**B. Orquestación — `cargarCatalogo` (nunca rechaza; devuelve `ResultadoCarga`)**
+
+| # | Función bajo prueba | Caso | Resultado esperado |
+|---|---|---|---|
+| B1 | `cargarCatalogo` | Red correcta | `origen: "red"`, `error: null`; llama a `guardarCatalogo` una vez |
+| B2 | `cargarCatalogo` | HTTP 404 con caché disponible | No rechaza: `origen: "cache"` y `error.tipo: "http"` |
+| B3 | `cargarCatalogo` | HTTP 500 o red caída, sin caché | No rechaza: reintenta 2 veces y devuelve `origen: "local"` con el catálogo de `productosIniciales` y `error.tipo` según el caso (`http` o `red`) |
+| B4 | `cargarCatalogo` | JSON inválido o estructura incorrecta | No rechaza: `origen: "cache"` o `"local"` y `error.tipo: "formato"` |
+| B5 | `cargarCatalogo` | Registros inválidos mezclados con válidos | `origen: "red"`; `descartados` con M elementos; en la caché solo quedan los válidos |
+| B6 | `cargarCatalogo` | Lista vacía o todos los registros inválidos | No rechaza: `origen: "cache"` o `"local"` y `error.tipo: "datos"` |
+| B7 | `cargarCatalogo` | Falla de red con `alReintentar` | Llama a `alReintentar` antes de cada reintento (2 veces) |
+
+**C. Procesamiento y pantalla**
+
+| # | Función bajo prueba | Caso | Resultado esperado |
+|---|---|---|---|
+| C1 | `filtrarValidos`, `construirProductos`, `resumirCatalogo`, `agruparPorCategoria` | `map` / `filter` / `reduce` con casos normales y de borde (lista vacía, un solo elemento, categorías repetidas) | Resultados correctos |
+| C2 | `script.js` (DOM) | Carga con `origen: "red"` | Mensaje `success`; tarjetas renderizadas; controles habilitados |
+| C3 | `script.js` (DOM) | Carga con `origen: "cache"` o `"local"` | Mensaje `error` como advertencia y botón «Reintentar»; **el catálogo está disponible**: tarjetas renderizadas, controles habilitados y los cuatro flujos operativos |
+| C4 | `script.js` (DOM) | Mientras carga y al pulsar «Reintentar» | Estado `loading` con controles deshabilitados; «Reintentar» vuelve a cargar y no inicia un segundo pedido si ya hay uno en curso |
 
 ### 6.2 Matriz mínima de los cuatro flujos
 
@@ -246,14 +279,14 @@ Los cuatro flujos son los de `docs/05-diagramas/01-diagrama-de-actividades/diagr
 
 | Flujo | Precondición | Acción | Resultado esperado | Verificaciones posteriores | Efecto de la carga asíncrona |
 |---|---|---|---|---|---|
-| **1. Búsqueda y filtrado** | Catálogo en estado `success` (con `origen` `red`, `cache` o `local`) | Escribir un texto en el buscador, o cambiar categoría, orden o precio máximo | Se renderizan solo las tarjetas que coinciden y `#catalogo-mensaje` dice «N producto(s) encontrado(s).» (o «Sin coincidencias.») | La cantidad de tarjetas en `#resultados-catalogo` es igual a N; el carrito guardado no cambia; con un precio máximo inválido se marca el control y se muestra el error sin borrar las tarjetas | Mientras el estado es `loading` los controles están deshabilitados y la búsqueda no corre. Al llegar a `success` se ejecuta la búsqueda inicial (`buscarYMostrarCatalogo`) |
-| **2. Carrito** | Catálogo en `success` | Agregar un producto desde su tarjeta, cambiar su cantidad y luego eliminarlo | Tras agregar, el panel del carrito muestra el ítem con su subtotal y el total; tras eliminar, el carrito queda vacío | El carrito se guarda con `FachadaStorage.guardarCarrito` después de cada operación válida; cualquier cambio descarta el pago y el pedido pendientes | No hay tarjetas, y por lo tanto nada que agregar, hasta `success`. Los productos agregados provienen del catálogo cargado (red, caché o local) |
+| **1. Búsqueda y filtrado** | Catálogo **disponible** (con `origen` `red`, `cache` o `local`; el mensaje puede ser de éxito o de advertencia, sección 2) | Escribir un texto en el buscador, o cambiar categoría, orden o precio máximo | Se renderizan solo las tarjetas que coinciden y `#catalogo-mensaje` dice «N producto(s) encontrado(s).» (o «Sin coincidencias.») | La cantidad de tarjetas en `#resultados-catalogo` es igual a N; el carrito guardado no cambia; con un precio máximo inválido se marca el control y se muestra el error sin borrar las tarjetas | Mientras el catálogo está `cargando` los controles están deshabilitados y la búsqueda no corre. Cuando queda disponible, con cualquier `origen`, se ejecuta la búsqueda inicial (`buscarYMostrarCatalogo`) |
+| **2. Carrito** | Catálogo **disponible** (con cualquier `origen`) | Agregar un producto desde su tarjeta, cambiar su cantidad y luego eliminarlo | Tras agregar, el panel del carrito muestra el ítem con su subtotal y el total; tras eliminar, el carrito queda vacío | El carrito se guarda con `FachadaStorage.guardarCarrito` después de cada operación válida; cualquier cambio descarta el pago y el pedido pendientes | No hay tarjetas, y por lo tanto nada que agregar, hasta que el catálogo está disponible. Los productos agregados provienen del catálogo cargado (red, caché o local) |
 | **3. Pago y cuotas** | Carrito con al menos un ítem; se pulsó «Iniciar compra» | Elegir el método de pago y, para tarjeta, las cuotas | `#condiciones-pago` muestra total original, recargo, interés, total financiado y valor de cuota, calculados con los precios del carrito | El carrito no se modifica; no se guarda ningún pedido; con «Cancelar pago» se ocultan pago y confirmación y se conservan los productos | No depende del `fetch`. Los precios usados son los del catálogo cargado en ese momento |
 | **4. Resumen y confirmación** | Condiciones de pago calculadas y datos del cliente válidos (nombre, correo, dirección) | Confirmar el pedido (y, en otro caso, cancelarlo) | Al confirmar: «Pedido confirmado: *número*» y «La operacion se realizo correctamente.»; al cancelar se conservan el carrito y las condiciones de pago | Al confirmar: el carrito queda vacío en pantalla y en el storage, se guarda el pedido en el historial, la secuencia de pedidos aumenta en 1 y la sección de pago se oculta | No hace ningún `fetch`: la confirmación no puede quedar bloqueada por la red ni por el estado del catálogo |
 
 Verificaciones transversales de la matriz (para cada flujo):
 - No se llama a `fetch` fuera de `apiService.js`.
-- Con la red caída (fallback `local`), los cuatro flujos se completan igual que con `origen: "red"`.
+- Con la red caída (respaldo `cache` o `local`), el mensaje es de advertencia pero el catálogo está disponible: los cuatro flujos se completan igual que con `origen: "red"`.
 - La carga inicial no deja el catálogo vacío en ningún caso.
 
 ### 6.3 Comportamientos a preservar (verificaciones de regresión)
@@ -276,7 +309,7 @@ Los tres Test Cases de Lighthouse (baseline, post-fetch y post-librería) son re
 - [ ] `api/productos.json` con los 9 productos del proyecto, sin cambios de códigos ni precios.
 - [ ] `js/api/apiService.js` implementado con `fetch`, `async/await` y `try/catch`, documentado con JSDoc.
 - [ ] El `fetch` está solo en `apiService.js`; `script.js` no llama a `fetch` directamente.
-- [ ] Los tres estados (loading / success / error) se ven en la interfaz, con `aria-busy` y mensajes en `#catalogo-mensaje`.
+- [ ] Los tres estados visuales (loading / success / error) se ven en la interfaz, con `aria-busy` y mensajes en `#catalogo-mensaje`, y se distingue la disponibilidad del catálogo del mensaje: con un respaldo (`cache` o `local`) se muestra la advertencia y los cuatro flujos siguen funcionando.
 - [ ] Manejo de errores completo: red, HTTP 4xx/5xx, formato inválido y datos inválidos, con mensajes amigables (sin detalles técnicos en pantalla).
 - [ ] Reintentos con espera creciente (máx. 2) y tiempo límite de 8 s por intento.
 - [ ] Fallbacks funcionando: caché en `localStorage` y luego `productosIniciales`.
