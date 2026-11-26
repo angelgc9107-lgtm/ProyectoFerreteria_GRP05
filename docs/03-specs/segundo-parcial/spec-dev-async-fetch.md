@@ -365,7 +365,23 @@ _Esta sección se completa **después** de terminar el código, con el contenido
 
 ## 1. Prompt exacto utilizado y ajustes manuales realizados
 
-_Pendiente._
+**Prompt exacto:** `docs/02-prompts/prompts-12.md` (implementación del rol). El spec se generó y corrigió con los prompts 9, 10 y 11.
+
+**Ajustes manuales realizados:** ninguna
+
+## 2. Resumen de la integración con las clases POO y con Storage
+
+- **Clases POO:** `construirProductos` crea instancias de `Producto` y `cargarCatalogo` arma un `Catalogo` con ellas, igual que antes. `Producto.js` y `Catalogo.js` no se modificaron. Los códigos repetidos se detectan antes de armar el `Catalogo` con `normalizarCodigo` (la misma regla que usa `Catalogo`), porque `Catalogo` lanza `RangeError` si recibe duplicados.
+- **Storage:** con la red funcionando, el catálogo (solo los registros válidos) se guarda con `FachadaStorage.guardarCatalogo()`; si la red falla, se lee con `FachadaStorage.cargarCatalogo()` y, si no hay caché usable, se usa `productosIniciales`. No se agregaron claves ni se tocaron `storage.js` ni `FachadaStorage.js`. Si no se puede guardar la caché, se registra en `console.error` y la carga continúa.
+- **Arquitectura:** `fetch` vive solo en `js/api/apiService.js`, que no toca el DOM. `ProcesadorCatalogo.js` son funciones puras (`map`, `filter`, `reduce`). `script.js` sigue siendo eventos y DOM: pide el catálogo con `await cargarCatalogo()`, muestra los estados con `mostrarMensaje()` y marca `#catalogo[data-catalogo]` (`cargando` / `disponible`) para distinguir la disponibilidad del mensaje. Con caché o catálogo local el catálogo queda disponible y los cuatro flujos funcionan (verificado en un navegador real). Todo texto de la API se inserta con `textContent`; `script.js` no usa `innerHTML`.
+- **Desvíos respecto del spec (a revisar):** opción extra `url` en `obtenerCatalogoRemoto`; `version` toma el valor 1 si el JSON no trae una versión numérica; atributos `data-catalogo` / `data-origen` en `#catalogo` y `aria-busy` en `#resultados-catalogo` como puntos de enganche para tests; el mensaje de carga se muestra después de la búsqueda inicial, así que reemplaza al «N producto(s) encontrado(s).» del primer renderizado; las advertencias usan el tipo `error` de `mostrarMensaje()` (no existe un tipo «advertencia»).
+
+## 3. Issues respondidas y su resolución
+
+- **#210** (spec del rol): resuelta con la PR #211 (spec). Esta implementación la cumple con la PR #<NÚMERO>. _<completar: respuesta en la issue y número de PR>_
+- **Comentarios de revisión de la PR #211** (3 + 2 + 1 de Angel y 3 de la revisión con IA): resueltos en el spec antes del merge.
+- **Pendiente de otros roles:** `api.spec.js` y `library.spec.js` (Tester QA/JS); avisarle de los cambios en `script.spec.js` (descritos en la PR).
+
 
 ## 2. Resumen de la integración con las clases POO y con Storage
 
