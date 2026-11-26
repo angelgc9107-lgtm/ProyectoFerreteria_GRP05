@@ -3,7 +3,7 @@
 **Segundo Parcial — Programación Web I (UCES)**
 **Grupo:** GRP05 · **Rol:** Desarrollador JS Asíncrono · **Integrante:** Alan Díaz (@alandox1)
 **Rama de trabajo:** `feature/dev-async-fetch-api` → `develop`
-**Issue asociada:** [#<completar>](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/<completar>)
+**Issue asociada:** [#210](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/210)
 
 **Entregables del rol:**
 - `api/productos.json`: catálogo en JSON estático, servido por el propio sitio.
