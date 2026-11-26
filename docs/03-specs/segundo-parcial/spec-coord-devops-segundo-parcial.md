@@ -154,12 +154,12 @@ Implementación de las suites de Jasmine para Fetch y la librería externa, actu
 
 #### Criterios de revisión y aprobación — Lighthouse
 
-- [ ] El Test Case 11 (Baseline) se ejecuta sobre `develop` después del backport de la cuarta entrega y antes de incorporar las nuevas funcionalidades.
+- [X] El Test Case 11 (Baseline) se ejecuta sobre `develop` después del backport de la cuarta entrega y antes de incorporar las nuevas funcionalidades.
 - [ ] El Test Case 12 (Post-Fetch) se ejecuta después de integrar Fetch en `develop` y antes de integrar la librería externa.
 - [ ] El Test Case 13 (Post-Librería) se ejecuta después de integrar la librería externa en `develop`.
-- [ ] Se establecen umbrales mínimos de 95 puntos para Performance, Accessibility, Best Practices y SEO.
+- [X] Se establecen umbrales mínimos de 95 puntos para Performance, Accessibility, Best Practices y SEO.
 - [ ] Cada auditoría identifica la fecha, URL evaluada, rama, navegador y versión; se registra también el commit evaluado y se mantienen condiciones de medición comparables como criterio adicional de coordinación.
-- [ ] Se documentan los puntajes de las cuatro categorías y las métricas de Performance: First Contentful Paint (FCP), Largest Contentful Paint (LCP), Total Blocking Time (TBT), Cumulative Layout Shift (CLS) y Speed Index.
+- [X] Se documentan los puntajes de las cuatro categorías y las métricas de Performance: First Contentful Paint (FCP), Largest Contentful Paint (LCP), Total Blocking Time (TBT), Cumulative Layout Shift (CLS) y Speed Index.
 - [ ] Se documentan los problemas y observaciones de Accessibility, Best Practices y SEO.
 - [ ] El Test Case 12 compara sus resultados con el baseline, analiza el impacto de Fetch y documenta las recomendaciones de optimización.
 - [ ] El Test Case 13 compara sus resultados con el estado post-fetch, presenta la evolución completa y analiza el impacto de la librería con recomendaciones finales.
@@ -228,9 +228,9 @@ Se solicitará verificar los requisitos del rol, los criterios de aceptación ap
 
 El Coordinador contrastará manualmente las observaciones de IA con los archivos y la consigna. Los incumplimientos confirmados se registrarán mediante comentarios inline en las líneas correspondientes del diff y se solicitarán Request Changes cuando corresponda. La aprobación se realizará después de verificar las correcciones y los criterios aplicables. No se generarán observaciones artificiales para alcanzar el mínimo de revisiones.
 
-Se registrará por cada PR el prompt exacto utilizado en bloque de código, los archivos y diff adjuntados como contexto, los requisitos verificados, las observaciones y líneas afectadas, los Request Changes solicitados, las correcciones verificadas y el resultado de la revisión.
+Se registrará por cada PR el prompt exacto utilizado y la respuesta dada por copilot en bloque de código.
 
-Se conservarán los prompts originales utilizados en cada code review, junto con los archivos adjuntados como contexto y las observaciones realizadas, con el objetivo de garantizar la trazabilidad y transparencia del proceso de revisión de las Pull Requests.
+Se conservarán los prompts originales utilizados en cada code review, junto con capturas, con el objetivo de garantizar la trazabilidad y transparencia del proceso de revisión de las Pull Requests.
 
 ## Decisiones de coordinación y arquitectura
 
@@ -306,11 +306,11 @@ El Coordinador/DevOps será responsable de garantizar la resolución de la total
 
 ### Fase 1 — Coordinación y desarrollo
 
-- [ ] Dadas las correcciones de AO3 y AO4, cuando se establece la base del parcial, entonces se verifica que se encuentren resueltas, incorporadas y documentadas.
-- [ ] Dada la cuarta entrega, cuando se obtiene el LGTM y Approve, entonces se realiza el merge a `master` y el backport aprobado hacia `develop`.
+- [X] Dadas las correcciones de AO3 y AO4, cuando se establece la base del parcial, entonces se verifica que se encuentren resueltas, incorporadas y documentadas.
+- [X] Dada la cuarta entrega, cuando se obtiene el LGTM y Approve, entonces se realiza el merge a `master` y el backport aprobado hacia `develop`.
 - [ ] Dado cada integrante, cuando comienza sus tareas, entonces cuenta con la issue, rama y spec correspondiente commiteado previamente.
 - [ ] Dadas las PRs del equipo, cuando se realiza su revisión, entonces se verifican los criterios generales y específicos aplicables a cada rol.
-- [ ] Dadas las PRs de los demás integrantes, cuando se realiza la coordinación, entonces se documentan al menos cuatro PRs distintas revisadas mediante IA, con prompts, contexto, observaciones y resultados.
+- [ ] Dadas las PRs de los demás integrantes, cuando se realiza la coordinación, entonces se documentan al menos cuatro PRs distintas revisadas mediante IA, con prompts.
 - [ ] Dado un incumplimiento confirmado, cuando se revisa la PR, entonces se realizan comentarios inline y se solicitan Request Changes cuando corresponde.
 - [ ] Dada una PR con Request Changes, cuando vuelve a revisión, entonces se verifica su resolución antes de aprobarla.
 - [ ] Dadas las nuevas funcionalidades, cuando se integran en `develop`, entonces se respeta el orden de las tres auditorías Lighthouse.
@@ -344,20 +344,17 @@ Para cada una de las cuatro PRs mínimas (y las adicionales, si corresponde) se 
 
 | Revisión | PR / enlace | Rol | Fecha | Resultado |
 |---|---|---|---|---|
-| 1 | Pendiente | Pendiente | Pendiente | Pendiente |
-| 2 | Pendiente | Pendiente | Pendiente | Pendiente |
-| 3 | Pendiente | Pendiente | Pendiente | Pendiente |
+| 1 | [PR: 208](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/208) | Tester QA/JS - Testing Avanzado | 26/11/2026 | Mergeado |
+| 2 | [PR: 211](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/211) | Desarrollador JS Asíncrono (Fetch & APIs) | 26/11/2026 | Pendiente RC |
+| 3 | [PR: 215](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/215) | Tester QA/JS - Testing Avanzado | 26/11/2026 | Pendiente RC |
 | 4 | Pendiente | Pendiente | Pendiente | Pendiente |
 
 #### Detalle de cada code review (repetir por PR)
 
-- **PR revisada y rol:** Pendiente.
-- **Prompt exacto utilizado (en bloque de código):** Pendiente.
-- **Archivos y diff adjuntados como contexto:** Pendiente.
-- **Requisitos y criterios verificados:** Pendiente.
-- **Observaciones, archivos y líneas del diff:** Pendiente.
-- **Request Changes solicitados y enlaces a comentarios inline:** Pendiente.
-- **Correcciones verificadas y resultado de la revisión:** Pendiente.
+- **PR revisada y rol:** PR 208 - Tester QA/JS - Testing Avanzado .
+- **Prompt exacto utilizado (en bloque de código):**
+
+
 
 ### Correcciones de AO4, aprobación y backport inicial
 
