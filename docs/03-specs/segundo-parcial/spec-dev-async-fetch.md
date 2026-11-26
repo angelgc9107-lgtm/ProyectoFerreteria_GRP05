@@ -147,23 +147,51 @@ El mensaje que ve el usuario **no** viaja en `ErrorApi`: lo elige `script.js` se
 
 `cargarCatalogo` usa `FachadaStorage` (caché) y `productosIniciales` (fallback local) importados desde sus módulos; no accede a `localStorage` directamente.
 
-### 4.2 Matriz de errores: reintento, fallback y mensaje
+**Propagación de `ErrorApi`**
 
-Fallback aplicable = **caché** (`FachadaStorage.cargarCatalogo()`, solo si existe y tiene productos) → **local** (`productosIniciales`, siempre disponible). Los textos de la columna «Mensaje» son los que muestra `script.js` en `#catalogo-mensaje`; el detalle técnico va a `console.error`. Todos los casos con `origen` distinto de `"red"` muestran el botón «Reintentar».
+| Función | ¿Lanza `ErrorApi`? | ¿Quién lo captura? |
+|---|---|---|
+| `obtenerJson` | Sí: `red` (fallo de red o tiempo agotado), `http` (4xx / 5xx) o `formato` (el cuerpo no es JSON). Lo lanza recién cuando se agotan los reintentos aplicables | Quien la llama |
+| `obtenerCatalogoRemoto` | Sí: propaga los de `obtenerJson` y agrega `formato` si la estructura no es `{ productos: [] }` | Quien la llama |
+| `cargarCatalogo` | **No hacia afuera**: captura el `ErrorApi`, lo escribe en `console.error`, aplica el fallback y lo deja en `ResultadoCarga.error` | — (nunca rechaza) |
+| `script.js` | No recibe excepciones de la carga: lee `resultado.origen` y `resultado.error?.tipo` para elegir el mensaje | — |
 
-| Caso | `tipo` | ¿Reintenta? | ¿Fallback? | Mensaje al usuario |
-|---|---|---|---|---|
-| Sin conexión, red caída, CORS o tiempo agotado (8 s) | `red` | Sí: 2 reintentos (500 ms y 1000 ms) | Sí: caché → local | Durante los reintentos: «No pudimos conectarnos. Reintentando…» (`loading`). Al agotarlos, con caché: «No pudimos actualizar el catálogo. Mostramos la última versión guardada.»; sin caché: «No pudimos conectarnos. Mostramos el catálogo local.» (`error`) |
-| HTTP 5xx | `http` | Sí: igual que `red` | Sí: caché → local | Igual que `red` |
-| HTTP 4xx (ej. 404) | `http` | No: no se va a arreglar solo | Sí: caché → local | Con caché: «No encontramos el catálogo. Mostramos la última versión guardada.»; sin caché: «No encontramos el catálogo. Mostramos el catálogo local.» (`error`) |
-| Respuesta que no es JSON válido | `formato` | No | Sí: caché → local | Con caché: «El catálogo recibido no es válido. Mostramos la última versión guardada.»; sin caché: «El catálogo recibido no es válido. Mostramos el catálogo local.» (`error`) |
-| JSON válido pero con estructura inesperada (sin `productos` o no es un arreglo) | `formato` | No | Sí: caché → local | Igual que el caso anterior |
-| Algunos registros inválidos (el resto es válido) | — (no es error) | No | No: se usan los válidos; se guarda en caché solo lo válido | «Se cargaron N productos (M descartados por datos inválidos).» (`success`, `origen: "red"`) |
-| Todos los registros inválidos o lista vacía | `datos` | No | Sí: caché → local | Con caché: «El catálogo no tiene productos disponibles. Mostramos la última versión guardada.»; sin caché: «El catálogo no tiene productos disponibles. Mostramos el catálogo local.» (`error`) |
+Los errores `ErrorApi` de tipo `datos` (lista vacía o sin registros válidos) los genera `cargarCatalogo` al revisar lo recibido; siguen el mismo camino: se capturan ahí mismo y se aplica el fallback.
 
-Notas de diseño:
-- Con **red caída y sin caché**, el sitio funciona igual con el catálogo local; el usuario nunca queda sin productos.
-- Los reintentos solo se hacen ante fallas que pueden ser pasajeras (`red` y 5xx). Los errores de contenido (4xx, formato, datos) no se reintentan porque dan el mismo resultado.
+**Caché y fallback local: quién hace qué**
+
+| Acción | Módulo | Detalle |
+|---|---|---|
+| Descargar y validar la estructura | `apiService.js` (`obtenerCatalogoRemoto`) | No lee ni escribe la caché ni usa el catálogo local |
+| Validar registros y construir `Producto` | `ProcesadorCatalogo.js` | Función pura, sin Storage |
+| Leer la caché | `apiService.js` (`cargarCatalogo`) | Con `FachadaStorage.cargarCatalogo()`, solo cuando la carga remota falla. Devuelve `Catalogo` o `null` (sin datos, corruptos o rechazados por `fromJSON`); un `Catalogo` sin productos se trata como sin caché |
+| Escribir la caché | `apiService.js` (`cargarCatalogo`) | Con `FachadaStorage.guardarCatalogo()`, solo cuando la carga remota termina bien (`origen: "red"`) y con los registros válidos. Si devuelve `false`, no es un error de la carga: se sigue sin caché y se registra en consola |
+| Usar el catálogo local | `apiService.js` (`cargarCatalogo`) | Importa `productosIniciales` y construye los `Producto`; es el último recurso y no puede fallar con datos del proyecto |
+| Mostrar qué fuente se usó | `script.js` | Según `origen` (`red`, `cache` o `local`) |
+
+`apiService.js` no accede a `localStorage` directamente: todo pasa por `FachadaStorage`, el módulo del Desarrollador JS Storage.
+
+### 4.2 Matriz de errores: reintento, caché, fallback local, `ErrorApi` y mensaje
+
+Orden de respaldo cuando la carga remota falla: **caché** (`FachadaStorage.cargarCatalogo()`, solo si existe y tiene productos) → **catálogo local** (`productosIniciales`, siempre disponible). Los textos de la columna «Mensaje» son los que muestra `script.js` en `#catalogo-mensaje`; el detalle técnico va a `console.error`. Cuando `origen` no es `"red"`, `script.js` muestra el botón «Reintentar».
+
+| Escenario | `tipo` | ¿Reintenta? | ¿Usa la caché? | ¿Usa el catálogo local? | ¿`ErrorApi`? | Mensaje al usuario |
+|---|---|---|---|---|---|---|
+| **Error de red** (sin conexión, CORS, fetch rechazado) o **tiempo agotado** (8 s) | `red` | Sí: 2 reintentos (500 ms y 1000 ms) | Sí, si existe | Sí, si no hay caché | Se lanza al agotar los reintentos; la captura `cargarCatalogo` | Durante los reintentos: «No pudimos conectarnos. Reintentando…» (`loading`). Al agotarlos, con caché: «No pudimos actualizar el catálogo. Mostramos la última versión guardada.»; sin caché: «No pudimos conectarnos. Mostramos el catálogo local.» (`error`) |
+| **HTTP 404** (y otros 4xx) | `http` | No | Sí, si existe | Sí, si no hay caché | Se lanza de inmediato; la captura `cargarCatalogo` | Con caché: «No encontramos el catálogo. Mostramos la última versión guardada.»; sin caché: «No encontramos el catálogo. Mostramos el catálogo local.» (`error`) |
+| **HTTP 500** (y otros 5xx) | `http` | Sí: igual que el error de red | Sí, si existe | Sí, si no hay caché | Se lanza al agotar los reintentos; la captura `cargarCatalogo` | Igual que el error de red |
+| **JSON inválido** (el cuerpo no se puede parsear) | `formato` | No | Sí, si existe | Sí, si no hay caché | Se lanza de inmediato; la captura `cargarCatalogo` | Con caché: «El catálogo recibido no es válido. Mostramos la última versión guardada.»; sin caché: «El catálogo recibido no es válido. Mostramos el catálogo local.» (`error`) |
+| **Datos con formato incorrecto** (JSON válido, pero sin `productos` o que no es un arreglo) | `formato` | No | Sí, si existe | Sí, si no hay caché | Se lanza de inmediato; la captura `cargarCatalogo` | Igual que JSON inválido |
+| **Datos vacíos** (lista vacía o todos los registros inválidos) | `datos` | No | Sí, si existe | Sí, si no hay caché | Lo genera `cargarCatalogo`; lo captura ahí mismo | Con caché: «El catálogo no tiene productos disponibles. Mostramos la última versión guardada.»; sin caché: «El catálogo no tiene productos disponibles. Mostramos el catálogo local.» (`error`) |
+| **Algunos registros inválidos** (el resto es válido) | — (no es un error) | No | No: se usan los registros válidos y se guardan en la caché | No | No se lanza | «Se cargaron N productos (M descartados por datos inválidos).» (`success`, `origen: "red"`) |
+
+**Justificación de cada decisión según la fuente elegida** (JSON estático propio, del mismo origen que el sitio, sección 1):
+- **Reintentos solo en red y 5xx:** son fallas que pueden ser pasajeras (conexión inestable, hosting reiniciándose). Con un archivo propio servido por el mismo origen, un reintento tiene sentido; más de 2 solo demoraría al usuario.
+- **Sin reintentos en 404 y 4xx:** el archivo no está donde se espera (ruta equivocada o archivo borrado). Repetir el pedido da el mismo resultado; se pasa directo al respaldo.
+- **Sin reintentos en JSON inválido, formato incorrecto y datos vacíos:** el servidor respondió, pero el contenido es el problema. Volver a pedirlo trae el mismo archivo.
+- **Caché antes que el catálogo local:** la caché es la última versión que el sitio sí pudo descargar y validar (precios al día); el catálogo local es el que viene con el código y puede estar desactualizado.
+- **El catálogo local siempre disponible:** al ser una fuente propia, el sitio no depende de un tercero; si falla todo, el usuario sigue pudiendo ver productos y comprar, que es lo que el negocio necesita.
+- **Registros inválidos parciales no son un error:** descartar solo lo dañado mantiene el resto del catálogo disponible y evita mostrar un error por un único producto mal cargado.
 - La caché no tiene vencimiento propio en este rol: se usa si existe y tiene productos. Si el Coordinador/DevOps o Storage definen una antigüedad máxima, se aplica en `cargarCatalogo` sin cambiar el contrato.
 
 ### 4.3 Validación y sanitización de lo que llega de la API
@@ -228,6 +256,19 @@ Verificaciones transversales de la matriz (para cada flujo):
 - Con la red caída (fallback `local`), los cuatro flujos se completan igual que con `origen: "red"`.
 - La carga inicial no deja el catálogo vacío en ningún caso.
 
+### 6.3 Comportamientos a preservar (verificaciones de regresión)
+
+La integración de `fetch` no debe cambiar el comportamiento de los cuatro flujos existentes. Esta sección fija **qué se mantiene**, en términos generales; los casos de prueba específicos se definen después, en coordinación con el Tester QA/JS, a partir de la matriz 6.2.
+
+| Flujo | Comportamiento general que debe mantenerse después de la integración de `fetch` |
+|---|---|
+| **1. Búsqueda y filtrado** | Los criterios de texto, categoría y precio máximo siguen filtrando; el orden sigue funcionando; un criterio inválido sigue mostrando su error; el mensaje con la cantidad de resultados (o «Sin coincidencias») se mantiene; la selección de categoría desde el menú sigue actualizando el catálogo. |
+| **2. Carrito** | Siguen funcionando agregar, cambiar la cantidad (con su validación) y eliminar productos; subtotales y total se recalculan; el carrito se sigue guardando con `FachadaStorage`; cualquier cambio del carrito sigue descartando el pago y el pedido pendientes; «Iniciar compra» sigue exigiendo al menos un ítem. |
+| **3. Pago y cuotas** | Siguen la selección del método de pago y de las cuotas para tarjeta; el cálculo de condiciones (total original, recargo, interés, total financiado y valor de cuota) no cambia; «Cancelar pago» sigue conservando el carrito. |
+| **4. Resumen y confirmación** | Siguen la validación de los datos del cliente con errores junto a cada control; el resumen del pedido; la confirmación que genera el número de pedido y vacía el carrito y el pago; y la cancelación, que conserva el carrito y las condiciones de pago. |
+
+Regla común: la carga asíncrona **solo cambia cuándo está disponible el catálogo** (y desde qué fuente), no las reglas de ningún flujo. Si algo de esta tabla deja de cumplirse, es una regresión y se reporta como issue al rol correspondiente.
+
 Los tres Test Cases de Lighthouse (baseline, post-fetch y post-librería) son responsabilidad del Tester QA/JS. De este rol dependen dos cosas: el baseline debe medirse **antes** de integrar el fetch, y la carga asíncrona no debe empeorar el rendimiento (umbral ≥ 95).
 
 ## 7. Criterios de aceptación
@@ -243,6 +284,7 @@ Los tres Test Cases de Lighthouse (baseline, post-fetch y post-librería) son re
 - [ ] Datos validados y sanitizados; el contenido de la API se inserta con `textContent`.
 - [ ] Datos integrados al DOM dinámicamente y guardados con `FachadaStorage`.
 - [ ] Casos de test coordinados con el Tester QA/JS (sección 6).
+- [ ] Comportamientos de los cuatro flujos preservados (sección 6.3), con sus casos específicos definidos junto al Tester QA/JS.
 - [ ] Issues respondidas, PR a `develop` revisada por el Coordinador/DevOps y línea en `changelog.md` con link a la PR y a la issue.
 
 ## 8. Herramientas y coordinación
