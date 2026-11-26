@@ -13,7 +13,7 @@
   (PR #156) y `StorageUtil` (PR #157) está disponible; `script.js` todavía no
   persiste con Storage.
 - **Implementado:** modelos, validaciones y serialización/restauración.
-- **Pruebas:** Jasmine ejecutó 39 casos, con 0 fallos (sección 12).
+- **Pruebas:** Jasmine ejecutó 84 casos, con 0 fallos (sección 12).
 - **Integración:** flujos de interfaz integrados en `develop` (PR #156); persistencia con `StorageUtil` (PR #157) aún sin conectar en `script.js`.
 
 ## 2. Objetivo y responsabilidades
@@ -330,7 +330,7 @@ integrar la interfaz con los contratos anteriores sin trasladar
   validación deben distinguirse. Los modelos no acceden al navegador.
 - **Tester QA — suite ejecutada:** existe
   `js/test/models.spec.js` con casos Jasmine de las cinco clases y un runner
-  autónomo `js/test/models-test-runner.html`. Resultado verificado: 39 specs,
+  autónomo `js/test/models-test-runner.html`. Resultado verificado: 84 specs,
   0 failures (ver AT CLOSE, sección 12).
   `docs/04-testing/pruebas-modelos-poo.md` contiene instrucciones y el
   resultado de ejecución. La invalidación/cancelación del flujo integrado y Storage
@@ -341,8 +341,14 @@ integrar la interfaz con los contratos anteriores sin trasladar
 En el repositorio existen `diagrama-clases.puml`, `diagrama-clases.png` y
 `diagrama-clases-doc.md` bajo `docs/05-diagramas/02-diagrama-de-clases/`.
 El diagrama corresponde a las cinco clases, con snapshots de carrito y datos
-de cliente como objetos de valor, no como clases adicionales. Mantenerlo
-alineado si cambian los contratos detallados en la sección 4.
+de cliente como objetos de valor, no como clases adicionales. En RC50 se
+precisaron las formas de los objetos de entrada y retorno, el método y las
+cuotas de pago, los auxiliares de módulo y las dependencias reales; se
+conservaron las multiplicidades de la agregación de catálogo y se aclaró
+que el carrito y el pedido guardan copias. También se corrigió la descripción
+de `ServicioOpcionesPago` y se representó el campo privado estático de
+`FormateadorMoneda`. El detalle está en `diagrama-clases-doc.md`.
+Mantenerlo alineado si cambian los contratos detallados en la sección 4.
 
 Los tres entregables UML se encuentran en
 `docs/05-diagramas/02-diagrama-de-clases/`.
@@ -354,7 +360,7 @@ Los tres entregables UML se encuentran en
 | `docs/03-specs/actividad-obligatoria-4/spec-dev-poo.md` | Actualizado para reflejar los contratos observados en los modelos; no implica integración. |
 | `js/models/Producto.js`, `Catalogo.js`, `Carrito.js` | Implementados; conforman las clases principales. |
 | `js/models/Pago.js`, `Pedido.js` | Implementados como clases adicionales de pago y pedido. |
-| `js/test/models.spec.js` | Suite Jasmine para las cinco clases; ejecutada: 39 specs, 0 failures. |
+| `js/test/models.spec.js` | Suite Jasmine para las cinco clases; ejecutada: 84 specs, 0 failures. |
 | `js/test/models-test-runner.html` | Runner autónomo que inicializa Jasmine, importa la suite y luego la ejecuta. |
 | `docs/04-testing/pruebas-modelos-poo.md` | Instrucciones y estado de ejecución de la suite. |
 | `docs/05-diagramas/02-diagrama-de-clases/diagrama-clases.puml` | Archivo presente en el repositorio. |
@@ -374,13 +380,25 @@ Los tres entregables UML se encuentran en
 | Serialización y restauración (`toJSON()`/`fromJSON()`). | Implementado en los cinco modelos. |
 | Diagrama PlantUML, exportación PNG y documentación UML. | Los tres archivos existen; revisar su alineación cuando cambien contratos. |
 | Contratos para Eventos + DOM y Storage. | Documentados; Eventos + DOM integrado (PR #156); Storage compatible (PR #157), sin conectar aún en la página. |
-| Suite para QA de modelos. | Jasmine ejecutado: 39 specs, 0 failures (PASS). |
+| Suite para QA de modelos. | Jasmine ejecutado: 84 specs, 0 failures (PASS); ramas y sentencias sin porcentaje fiable (sección 12). |
 | Evidencia de uso/generación mediante Copilot. | Registrada en la sección 12.1 (prompt, fragmento y ajustes aportados por el responsable del rol). |
 
 ## 12. AT CLOSE — Evidencias
 
 ### Resultado de pruebas Jasmine (verificado)
 
+- RC51: línea de base **73 specs, 0 failures**, semilla `56412`; después de
+  incorporar 11 pruebas, **84 specs, 0 failures**, semilla `15778`. Se
+  ejecutó el runner de modelos en navegador, servido por HTTP local.
+- Los casos nuevos comprueban textos y criterios de producto; catálogo
+  vacío o disperso, filtros y precio cero; desbordes y copias del carrito;
+  redondeo, restauración y entradas inválidas de pago; y copias, numeración
+  segura y restauración de pedidos.
+- Estimación nativa V8 antes y después: 341/341 líneas y 73/73 funciones
+  informadas, ambas 100 % según los criterios explicados en
+  `docs/04-testing/pruebas-modelos-poo.md`. Los rangos internos de V8 no
+  equivalen a todas las ramas; no se midieron porcentajes fiables de ramas
+  ni sentencias. El documento incluye pasos y evidencia de reproducción.
 - Revisión de cadenas numéricas estrictas (PR #150): 42 ejecutadas, 42
   aprobadas y 0 fallidas; salida `42 specs, 0 failures, randomized with seed 95696`.
   Runner servido por HTTP local y ejecutado en navegador.
@@ -625,4 +643,4 @@ Eventos + DOM quedó integrado en la PR #156; la conexión de `StorageUtil` en `
 
 Las pruebas automatizadas de los modelos se encuentran en `js/test/models.spec.js`, utilizando un runner independiente para no modificar las pruebas existentes de Tester QA.
 
-Resultado definitivo de Jasmine: 42 specs, 0 failures (sección 12).
+Resultado más reciente de Jasmine: 84 specs, 0 failures (sección 12).

@@ -1,78 +1,90 @@
+
 @startuml actividad-flujo-4-confirmacion-pedido
 title Flujo 4 - Resumen y confirmación del pedido (RF21 a RF24)
+skinparam backgroundColor #FFFFFF
 skinparam defaultFontName Arial
+skinparam dpi 180
 skinparam ArrowColor #444444
-skinparam ActivityBackgroundColor #FDECEA
+skinparam ActivityBackgroundColor #FFFFFF
 skinparam ActivityBorderColor #C0392B
 skinparam SwimlaneBorderColor #7D7D7D
 
 |Usuario|
 start
-:Elige "Confirmar pedido" en el menú principal;
+:Accede al formulario de datos del cliente\ndesde el flujo de pago;
 
 |Sistema|
-if (¿El carrito tiene ítems\ny hay un método de pago elegido?) then (no)
-  :Informa que falta completar el carrito o el pago;
-  end
-else (sí)
-endif
-
-repeat
-  |Usuario|
-  :Ingresa el nombre con prompt();
-  |Sistema|
-  if (¿Canceló el prompt()?) then (sí)
-    :Informa "Pedido cancelado" con alert();
-    :Conserva el carrito y el método de pago;
-    end
-  else (no)
-    :Valida que no esté vacío y no sea numérico;
-  endif
-repeat while (¿El nombre es válido?) is (no) not (sí)
-
-repeat
-  |Usuario|
-  :Ingresa el correo con prompt();
-  |Sistema|
-  if (¿Canceló el prompt()?) then (sí)
-    :Informa "Pedido cancelado" con alert();
-    :Conserva el carrito y el método de pago;
-    end
-  else (no)
-    :Valida que tenga "@" y un dominio;
-  endif
-repeat while (¿El correo es válido?) is (no) not (sí)
-
-repeat
-  |Usuario|
-  :Ingresa la dirección de envío con prompt();
-  |Sistema|
-  if (¿Canceló el prompt()?) then (sí)
-    :Informa "Pedido cancelado" con alert();
-    :Conserva el carrito y el método de pago;
-    end
-  else (no)
-    :Valida que no esté vacía;
-  endif
-repeat while (¿La dirección es válida?) is (no) not (sí)
-
-|Sistema|
-:Arma el resumen: productos, cantidades,\nprecios, total, método de pago y cuotas;
-:Muestra el resumen con alert();
-
-|Usuario|
-:Responde con prompt() si confirma el pedido (SI / NO);
-
-|Sistema|
-if (¿Respondió SI?) then (sí)
-  :Genera el número de pedido;
-  :Muestra la confirmación de la operación\ny el resumen de la compra;
-  :Vacía el carrito y el método de pago;
+if (¿Elige "Cancelar pedido"?) then (sí)
+  :Limpia el formulario y el pedido pendiente;
+  :Oculta la confirmación;
+  :Conserva el carrito y las condiciones de pago;
+  :Regresa a la sección de pago;
+  stop
 else (no)
-  :Informa "Pedido cancelado" con alert();
-  :Conserva el carrito y el método de pago;
 endif
 
-:Vuelve al menú principal;
+repeat
+  |Usuario|
+  :Completa o corrige nombre, correo y dirección;
+  :Envía el formulario del pedido;
+  |Sistema|
+  :Previene el envío tradicional y valida los datos;
+  if (¿Nombre, correo y dirección son válidos?) then (sí)
+    :Crea el pedido pendiente a partir\ndel carrito, el pago y los datos del cliente;
+    :Renderiza los productos, importes, cliente\ny condiciones de pago en el resumen;
+    :Solicita revisar el resumen antes de confirmar;
+  else (no)
+    :Muestra los errores junto a los campos\ny en el mensaje de estado;
+    :Marca los campos inválidos;
+  endif
+repeat while (¿Los datos ingresados siguen siendo inválidos?) is (sí) not (no)
+
+while (¿El pedido sigue pendiente de una decisión?) is (sí)
+  |Usuario|
+  :Revisa el resumen y puede modificar\nlos datos o decidir sobre el pedido;
+  if (¿Modifica algún dato del cliente?) then (sí)
+    |Sistema|
+    :Invalida el pedido pendiente\ny limpia el resumen anterior;
+    :Solicita volver a revisar los datos;
+    repeat
+      |Usuario|
+      :Corrige y vuelve a enviar el formulario;
+      |Sistema|
+      :Valida nuevamente los datos del cliente;
+      if (¿Los datos son válidos?) then (sí)
+        :Crea un nuevo pedido pendiente;
+        :Renderiza el resumen actualizado;
+      else (no)
+        :Marca los campos inválidos\ny muestra los mensajes de error;
+      endif
+    repeat while (¿Los datos corregidos siguen siendo inválidos?) is (sí) not (no)
+  else (no)
+    |Usuario|
+    :Elige "Confirmar pedido" o "Cancelar pedido";
+    |Sistema|
+    if (¿Cancela el pedido?) then (sí)
+      :Limpia el resumen y el pedido pendiente;
+      :Oculta la confirmación y restablece el formulario;
+      :Conserva el carrito y las condiciones de pago;
+      :Vuelve a la sección de pago;
+      stop
+    else (no)
+      if (¿Existe un pedido pendiente válido?) then (sí)
+        :Genera el número de pedido;
+        :Renderiza la confirmación y el resumen final;
+        :Oculta el formulario de datos;
+        :Vacía el carrito e intenta guardar el estado vacío;
+        :Limpia el estado del pago;
+        :Muestra el éxito o una advertencia\nsi falla la persistencia del carrito;
+        stop
+      else (no)
+        :Informa que debe generar nuevamente\nun resumen válido antes de confirmar;
+      endif
+    endif
+  endif
+endwhile (no)
+
+|Sistema|
+:Mantiene el pedido pendiente si el usuario\nabandona la revisión sin confirmar ni cancelar;
 stop
 @enduml

@@ -1,26 +1,23 @@
 import { Producto } from "./models/Producto.js";
+import { FachadaStorage } from "./services/FachadaStorage.js";
 import { Catalogo } from "./models/Catalogo.js";
 import { Carrito } from "./models/Carrito.js";
 import { Pago } from "./models/Pago.js";
 import { Pedido } from "./models/Pedido.js";
-
-const productosIniciales = [
-    { codigo: "GUANTES-001", nombre: "Guantes moteados multiuso maxima calidad", categoria: "Herramientas manuales", descripcion: "Proteccion multiuso para trabajos de ferreteria y mantenimiento.", precio: 4401 },
-    { codigo: "DESTORNILLADOR-001", nombre: "Destornillador punta plana Black Jack 8 x 200 mm", categoria: "Herramientas manuales", descripcion: "Destornillador con punta plana para tareas de ajuste y reparacion.", precio: 6026 },
-    { codigo: "PINZA-001", nombre: "Pinza punta curva mini 5 pulgadas ideal electronica", categoria: "Herramientas manuales", descripcion: "Pinza compacta para trabajos de precision en electronica.", precio: 6426 },
-    { codigo: "ENCHUFE-001", nombre: "Enchufe adaptador cubo 5 tomas 3 patas 10 amp", categoria: "Electricidad", descripcion: "Adaptador electrico con cinco tomas para conectar herramientas y equipos.", precio: 10282 },
-    { codigo: "MARTILLO-001", nombre: "Martillo galponero mango de fibra acero forjado Black Jack", categoria: "Herramientas manuales", descripcion: "Martillo robusto para tareas de obra, reparacion y mantenimiento.", precio: 16000 },
-    { codigo: "PALA-001", nombre: "Pala de punta chapa acero estampada cabo metalico", categoria: "Jardineria", descripcion: "Herramienta de punta para tareas de jardineria y movimiento de tierra.", precio: 21329 },
-    { codigo: "AMOLADORA-001", nombre: "Amoladora angular inalambrica DeWalt Flexvolt DCG416B", categoria: "Herramientas electricas", descripcion: "Amoladora inalambrica para cortar, desbastar y trabajar distintos materiales.", precio: 50000 },
-    { codigo: "KIT-TAPONES-001", nombre: "Kit juego tapones para cano de termofusion", categoria: "Accesorios", descripcion: "Juego de tapones y obturadores para instalaciones de agua.", precio: 55000 },
-    { codigo: "TALADRO-001", nombre: "Taladro atornillador inalambrico 10 mm 20 V", categoria: "Herramientas electricas", descripcion: "Atornillador inalambrico para perforar y ajustar en distintos proyectos.", precio: 79999 }
-];
+import { FormateadorMoneda } from "./services/FormateadorMoneda.js";
+import { validarCambioCantidad } from "./services/ValidacionCarrito.js";
+import { confirmarPedidoConNumeracion, ErrorPersistenciaPedido } from "./services/ConfirmadorPedidos.js";
+import { ServicioOfertas } from "./services/ServicioOfertas.js";
+import { IMAGENES_CATALOGO } from "./data/imagenesCatalogo.js";
+import { ServicioCategorias } from "./services/ServicioCategorias.js";
+import { ServicioOpcionesPago } from "./services/ServicioOpcionesPago.js";
+import { validarCampoPedido } from "./services/ValidacionPedido.js";
+import { productosIniciales } from "./data/productosIniciales.js";
 
 const catalogo = new Catalogo(productosIniciales.map((datos) => new Producto(datos)));
-const carrito = new Carrito();
+const carrito = FachadaStorage.cargarCarrito();
 let pagoActual = null;
 let pedidoPendiente = null;
-let secuenciaPedidos = 1;
 let esperandoCierreCarrito = false;
 
 // Obtiene elementos del DOM y permite distinguir
@@ -40,11 +37,13 @@ const elementos = {
     formBusqueda: elemento("#form-busqueda"),
     estadoAplicacion: elemento("#estado-aplicacion", false),
     categoria: elemento("#categoria"),
+    menuCategorias: elemento("#menu-categorias"),
     orden: elemento("#orden"),
     activarPrecio: elemento("#activar-filtro-precio"),
     precio: elemento("#precio-hasta"),
     precioValor: elemento("#precio-hasta-valor"),
     resultados: elemento("#resultados-catalogo"),
+    tablaPreciosCuerpo: elemento("#tabla-precios-cuerpo"),
     catalogoMensaje: elemento("#catalogo-mensaje"),
     carritoItems: elemento("#carrito-items"),
     carritoMensaje: elemento("#carrito-mensaje"),
@@ -64,6 +63,7 @@ const elementos = {
     seccionCatalogo: elemento("#catalogo"),
     panelCarrito: elemento("#carrito"),
     seccionOfertas: elemento("#ofertas"),
+    ofertasProductos: elemento("#ofertas-productos"),
     navegacionPrincipal: elemento('nav[aria-label="Navegacion principal"]')
 };
 
@@ -81,19 +81,7 @@ if (elementosFaltantes.length > 0) {
     );
 }
 
-const tarjetasCatalogo = new Map(
-    Array.from(elementos.resultados.querySelectorAll("article[data-product-code]"))
-        .map((tarjeta) => [tarjeta.dataset.productCode, tarjeta.parentElement])
-);
 
-function formatearMoneda(importe) {
-    return new Intl.NumberFormat("es-AR", {
-        style: "currency",
-        currency: "ARS",
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    }).format(importe);
-}
 
 // Muestra mensajes informativos, de éxito, error o carga,
 // aplicando las clases CSS correspondientes a cada estado.
@@ -161,6 +149,102 @@ function limpiarEstadoControl(control) {
     }
 }
 
+
+/**
+ * Genera dinámicamente las tarjetas de los productos.
+ * Recibe los resultados del catálogo y los representa en el DOM.
+ *
+ * @param {Producto[]} productos
+ * @returns {void}
+ */
+function renderizarCatalogo(productos) {
+    const fragmento = document.createDocumentFragment();
+
+    const ofertas = ServicioOfertas.obtenerOfertas(catalogo);
+
+    const ofertasPorCodigo = new Map(
+        ofertas.map((oferta) => [oferta.codigo, oferta])
+    );
+
+    productos.forEach((producto) => {
+        const oferta = ofertasPorCodigo.get(producto.codigo);
+
+        const columna = document.createElement("div");
+        columna.className = "col-12 col-md-6 col-lg-4";
+
+        const articulo = document.createElement("article");
+        articulo.className = "h-100";
+        articulo.dataset.productCode = producto.codigo;
+
+        // Imagen del producto
+        const rutaImagen =
+            oferta?.imagen ?? IMAGENES_CATALOGO[producto.codigo];
+
+        if (rutaImagen) {
+            const imagen = document.createElement("img");
+            imagen.src = rutaImagen;
+            imagen.alt = producto.nombre;
+            articulo.append(imagen);
+        }
+
+        // Categoría
+        const categoria = document.createElement("p");
+        categoria.textContent = producto.categoria;
+
+        // Nombre
+        const titulo = document.createElement("h3");
+        titulo.textContent = producto.nombre;
+
+        // Descripción
+        const descripcion = document.createElement("p");
+        descripcion.textContent = producto.descripcion;
+
+        // Precios
+        const precios = document.createElement("p");
+
+        if (oferta) {
+            const precioAnterior = document.createElement("del");
+            precioAnterior.textContent =
+                FormateadorMoneda.formatear(oferta.precioAnterior);
+
+            precios.append(
+                precioAnterior,
+                document.createTextNode(" ")
+            );
+        }
+
+        const precioActual = document.createElement("strong");
+        precioActual.textContent =
+            FormateadorMoneda.formatear(producto.precio);
+
+        precios.append(
+            precioActual,
+            document.createTextNode(" por unidad")
+        );
+
+        // Botón de compra
+        const boton = document.createElement("button");
+        boton.type = "button";
+        boton.dataset.action = "agregar-carrito";
+        boton.dataset.productCode = producto.codigo;
+        boton.textContent = "Comprar";
+
+        articulo.append(
+            categoria,
+            titulo,
+            descripcion,
+            precios,
+            boton
+        );
+
+        columna.append(articulo);
+        fragmento.append(columna);
+    });
+
+    elementos.resultados.replaceChildren(fragmento);
+}
+
+
 function buscarYMostrarCatalogo() {
     const criterios = {
         texto: elementos.busqueda.value,
@@ -168,6 +252,7 @@ function buscarYMostrarCatalogo() {
         precioMaximo: elementos.activarPrecio.checked ? elementos.precio.value : null,
         orden: elementos.orden.value
     };
+
     const resultado = catalogo.buscar(criterios);
 
     if (!resultado.valido) {
@@ -181,19 +266,9 @@ function buscarYMostrarCatalogo() {
     } else {
         limpiarEstadoControl(elementos.precio);
     }
-    resultado.resultados.forEach((producto) => {
-        const tarjeta = tarjetasCatalogo.get(producto.codigo);
-        if (!tarjeta) {
-            throw new Error(`No hay una tarjeta HTML para el producto ${producto.codigo}.`);
-        }
-        elementos.resultados.append(tarjeta);
-        tarjeta.hidden = false;
-    });
 
-    const codigosVisibles = new Set(resultado.resultados.map((producto) => producto.codigo));
-    tarjetasCatalogo.forEach((tarjeta, codigo) => {
-        tarjeta.hidden = !codigosVisibles.has(codigo);
-    });
+    // Genera dinámicamente las tarjetas del catálogo.
+    renderizarCatalogo(resultado.resultados);
 
     mostrarMensaje(
         elementos.catalogoMensaje,
@@ -204,13 +279,14 @@ function buscarYMostrarCatalogo() {
     );
 }
 
+
 // Actualiza visualmente los productos, cantidades y totales del carrito
 // utilizando la información proporcionada por la clase Carrito.
 function renderizarCarrito() {
     const resumen = carrito.resumir();
     elementos.carritoItems.replaceChildren();
     elementos.contadorCarrito.textContent = String(resumen.cantidadItems);
-    elementos.carritoTotal.textContent = formatearMoneda(resumen.total);
+    elementos.carritoTotal.textContent = FormateadorMoneda.formatear(resumen.total);
     elementos.botonIniciarCompra.disabled = resumen.items.length === 0;
     mostrarMensaje(
         elementos.carritoMensaje,
@@ -225,7 +301,7 @@ function renderizarCarrito() {
         const titulo = document.createElement("h3");
         titulo.textContent = item.nombre;
         const precio = document.createElement("p");
-        precio.textContent = `Precio unitario: ${formatearMoneda(item.precio)}`;
+        precio.textContent = `Precio unitario: ${FormateadorMoneda.formatear(item.precio)}`;
 
         const label = document.createElement("label");
         const cantidadId = `cantidad-${item.codigo.toLocaleLowerCase("es")}`;
@@ -248,7 +324,7 @@ function renderizarCarrito() {
         cantidad.setAttribute("aria-describedby", errorCantidad.id);
 
         const subtotal = document.createElement("p");
-        subtotal.textContent = `Subtotal: ${formatearMoneda(item.subtotal)}`;
+        subtotal.textContent = `Subtotal: ${FormateadorMoneda.formatear(item.subtotal)}`;
         const eliminar = document.createElement("button");
         eliminar.type = "button";
         eliminar.dataset.action = "eliminar-carrito";
@@ -277,11 +353,11 @@ function renderizarCondiciones(condiciones) {
     elementos.condicionesPago.replaceChildren();
     const lista = document.createElement("dl");
     const datos = [
-        ["Total original", formatearMoneda(condiciones.totalOriginal)],
+        ["Total original", FormateadorMoneda.formatear(condiciones.totalOriginal)],
         ["Cuotas", String(condiciones.cuotas)],
-        ["Interes / recargo", `${condiciones.porcentajeRecargo}% (${formatearMoneda(condiciones.interes)})`],
-        ["Total financiado", formatearMoneda(condiciones.totalFinanciado)],
-        ["Valor de cada cuota", formatearMoneda(condiciones.valorCuota)]
+        ["Interes / recargo", `${condiciones.porcentajeRecargo}% (${FormateadorMoneda.formatear(condiciones.interes)})`],
+        ["Total financiado", FormateadorMoneda.formatear(condiciones.totalFinanciado)],
+        ["Valor de cada cuota", FormateadorMoneda.formatear(condiciones.valorCuota)]
     ];
     datos.forEach(([etiqueta, valor]) => {
         const termino = document.createElement("dt");
@@ -299,17 +375,12 @@ function obtenerCondicionesPago() {
         mostrarMensaje(elementos.pagoMensaje, "No hay productos para pagar.", "error");
         return null;
     }
-    if (!elementos.metodoPago.value) {
-        mostrarMensaje(elementos.pagoMensaje, "Selecciona un metodo de pago.", "error");
-        marcarControl(elementos.metodoPago, false);
-        return null;
-    }
 
     try {
         const pago = new Pago(
             resumen.total,
             elementos.metodoPago.value,
-            elementos.metodoPago.value === "tarjeta" ? elementos.cuotas.value : 1
+            elementos.cuotas.value
         );
         const condiciones = pago.calcular();
         marcarControl(elementos.metodoPago, true);
@@ -323,7 +394,9 @@ function obtenerCondicionesPago() {
         pagoActual = null;
         mostrarMensaje(elementos.pagoMensaje, error.message, "error");
         marcarControl(
-            elementos.metodoPago.value === "tarjeta" ? elementos.cuotas : elementos.metodoPago,
+            Pago.admiteCuotas(elementos.metodoPago.value)
+                ? elementos.cuotas
+                : elementos.metodoPago,
             false,
             error.message
         );
@@ -341,35 +414,25 @@ function clienteDesdeFormulario() {
     };
 }
 
-// Valida individualmente los campos del formulario.
-// La validación definitiva del pedido permanece en la clase Pedido.
-function validarCampoPedido(control) {
-    if (!carrito.resumir().items.length || !pagoActual) {
-        limpiarEstadoControl(control);
-        return false;
+ // Actualiza el estado visual y accesible de un campo
+ // del formulario de pedido.
+function actualizarValidacionCampoPedido(control) {
+    if (elementos.seccionConfirmacion.hidden ||
+        elementos.formPedido.hidden
+    ) {
+        return;
     }
 
-    const mensajes = {
-        nombre: "Ingresá un nombre válido.",
-        correo: "Ingresá un correo electrónico válido.",
-        direccion: "Ingresá una dirección de envío."
-    };
+    const resultado = validarCampoPedido(
+        control.name,
+        control.value
+    );
 
-    const valido =
-        control.value.trim() !== "" &&
-        control.checkValidity();
-
-    if (valido) {
-        marcarControl(control, true);
-    } else {
-        marcarControl(
-            control,
-            false,
-            mensajes[control.name] ?? "El campo ingresado no es válido."
-        );
-    }
-
-    return valido;
+    marcarControl(
+        control,
+        resultado.exito,
+        resultado.error ?? ""
+    );
 }
 
 // Construye los elementos HTML del resumen del pedido
@@ -380,14 +443,14 @@ function agregarDatosResumen(contenedor, resumen) {
     const productos = document.createElement("ul");
     resumen.productos.forEach((item) => {
         const linea = document.createElement("li");
-        linea.textContent = `${item.nombre} | ${item.cantidad} x ${formatearMoneda(item.precio)} = ${formatearMoneda(item.subtotal)}`;
+        linea.textContent = `${item.nombre} | ${item.cantidad} x ${FormateadorMoneda.formatear(item.precio)} = ${FormateadorMoneda.formatear(item.subtotal)}`;
         productos.append(linea);
     });
 
     const cliente = document.createElement("p");
     cliente.textContent = `Cliente: ${resumen.cliente.nombre} · ${resumen.cliente.correo} · Envio a: ${resumen.cliente.direccion}`;
     const condiciones = document.createElement("p");
-    condiciones.textContent = `Total original: ${formatearMoneda(resumen.pago.totalOriginal)} · Metodo: ${resumen.pago.metodoPago} · ${resumen.pago.cuotas} cuota(s) · Recargo: ${resumen.pago.porcentajeRecargo}% · Total financiado: ${formatearMoneda(resumen.pago.totalFinanciado)} · Valor de cuota: ${formatearMoneda(resumen.pago.valorCuota)}`;
+    condiciones.textContent = `Total original: ${FormateadorMoneda.formatear(resumen.pago.totalOriginal)} · Metodo: ${resumen.pago.metodoPago} · ${resumen.pago.cuotas} cuota(s) · Recargo: ${resumen.pago.porcentajeRecargo}% · Total financiado: ${FormateadorMoneda.formatear(resumen.pago.totalFinanciado)} · Valor de cuota: ${FormateadorMoneda.formatear(resumen.pago.valorCuota)}`;
     const boton = document.createElement("button");
     boton.type = "button";
     boton.dataset.action = "confirmar-pedido";
@@ -427,11 +490,18 @@ function agregarDatosResumen(contenedor, resumen) {
         return false;
     }
 
+    const guardado = FachadaStorage.guardarCarrito(carrito);
+
     const pagoInvalidado = invalidarPagoPorCambioCarrito();
 
     renderizarCarrito();
 
-    if (pagoInvalidado) {
+    if (!guardado) {
+        const mensaje = "El carrito se actualizó, pero no pudo guardarse. Los cambios podrían perderse al recargar.";
+
+        mostrarMensaje(elementos.carritoMensaje, mensaje, "error");
+        mostrarMensaje(elementos.estadoAplicacion, mensaje, "error");
+    } else if (pagoInvalidado) {
         const mensaje = "Carrito actualizado; el pago debe seleccionarse nuevamente.";
 
         mostrarMensaje(elementos.carritoMensaje, mensaje, "info");
@@ -461,8 +531,7 @@ function iniciarPago() {
     elementos.formPedido.querySelectorAll("input").forEach(limpiarEstadoControl);
     elementos.resumenPedido.replaceChildren();
     elementos.metodoPago.value = "";
-    elementos.cuotas.value = "1";
-    elementos.cuotas.disabled = true;
+    renderizarCuotas("");
     elementos.condicionesPago.replaceChildren();
     elementos.seccionConfirmacion.hidden = true;
     elementos.seccionPago.hidden = false;
@@ -506,8 +575,7 @@ function confirmarPedido() {
         return;
     }
     try {
-        const numero = pedidoPendiente.confirmar(Date.now(), secuenciaPedidos);
-        secuenciaPedidos += 1;
+        const numero = confirmarPedidoConNumeracion(pedidoPendiente);
         const resumen = pedidoPendiente.resumir();
         elementos.resumenPedido.replaceChildren();
         const mensaje = document.createElement("p");
@@ -517,15 +585,27 @@ function confirmarPedido() {
         elementos.resumenPedido.querySelector('[data-action="confirmar-pedido"]').remove();
         elementos.formPedido.hidden = true;
         carrito.vaciar();
+        const carritoGuardado = FachadaStorage.guardarCarrito(carrito);
         pagoActual = null;
         pedidoPendiente = null;
         renderizarCarrito();
         elementos.seccionPago.hidden = true;
-        mostrarMensaje(elementos.pedidoMensaje, "La operacion se realizo correctamente.", "success");
-    } catch (error) {
-        if (!(error instanceof TypeError || error instanceof RangeError)) throw error;
+        mostrarMensaje(elementos.pedidoMensaje,carritoGuardado
+                ? "La operacion se realizo correctamente."
+                : "Pedido confirmado, pero no se pudo guardar el carrito vacío. Los productos podrían reaparecer al recargar.",
+            carritoGuardado ? "success" : "error"
+        );
+
+        } catch (error) {
+            if (!(error instanceof TypeError ||
+            error instanceof RangeError ||
+            error instanceof ErrorPersistenciaPedido)) {
+            throw error;
+        }
+
         mostrarMensaje(elementos.pedidoMensaje, error.message, "error");
     }
+
 }
 
 // Cancela la confirmación del pedido y limpia el formulario,
@@ -536,12 +616,203 @@ function cancelarPedido() {
     elementos.seccionConfirmacion.hidden = true;
     elementos.formPedido.reset();
     elementos.formPedido.querySelectorAll("input").forEach(limpiarEstadoControl);
-    mostrarMensaje(elementos.pedidoMensaje, "Pedido cancelado. Se conservaron el carrito y las condiciones de pago.", "info");
+    mostrarMensaje(elementos.pagoMensaje, "Pedido cancelado. Se conservaron el carrito y las condiciones de pago.", "info");
     elementos.seccionPago.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+
+/**
+ * Renderiza dinámicamente las tarjetas de ofertas
+ * utilizando los datos proporcionados por ServicioOfertas.
+ * @returns {void}
+ */
+function renderizarOfertas() {
+    const ofertas = ServicioOfertas.obtenerOfertas(catalogo);
+    const fragmento = document.createDocumentFragment();
+
+    ofertas.forEach((oferta) => {
+        const columna = document.createElement("div");
+        columna.className = "col-12 col-md-6 col-lg-4";
+
+        const articulo = document.createElement("article");
+        articulo.className = "h-100";
+        articulo.dataset.productCode = oferta.codigo;
+
+        const imagen = document.createElement("img");
+        imagen.src = oferta.imagen;
+        imagen.alt = oferta.nombre;
+
+        const titulo = document.createElement("h2");
+        titulo.textContent = oferta.nombre;
+
+        const descripcion = document.createElement("p");
+        descripcion.textContent = oferta.descripcion;
+
+        const precios = document.createElement("p");
+
+        const precioAnterior = document.createElement("del");
+        precioAnterior.textContent =
+            FormateadorMoneda.formatear(oferta.precioAnterior);
+
+        const precioActual = document.createElement("strong");
+        precioActual.textContent =
+            FormateadorMoneda.formatear(oferta.precioActual);
+
+        precios.append(
+            precioAnterior,
+            document.createTextNode(" "),
+            precioActual,
+            document.createTextNode(" por unidad")
+        );
+
+        const boton = document.createElement("button");
+        boton.type = "button";
+        boton.dataset.action = "agregar-carrito";
+        boton.dataset.productCode = oferta.codigo;
+        boton.textContent = "Comprar";
+
+        articulo.append(
+            imagen,
+            titulo,
+            descripcion,
+            precios,
+            boton
+        );
+
+        columna.append(articulo);
+        fragmento.append(columna);
+    });
+
+    elementos.ofertasProductos.replaceChildren(fragmento);
+}
+
+
+/**
+ * Renderiza dinámicamente la tabla de precios
+ * utilizando los productos del catálogo.
+ * @returns {void}
+ */
+function renderizarTablaPrecios() {
+    const fragmento = document.createDocumentFragment();
+
+    const productos = catalogo.obtenerProductos();
+
+    productos.forEach((producto) => {
+        const fila = document.createElement("tr");
+
+        const nombre = document.createElement("td");
+        nombre.textContent = producto.nombre;
+
+        const categoria = document.createElement("td");
+        categoria.textContent = producto.categoria;
+
+        const precio = document.createElement("td");
+        precio.textContent = FormateadorMoneda.formatear(
+            producto.precio
+        );
+
+        fila.append(nombre, categoria, precio);
+        fragmento.append(fila);
+    });
+
+    elementos.tablaPreciosCuerpo.replaceChildren(fragmento);
+}
+
+
+/**
+ * Renderiza dinámicamente las categorías en el filtro
+ * y en el menú desplegable de navegación.
+ * @returns {void}
+ */
+function renderizarCategorias() {
+    const categorias = ServicioCategorias.obtenerCategorias(catalogo);
+
+    const fragmentoSelect = document.createDocumentFragment();
+    const fragmentoMenu = document.createDocumentFragment();
+
+    const opciones = ["", ...categorias];
+
+    opciones.forEach((categoria) => {
+        const etiqueta = categoria || "Todas las categorias";
+
+        // Opción del filtro de categorías
+        const opcion = document.createElement("option");
+        opcion.value = categoria;
+        opcion.textContent = etiqueta;
+
+        fragmentoSelect.append(opcion);
+
+        // Opción del menú desplegable
+        const item = document.createElement("li");
+
+        const enlace = document.createElement("a");
+        enlace.className = "dropdown-item";
+        enlace.href = "#catalogo";
+        enlace.dataset.categoria = categoria;
+        enlace.textContent = etiqueta;
+
+        item.append(enlace);
+        fragmentoMenu.append(item);
+    });
+
+    elementos.categoria.replaceChildren(fragmentoSelect);
+    elementos.menuCategorias.replaceChildren(fragmentoMenu);
+}
+
+
+/**
+ * Renderiza los métodos de pago disponibles.
+ * @returns {void}
+ */
+function renderizarMetodosPago() {
+    const metodos = ServicioOpcionesPago.obtenerMetodos();
+    const fragmento = document.createDocumentFragment();
+
+    const inicial = document.createElement("option");
+    inicial.value = "";
+    inicial.textContent = "Selecciona un metodo";
+    fragmento.append(inicial);
+
+    metodos.forEach((metodo) => {
+        const opcion = document.createElement("option");
+        opcion.value = metodo.valor;
+        opcion.textContent = metodo.etiqueta;
+
+        fragmento.append(opcion);
+    });
+
+    elementos.metodoPago.replaceChildren(fragmento);
+}
+
+/**
+ * Renderiza las cuotas disponibles para el método elegido.
+ * @param {string} metodo
+ * @returns {void}
+ */
+function renderizarCuotas(metodo) {
+    const cuotas = ServicioOpcionesPago.obtenerCuotas(metodo);
+    const fragmento = document.createDocumentFragment();
+
+    cuotas.forEach((cuota) => {
+        const opcion = document.createElement("option");
+        opcion.value = cuota.valor;
+        opcion.textContent = cuota.etiqueta;
+
+        fragmento.append(opcion);
+    });
+
+    elementos.cuotas.replaceChildren(fragmento);
+    elementos.cuotas.disabled = !Pago.admiteCuotas(metodo);
+}
+
+
 function inicializarEventos() {
+    renderizarCategorias();
+    renderizarOfertas();
     buscarYMostrarCatalogo();
+    renderizarTablaPrecios();
+    renderizarMetodosPago();
+    renderizarCuotas("");
     renderizarCarrito();
     // Gestiona el cierre del Offcanvas una sola vez.
     // La transición al pago se ejecuta únicamente
@@ -598,12 +869,12 @@ function inicializarEventos() {
     elementos.activarPrecio.addEventListener("change", () => {
         elementos.precio.disabled = !elementos.activarPrecio.checked;
         elementos.precioValor.textContent = elementos.activarPrecio.checked
-            ? formatearMoneda(Number(elementos.precio.value))
+            ? FormateadorMoneda.formatear(Number(elementos.precio.value))
             : "Sin limite";
         buscarYMostrarCatalogo();
     });
     elementos.precio.addEventListener("input", () => {
-        elementos.precioValor.textContent = formatearMoneda(Number(elementos.precio.value));
+        elementos.precioValor.textContent = FormateadorMoneda.formatear(Number(elementos.precio.value));
         buscarYMostrarCatalogo();
     });
 
@@ -713,21 +984,20 @@ function inicializarEventos() {
     elementos.carritoItems.addEventListener("input", (evento) => {
         const control = evento.target.closest('[data-action="cambiar-cantidad"]');
         if (!control) return;
-        const valor = control.value.trim();
-        const valido =
-            valor !== "" &&
-            control.validity.valid &&
-            Number.isSafeInteger(Number(valor));
-        if (valido) {
-            marcarControl(control, true);
-        } else {
-            marcarControl(
-                control,
-                false,
-                "La cantidad debe ser un número entero mayor o igual a 1."
-            );
-        }
+
+        const resultado = validarCambioCantidad(
+            carrito,
+            control.dataset.productCode,
+            control.value
+        );
+
+        marcarControl(
+            control,
+            resultado.exito,
+            resultado.error ?? ""
+        );
     });
+
 
     // Actualiza la cantidad mediante la clase Carrito cuando se confirma el cambio.
     elementos.carritoItems.addEventListener("change", (evento) => {
@@ -740,15 +1010,17 @@ function inicializarEventos() {
     });
 
     elementos.metodoPago.addEventListener("change", () => {
-        const tarjeta = elementos.metodoPago.value === "tarjeta";
-        elementos.cuotas.disabled = !tarjeta;
-        if (!tarjeta) elementos.cuotas.value = "1";
+        renderizarCuotas(elementos.metodoPago.value);
+
         elementos.condicionesPago.replaceChildren();
         pagoActual = null;
         pedidoPendiente = null;
         elementos.seccionConfirmacion.hidden = true;
         elementos.resumenPedido.replaceChildren();
-        if (elementos.metodoPago.value) obtenerCondicionesPago();
+
+        if (elementos.metodoPago.value) {
+            obtenerCondicionesPago();
+        }
     });
 
     elementos.cuotas.addEventListener("change", () => {
@@ -790,46 +1062,22 @@ function inicializarEventos() {
             );
         }
             
-        validarCampoPedido(control);
+        actualizarValidacionCampoPedido(control);
     });
-    
-    // Valida nuevamente el campo cuando el usuario lo abandona.
+
+    // Valida el campo cuando el usuario lo abandona.
     elementos.formPedido.addEventListener("focusout", (evento) => {
         const control = evento.target.closest("input");
 
         if (!control) return;
 
-        validarCampoPedido(control);
+        actualizarValidacionCampoPedido(control);
     });
+
 
     // Valida todos los campos antes de generar el resumen del pedido.
     elementos.formPedido.addEventListener("submit", (evento) => {
         evento.preventDefault();
-
-        const controles = Array.from(
-            elementos.formPedido.querySelectorAll("input")
-        );
-        // Valida cada campo de manera independiente.
-        const resultados = controles.map(validarCampoPedido);
-
-        const primerInvalido = resultados.findIndex(
-            (valido) => !valido
-        );
-        if (primerInvalido !== -1) {
-            pedidoPendiente = null;
-
-            elementos.resumenPedido.replaceChildren();
-
-            mostrarMensaje(
-                elementos.pedidoMensaje,
-                "Revisá los datos del cliente antes de continuar.",
-                "error"
-            );
-            
-            controles[primerInvalido].focus();
-            
-            return;
-        }
         
         try {
             // Validación definitiva mediante la clase Pedido.
@@ -861,6 +1109,7 @@ function inicializarEventos() {
             }
 
             pedidoPendiente = null;
+            elementos.resumenPedido.replaceChildren();
 
             const campo = error.campo && elementos.formPedido.elements[error.campo];
 

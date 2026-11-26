@@ -1,8 +1,8 @@
 # Diagramas de actividades — FerroLab
 
 Diagramas de actividades en PlantUML de los 4 flujos principales del
-proyecto. Son el punto de partida de la implementación en `js/script.js`:
-el código debe reflejar estos flujos, decisiones y ciclos.
+proyecto. Documentan la implementación actual en `js/script.js`, sus
+eventos del DOM, validaciones, decisiones y ciclos.
 
 Proceso y decisiones de diseño:
 [spec-arq-diagramas.md](../../03-specs/actividad-obligatoria-3/spec-arq-diagramas.md)
@@ -11,54 +11,57 @@ Proceso y decisiones de diseño:
 
 | # | Flujo | Requisitos | Editable | Imagen |
 |---|---|---|---|---|
-| 1 | [Búsqueda y filtrado del catálogo](#flujo-1--búsqueda-y-filtrado-del-catálogo) | RF4, RF5 | [.puml](actividad-flujo-1-busqueda-filtrado.puml) | [.png](actividad-flujo-1-busqueda-filtrado.png) |
-| 2 | [Gestión del carrito](#flujo-2--gestión-del-carrito) | RF9 a RF13, RF20 | [.puml](actividad-flujo-2-carrito.puml) | [.png](actividad-flujo-2-carrito.png) |
-| 3 | [Pago y cálculo de cuotas](#flujo-3--pago-y-cálculo-de-cuotas) | RF14 a RF19 | [.puml](actividad-flujo-3-pago-cuotas.puml) | [.png](actividad-flujo-3-pago-cuotas.png) |
-| 4 | [Resumen y confirmación del pedido](#flujo-4--resumen-y-confirmación-del-pedido) | RF21 a RF24 | [.puml](actividad-flujo-4-confirmacion-pedido.puml) | [.png](actividad-flujo-4-confirmacion-pedido.png) |
+| 1 | [Búsqueda y filtrado del catálogo](#flujo-1--búsqueda-y-filtrado-del-catálogo) | RF4, RF5 | [.puml](actividad-flujo-1-busqueda-filtrado.puml) | [.jpg](actividad-flujo-1-busqueda-filtrado.jpg) |
+| 2 | [Gestión del carrito](#flujo-2--gestión-del-carrito) | RF9 a RF13, RF20 | [.puml](actividad-flujo-2-carrito.puml) | [.jpg](actividad-flujo-2-carrito.jpg) |
+| 3 | [Pago y cálculo de cuotas](#flujo-3--pago-y-cálculo-de-cuotas) | RF14 a RF19 | [.puml](actividad-flujo-3-pago-cuotas.puml) | [.jpg](actividad-flujo-3-pago-cuotas.jpg) |
+| 4 | [Resumen y confirmación del pedido](#flujo-4--resumen-y-confirmación-del-pedido) | RF21 a RF24 | [.puml](actividad-flujo-4-confirmacion-pedido.puml) | [.jpg](actividad-flujo-4-confirmacion-pedido.jpg) |
 
-Todos usan swimlanes: **Usuario** (ingresa datos con `prompt()` y decide) y
-**Sistema** (valida, calcula y muestra resultados con `alert()` /
-`console.log()`).
+Todos usan swimlanes: **Usuario** (interactúa con controles, formularios y
+acciones de la interfaz) y **Sistema** (responde a eventos, valida y
+actualiza el DOM y los mensajes de estado).
 
 ## Flujo 1 — Búsqueda y filtrado del catálogo
 
-El usuario ingresa texto, categoría y precio máximo. El sistema valida el
-precio, recorre el catálogo, arma la lista de coincidencias, la ordena por
-precio y la muestra. Los campos vacíos no filtran y cancelar un `prompt()`
-vuelve al menú. El ciclo se repite mientras el usuario quiera filtrar de
-nuevo.
+El catálogo se actualiza al escribir en el buscador o cambiar categoría,
+orden o filtro de precio; también responde al envío del formulario y a la
+selección de categoría desde el menú. El sistema valida los criterios,
+filtra y ordena los productos y renderiza las tarjetas y el mensaje de
+estado. Los criterios de texto, categoría y precio desactivado no limitan
+los resultados. El usuario puede cambiar los criterios repetidamente.
 
-![Flujo 1](actividad-flujo-1-busqueda-filtrado.png)
+![Flujo 1](actividad-flujo-1-busqueda-filtrado.jpg)
 
 ## Flujo 2 — Gestión del carrito
 
-Menú con `prompt()` para agregar, cambiar cantidad, eliminar, comprar o salir.
-Cada acción valida producto y cantidad. Después de cada acción el sistema
-recorre los ítems, recalcula subtotales y total, y muestra el carrito. Cancelar un
-`prompt()` no modifica el carrito, y si el total cambia se descarta el pago
-ya elegido. La opción "Comprar" (solo con el
-carrito con ítems) sale del menú del carrito y continúa en el flujo 3 (pago).
+El usuario agrega productos desde las tarjetas, cambia cantidades en los
+campos numéricos o elimina ítems desde el panel del carrito. Cada operación
+valida el producto o la cantidad; si es válida, guarda y renderiza el carrito
+con subtotales y total. Si cambia el carrito, se descartan el pago y el pedido
+pendiente. "Iniciar compra" solo continúa si hay ítems y lleva al flujo 3.
 
-![Flujo 2](actividad-flujo-2-carrito.png)
+![Flujo 2](actividad-flujo-2-carrito.jpg)
 
 ## Flujo 3 — Pago y cálculo de cuotas
 
-El usuario elige el método de pago. Si permite financiación, ingresa la
-cantidad de cuotas (se repite hasta que sea válida). El sistema calcula
-interés, total financiado y valor de cada cuota, y muestra las condiciones.
-Cancelar en cualquier `prompt()` no guarda nada y vuelve al menú.
+El usuario elige el método y, para tarjeta, una de las cuotas disponibles.
+Los eventos de cambio actualizan las opciones y recalculan las condiciones;
+el envío del formulario vuelve a validarlas y muestra la sección de datos del
+pedido. Las condiciones incluyen total original, recargo, interés, total
+financiado y valor de cuota. "Cancelar pago" oculta pago y confirmación y
+conserva los productos del carrito.
 
-![Flujo 3](actividad-flujo-3-pago-cuotas.png)
+![Flujo 3](actividad-flujo-3-pago-cuotas.jpg)
 
 ## Flujo 4 — Resumen y confirmación del pedido
 
-El sistema verifica que haya carrito y pago elegido. El usuario ingresa
-nombre, correo y dirección (cada dato se repite hasta ser válido). Se
-muestra el resumen y el usuario confirma o cancela; si confirma, se genera
-el número de pedido y se vacían el carrito y el pago. Cancelar la carga de
-datos o responder NO cancela el pedido y conserva el carrito y el pago.
+El usuario completa nombre, correo y dirección en el formulario. El sistema
+valida los datos, presenta errores junto a los controles y permite corregirlos
+antes de renderizar el resumen. El usuario confirma o cancela mediante los
+botones del resumen. Al confirmar, se genera el número de pedido y se vacían
+el carrito y el pago; al cancelar, se conserva el carrito y las condiciones
+de pago.
 
-![Flujo 4](actividad-flujo-4-confirmacion-pedido.png)
+![Flujo 4](actividad-flujo-4-confirmacion-pedido.jpg)
 
 ## Cómo editar los diagramas
 
@@ -70,4 +73,6 @@ datos o responder NO cancela el pedido y conserva el carrito y el pago.
    `if (...) then (sí) ... else (no) ... endif`, `while` / `repeat`
    para ciclos y `|Usuario|` / `|Sistema|` para los swimlanes.
 3. Exportá a PNG (en VS Code: *PlantUML: Export Current Diagram*) y
-   reemplazá el `.png` con el mismo nombre.
+   convertí la imagen a JPG sin reducir sus dimensiones. Los archivos
+   `.puml` ya configuran fondo blanco y resolución de 180 dpi. Reemplazá
+   el `.jpg` con el mismo nombre.

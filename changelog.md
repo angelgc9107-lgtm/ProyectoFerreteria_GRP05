@@ -2,7 +2,9 @@
 
 Este archivo se actualiza con cada Pull Request para registrar avances y correcciones.
 
-## [Actividad N°4] - Unreleased
+## [Unreleased]
+
+## [Release Actividad Obligatoria N°4] - 2026-11-22
 
 ### Added
 - [feature/dev-poo-logica-negocio] [A4] Desarrollador JS POO (Lógica de Negocio) - Implementación de 5 clases y diagrama UML - PR: [#150](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/150) - Issue: [#149](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/149) - @LuchoBarrionuevo13 (Desarrollador JS POO)
@@ -27,10 +29,24 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 ### Fixed
 
-- [fix/arq-diagramas-tercera-entrega] [A3] Corrección de la revisión del profesor en los diagramas de actividades: único `stop` por flujo y `end` en las salidas alternativas (RC1-RC3), con los `.puml`, los `.png` y `diagramas-doc.md` actualizados PR: [#134](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/134) — @alandox1 (Arquitecto de Diagramas de Actividades)
-- [fix/dev-js-menu-carrito-y-tester-cobertura] [A3] Correcciones de la revisión del profesor: ajustes de menú y carrito en `index.html` y `js/script.js`, `script.spec.js` ampliado con tests de interacción, capturas nuevas y `testing-doc.md` con la cobertura medida PR: [#135](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/135) — @alandox1 (Desarrollador JavaScript y Tester)
-
-
+- [fix/arq-diagramas-tercera-entrega]fix(diagramas): único stop por flujo y end en salidas alternativas (R… PR: [#134](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/134) — @alandox1 (Arquitecto de Diagramas de Actividades)
+- [fix/dev-js-menu-carrito-y-tester-cobertura]fix: aplicar correcciones de la revisión del profesor (tercera entrega) PR: [#135](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/135) — @alandox1 (Desarrollador JavaScript y Tester)
+- [fix/refactor-logica-negocio]Refactorización del controlador y delegación de lógica de negocio PR: [#167](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/167) — Issue: [#190](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/190) — @angelgc9107-lgtm (Desarrollador JavaScript Eventos + DOM)
+- [fix/renderizado-storage]Fix - mejoras de persistencia y renderizado dinámico PR: [#168](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/168) — Issue: [#191](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/191) — @angelgc9107-lgtm (Desarrollador JavaScript Eventos + DOM)
+- [fix/trazabilidad-documentacion]Fix/trazabilidad documentacion PR: [#169](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/169) — Issue: [#192](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/192) — @angelgc9107-lgtm (Desarrollador JavaScript Eventos + DOM)
+- [fix/storage-doc-uso-real] [A4] Corrección de la revisión del profesor (RC18, RC53): sección 7 de `storage-doc.md` alineada con el uso real del carrito vía `FachadaStorage`, columna de uso actual en la sección 2 y AT CLOSE del spec actualizado PR: [#172](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/172) — Issue: [#171](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/171) — @Piastrellini (Desarrollador JS Local y Session Storage)
+- [fix/correccion-rc50-51][A4] Corregir diagrama UML y ampliar cobertura de pruebas RC50-RC51 PR: [#175](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/175) - Issue: [#174](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/174) - @LuchoBarrionuevo13 (Desarrollador JS POO)
+- [fix/correcciones-qa-docs]Fix/correcciones qa docs PR: [#170](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/170) — Issue: [#173](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/173) — @alandox1 (Coordinador / DevOps y Tester QA)
+- [fix/qa-cobertura]Fix/qa-cobertura PR: [#183](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/183) — Issue: [#180](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/180) — @alandox1 (Coordinador / DevOps y Tester QA)
+- [fix/rc51-cobertura-pedido][A4] fix(models): leer el número una sola vez en Pedido.fromJSON() y completar la cobertura de modelos (RC51) PR: [#185](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/185) — Issue: [#184](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/184) — @Piastrellini (Desarrollador JS Local y Session Storage)
+- [fix/controlador-eventos-dom]fix: correcciones del controlador JavaScript PR: [#186](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/186) — Issue: [#187](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/187) — @angelgc9107-lgtm (Desarrollador JavaScript Eventos + DOM)
+- [fix/persistencia-pedidos]persistencia de numeración e historial de pedidos confirmados PR: [#188](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/188) — Issue: [#189](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/189) — @angelgc9107-lgtm (Desarrollador JavaScript Eventos + DOM)
+- [fix/qa-cobertura]Fix/qa-cobertura PR: [#193](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/193) — Issue: [#182](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/182) — @alandox1 (Coordinador / DevOps y Tester QA)
+- [fix/trazabilidad-changelog]fix: corrección de trazabilidad de Pull Requests e Issues en changelog PR: [#197](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/197) — Issue: [#196](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/196) — @angelgc9107-lgtm (Desarrollador JavaScript Eventos + DOM)
+- [fix/limpieza-changelog]Corrección de títulos y eliminación de duplicados del changelog PR: [#199](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/199) — Issue: [#198](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/198) — @angelgc9107-lgtm (Desarrollador JavaScript Eventos + DOM)
+- [fix/trazabilidad-testing-doc]Actualización de la trazabilidad de hallazgos en testing-doc PR: [#201](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/201) — Issue: [#200](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/200) — @angelgc9107-lgtm (Desarrollador JavaScript Eventos + DOM)
+- [fix/qa-testing-doc-vigente]fix/qa-testing-doc-vigente PR: [#202](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/202) — Issue: [#182](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/182) — @alandox1 (Coordinador / DevOps y Tester QA)
+- [fix/titulos-pr-changelog]Corrección de títulos de Pull Requests en changelog.md PR: [#205](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/205) — Issue: [#204](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/204) — @angelgc9107-lgtm (Desarrollador JavaScript Eventos + DOM)
 
 ## [Actividad N°3] - 2026-11-02
 
