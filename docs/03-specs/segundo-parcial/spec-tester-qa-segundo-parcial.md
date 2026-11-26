@@ -165,8 +165,10 @@ la corrección con el responsable.
 
 ### Criterios de aceptación
 
-- [ ] Este SPEC está commiteado antes de implementar cualquier prueba o
-      ejecutar Lighthouse.
+- [x] Este SPEC está commiteado antes de implementar cualquier prueba o
+      ejecutar Lighthouse; la versión con las correcciones RC01/RC02 quedó
+      registrada en el commit [`6cf9536`](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/commit/6cf9536b8f0ccff2bc6403173fb2849ea14246b5)
+      a las 13:06 GMT-3, antes de la ejecución de TC-11 a las 13:37 GMT-3.
 - [ ] `api.spec.js` verifica éxito, error HTTP, error de red y procesamiento
       con `map`, `filter` y `reduce`; incluye DOM si corresponde.
 - [ ] `library.spec.js` verifica inicialización, configuración, funcionalidad
@@ -201,8 +203,9 @@ la corrección con el responsable.
 
 ## AT CLOSE — Se completa al cerrar la tarea (evidencia)
 
-> Pendiente. Registrar únicamente lo efectivamente realizado, sin anticipar
-> resultados ni inventar evidencias.
+> AT CLOSE parcialmente actualizado: se registra la ejecución de TC-11 y el
+> estado actual de las Issues asociadas. No representa el cierre definitivo;
+> los demás apartados permanecen pendientes.
 
 ### Prompt exacto y contexto
 
@@ -218,18 +221,72 @@ la corrección con el responsable.
 
 ### Resultados de Lighthouse
 
-| Test case | Puntajes y métricas | Comparación | Capturas |
-|---|---|---|---|
-| 11 — Baseline | Pendiente | Referencia inicial | Pendiente |
-| 12 — Post Fetch | Pendiente | Frente a TC-11: pendiente | Pendiente |
-| 13 — Post Library | Pendiente | Frente a TC-12: pendiente | Pendiente |
+La auditoría TC-11 — Lighthouse Baseline se ejecutó manualmente mediante
+Chrome DevTools el 26/11/2026 a las 13:37 GMT-3. Performance y Best Practices
+no alcanzaron el umbral mínimo de 95 puntos.
+
+Commit de referencia del Baseline, verificado en el historial del repositorio:
+[`0aec81a3d836968ee2e585fcddf4fa03418e659e`](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/commit/0aec81a3d836968ee2e585fcddf4fa03418e659e).
+Los detalles de configuración y las condiciones no recuperables están
+documentados en [TC-11](../../04-testing/test-case-11-lighthouse-baseline.md).
+
+| Categoría | Resultado |
+|---|---:|
+| Performance | 92 |
+| Accessibility | 100 |
+| Best Practices | 77 |
+| SEO | 100 |
+
+| Métrica | Resultado |
+|---|---:|
+| FCP | 0.5 s |
+| LCP | 1.1 s |
+| TBT | 0 ms |
+| CLS | 0.148 |
+| Speed Index | 0.5 s |
+
+Documentación: [TC-11 — Lighthouse Baseline](../../04-testing/test-case-11-lighthouse-baseline.md).
+Evidencias: [12 capturas de TC-11](../../04-testing/screenshots/tc-11/).
+
+| Test case | Estado | Comparación |
+|---|---|---|
+| 12 — Post Fetch | Pendiente | Frente a TC-11: pendiente |
+| 13 — Post Library | Pendiente | Frente a TC-12: pendiente |
 
 ### Issues reportadas
 
-| Issue | Problema | Responsable | Estado de resolución y verificación |
+| Issue | Problema | Responsable | Estado |
 |---|---|---|---|
-| Pendiente | Pendiente | Pendiente | Pendiente |
+| [#212](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/212) | Performance inferior al umbral mínimo | Pendiente de asignación | Abierta |
+| [#213](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/213) | Desplazamientos visuales durante la carga (CLS) | Pendiente de asignación | Abierta |
+| [#214](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/214) | Best Practices y cookies de terceros de Google Maps | Pendiente de asignación | Abierta |
+
+Las tres Issues corresponden a problemas detectados durante el Baseline,
+previo a la incorporación de Fetch y SweetAlert2. Permanecen abiertas y sin
+responsables asignados; el Coordinador/DevOps definirá las asignaciones
+posteriormente. Por indicación expresa del coordinador, RC03 permanece abierto
+hasta que Alan y Thiago suban sus respectivas implementaciones de Fetch y
+SweetAlert2. La resolución y verificación de los problemas siguen pendientes.
+
+Para actualizar manualmente las Issues, usar como referencias el [commit del
+Baseline](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/commit/0aec81a3d836968ee2e585fcddf4fa03418e659e),
+el [TC-11](../../04-testing/test-case-11-lighthouse-baseline.md) y las
+[12 capturas](../../04-testing/screenshots/tc-11/). En #212, la tarea
+“Implementar las mejoras correspondientes” aparece marcada como completada,
+pero no se hicieron correcciones funcionales; debe desmarcarse manualmente en
+GitHub. No se modificaron las Issues desde esta documentación.
 
 ### Ajustes manuales a las pruebas generadas mediante IA
 
 **Pendiente:** describir los ajustes realizados y su motivo.
+
+### Pendientes para completar AT CLOSE
+
+- Prompt exacto utilizado para generar las pruebas Jasmine y archivos usados
+  como contexto.
+- Resultados de Jasmine.
+- Ejecución y análisis de TC-12 y TC-13, incluidas las comparaciones entre
+  auditorías.
+- Ajustes manuales a las pruebas generadas mediante IA.
+- Asignación, resolución y verificación de las Issues #212, #213 y #214.
+- Mantener RC03 abierto hasta que Alan y Thiago suban Fetch y SweetAlert2.

@@ -1,6 +1,6 @@
-# Testing Doc — Actividad Obligatoria N°2 y Primer Parcial
+# Testing Doc — Actividad Obligatoria N°2, Primer Parcial y Segundo Parcial
 
-Índice central de test cases ejecutados con **Playwright MCP** (vía Claude Code — ver nota en spec-qa.md sobre el cambio de herramienta) y resumen de issues creados con **GitHub MCP**. Los test cases 1 a 5 corresponden a la Actividad Obligatoria N°2 y los test cases 6 a 10, al Primer Parcial (migración a Bootstrap y componentes avanzados).
+Índice central de test cases ejecutados con **Playwright MCP** (vía Claude Code — ver nota en spec-qa.md sobre el cambio de herramienta) y resumen de issues creados con **GitHub MCP**. Los test cases 1 a 5 corresponden a la Actividad Obligatoria N°2, los test cases 6 a 10 al Primer Parcial (migración a Bootstrap y componentes avanzados), y el TC-11 al Segundo Parcial (Lighthouse Baseline).
 
 ## Índice de Test Cases
 
@@ -16,6 +16,24 @@
 | 8 | [test-case-8.md](test-case-8.md) | Funcionamiento y comportamiento responsive del componente Offcanvas del carrito | Playwright MCP |
 | 9 | [test-case-9.md](test-case-9.md) | Iframe de Google Maps (carga, responsive, ausencia de overflow) | Playwright MCP |
 | 10 | [test-case-10.md](test-case-10.md) | Input range de filtro de precio (interacción, sincronización con output) | Playwright MCP |
+| 11 | [test-case-11-lighthouse-baseline.md](test-case-11-lighthouse-baseline.md) | Baseline Lighthouse Desktop / Navigation sobre `develop` | Chrome DevTools Lighthouse 13.5.0 |
+
+## Segundo Parcial — TC-11 Lighthouse Baseline
+
+TC-11 se ejecutó manualmente el 26/11/2026 a las 13:37 GMT-3. Resultados:
+Performance 92, Accessibility 100, Best Practices 77 y SEO 100. Performance y
+Best Practices no alcanzaron el umbral ≥95. Las cinco métricas, hallazgos,
+recomendaciones, limitaciones de reproducibilidad/comparabilidad y 12 capturas
+están documentados en [test-case-11-lighthouse-baseline.md](test-case-11-lighthouse-baseline.md).
+El commit de referencia del Baseline es
+[`0aec81a3d836968ee2e585fcddf4fa03418e659e`](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/commit/0aec81a3d836968ee2e585fcddf4fa03418e659e).
+Las Issues [#212](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/212),
+[#213](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/213)
+y [#214](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/214)
+fueron creadas y permanecen abiertas, sin responsables asignados; la resolución
+y verificación siguen pendientes. RC03 permanece abierto por indicación del
+Coordinador/DevOps hasta que Alan y Thiago suban sus implementaciones de Fetch
+y SweetAlert2. TC-12 y TC-13 siguen pendientes.
 
 ## Resumen de Issues — Momento 1 (Testing pre-merge)
 
