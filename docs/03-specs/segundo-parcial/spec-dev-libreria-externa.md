@@ -3,7 +3,7 @@
 **Segundo Parcial — Programación Web I (UCES)**
 **Grupo:** GRP05 · **Rol:** Desarrollador JS Librerías Externas · **Integrante:** Thiago Piastrellini (@Piastrellini)
 **Rama de trabajo:** `feature/dev-libreria-externa-sweetalert2` → `develop`
-**Issue asociada:** [#<N° ISSUE>](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/<N° ISSUE>)
+**Issue asociada:** [#209](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/209)
 
 **Entregables del rol:**
 - `index.html`: hoja de estilos y script de SweetAlert2 por CDN.
