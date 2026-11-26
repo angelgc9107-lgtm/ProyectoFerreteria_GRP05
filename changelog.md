@@ -6,6 +6,8 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 ### Added
 
+- [feature/dev-async.fetch-api] [Segundo Parcial] Creacion del spec de Desarrollador JS Asíncrono - PR: [#211](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/211) - Issue: [#210](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/210) - @alandox1 (Desarrollador JS Asíncrono)
+
 - [feature/tester-qa-js-testing-suite] [Segundo Parcial] SPEC inicial - Tester QA/JS - Testing Avanzado - PR: [#208](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/208) - Issue: [#207](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/207) - @LuchoBarrionuevo13 (Tester QA/JS - Testing Avanzado)
 
 ## [Release Actividad Obligatoria N°4] - 2026-11-22
