@@ -1,6 +1,6 @@
-# Testing Doc — Actividad Obligatoria N°2 y Primer Parcial
+# Testing Doc — Actividad Obligatoria N°2, Primer Parcial y Segundo Parcial
 
-Índice central de test cases ejecutados con **Playwright MCP** (vía Claude Code — ver nota en spec-qa.md sobre el cambio de herramienta) y resumen de issues creados con **GitHub MCP**. Los test cases 1 a 5 corresponden a la Actividad Obligatoria N°2 y los test cases 6 a 10, al Primer Parcial (migración a Bootstrap y componentes avanzados).
+Índice central de test cases ejecutados con **Playwright MCP** (vía Claude Code — ver nota en spec-qa.md sobre el cambio de herramienta) y resumen de issues creados con **GitHub MCP**. Los test cases 1 a 5 corresponden a la Actividad Obligatoria N°2, los test cases 6 a 10 al Primer Parcial (migración a Bootstrap y componentes avanzados), y el TC-11 al Segundo Parcial (Lighthouse Baseline).
 
 ## Índice de Test Cases
 
@@ -16,6 +16,17 @@
 | 8 | [test-case-8.md](test-case-8.md) | Funcionamiento y comportamiento responsive del componente Offcanvas del carrito | Playwright MCP |
 | 9 | [test-case-9.md](test-case-9.md) | Iframe de Google Maps (carga, responsive, ausencia de overflow) | Playwright MCP |
 | 10 | [test-case-10.md](test-case-10.md) | Input range de filtro de precio (interacción, sincronización con output) | Playwright MCP |
+| 11 | [test-case-11-lighthouse-baseline.md](test-case-11-lighthouse-baseline.md) | Baseline Lighthouse Desktop / Navigation sobre `develop` | Chrome DevTools Lighthouse 13.5.0 |
+
+## Segundo Parcial — TC-11 Lighthouse Baseline
+
+TC-11 se ejecutó manualmente el 26/11/2026 a las 13:37 GMT-3. Resultados:
+Performance 92, Accessibility 100, Best Practices 77 y SEO 100. Performance y
+Best Practices no alcanzaron el umbral ≥95. Las cinco métricas, hallazgos,
+recomendaciones, limitaciones de verificación de URL/checkout y 12 capturas
+están documentados en [test-case-11-lighthouse-baseline.md](test-case-11-lighthouse-baseline.md).
+Se prepararon tres borradores de Issues; no se crearon Issues. TC-12 y TC-13
+siguen pendientes.
 
 ## Resumen de Issues — Momento 1 (Testing pre-merge)
 
