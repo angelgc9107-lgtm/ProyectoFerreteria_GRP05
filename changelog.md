@@ -4,6 +4,11 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 ## [Unreleased]
 
+### Added
+
+- [feature/dev-async.fetch-api] [Segundo Parcial] Creacion del spec de Desarrollador JS Asíncrono - PR: [#211](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/211) - Issue: [#210](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/210) - @alandox1 (Desarrollador JS Asíncrono)
+
+
 ## [Release Actividad Obligatoria N°4] - 2026-11-22
 
 ### Added
