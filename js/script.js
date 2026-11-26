@@ -13,12 +13,14 @@ import { ServicioCategorias } from "./services/ServicioCategorias.js";
 import { ServicioOpcionesPago } from "./services/ServicioOpcionesPago.js";
 import { validarCampoPedido } from "./services/ValidacionPedido.js";
 import { productosIniciales } from "./data/productosIniciales.js";
+import { ServicioDialogos } from "./services/ServicioDialogos.js";
 
 const catalogo = new Catalogo(productosIniciales.map((datos) => new Producto(datos)));
 const carrito = FachadaStorage.cargarCarrito();
 let pagoActual = null;
 let pedidoPendiente = null;
 let esperandoCierreCarrito = false;
+let confirmacionEnCurso = false;
 
 // Obtiene elementos del DOM y permite distinguir
 // entre controles obligatorios y opcionales.
@@ -620,6 +622,113 @@ function cancelarPedido() {
     elementos.seccionPago.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+/**
+ * Pide confirmación con ServicioDialogos y ejecuta la acción solo si el usuario acepta.
+ * Mientras hay un diálogo abierto ignora nuevos pedidos, para que un doble clic
+ * no ejecute la misma acción dos veces.
+ * @param {object} opciones - Opciones de ServicioDialogos.confirmar().
+ * @param {() => void} accion - Se ejecuta si el usuario confirma.
+ * @returns {Promise<boolean>} true si la acción se ejecutó.
+ */
+async function ejecutarConConfirmacion(opciones, accion) {
+    if (confirmacionEnCurso) return false;
+    confirmacionEnCurso = true;
+
+    try {
+        if (!(await ServicioDialogos.confirmar(opciones))) return false;
+        accion();
+        return true;
+    } finally {
+        confirmacionEnCurso = false;
+    }
+}
+
+/**
+ * Punto de integración 1: confirma antes de quitar un producto del carrito.
+ * @param {HTMLButtonElement} boton - Botón «Eliminar» del ítem.
+ * @returns {Promise<void>}
+ */
+async function solicitarEliminacionCarrito(boton) {
+    const codigo = boton.dataset.productCode;
+    const eliminar = () => procesarOperacionCarrito(() => carrito.eliminar(codigo));
+    const item = carrito.resumir().items.find((producto) => producto.codigo === codigo);
+
+    // Si el ítem no está en el carrito, el modelo informa el error sin abrir el diálogo.
+    if (!item) {
+        eliminar();
+        return;
+    }
+
+    const eliminado = await ejecutarConConfirmacion({
+        titulo: `¿Eliminar ${item.nombre} del carrito?`,
+        texto: `Tenés ${item.cantidad} unidad(es) en el carrito. Si lo eliminás, vas a tener que agregarlo de nuevo.`,
+        textoConfirmar: "Eliminar",
+        textoCancelar: "Cancelar",
+        peligroso: true,
+        origen: boton
+    }, eliminar);
+
+    // El botón que abrió el diálogo ya no existe: el foco queda en el panel del carrito.
+    if (eliminado && elementos.panelCarrito.classList.contains("show")) {
+        elementos.panelCarrito.focus();
+    }
+}
+
+/**
+ * Punto de integración 2: confirma la compra mostrando total financiado, método y cuotas.
+ * Sin resumen pendiente no abre el diálogo: confirmarPedido() muestra el error (RC24).
+ * @param {HTMLButtonElement} boton - Botón «Confirmar pedido» del resumen.
+ * @returns {Promise<void>}
+ */
+async function solicitarConfirmacionPedido(boton) {
+    if (!pedidoPendiente) {
+        confirmarPedido();
+        return;
+    }
+
+    const { pago } = pedidoPendiente.resumir();
+    const metodo = ServicioOpcionesPago.obtenerMetodos()
+        .find((opcion) => opcion.valor === pago.metodoPago)?.etiqueta ?? pago.metodoPago;
+
+    await ejecutarConConfirmacion({
+        titulo: "¿Confirmar la compra?",
+        texto: [
+            `Total financiado: ${FormateadorMoneda.formatear(pago.totalFinanciado)}`,
+            `Método de pago: ${metodo}`,
+            `Cuotas: ${pago.cuotas} de ${FormateadorMoneda.formatear(pago.valorCuota)}`,
+            "Al confirmar se genera el número de pedido y se vacía el carrito."
+        ].join("\n"),
+        textoConfirmar: "Confirmar compra",
+        textoCancelar: "Seguir revisando",
+        origen: boton
+    }, confirmarPedido);
+}
+
+/**
+ * Punto de integración 3: confirma antes de descartar los datos del cliente.
+ * Si el formulario está vacío y no hay resumen, no hay nada que perder y cancela sin preguntar.
+ * @param {HTMLButtonElement} boton - Botón «Cancelar pedido».
+ * @returns {Promise<void>}
+ */
+async function solicitarCancelacionPedido(boton) {
+    const hayDatos = pedidoPendiente !== null ||
+        Object.values(clienteDesdeFormulario()).some((valor) => valor.trim() !== "");
+
+    if (!hayDatos) {
+        cancelarPedido();
+        return;
+    }
+
+    await ejecutarConConfirmacion({
+        titulo: "¿Descartar los datos del pedido?",
+        texto: "Se borran el nombre, el correo y la dirección cargados. El carrito y las condiciones de pago se conservan.",
+        textoConfirmar: "Descartar datos",
+        textoCancelar: "Seguir con el pedido",
+        peligroso: true,
+        origen: boton
+    }, cancelarPedido);
+}
+
 
 /**
  * Renderiza dinámicamente las tarjetas de ofertas
@@ -929,13 +1038,9 @@ function inicializarEventos() {
 
         if (!accion || !elementos.panelCarrito.contains(accion)) return;
 
-        const codigo = accion.dataset.productCode;
-
         switch (accion.dataset.action) {
             case "eliminar-carrito":
-                procesarOperacionCarrito(
-                    () => carrito.eliminar(codigo)
-                );
+                solicitarEliminacionCarrito(accion);
                 break;
 
             case "iniciar-compra":
@@ -968,11 +1073,11 @@ function inicializarEventos() {
 
         switch (accion.dataset.action) {
             case "cancelar-pedido":
-                cancelarPedido();
+                solicitarCancelacionPedido(accion);
                 break;
 
             case "confirmar-pedido":
-                confirmarPedido();
+                solicitarConfirmacionPedido(accion);
                 break;
 
             default:

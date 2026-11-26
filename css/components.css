@@ -657,3 +657,112 @@ footer img {
     width: auto;
     margin: 0;
 }
+
+/* Diálogos de confirmación (SweetAlert2, js/services/ServicioDialogos.js).
+   Se usan las clases propias de customClass y las variables --swal2-* que la
+   librería expone; su hoja de estilos no se modifica. */
+.dialogo-confirmacion-fondo {
+    --swal2-backdrop: rgb(47 47 47 / 55%);
+}
+
+.dialogo-confirmacion {
+    --swal2-width: 28rem;
+    --swal2-padding: var(--space-5);
+    --swal2-background: var(--color-white);
+    --swal2-color: var(--color-ink);
+    --swal2-border-radius: var(--radius-md);
+    border-top: 4px solid var(--color-red);
+    box-shadow: var(--shadow-card);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-md);
+    line-height: var(--line-height-base);
+}
+
+.dialogo-confirmacion__icono.swal2-warning {
+    border-color: var(--color-danger);
+    color: var(--color-danger);
+}
+
+.dialogo-confirmacion__icono.swal2-question {
+    border-color: var(--color-red);
+    color: var(--color-red);
+}
+
+.dialogo-confirmacion__titulo {
+    padding: var(--space-3) 0 0;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+}
+
+/* white-space conserva los saltos de línea del texto (total, método y cuotas). */
+.dialogo-confirmacion__texto {
+    padding: var(--space-3) 0 0;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-base);
+    white-space: pre-line;
+}
+
+.dialogo-confirmacion__acciones {
+    gap: var(--space-3);
+    margin-top: var(--space-5);
+}
+
+.dialogo-confirmacion__boton {
+    min-height: 2.5rem;
+    padding: var(--space-2) var(--space-4);
+    border: var(--border-width) solid transparent;
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.dialogo-confirmacion__boton:focus-visible {
+    outline: 0;
+    box-shadow: var(--focus-ring);
+}
+
+.dialogo-confirmacion__boton--confirmar {
+    color: var(--color-white);
+    background: var(--color-red);
+}
+
+.dialogo-confirmacion__boton--confirmar:hover {
+    background: var(--color-red-dark);
+}
+
+.dialogo-confirmacion__boton--peligro {
+    color: var(--color-white);
+    background: var(--color-danger);
+}
+
+.dialogo-confirmacion__boton--peligro:hover {
+    background: var(--color-red-dark);
+}
+
+.dialogo-confirmacion__boton--cancelar {
+    color: var(--color-ink);
+    border-color: var(--color-gray-500);
+    background: var(--color-white);
+}
+
+.dialogo-confirmacion__boton--cancelar:hover {
+    color: var(--color-white);
+    background: var(--color-gray-700);
+}
+
+.dialogo-confirmacion__boton:active {
+    color: var(--color-white);
+    background: var(--color-ink);
+}
+
+/* Las animaciones de entrada y salida se desactivan desde ServicioDialogos;
+   aquí se quita además el fundido del fondo. */
+@media (prefers-reduced-motion: reduce) {
+    .dialogo-confirmacion-fondo {
+        --swal2-backdrop-transition: none;
+    }
+}

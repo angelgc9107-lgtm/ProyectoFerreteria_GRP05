@@ -24,6 +24,8 @@ let espiaConfirm;
 let espiaConsoleLog;
 let espiaConsoleError;
 let storageAntes;
+let dobleSwal;
+let swalReal;
 
 const CLAVES_STORAGE_PRUEBAS = [
     "app:carrito:items",
@@ -105,6 +107,63 @@ function iniciarCompra() {
     clic(q('[data-action="iniciar-compra"]'));
 }
 
+/**
+ * Doble de prueba de SweetAlert2 (reemplaza a la global Swal de la página).
+ * Registra las opciones de cada Swal.fire() y responde según `respuesta`:
+ * true (el usuario confirma), false (cancela, cierra o presiona Esc),
+ * un Error (la librería falla) o "pendiente" (el diálogo queda abierto hasta
+ * llamar a responder(confirmado)).
+ */
+function crearDobleSwal() {
+    const resultado = (confirmado) => ({
+        isConfirmed: confirmado,
+        isDismissed: !confirmado,
+        dismiss: confirmado ? undefined : "cancel"
+    });
+    const doble = {
+        respuesta: true,
+        llamadas: [],
+        responder: null,
+        fire(opciones) {
+            doble.llamadas.push(opciones);
+            if (doble.respuesta instanceof Error) return Promise.reject(doble.respuesta);
+            if (doble.respuesta === "pendiente") {
+                return new Promise((resolve) => {
+                    doble.responder = (confirmado) => resolve(resultado(confirmado));
+                });
+            }
+            return Promise.resolve(resultado(doble.respuesta));
+        }
+    };
+    return doble;
+}
+
+/**
+ * Guarda la SweetAlert2 real que cargó la página (si el CDN respondió) y la
+ * reemplaza por un doble que confirma: los flujos se prueban completos, con el
+ * diálogo de por medio, sin depender de la red ni de animaciones.
+ */
+function instalarDobleSwal() {
+    swalReal = win.Swal ?? null;
+    dobleSwal = crearDobleSwal();
+    win.Swal = dobleSwal;
+}
+
+/**
+ * Las acciones que piden confirmación (eliminar del carrito, confirmar y cancelar
+ * el pedido) terminan después de que se resuelve el diálogo. Sus microtareas se
+ * ejecutan todas antes del próximo setTimeout, así que una pausa de 0 ms alcanza.
+ */
+function esperarDialogo() {
+    return pausa(0);
+}
+
+/** Hace clic en un botón que pide confirmación y espera a que la acción termine. */
+async function clicYEsperar(elemento) {
+    clic(elemento);
+    await esperarDialogo();
+}
+
 /** Copia el contenido de un Web Storage para compararlo después. */
 function instantanea(almacen) {
     return Object.fromEntries(
@@ -171,6 +230,7 @@ beforeEach(async function () {
     win.alert = espiaAlert;
     win.prompt = espiaPrompt;
     win.confirm = espiaConfirm;
+    instalarDobleSwal();
 
     espiaConsoleLog = spyOn(win.console, "log");
     espiaConsoleError = spyOn(win.console, "error");
@@ -219,6 +279,7 @@ async function recargarApp() {
     win.alert = espiaAlert;
     win.prompt = espiaPrompt;
     win.confirm = espiaConfirm;
+    instalarDobleSwal();
 
     espiaConsoleLog = spyOn(win.console, "log");
     espiaConsoleError = spyOn(win.console, "error");
@@ -668,19 +729,19 @@ describe("Controlador - Flujo 2: carrito", function () {
     });
 
 
-    it("elimina un producto y vuelve al estado vacío", function () {
+    it("elimina un producto y vuelve al estado vacío", async function () {
         agregarAlCarrito("GUANTES-001");
-        clic(q('[data-action="eliminar-carrito"]'));
+        await clicYEsperar(q('[data-action="eliminar-carrito"]'));
         expect(texto("#contador-carrito")).toBe("0");
         expect(qa("#carrito-items article").length).toBe(0);
         expect(texto("#carrito-mensaje")).toBe("El carrito esta vacio.");
         expect(q('[data-action="iniciar-compra"]').disabled).toBeTrue();
     });
 
-    it("eliminar un producto conserva los demás", function () {
+    it("eliminar un producto conserva los demás", async function () {
         agregarAlCarrito("GUANTES-001");
         agregarAlCarrito("PINZA-001");
-        clic(q('[data-action="eliminar-carrito"][data-product-code="GUANTES-001"]'));
+        await clicYEsperar(q('[data-action="eliminar-carrito"][data-product-code="GUANTES-001"]'));
         expect(cantidadEnCarrito("GUANTES-001")).toBeNull();
         expect(cantidadEnCarrito("PINZA-001")).toBe("1");
         expect(texto("#carrito-total")).toMatch(/6\.426,00/);
@@ -1002,12 +1063,12 @@ describe("Controlador - Flujo 4: confirmación del pedido", function () {
 
 
     // RC59 - Compatibilidad con la cancelación del pedido.
-    it("RC59 - cancelar el pedido elimina los estados de validación", function () {
+    it("RC59 - cancelar el pedido elimina los estados de validación", async function () {
         escribir("#pedido-nombre", "12345");
         escribir("#pedido-correo", "correo-invalido");
         disparar(q("#pedido-direccion"), "focusout");
 
-        clic(q('[data-action="cancelar-pedido"]'));
+        await clicYEsperar(q('[data-action="cancelar-pedido"]'));
 
         expect(q("#confirmacion").hidden).toBeTrue();
 
@@ -1125,10 +1186,10 @@ describe("Controlador - Flujo 4: confirmación del pedido", function () {
             .toBe("Los datos del cliente cambiaron. Revisá nuevamente el resumen antes de confirmar.");
     });
 
-    it("confirmar muestra el número de pedido y limpia carrito y pago", function () {
+    it("confirmar muestra el número de pedido y limpia carrito y pago", async function () {
         completarCliente();
         enviar("#form-pedido");
-        clic(q('[data-action="confirmar-pedido"]'));
+        await clicYEsperar(q('[data-action="confirmar-pedido"]'));
         expect(texto("#resumen-pedido")).toMatch(/^Pedido confirmado: FL-\d+-0001/);
         expect(q('#resumen-pedido [data-action="confirmar-pedido"]')).toBeNull();
         expect(texto("#pedido-mensaje")).toBe("La operacion se realizo correctamente.");
@@ -1138,15 +1199,15 @@ describe("Controlador - Flujo 4: confirmación del pedido", function () {
         expect(q("#form-pedido").hidden).toBeTrue();
     });
 
-    it("una segunda compra obtiene la secuencia siguiente", function () {
+    it("una segunda compra obtiene la secuencia siguiente", async function () {
         completarCliente();
         enviar("#form-pedido");
-        clic(q('[data-action="confirmar-pedido"]'));
+        await clicYEsperar(q('[data-action="confirmar-pedido"]'));
         irAConfirmacion();
         expect(q("#form-pedido").hidden).toBeFalse();
         completarCliente("Luis Gómez", "luis@correo.com", "Av. Siempreviva 742");
         enviar("#form-pedido");
-        clic(q('[data-action="confirmar-pedido"]'));
+        await clicYEsperar(q('[data-action="confirmar-pedido"]'));
         expect(texto("#resumen-pedido")).toMatch(/^Pedido confirmado: FL-\d+-0002/);
     });
 
@@ -1160,7 +1221,7 @@ describe("Controlador - Flujo 4: confirmación del pedido", function () {
         expect(texto("#resumen-pedido")).toMatch(/Total financiado: \$\s?5\.281,20/);
     });
 
-    it("RC61 - cancelar el pedido conserva el carrito y las condiciones de pago", function () {
+    it("RC61 - cancelar el pedido conserva el carrito y las condiciones de pago", async function () {
         completarCliente();
         enviar("#form-pedido");
 
@@ -1169,7 +1230,7 @@ describe("Controlador - Flujo 4: confirmación del pedido", function () {
         const metodoAnterior = q("#metodo-pago").value;
         const cuotasAnteriores = q("#cuotas").value;
 
-        clic(q('[data-action="cancelar-pedido"]'));
+        await clicYEsperar(q('[data-action="cancelar-pedido"]'));
 
         expect(q("#confirmacion").hidden).toBeTrue();
         expect(q("#pedido-nombre").value).toBe("");
@@ -1206,7 +1267,7 @@ describe("Controlador - Flujo 4: confirmación del pedido", function () {
         expect(mensaje.getAttribute("aria-live")).toBe("polite");
     });
 
-    it("RC61 - muestra el mensaje al cancelar con campos invalidos", function () {
+    it("RC61 - muestra el mensaje al cancelar con campos invalidos", async function () {
 
         escribir("#pedido-nombre", "12345");
         escribir("#pedido-correo", "correo-invalido");
@@ -1215,7 +1276,7 @@ describe("Controlador - Flujo 4: confirmación del pedido", function () {
 
         expect(qa("#form-pedido .is-invalid").length).toBe(3);
 
-        clic(q('[data-action="cancelar-pedido"]'));
+        await clicYEsperar(q('[data-action="cancelar-pedido"]'));
 
         expect(q("#confirmacion").hidden).toBeTrue();
 
@@ -1323,7 +1384,7 @@ describe("Controlador - RC62: persistencia de pedidos", function () {
 
     it("RC62 - conserva la numeracion y el historial despues de recargar", async function () {
         llegarAlResumen();
-        clic(q('[data-action="confirmar-pedido"]'));
+        await clicYEsperar(q('[data-action="confirmar-pedido"]'));
 
         expect(texto("#resumen-pedido"))
             .toMatch(/^Pedido confirmado: FL-\d+-0001/);
@@ -1347,6 +1408,7 @@ describe("Controlador - RC62: persistencia de pedidos", function () {
 
         win = marco.contentWindow;
         doc = marco.contentDocument;
+        instalarDobleSwal();
 
         expect(JSON.parse(
             win.localStorage.getItem(CLAVE_HISTORIAL)
@@ -1359,7 +1421,7 @@ describe("Controlador - RC62: persistencia de pedidos", function () {
         expect(texto("#contador-carrito")).toBe("0");
 
         llegarAlResumen();
-        clic(q('[data-action="confirmar-pedido"]'));
+        await clicYEsperar(q('[data-action="confirmar-pedido"]'));
 
         expect(texto("#resumen-pedido"))
             .toMatch(/^Pedido confirmado: FL-\d+-0002/);
@@ -1379,9 +1441,9 @@ describe("Controlador - RC62: persistencia de pedidos", function () {
     }, TIEMPO_CARGA_MS);
 
 
-    it("RC62 - cancelar un pedido no modifica el historial ni la secuencia", function () {
+    it("RC62 - cancelar un pedido no modifica el historial ni la secuencia", async function () {
         llegarAlResumen();
-        clic(q('[data-action="confirmar-pedido"]'));
+        await clicYEsperar(q('[data-action="confirmar-pedido"]'));
 
         const historialAntes =
             win.localStorage.getItem(CLAVE_HISTORIAL);
@@ -1390,7 +1452,7 @@ describe("Controlador - RC62: persistencia de pedidos", function () {
             win.localStorage.getItem(CLAVE_SECUENCIA);
 
         llegarAlResumen();
-        clic(q('[data-action="cancelar-pedido"]'));
+        await clicYEsperar(q('[data-action="cancelar-pedido"]'));
 
         expect(win.localStorage.getItem(CLAVE_HISTORIAL))
             .toBe(historialAntes);
@@ -1403,7 +1465,7 @@ describe("Controlador - RC62: persistencia de pedidos", function () {
     });
 
 
-    it("RC62 - informa el error cuando falla el guardado de la secuencia", function () {
+    it("RC62 - informa el error cuando falla el guardado de la secuencia", async function () {
         llegarAlResumen();
 
         const setItemOriginal = win.Storage.prototype.setItem;
@@ -1420,7 +1482,7 @@ describe("Controlador - RC62: persistencia de pedidos", function () {
             return setItemOriginal.call(this, clave, valor);
         });
 
-        clic(q('[data-action="confirmar-pedido"]'));
+        await clicYEsperar(q('[data-action="confirmar-pedido"]'));
 
         expect(texto("#pedido-mensaje"))
             .toBe("No se pudo guardar la secuencia del pedido.");
@@ -1439,7 +1501,7 @@ describe("Controlador - RC62: persistencia de pedidos", function () {
         // Restablece Storage y permite reintentar.
         espiaStorage.and.callThrough();
 
-        clic(q('[data-action="confirmar-pedido"]'));
+        await clicYEsperar(q('[data-action="confirmar-pedido"]'));
 
         expect(texto("#resumen-pedido"))
             .toMatch(/^Pedido confirmado: FL-\d+-0001/);
@@ -1450,9 +1512,9 @@ describe("Controlador - RC62: persistencia de pedidos", function () {
     });
 
 
-    it("RC62 - restaura la secuencia cuando falla el guardado del historial", function () {
+    it("RC62 - restaura la secuencia cuando falla el guardado del historial", async function () {
         llegarAlResumen();
-        clic(q('[data-action="confirmar-pedido"]'));
+        await clicYEsperar(q('[data-action="confirmar-pedido"]'));
 
         const historialAntes =
             win.localStorage.getItem(CLAVE_HISTORIAL);
@@ -1476,7 +1538,7 @@ describe("Controlador - RC62: persistencia de pedidos", function () {
             return setItemOriginal.call(this, clave, valor);
         });
 
-        clic(q('[data-action="confirmar-pedido"]'));
+        await clicYEsperar(q('[data-action="confirmar-pedido"]'));
 
         expect(texto("#pedido-mensaje"))
             .toBe("No se pudo guardar el pedido.");
@@ -1495,7 +1557,7 @@ describe("Controlador - RC62: persistencia de pedidos", function () {
         // Reintenta sin el fallo de almacenamiento.
         espiaStorage.and.callThrough();
 
-        clic(q('[data-action="confirmar-pedido"]'));
+        await clicYEsperar(q('[data-action="confirmar-pedido"]'));
 
         expect(texto("#resumen-pedido"))
             .toMatch(/^Pedido confirmado: FL-\d+-0002/);
@@ -1511,21 +1573,21 @@ describe("Controlador - RC62: persistencia de pedidos", function () {
 });
 
 describe("Controlador - requisitos transversales", function () {
-    it("una compra completa no usa alert(), prompt() ni confirm()", function () {
+    it("una compra completa no usa alert(), prompt() ni confirm()", async function () {
         llegarAlResumen();
-        clic(q('[data-action="confirmar-pedido"]'));
+        await clicYEsperar(q('[data-action="confirmar-pedido"]'));
         expect(espiaAlert).not.toHaveBeenCalled();
         expect(espiaPrompt).not.toHaveBeenCalled();
         expect(espiaConfirm).not.toHaveBeenCalled();
     });
 
-    it("los flujos de búsqueda, carrito, pago y cancelaciones tampoco los usan", function () {
+    it("los flujos de búsqueda, carrito, pago y cancelaciones tampoco los usan", async function () {
         escribir("#busqueda", "zzz");           // sin resultados: el catálogo se vuelve a dibujar sin tarjetas
         escribir("#busqueda", "");
         elegir("#categoria", "Jardineria");
         agregarAlCarrito("PALA-001");
         elegir(q('[data-action="cambiar-cantidad"]'), "0");
-        clic(q('[data-action="eliminar-carrito"]'));
+        await clicYEsperar(q('[data-action="eliminar-carrito"]'));
         elegir("#categoria", "");               // el catálogo ya no conserva las tarjetas filtradas
         irAConfirmacion();
         clic(q('[data-action="cancelar-pago"]'));
@@ -1534,16 +1596,16 @@ describe("Controlador - requisitos transversales", function () {
         expect(espiaConfirm).not.toHaveBeenCalled();
     });
 
-    it("no escribe en la consola durante una compra completa", function () {
+    it("no escribe en la consola durante una compra completa", async function () {
         llegarAlResumen();
-        clic(q('[data-action="confirmar-pedido"]'));
+        await clicYEsperar(q('[data-action="confirmar-pedido"]'));
         expect(espiaConsoleLog).not.toHaveBeenCalled();
         expect(espiaConsoleError).not.toHaveBeenCalled();
     });
 
-    it("una compra completa solo escribe claves de la app en localStorage y no toca sessionStorage", function () {
+    it("una compra completa solo escribe claves de la app en localStorage y no toca sessionStorage", async function () {
         llegarAlResumen();
-        clic(q('[data-action="confirmar-pedido"]'));
+        await clicYEsperar(q('[data-action="confirmar-pedido"]'));
         expect(instantanea(win.sessionStorage)).toEqual(storageAntes.session);
         const ajenas = Object.keys(instantanea(win.localStorage))
             .filter((clave) => !clave.startsWith("app:"))
@@ -1606,7 +1668,7 @@ describe("Controlador - persistencia del carrito en Web Storage", function () {
         agregarAlCarrito("GUANTES-001");
         agregarAlCarrito("PALA-001");
         elegir(q('[data-action="cambiar-cantidad"][data-product-code="GUANTES-001"]'), "4");
-        clic(q('[data-action="eliminar-carrito"][data-product-code="PALA-001"]'));
+        await clicYEsperar(q('[data-action="eliminar-carrito"][data-product-code="PALA-001"]'));
         await recargarApp();
         expect(cantidadEnCarrito("GUANTES-001")).toBe("4");
         expect(cantidadEnCarrito("PALA-001")).toBeNull();
@@ -1614,7 +1676,7 @@ describe("Controlador - persistencia del carrito en Web Storage", function () {
 
     it("al vaciar el carrito y recargar, la página arranca con el carrito vacío", async function () {
         agregarAlCarrito("GUANTES-001");
-        clic(q('[data-action="eliminar-carrito"]'));
+        await clicYEsperar(q('[data-action="eliminar-carrito"]'));
         await recargarApp();
         expect(texto("#contador-carrito")).toBe("0");
         expect(q('[data-action="iniciar-compra"]').disabled).toBeTrue();
@@ -1636,7 +1698,7 @@ describe("Controlador - persistencia del carrito en Web Storage", function () {
 
     it("al confirmar un pedido el carrito queda vacío también después de recargar", async function () {
         llegarAlResumen();
-        clic(q('[data-action="confirmar-pedido"]'));
+        await clicYEsperar(q('[data-action="confirmar-pedido"]'));
         await recargarApp();
         expect(texto("#contador-carrito")).toBe("0");
     });
@@ -1670,9 +1732,9 @@ describe("Controlador - casos borde", function () {
             expect(qa("#resumen-pedido *").length).toBe(0);
         });
 
-        it("vaciar el carrito en medio del pago descarta las condiciones calculadas", function () {
+        it("vaciar el carrito en medio del pago descarta las condiciones calculadas", async function () {
             irAConfirmacion();
-            clic(q('[data-action="eliminar-carrito"]'));
+            await clicYEsperar(q('[data-action="eliminar-carrito"]'));
             expect(texto("#contador-carrito")).toBe("0");
             expect(q("#pago").hidden).toBeTrue();
             expect(q("#confirmacion").hidden).toBeTrue();
@@ -1698,19 +1760,21 @@ describe("Controlador - casos borde", function () {
             expect(qa('#resumen-pedido [data-action="confirmar-pedido"]').length).toBe(1);
         });
 
-        it("confirmar dos veces el mismo pedido muestra un único número de pedido", function () {
+        it("confirmar dos veces el mismo pedido muestra un único número de pedido", async function () {
             llegarAlResumen();
             const boton = q('[data-action="confirmar-pedido"]');
             clic(boton);
-            clic(boton);
+            await clicYEsperar(boton);
+            expect(dobleSwal.llamadas.length).toBe(1);
             expect(texto("#resumen-pedido")).toMatch(/^Pedido confirmado: FL-\d+-0001/);
             expect(texto("#contador-carrito")).toBe("0");
         });
 
-        it("cancelar dos veces el pedido no cambia el estado", function () {
+        it("cancelar dos veces el pedido no cambia el estado", async function () {
             llegarAlResumen();
-            clic(q('[data-action="cancelar-pedido"]'));
-            clic(q('[data-action="cancelar-pedido"]'));
+            await clicYEsperar(q('[data-action="cancelar-pedido"]'));
+            await clicYEsperar(q('[data-action="cancelar-pedido"]'));
+            expect(dobleSwal.llamadas.length).toBe(1);
             expect(q("#confirmacion").hidden).toBeTrue();
             expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
         });
@@ -1744,9 +1808,9 @@ describe("Controlador - casos borde", function () {
             expect(texto("#carrito-mensaje")).toMatch(/no pudo guardarse/);
         });
         
-        it("RC62 - impide confirmar una compra cuando el storage rechaza las escrituras", function () {
+        it("RC62 - impide confirmar una compra cuando el storage rechaza las escrituras", async function () {
             llegarAlResumen();
-            clic(q('[data-action="confirmar-pedido"]'));
+            await clicYEsperar(q('[data-action="confirmar-pedido"]'));
 
             expect(texto("#pedido-mensaje"))
                 .toBe("No se pudo guardar la secuencia del pedido.");
@@ -1853,6 +1917,8 @@ describe("Controlador - rutas defensivas y de error", function () {
         expect(q("#pedido-mensaje").classList).toContain("text-danger");
         expect(q("#resumen-pedido").textContent.trim()).toBe("");
         expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+        // El error se muestra en el mismo clic, sin abrir el diálogo de confirmación.
+        expect(dobleSwal.llamadas.length).toBe(0);
     });
 
     it("una acción desconocida dentro del panel del carrito se ignora", function () {
@@ -1882,18 +1948,18 @@ describe("Controlador - rutas defensivas y de error", function () {
         expect(q('#resumen-pedido [data-action="confirmar-pedido"]')).not.toBeNull();
     });
 
-    it("si el reloj del sistema es inválido, confirmar muestra el error y permite reintentar", function () {
+    it("si el reloj del sistema es inválido, confirmar muestra el error y permite reintentar", async function () {
         llegarAlResumen();
         const reloj = spyOn(win.Date, "now").and.returnValue(-1);
 
-        clic(q('#resumen-pedido [data-action="confirmar-pedido"]'));
+        await clicYEsperar(q('#resumen-pedido [data-action="confirmar-pedido"]'));
         expect(texto("#pedido-mensaje")).toBe("La fecha o la secuencia no son validas.");
         expect(q("#pedido-mensaje").classList).toContain("text-danger");
         expect(q('#resumen-pedido [data-action="confirmar-pedido"]')).not.toBeNull();
         expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
 
         reloj.and.callThrough();
-        clic(q('#resumen-pedido [data-action="confirmar-pedido"]'));
+        await clicYEsperar(q('#resumen-pedido [data-action="confirmar-pedido"]'));
         expect(texto("#resumen-pedido")).toMatch(/Pedido confirmado: FL-\d+-0001/);
     });
 
@@ -1987,5 +2053,495 @@ describe("Controlador - rutas defensivas y de error", function () {
         expect(etiqueta).not.toBeNull();
         expect(etiqueta.type).toBe("module");
         expect(etiqueta.hasAttribute("async")).toBeFalse();
+    });
+});
+
+// ---------------------------------------------------------------------------
+// Librería externa: diálogos de confirmación con SweetAlert2
+// (docs/03-specs/segundo-parcial/spec-dev-libreria-externa.md, puntos 1, 2 y 3)
+//
+// La mayoría de los tests usa el doble de Swal que instala el beforeEach global.
+// Los de "con la librería real" usan la SweetAlert2 que la página cargó del CDN;
+// si no hay red quedan pendientes en lugar de fallar.
+// ---------------------------------------------------------------------------
+
+describe("Controlador - diálogos de confirmación (SweetAlert2)", function () {
+    const VERSION = "11.26.25";
+    const CDN = `https://cdn.jsdelivr.net/npm/sweetalert2@${VERSION}/dist/`;
+    const SRI_CSS = "sha384-dCW5imOdApH6OwpFau8cZNKjqVbJYnCA5q+8YsMYP3XwXKsV6Jfz1u6MZLnXaBsS";
+    const SRI_JS = "sha384-hW8ZCQHtRH+nVOAkHZ4amZvYsAtKn1ZOvMV6dNag1Rb1thWmLZMBKTRxFV0cOxiK";
+    const NOMBRE_GUANTES = "Guantes moteados multiuso maxima calidad";
+
+    const ultimaLlamada = () => dobleSwal.llamadas.at(-1);
+    const botonEliminar = (codigo) =>
+        q(`[data-action="eliminar-carrito"][data-product-code="${codigo}"]`);
+
+    /** Espera (sondeando cada 20 ms) a que se cumpla una condición. */
+    async function esperarHasta(condicion, limiteMs = 3000) {
+        const fin = Date.now() + limiteMs;
+        while (!condicion()) {
+            if (Date.now() > fin) throw new Error("La condición no se cumplió a tiempo.");
+            await pausa(20);
+        }
+    }
+
+    /** Importa ServicioDialogos dentro de la página: es la misma instancia que usa script.js. */
+    function importarServicioEnLaPagina() {
+        const url = new URL("../services/ServicioDialogos.js", import.meta.url).href;
+        return new win.Function("url", "return import(url);")(url);
+    }
+
+    /** Vuelve a poner la SweetAlert2 real; sin red, el test queda pendiente. */
+    function usarSwalReal() {
+        if (!swalReal) pending("SweetAlert2 no cargó desde el CDN (¿sin conexión?).");
+        win.Swal = swalReal;
+    }
+
+    /** Abre el Offcanvas del carrito con Bootstrap y espera a que termine de mostrarse. */
+    async function abrirCarrito() {
+        const panel = q("#carrito");
+        const mostrado = new Promise((resolve) =>
+            panel.addEventListener("shown.bs.offcanvas", resolve, { once: true })
+        );
+        win.bootstrap.Offcanvas.getOrCreateInstance(panel).show();
+        await mostrado;
+        return panel;
+    }
+
+    /** Calcula el hash SRI (SHA-384 en base64) de un archivo remoto. */
+    async function calcularSri(url) {
+        const datos = await (await fetch(url, { cache: "no-store" })).arrayBuffer();
+        const hash = new Uint8Array(await crypto.subtle.digest("SHA-384", datos));
+        return `sha384-${btoa(String.fromCharCode(...hash))}`;
+    }
+
+    describe("punto 1: eliminar un producto del carrito", function () {
+        beforeEach(function () {
+            agregarAlCarrito("GUANTES-001");
+            agregarAlCarrito("GUANTES-001");
+            agregarAlCarrito("PINZA-001");
+        });
+
+        it("pregunta con el nombre y la cantidad, y no toca el carrito hasta la respuesta", async function () {
+            dobleSwal.respuesta = "pendiente";
+            const local = instantanea(win.localStorage);
+
+            clic(botonEliminar("GUANTES-001"));
+
+            expect(dobleSwal.llamadas.length).toBe(1);
+            expect(ultimaLlamada().titleText).toBe(`¿Eliminar ${NOMBRE_GUANTES} del carrito?`);
+            expect(ultimaLlamada().text).toContain("Tenés 2 unidad(es) en el carrito.");
+            expect(cantidadEnCarrito("GUANTES-001")).toBe("2");
+            expect(instantanea(win.localStorage)).toEqual(local);
+
+            dobleSwal.responder(true);
+            await esperarDialogo();
+
+            expect(cantidadEnCarrito("GUANTES-001")).toBeNull();
+            expect(cantidadEnCarrito("PINZA-001")).toBe("1");
+            expect(JSON.parse(win.localStorage.getItem("app:carrito:items")).items.length).toBe(1);
+        });
+
+        it("si el usuario cancela o presiona Esc, el carrito y el storage no cambian", async function () {
+            dobleSwal.respuesta = false;
+            const local = instantanea(win.localStorage);
+            const mensaje = texto("#carrito-mensaje");
+
+            await clicYEsperar(botonEliminar("GUANTES-001"));
+
+            expect(dobleSwal.llamadas.length).toBe(1);
+            expect(cantidadEnCarrito("GUANTES-001")).toBe("2");
+            expect(cantidadEnCarrito("PINZA-001")).toBe("1");
+            expect(texto("#carrito-mensaje")).toBe(mensaje);
+            expect(instantanea(win.localStorage)).toEqual(local);
+        });
+
+        it("es una acción que pierde datos: foco inicial en Cancelar, Esc habilitado y estilo de peligro", function () {
+            clic(botonEliminar("GUANTES-001"));
+            const opciones = ultimaLlamada();
+
+            expect(opciones.icon).toBe("warning");
+            expect(opciones.showCancelButton).toBeTrue();
+            expect(opciones.focusCancel).toBeTrue();
+            expect(opciones.allowEscapeKey).toBeTrue();
+            expect(opciones.stopKeydownPropagation).toBeTrue();
+            expect(opciones.returnFocus).toBeTrue();
+            expect(opciones.buttonsStyling).toBeFalse();
+            expect(opciones.customClass.popup).toBe("dialogo-confirmacion");
+            expect(opciones.customClass.confirmButton).toContain("dialogo-confirmacion__boton--peligro");
+            expect(opciones.customClass.cancelButton).toContain("dialogo-confirmacion__boton--cancelar");
+        });
+
+        it("mientras el diálogo está abierto, otros clics no abren otro ni repiten la acción", async function () {
+            dobleSwal.respuesta = "pendiente";
+
+            clic(botonEliminar("GUANTES-001"));
+            clic(botonEliminar("GUANTES-001"));
+            clic(botonEliminar("PINZA-001"));
+            expect(dobleSwal.llamadas.length).toBe(1);
+
+            dobleSwal.responder(true);
+            await esperarDialogo();
+
+            expect(cantidadEnCarrito("GUANTES-001")).toBeNull();
+            expect(cantidadEnCarrito("PINZA-001")).toBe("1");
+        });
+
+        it("un producto que ya no está en el carrito muestra el error sin abrir el diálogo", function () {
+            const boton = doc.createElement("button");
+            boton.type = "button";
+            boton.dataset.action = "eliminar-carrito";
+            boton.dataset.productCode = "NO-EXISTE";
+            q("#carrito-items").append(boton);
+
+            clic(boton);
+
+            expect(dobleSwal.llamadas.length).toBe(0);
+            expect(texto("#carrito-mensaje")).toBe("El producto no esta en el carrito.");
+            expect(q("#carrito-mensaje").classList).toContain("text-danger");
+        });
+
+        it("con el carrito abierto, el diálogo se inserta en el Offcanvas y al eliminar el foco queda en el panel", async function () {
+            const panel = await abrirCarrito();
+            const boton = botonEliminar("GUANTES-001");
+
+            await clicYEsperar(boton);
+
+            // Dentro del Offcanvas, la trampa de foco de Bootstrap no le quita el foco al diálogo.
+            expect(ultimaLlamada().target).toBe(panel);
+            expect(boton.isConnected).toBeFalse();
+            expect(doc.activeElement).toBe(panel);
+        }, TIEMPO_CARGA_MS);
+
+        it("con el carrito cerrado, el diálogo se inserta en el body", function () {
+            clic(botonEliminar("GUANTES-001"));
+            expect(ultimaLlamada().target).toBe("body");
+        });
+    });
+
+    describe("punto 2: confirmar el pedido", function () {
+        beforeEach(function () {
+            irAConfirmacion("tarjeta", "6");
+            completarCliente();
+            enviar("#form-pedido");
+        });
+
+        it("muestra el total financiado, el método de pago y las cuotas antes de confirmar", async function () {
+            dobleSwal.respuesta = "pendiente";
+
+            clic(q('[data-action="confirmar-pedido"]'));
+
+            const opciones = ultimaLlamada();
+            expect(opciones.titleText).toBe("¿Confirmar la compra?");
+            expect(opciones.text).toMatch(/Total financiado: \$\s?5\.281,20/);
+            expect(opciones.text).toContain("Método de pago: Tarjeta de credito");
+            expect(opciones.text).toMatch(/Cuotas: 6 de \$\s?880,20/);
+            expect(texto("#resumen-pedido")).not.toContain("Pedido confirmado");
+            expect(win.localStorage.getItem("app:pedidos:secuencia")).toBeNull();
+
+            dobleSwal.responder(true);
+            await esperarDialogo();
+
+            expect(texto("#resumen-pedido")).toMatch(/^Pedido confirmado: FL-\d+-0001/);
+            expect(texto("#contador-carrito")).toBe("0");
+        });
+
+        it("si cancela, el resumen sigue pendiente y no se consume número de pedido", async function () {
+            dobleSwal.respuesta = false;
+
+            await clicYEsperar(q('[data-action="confirmar-pedido"]'));
+
+            expect(q('#resumen-pedido [data-action="confirmar-pedido"]')).not.toBeNull();
+            expect(texto("#resumen-pedido")).not.toContain("Pedido confirmado");
+            expect(texto("#contador-carrito")).toBe("1");
+            expect(win.localStorage.getItem("app:pedidos:secuencia")).toBeNull();
+            expect(win.localStorage.getItem("app:pedidos:historial")).toBeNull();
+
+            // Al confirmar después, el pedido recibe el primer número de la secuencia.
+            dobleSwal.respuesta = true;
+            await clicYEsperar(q('[data-action="confirmar-pedido"]'));
+            expect(texto("#resumen-pedido")).toMatch(/^Pedido confirmado: FL-\d+-0001/);
+        });
+
+        it("no pierde datos: el foco inicial queda en Confirmar y usa el estilo principal", function () {
+            clic(q('[data-action="confirmar-pedido"]'));
+            const opciones = ultimaLlamada();
+
+            expect(opciones.icon).toBe("question");
+            expect(opciones.focusCancel).toBeFalse();
+            expect(opciones.allowEscapeKey).toBeTrue();
+            expect(opciones.customClass.confirmButton).toContain("dialogo-confirmacion__boton--confirmar");
+        });
+
+        it("RC24 - sin resumen pendiente muestra el error actual sin abrir el diálogo", function () {
+            escribir("#pedido-nombre", "Ana María Pérez");   // invalida el resumen
+            const boton = doc.createElement("button");
+            boton.type = "button";
+            boton.dataset.action = "confirmar-pedido";
+            q("#confirmacion").append(boton);
+
+            clic(boton);
+
+            expect(dobleSwal.llamadas.length).toBe(0);
+            expect(texto("#pedido-mensaje")).toBe("Revisa los datos y genera el resumen antes de confirmar.");
+            expect(q("#pedido-mensaje").classList).toContain("text-danger");
+        });
+    });
+
+    describe("punto 3: cancelar el pedido", function () {
+        it("con datos cargados pregunta; si cancela, conserva el formulario y el resumen", async function () {
+            llegarAlResumen();
+            dobleSwal.respuesta = false;
+
+            await clicYEsperar(q('[data-action="cancelar-pedido"]'));
+
+            const opciones = ultimaLlamada();
+            expect(opciones.titleText).toBe("¿Descartar los datos del pedido?");
+            expect(opciones.focusCancel).toBeTrue();
+            expect(opciones.icon).toBe("warning");
+            expect(q("#confirmacion").hidden).toBeFalse();
+            expect(q("#pedido-nombre").value).toBe("Ana Pérez");
+            expect(q('#resumen-pedido [data-action="confirmar-pedido"]')).not.toBeNull();
+        });
+
+        it("con datos cargados, si confirma descarta los datos y conserva carrito y pago", async function () {
+            llegarAlResumen();
+
+            await clicYEsperar(q('[data-action="cancelar-pedido"]'));
+
+            expect(dobleSwal.llamadas.length).toBe(1);
+            expect(q("#confirmacion").hidden).toBeTrue();
+            expect(q("#pedido-nombre").value).toBe("");
+            expect(q("#pago").hidden).toBeFalse();
+            expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+        });
+
+        it("con el formulario vacío no hay datos que perder: cancela sin preguntar", async function () {
+            irAConfirmacion();
+
+            await clicYEsperar(q('[data-action="cancelar-pedido"]'));
+
+            expect(dobleSwal.llamadas.length).toBe(0);
+            expect(q("#confirmacion").hidden).toBeTrue();
+        });
+    });
+
+    describe("seguridad, accesibilidad y fallas de la librería", function () {
+        it("los tres diálogos pasan los textos como texto plano (titleText/text), nunca como HTML", async function () {
+            agregarAlCarrito("GUANTES-001");
+            dobleSwal.respuesta = false;
+            await clicYEsperar(botonEliminar("GUANTES-001"));
+            llegarAlResumen();
+            await clicYEsperar(q('[data-action="confirmar-pedido"]'));
+            await clicYEsperar(q('[data-action="cancelar-pedido"]'));
+
+            expect(dobleSwal.llamadas.length).toBe(3);
+            for (const opciones of dobleSwal.llamadas) {
+                expect(typeof opciones.titleText).toBe("string");
+                expect(typeof opciones.text).toBe("string");
+                expect("title" in opciones).toBeFalse();
+                expect("html" in opciones).toBeFalse();
+            }
+        });
+
+        it("con prefers-reduced-motion desactiva las animaciones de entrada y salida", function () {
+            spyOn(win, "matchMedia").and.callFake((consulta) => ({
+                matches: consulta === "(prefers-reduced-motion: reduce)"
+            }));
+            agregarAlCarrito("GUANTES-001");
+
+            clic(botonEliminar("GUANTES-001"));
+
+            expect(ultimaLlamada().showClass.popup).toBe("");
+            expect(ultimaLlamada().hideClass.popup).toBe("");
+            expect(ultimaLlamada().showClass.icon).toBe("");
+        });
+
+        it("sin prefers-reduced-motion conserva las animaciones de la librería", function () {
+            spyOn(win, "matchMedia").and.returnValue({ matches: false });
+            agregarAlCarrito("GUANTES-001");
+
+            clic(botonEliminar("GUANTES-001"));
+
+            expect(ultimaLlamada().showClass).toBeUndefined();
+            expect(ultimaLlamada().hideClass).toBeUndefined();
+        });
+
+        it("si la librería no cargó, las tres acciones siguen sin confirmación, sin excepciones y con el error en consola", async function () {
+            delete win.Swal;
+            const errores = [];
+            const registrar = (evento) => errores.push(evento.reason ?? evento.message);
+            win.addEventListener("error", registrar);
+            win.addEventListener("unhandledrejection", registrar);
+            try {
+                agregarAlCarrito("GUANTES-001");
+                await clicYEsperar(botonEliminar("GUANTES-001"));
+                expect(cantidadEnCarrito("GUANTES-001")).toBeNull();
+
+                llegarAlResumen();
+                await clicYEsperar(q('[data-action="cancelar-pedido"]'));
+                expect(q("#confirmacion").hidden).toBeTrue();
+
+                llegarAlResumen();
+                await clicYEsperar(q('[data-action="confirmar-pedido"]'));
+                expect(texto("#resumen-pedido")).toMatch(/^Pedido confirmado: FL-\d+-0001/);
+            } finally {
+                win.removeEventListener("error", registrar);
+                win.removeEventListener("unhandledrejection", registrar);
+            }
+
+            expect(errores).toEqual([]);
+            expect(espiaConsoleError).toHaveBeenCalledWith(
+                "SweetAlert2 no está disponible: la acción continúa sin confirmación."
+            );
+            expect(espiaAlert).not.toHaveBeenCalled();
+            expect(espiaConfirm).not.toHaveBeenCalled();
+            expect(espiaPrompt).not.toHaveBeenCalled();
+        });
+
+        it("si Swal.fire() rechaza, registra el error y la acción continúa", async function () {
+            const falla = new Error("falla simulada de la librería");
+            dobleSwal.respuesta = falla;
+            agregarAlCarrito("GUANTES-001");
+
+            await clicYEsperar(botonEliminar("GUANTES-001"));
+
+            expect(cantidadEnCarrito("GUANTES-001")).toBeNull();
+            expect(espiaConsoleError).toHaveBeenCalledWith(jasmine.stringContaining("No se pudo mostrar"), falla);
+        });
+
+        it("si Swal.fire() lanza una excepción, registra el error y la acción continúa", async function () {
+            const falla = new TypeError("opción inválida");
+            dobleSwal.fire = () => { throw falla; };
+            llegarAlResumen();
+
+            await clicYEsperar(q('[data-action="confirmar-pedido"]'));
+
+            expect(texto("#resumen-pedido")).toMatch(/^Pedido confirmado: FL-\d+-0001/);
+            expect(espiaConsoleError).toHaveBeenCalledWith(jasmine.stringContaining("No se pudo mostrar"), falla);
+        });
+
+        it("ServicioDialogos.disponible() detecta si la librería está cargada", async function () {
+            const { ServicioDialogos } = await importarServicioEnLaPagina();
+
+            expect(ServicioDialogos.disponible()).toBeTrue();
+            win.Swal = {};
+            expect(ServicioDialogos.disponible()).toBeFalse();
+            delete win.Swal;
+            expect(ServicioDialogos.disponible()).toBeFalse();
+        });
+
+        it("script.js no usa Swal directamente: pasa por ServicioDialogos", async function () {
+            const codigo = await (await fetch(new URL("../script.js", import.meta.url), { cache: "no-store" })).text();
+
+            expect(codigo).not.toMatch(/\bSwal\b/);
+            expect(codigo).toContain('import { ServicioDialogos } from "./services/ServicioDialogos.js";');
+        });
+    });
+
+    describe("carga por CDN", function () {
+        let pagina;
+
+        beforeEach(async function () {
+            const html = await (await fetch(URL_APP, { cache: "no-store" })).text();
+            pagina = new DOMParser().parseFromString(html, "text/html");
+        });
+
+        it("index.html usa jsDelivr con versión fija, integrity, crossorigin y defer", function () {
+            const hoja = pagina.querySelector('link[href*="sweetalert2"]');
+            const script = pagina.querySelector('script[src*="sweetalert2"]');
+
+            expect(hoja.getAttribute("rel")).toBe("stylesheet");
+            expect(hoja.getAttribute("href")).toBe(`${CDN}sweetalert2.min.css`);
+            expect(hoja.getAttribute("integrity")).toBe(SRI_CSS);
+            expect(hoja.getAttribute("crossorigin")).toBe("anonymous");
+
+            expect(script.getAttribute("src")).toBe(`${CDN}sweetalert2.min.js`);
+            expect(script.getAttribute("integrity")).toBe(SRI_JS);
+            expect(script.getAttribute("crossorigin")).toBe("anonymous");
+            expect(script.hasAttribute("defer")).toBeTrue();
+        });
+
+        it("el CSS de la librería va antes del CSS propio y su script antes de js/script.js", function () {
+            const hojas = Array.from(pagina.querySelectorAll('link[rel="stylesheet"]'))
+                .map((hoja) => hoja.getAttribute("href"));
+            const scripts = Array.from(pagina.querySelectorAll("script[src]"))
+                .map((script) => script.getAttribute("src"));
+
+            expect(hojas.indexOf(`${CDN}sweetalert2.min.css`)).toBeLessThan(hojas.indexOf("css/styles.css"));
+            expect(scripts.indexOf(`${CDN}sweetalert2.min.js`)).toBeLessThan(scripts.indexOf("js/script.js"));
+        });
+
+        it("los hashes SRI coinciden con los archivos del CDN y la página cargó la versión fijada", async function () {
+            let sriCss;
+            let sriJs;
+            try {
+                [sriCss, sriJs] = await Promise.all([
+                    calcularSri(`${CDN}sweetalert2.min.css`),
+                    calcularSri(`${CDN}sweetalert2.min.js`)
+                ]);
+            } catch {
+                pending("No se pudo descargar la librería del CDN (¿sin conexión?).");
+            }
+
+            expect(sriCss).toBe(SRI_CSS);
+            expect(sriJs).toBe(SRI_JS);
+            // Si el hash no coincidiera, el navegador bloquearía el script y Swal no existiría.
+            expect(swalReal).not.toBeNull();
+            expect(swalReal.version).toBe(VERSION);
+        }, TIEMPO_CARGA_MS);
+    });
+
+    describe("con la librería real", function () {
+        it("muestra los textos como texto plano y aplica las clases y colores del sitio", async function () {
+            usarSwalReal();
+            const { ServicioDialogos } = await importarServicioEnLaPagina();
+            const malicioso = '<img src="x" onerror="window.__inyectado = true">Pala';
+
+            const respuesta = ServicioDialogos.confirmar({
+                titulo: `¿Eliminar ${malicioso}?`,
+                texto: malicioso,
+                peligroso: true
+            });
+            await esperarHasta(() => q(".swal2-popup.dialogo-confirmacion"));
+
+            expect(q(".swal2-title").textContent).toBe(`¿Eliminar ${malicioso}?`);
+            expect(q(".swal2-html-container").textContent).toBe(malicioso);
+            expect(q(".swal2-title img, .swal2-html-container img")).toBeNull();
+
+            const confirmar = q(".swal2-confirm");
+            expect(confirmar.classList).toContain("dialogo-confirmacion__boton--peligro");
+            expect(confirmar.classList).not.toContain("swal2-styled");
+            expect(win.getComputedStyle(confirmar).backgroundColor).toBe("rgb(179, 38, 30)");   // --color-danger
+
+            q(".swal2-cancel").click();
+            expect(await respuesta).toBeFalse();
+            expect(win.__inyectado).toBeUndefined();
+        }, TIEMPO_CARGA_MS);
+
+        it("desde el carrito abierto: foco en Cancelar, Esc cierra solo el diálogo y el foco vuelve al botón", async function () {
+            usarSwalReal();
+            agregarAlCarrito("GUANTES-001");
+            const panel = await abrirCarrito();
+            const boton = botonEliminar("GUANTES-001");
+
+            clic(boton);
+            await esperarHasta(() => doc.activeElement?.classList.contains("swal2-cancel"));
+
+            const popup = q(".swal2-popup");
+            expect(panel.contains(popup)).toBeTrue();
+            expect(popup.getAttribute("role")).toBe("dialog");
+            expect(popup.getAttribute("aria-modal")).toBe("true");
+
+            doc.activeElement.dispatchEvent(
+                new win.KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true })
+            );
+            await esperarHasta(() => !q(".swal2-container") && doc.activeElement === boton);
+
+            expect(panel.classList.contains("show")).toBeTrue();
+            expect(panel.classList.contains("hiding")).toBeFalse();
+            expect(cantidadEnCarrito("GUANTES-001")).toBe("1");
+            expect(doc.activeElement).toBe(boton);
+        }, TIEMPO_CARGA_MS);
     });
 });
