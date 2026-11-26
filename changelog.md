@@ -9,10 +9,6 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 - [feature/tester-qa-js-testing-suite] [Segundo Parcial] Tester QA/JS - Ejecución y documentación Lighthouse Baseline (TC-11) - PR: [#215](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/215) - Issue: [#212](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/212) - Issue: [#213](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/213) - Issue: [#214](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/214) - @LuchoBarrionuevo13 (Tester QA/JS - Testing Avanzado)
 - [feature/tester-qa-js-testing-suite] [Segundo Parcial] SPEC inicial - Tester QA/JS - Testing Avanzado - PR: [#208](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/208) - Issue: [#207](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/207) - @LuchoBarrionuevo13 (Tester QA/JS - Testing Avanzado)
 
-### Changed
-
-- [feature/tester-qa-js-testing-suite] [Segundo Parcial] Revisión de PR [#215](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/215): RC01 corregido (Issues #212, #213 y #214 documentadas como creadas y abiertas); RC02 corregido documentalmente, pendiente de revisión; RC03 permanece abierto por indicación del Coordinador/DevOps hasta que Alan y Thiago suban Fetch y SweetAlert2. Las Issues siguen sin responsables asignados y pendientes de resolución y verificación.
-
 ## [Release Actividad Obligatoria N°4] - 2026-11-22
 
 ### Added
