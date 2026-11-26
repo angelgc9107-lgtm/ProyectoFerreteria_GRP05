@@ -378,7 +378,8 @@ _Esta sección se completa **después** de terminar el código, con el contenido
 
 ## 3. Issues respondidas y su resolución
 
-- **#210** (spec del rol): resuelta con la PR #211 (spec). Esta implementación la cumple con la PR #<NÚMERO>. _<completar: respuesta en la issue y número de PR>_
+- **#210** (spec del rol): resuelta con la PR #211 (spec). Esta implementación se entrega en la PR #217. Completar aquí la respuesta y resolución registrada en la issue #210.
+
 - **Comentarios de revisión de la PR #211** (3 + 2 + 1 de Angel y 3 de la revisión con IA): resueltos en el spec antes del merge.
 - **Pendiente de otros roles:** `api.spec.js` y `library.spec.js` (Tester QA/JS); avisarle de los cambios en `script.spec.js` (descritos en la PR).
 

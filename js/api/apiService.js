@@ -151,7 +151,8 @@ export async function obtenerJson(url, opciones = {}) {
         try {
             return await pedirUnaVez(url, tiempoLimiteMs, fetchFn);
         } catch (error) {
-            const pasajero = error.tipo === "red" || (error.tipo === "http" && error.estado >= 500);
+            const pasajero = error.tipo === "red" ||
+                (error.tipo === "http" && error.estado >= 500 && error.estado < 600);
             if (!pasajero || intento >= reintentos) throw error;
 
             try {
