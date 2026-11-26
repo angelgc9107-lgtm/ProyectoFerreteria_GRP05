@@ -225,6 +225,11 @@ La auditoría TC-11 — Lighthouse Baseline se ejecutó manualmente mediante
 Chrome DevTools el 26/11/2026 a las 13:37 GMT-3. Performance y Best Practices
 no alcanzaron el umbral mínimo de 95 puntos.
 
+Commit de referencia del Baseline, verificado en el historial del repositorio:
+[`0aec81a3d836968ee2e585fcddf4fa03418e659e`](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/commit/0aec81a3d836968ee2e585fcddf4fa03418e659e).
+Los detalles de configuración y las condiciones no recuperables están
+documentados en [TC-11](../../04-testing/test-case-11-lighthouse-baseline.md).
+
 | Categoría | Resultado |
 |---|---:|
 | Performance | 92 |
@@ -256,9 +261,20 @@ Evidencias: [12 capturas de TC-11](../../04-testing/screenshots/tc-11/).
 | [#213](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/213) | Desplazamientos visuales durante la carga (CLS) | Pendiente de asignación | Abierta |
 | [#214](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/214) | Best Practices y cookies de terceros de Google Maps | Pendiente de asignación | Abierta |
 
-Los hallazgos corresponden al Baseline, previo a la incorporación de Fetch y
-SweetAlert2. El coordinador todavía debe definir a quién asignar cada Issue;
-su resolución y verificación siguen pendientes.
+Las tres Issues corresponden a problemas detectados durante el Baseline,
+previo a la incorporación de Fetch y SweetAlert2. Permanecen abiertas y sin
+responsables asignados; el Coordinador/DevOps definirá las asignaciones
+posteriormente. Por indicación expresa del coordinador, RC03 permanece abierto
+hasta que Alan y Thiago suban sus respectivas implementaciones de Fetch y
+SweetAlert2. La resolución y verificación de los problemas siguen pendientes.
+
+Para actualizar manualmente las Issues, usar como referencias el [commit del
+Baseline](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/commit/0aec81a3d836968ee2e585fcddf4fa03418e659e),
+el [TC-11](../../04-testing/test-case-11-lighthouse-baseline.md) y las
+[12 capturas](../../04-testing/screenshots/tc-11/). En #212, la tarea
+“Implementar las mejoras correspondientes” aparece marcada como completada,
+pero no se hicieron correcciones funcionales; debe desmarcarse manualmente en
+GitHub. No se modificaron las Issues desde esta documentación.
 
 ### Ajustes manuales a las pruebas generadas mediante IA
 
@@ -273,3 +289,4 @@ su resolución y verificación siguen pendientes.
   auditorías.
 - Ajustes manuales a las pruebas generadas mediante IA.
 - Asignación, resolución y verificación de las Issues #212, #213 y #214.
+- Mantener RC03 abierto hasta que Alan y Thiago suban Fetch y SweetAlert2.

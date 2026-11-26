@@ -23,10 +23,17 @@
 TC-11 se ejecutó manualmente el 26/11/2026 a las 13:37 GMT-3. Resultados:
 Performance 92, Accessibility 100, Best Practices 77 y SEO 100. Performance y
 Best Practices no alcanzaron el umbral ≥95. Las cinco métricas, hallazgos,
-recomendaciones, limitaciones de verificación de URL/checkout y 12 capturas
+recomendaciones, limitaciones de reproducibilidad/comparabilidad y 12 capturas
 están documentados en [test-case-11-lighthouse-baseline.md](test-case-11-lighthouse-baseline.md).
-Se prepararon tres borradores de Issues; no se crearon Issues. TC-12 y TC-13
-siguen pendientes.
+El commit de referencia del Baseline es
+[`0aec81a3d836968ee2e585fcddf4fa03418e659e`](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/commit/0aec81a3d836968ee2e585fcddf4fa03418e659e).
+Las Issues [#212](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/212),
+[#213](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/213)
+y [#214](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/214)
+fueron creadas y permanecen abiertas, sin responsables asignados; la resolución
+y verificación siguen pendientes. RC03 permanece abierto por indicación del
+Coordinador/DevOps hasta que Alan y Thiago suban sus implementaciones de Fetch
+y SweetAlert2. TC-12 y TC-13 siguen pendientes.
 
 ## Resumen de Issues — Momento 1 (Testing pre-merge)
 

@@ -17,7 +17,7 @@ una de las cuatro categorías.
 |---|---|
 | Fecha y hora | 26/11/2026, 13:37 GMT-3 |
 | URL de la primera ejecución | `http://127.0.0.1:8000/` (referencia local verificada previamente; las capturas no muestran la barra de direcciones, por lo que el host exacto usado durante la auditoría no se puede confirmar solo con esta evidencia) |
-| Rama / commit de referencia | `develop` — `0aec81a3d836968ee2e585fcddf4fa03418e659e`. Al documentar, `develop` y `feature/tester-qa-js-testing-suite` apuntan al mismo commit; las capturas no contienen SHA ni nombre de rama. |
+| Rama / commit de referencia | `develop` — [`0aec81a3d836968ee2e585fcddf4fa03418e659e`](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/commit/0aec81a3d836968ee2e585fcddf4fa03418e659e), verificado en el historial del repositorio. La captura no contiene SHA ni nombre de rama. |
 | Lighthouse | 13.5.0 |
 | Chromium informado | 158.0.0.0 |
 | Servidor local | `npx http-server -p 8000`, versión 14.1.1 (según los datos de ejecución aportados) |
@@ -37,19 +37,33 @@ contiene el SHA del informe.
 | Dispositivo | Desktop emulado |
 | Categorías | Performance, Accessibility, Best Practices y SEO |
 | Throttling | Custom throttling |
+| Carga | Initial page load |
 | Sesión | Single page session |
 
-Para auditorías posteriores, registrar los valores concretos incluidos en
-Custom throttling. Mantener el mismo modo, dispositivo, sesión y configuración
-cuando sea posible; documentar cambios de versión o entorno como limitaciones
-de comparabilidad.
+La captura `12-lighthouse-execution-conditions.png` muestra la fecha y hora,
+Lighthouse 13.5.0, Chromium 158.0.0.0, Desktop emulado, Navigation/Initial
+page load, Custom throttling y Single page session. No muestra los valores
+concretos del throttling (por ejemplo, latencia, throughput o CPU), ni las
+condiciones de red detalladas ni el estado/configuración de caché. Esos datos
+no fueron registrados en las capturas ni en los demás registros disponibles,
+por lo que no pueden recuperarse con certeza. No se atribuyen valores de
+configuración actuales a esta auditoría.
 
-### URL de referencia para próximas auditorías
+### Servidores y comparabilidad
 
-Utilizar `http://127.0.0.1:5500/index.html`, servido mediante Live Server de
-Visual Studio Code. Esta es la dirección de referencia para auditorías futuras;
-no reemplaza ni se atribuye retroactivamente a la primera ejecución, cuyo
-servidor registrado fue `npx http-server -p 8000` (versión 14.1.1).
+- **Baseline:** `npx http-server -p 8000`, versión 14.1.1. La URL local
+  documentada es `http://127.0.0.1:8000/`; la captura no muestra la barra de
+  direcciones, así que no confirma por sí sola el host exacto.
+- **Referencia propuesta para próximas auditorías:** Live Server de Visual
+  Studio Code en `http://127.0.0.1:5500/index.html`. No se atribuye esta URL a
+  la ejecución del Baseline.
+
+El cambio de servidor puede producir diferencias en políticas de caché,
+cabeceras HTTP, tiempos de respuesta y carga de recursos, con efecto potencial
+en métricas y puntuaciones de Performance. Para TC-12 y TC-13, priorizar
+condiciones equivalentes a las del Baseline; si se utiliza Live Server u otro
+servidor, registrar expresamente esa diferencia como limitación de
+comparabilidad.
 
 ## Resultados
 
@@ -120,17 +134,19 @@ consultar detalles ampliados.
   de solicitudes de red, controles de seguridad u otras advertencias del
   navegador; en la evidencia adjunta, el issue visible está vinculado a Maps.
 
-## Issues a preparar (no creadas)
+## Issues registradas
 
-Los siguientes borradores quedan para revisión y creación manual. No se
-crearon Issues ni se corrigió el código funcional.
+Las tres Issues fueron creadas y permanecen abiertas. Ninguna tiene responsable
+asignado; el Coordinador/DevOps definirá las asignaciones. No se corrigió el
+código funcional.
 
-### Issue propuesta — Performance bajo el umbral y optimizaciones de recursos
+### [#212 — Performance inferior al umbral mínimo](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/212)
 
-- **Responsable sugerido:** Desarrollador Frontend / Bootstrap, coordinando con
-  el responsable de los recursos que resulten afectados.
+- **Estado:** Abierta.
+- **Responsable:** Pendiente de asignación por el Coordinador/DevOps.
 - **Contexto:** TC-11, Lighthouse 13.5.0, Navigation, Desktop emulado, Custom
-  throttling, commit de referencia `0aec81a3d836968ee2e585fcddf4fa03418e659e`.
+  throttling, commit de referencia
+  [`0aec81a3d836968ee2e585fcddf4fa03418e659e`](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/commit/0aec81a3d836968ee2e585fcddf4fa03418e659e).
 - **Pasos para reproducir:** servir la página principal en el puerto 8000;
   ejecutar Lighthouse con la configuración de este caso.
 - **Esperado:** Performance ≥95, según el umbral del SPEC.
@@ -143,9 +159,10 @@ crearon Issues ni se corrigió el código funcional.
 - **Evidencia:** `01-lighthouse-scores.png`, `02-performance-metrics.png`,
   `03-performance-insights.png` y `04-performance-diagnostics.png`.
 
-### Issue propuesta — CLS y causas de desplazamiento de layout
+### [#213 — Desplazamientos visuales durante la carga (CLS)](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/213)
 
-- **Responsable sugerido:** Desarrollador Frontend / Bootstrap.
+- **Estado:** Abierta.
+- **Responsable:** Pendiente de asignación por el Coordinador/DevOps.
 - **Contexto:** TC-11, mismo entorno y commit de referencia.
 - **Pasos para reproducir:** ejecutar la navegación Lighthouse según la
   configuración de este caso y revisar la métrica CLS y el insight **Layout
@@ -156,11 +173,10 @@ crearon Issues ni se corrigió el código funcional.
 - **Obtenido:** CLS 0.148; Lighthouse lista **Layout shift culprits**.
 - **Evidencia:** `02-performance-metrics.png` y `03-performance-insights.png`.
 
-### Issue propuesta — Best Practices y cookies de terceros de Google Maps
+### [#214 — Best Practices y cookies de terceros de Google Maps](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/214)
 
-- **Responsable sugerido:** Desarrollador Frontend / Bootstrap responsable de
-  la integración del embed de Google Maps; coordinar cualquier restricción
-  externa con Coordinador/DevOps.
+- **Estado:** Abierta.
+- **Responsable:** Pendiente de asignación por el Coordinador/DevOps.
 - **Contexto:** TC-11, mismo entorno y commit de referencia.
 - **Pasos para reproducir:** ejecutar Lighthouse y abrir los dos hallazgos de
   Best Practices; revisar el issue Cookie en Chrome DevTools.
@@ -171,6 +187,21 @@ crearon Issues ni se corrigió el código funcional.
   registra un issue de tipo Cookie asociado a solicitudes de Google Maps.
 - **Evidencia:** `06-best-practices.png` y
   `08-google-maps-cookies-1.png`–`11-google-maps-devtools-issue.png`.
+
+### Trazabilidad para actualizar manualmente las Issues
+
+- **Commit de referencia:** [`0aec81a3d836968ee2e585fcddf4fa03418e659e`](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/commit/0aec81a3d836968ee2e585fcddf4fa03418e659e).
+- **Documentación:** este [TC-11 — Lighthouse Baseline](./test-case-11-lighthouse-baseline.md).
+- **Evidencias:** [directorio de capturas de TC-11](./screenshots/tc-11/).
+- **Capturas por Issue:** #212 — `01-lighthouse-scores.png` a
+  `04-performance-diagnostics.png`; #213 — `02-performance-metrics.png` y
+  `03-performance-insights.png`; #214 — `06-best-practices.png` y
+  `08-google-maps-cookies-1.png` a `11-google-maps-devtools-issue.png`.
+
+En la Issue #212, la tarea “Implementar las mejoras correspondientes” figura
+marcada como completada, pero no se realizaron correcciones funcionales. Se
+debe desmarcar manualmente en GitHub. No se modificaron las Issues desde esta
+actualización documental.
 
 ## Evidencias
 
@@ -199,10 +230,10 @@ alcanzaron el umbral mínimo (100 cada una); Performance (92) y Best Practices
 criterios de aceptación**. FCP (0.5 s), LCP (1.1 s), TBT (0 ms), CLS (0.148) y
 Speed Index (0.5 s) quedan registrados como valores originales.
 
-Las recomendaciones de Lighthouse y el issue de cookies se atribuyen a Google
-Maps solo en el alcance respaldado por las capturas y la indicación del Tester.
-Las propuestas de Issues quedan pendientes de revisión y creación manual. El
-host exacto de la URL y el checkout de la ejecución no aparecen en las
-capturas; se documentan aparte los datos locales verificables, sin afirmar que
-la evidencia visual los demuestre. TC-12, TC-13 y el AT CLOSE definitivo no se
-realizaron.
+Las Issues #212, #213 y #214 están creadas y abiertas, con asignación pendiente;
+la resolución y verificación de los problemas siguen pendientes. Los hallazgos
+son del Baseline previo a Fetch y SweetAlert2. Por indicación del
+Coordinador/DevOps, RC03 permanece abierto hasta que Alan y Thiago suban sus
+respectivas implementaciones; esto no resuelve ni cierra las Issues. El host
+exacto y el checkout de la ejecución no aparecen en las capturas. TC-12,
+TC-13 y el AT CLOSE definitivo no se realizaron.
