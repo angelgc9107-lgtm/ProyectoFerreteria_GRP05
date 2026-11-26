@@ -132,7 +132,7 @@ _Esta sección se completa **después** de integrar la librería, con el conteni
 
 ## 1. Prompt exacto utilizado
 
-**Herramienta:** Claude Code (Anthropic), en una sesión nueva dentro de VS Code, sobre la rama `feature/dev-libreria-externa-sweetalert2` con el spec BEFORE ya commiteado. El prompt se redactó con ayuda de Claude (claude.ai) a partir de este spec. Captura: `docs/02-prompts/images/<captura-del-prompt>.png`.
+**Herramienta:** Claude Code (Anthropic), en una sesión nueva dentro de VS Code, sobre la rama `feature/dev-libreria-externa-sweetalert2` con el spec BEFORE ya commiteado. El prompt se redactó con ayuda de Claude (claude.ai) a partir de este spec. Registro completo en [`docs/02-prompts/prompts-12.md`](../../02-prompts/prompts-12.md), con la captura `docs/02-prompts/images/prompt-12-DesarrolladorJSLibreriasExternas.png`.
 
 ```text
 Actuá como un desarrollador senior de JavaScript (ES6, módulos, sin frameworks) y especialista en accesibilidad.
