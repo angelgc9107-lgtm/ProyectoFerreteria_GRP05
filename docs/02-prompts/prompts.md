@@ -10,3 +10,4 @@
 - [Prompt 8 — Reconstrucción aproximada de los prompts de las suites (Tester QA): NO son los originales, que se perdieron](./prompts-8.md)
 - [Prompt 9 — Generación de spec-dev-async-fetch.md (Desarrollador JS Asíncrono)](./prompts-9.md)
 - [Prompt 10 — Correcciones de la revisión del spec (Desarrollador JS Asíncrono)](./prompts-10.md)
+- [Prompt 11 — Casos de QA de validación y sanitización del spec (Desarrollador JS Asíncrono)](./prompts-11.md)

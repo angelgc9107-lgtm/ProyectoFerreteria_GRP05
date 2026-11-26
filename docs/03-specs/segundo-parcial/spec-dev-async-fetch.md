@@ -73,7 +73,7 @@ Funciones puras en `js/services/ProcesadorCatalogo.js` (sin DOM, sin `fetch`, si
 
 | Función | Usa | Colección que procesa | Para qué |
 |---|---|---|---|
-| `filtrarValidos(datos)` | `filter` + `map` | `productos` del JSON | Descarta registros que no cumplen las reglas de `Producto` (campos vacíos, precio no numérico o negativo, código repetido) y devuelve `{ validos, descartados }`. |
+| `filtrarValidos(datos)` | `filter` + `map` | `productos` del JSON | Descarta registros que no cumplen las reglas de `Producto` (campos vacíos, tipos incorrectos, precio no numérico o negativo, código repetido sin distinguir mayúsculas ni espacios exteriores) y devuelve `{ validos, descartados }`. |
 | `construirProductos(datos)` | `map` | Registros válidos | Convierte cada registro en una instancia de `Producto` (integración POO). |
 | `resumirCatalogo(productos)` | `reduce` | Instancias de `Producto` | Calcula en una sola pasada: cantidad total, cantidad por categoría, precio mínimo y precio máximo. |
 | `agruparPorCategoria(productos)` | `reduce` | Instancias de `Producto` | Devuelve un objeto categoría → productos, para el resumen. |
@@ -206,10 +206,23 @@ Orden de respaldo cuando la carga remota falla: **caché** (`FachadaStorage.carg
 
 ### 4.3 Validación y sanitización de lo que llega de la API
 
-- Se valida que la respuesta sea un objeto con un arreglo `productos`.
-- Cada registro se valida creando un `Producto` dentro de `try/catch` (reglas del modelo: textos no vacíos, precio numérico, finito y no negativo); se aplica `trim()` a los textos, como ya hace el modelo.
-- Los campos de texto se insertan en el DOM con `textContent`, nunca con `innerHTML`, para que un texto con etiquetas o scripts llegue como texto plano.
-- Códigos repetidos: se conserva el primero y se descarta el resto.
+Reglas que aplica `filtrarValidos` (y que `Producto` y `Catalogo` ya exigen). Cada registro descartado queda en `descartados` con su motivo, y `filtrarValidos` **nunca lanza**.
+
+| Regla | Detalle | Motivo registrado |
+|---|---|---|
+| La respuesta es un objeto con un arreglo `productos` | Si no, `ErrorApi` de tipo `formato` (sección 4.2) | — |
+| Cada registro es un objeto | `null`, números, textos y arreglos se descartan | «el registro no es un objeto» |
+| Tipos correctos | `codigo`, `nombre`, `categoria` y `descripcion` deben ser texto; `precio` debe ser un número (un texto como `"4401"` **no** se convierte) | «campo inválido: *campo*» |
+| Campos no vacíos | Un texto vacío o solo con espacios se descarta | «campo vacío: *campo*» |
+| `trim()` en los textos | Se quitan los espacios al inicio y al final (lo hace `Producto`, que guarda los valores ya recortados) | — |
+| Precio válido | Finito y mayor o igual a 0 (`NaN`, `Infinity`, `null`, `undefined` y negativos se descartan; el 0 es válido, como en el modelo) | «precio inválido» |
+| Códigos únicos | Se comparan **sin distinguir mayúsculas y con `trim()`**, con la misma regla (`normalizarCodigo`) que usa `Catalogo`, que lanza `RangeError` si hay repetidos. Se conserva el primero y se descartan los siguientes | «código repetido» |
+
+La validación de duplicados se hace **antes** de armar el `Catalogo`; así un archivo con códigos repetidos nunca llega a lanzar el `RangeError` del constructor.
+
+**Renderizado seguro con `textContent`:**
+- Todo texto que viene de la API (nombre, categoría, descripción, mensajes) se inserta en el DOM con `textContent`; no se usa `innerHTML` ni `insertAdjacentHTML` con datos de la API. Así, un texto como `<img src=x onerror=...>` o `<script>...</script>` se muestra como texto literal y no se ejecuta.
+- Esta regla **ya se cumple** en el código actual: `renderizarCatalogo` arma las tarjetas con `textContent` (categoría, nombre y descripción) y `script.js` no usa `innerHTML`. El rol solo debe mantenerla en lo nuevo (estados de carga, resumen y mensajes de descarte).
 
 ## 5. Integración con la arquitectura existente
 
@@ -273,6 +286,20 @@ Cada caso indica la **función bajo prueba**, porque no todas se comportan igual
 | C3 | `script.js` (DOM) | Carga con `origen: "cache"` o `"local"` | Mensaje `error` como advertencia y botón «Reintentar»; **el catálogo está disponible**: tarjetas renderizadas, controles habilitados y los cuatro flujos operativos |
 | C4 | `script.js` (DOM) | Mientras carga y al pulsar «Reintentar» | Estado `loading` con controles deshabilitados; «Reintentar» vuelve a cargar y no inicia un segundo pedido si ya hay uno en curso |
 
+**D. Validación y sanitización (casos de QA ampliados)**
+
+| # | Función bajo prueba | Caso | Resultado esperado |
+|---|---|---|---|
+| D1 | `filtrarValidos` | **Códigos duplicados**: dos registros con el mismo código | Conserva el primero; el segundo queda en `descartados` con el motivo «código repetido»; no lanza |
+| D2 | `filtrarValidos` | Duplicado con otra capitalización o con espacios (`"GUANTES-001"` y `" guantes-001 "`) | Se trata como duplicado (misma regla que `Catalogo`); el catálogo armado con los válidos no lanza `RangeError` |
+| D3 | `construirProductos` | **`trim()`**: espacios al inicio y al final en código, nombre, categoría y descripción | Los `Producto` guardan los valores sin espacios |
+| D4 | `filtrarValidos` | Texto vacío o solo con espacios en cualquier campo | Se descarta, con motivo «campo vacío» |
+| D5 | `filtrarValidos` | **Tipos incorrectos** en los textos: número, `null`, objeto o arreglo en `codigo`, `nombre`, `categoria` o `descripcion` | Se descarta, con motivo «campo inválido» |
+| D6 | `filtrarValidos` | **Tipos incorrectos** en `precio`: `"4401"` (texto), `null`, `undefined`, `NaN`, `Infinity` y negativos | Se descartan, con motivo «precio inválido»; el precio `0` es válido |
+| D7 | `filtrarValidos` | Elementos que no son objetos (`null`, números, textos, arreglos) | Se descartan, con motivo «el registro no es un objeto»; no lanza |
+| D8 | `script.js` (DOM) | **Renderizado seguro**: nombre o descripción con `<img src=x onerror=...>` o `<script>...</script>` | En `#resultados-catalogo` se ve el texto literal; no aparece ningún `<img>` ni `<script>` creado desde los datos y no se ejecuta ningún código (se verifica con una bandera global que el contenido intentaría modificar) |
+| D9 | `cargarCatalogo` | Archivo que mezcla los casos D1 a D7 con registros válidos | `origen: "red"`; `descartados` con un elemento por cada registro inválido y sus motivos; el catálogo se arma sin lanzar y solo con los válidos |
+
 ### 6.2 Matriz mínima de los cuatro flujos
 
 Los cuatro flujos son los de `docs/05-diagramas/01-diagrama-de-actividades/diagramas-doc.md`. Cada fila indica qué debe seguir pasando **después** de pasar el catálogo a carga asíncrona. La columna final es el único comportamiento nuevo; el resto es el comportamiento actual de `script.js`, que no debe cambiar.
@@ -317,6 +344,7 @@ Los tres Test Cases de Lighthouse (baseline, post-fetch y post-librería) son re
 - [ ] Datos validados y sanitizados; el contenido de la API se inserta con `textContent`.
 - [ ] Datos integrados al DOM dinámicamente y guardados con `FachadaStorage`.
 - [ ] Casos de test coordinados con el Tester QA/JS (sección 6).
+- [ ] Casos de QA de validación y sanitización (códigos duplicados, `trim()`, tipos incorrectos y renderizado seguro con `textContent`) definidos en 6.1 D y coordinados con el Tester QA/JS.
 - [ ] Comportamientos de los cuatro flujos preservados (sección 6.3), con sus casos específicos definidos junto al Tester QA/JS.
 - [ ] Issues respondidas, PR a `develop` revisada por el Coordinador/DevOps y línea en `changelog.md` con link a la PR y a la issue.
 
