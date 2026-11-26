@@ -4,8 +4,6 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 ## [Unreleased]
 
-## [Release Actividad Obligatoria N°4] - 2026-11-22
-
 ### Added
 
 - [feature/tester-qa-js-testing-suite] [Segundo Parcial] SPEC inicial - Tester QA/JS - Testing Avanzado - PR: [#208](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/208) - Issue: [#207](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/207) - @LuchoBarrionuevo13 (Tester QA/JS - Testing Avanzado)
