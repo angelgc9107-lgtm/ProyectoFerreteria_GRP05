@@ -73,10 +73,10 @@ Que un catálogo parcialmente válido (por ejemplo, con `AMOLADORA-001` descarta
 - **No verificado:** origen local con catálogo parcial (el catálogo local siempre trae los tres productos promocionados), otros navegadores, Lighthouse y cobertura.
 
 ## Correcciones manuales
-<completar: ajustes que hiciste antes de commitear; si no hay, escribir "ninguna">
+ninguna
 
 ## Captura
-<PEGAR captura del chat con este mensaje y la respuesta, con la fecha visible>
+![Resultado](./images/prompt-15-DesarrolladorJSasincronico.png)
 
 ## Aplicación
 Rama `feature/dev-async-fetch-api-implementacion`: commit de corrección de RC03 y commit de este registro.

@@ -107,10 +107,11 @@ Corregir lo que corresponde a mi rol de la issue de Lighthouse: el CLS causado p
 - **No verificado:** el puntaje de Performance de Lighthouse (no se corrió; el CDN no es accesible desde el entorno y no se instaló Lighthouse), el efecto de las propuestas, otros navegadores y la cobertura.
 
 ## Correcciones manuales
-<completar: ajustes que hiciste antes de commitear; si no hay, escribir "ninguna">
+ninguna
 
 ## Captura
-<PEGAR captura del chat con este mensaje y la respuesta, con la fecha visible>
+![Resultado](./images/prompt-16-DesarrolladorJSasincronico.png)
 
+![Resultado](./images/prompt-16-DesarrolladorJSasincronico-2.png)
 ## Aplicación
 Rama `fix/lighthouse-rendimiento-fetch` → `develop`: commits de CLS en tablet, de imágenes (LCP, dimensiones, carga diferida) y de documentación.

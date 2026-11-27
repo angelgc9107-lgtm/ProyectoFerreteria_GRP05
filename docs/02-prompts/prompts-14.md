@@ -109,7 +109,7 @@ const pasajero = error.tipo === "red" ||
 - Carga real en Chromium: 9 tarjetas renderizadas, origen `red`, estado accesible `aria-busy="false"` y sin errores de consola.
 - Suites Jasmine existentes en Chromium: **441 specs, 0 fallos**.
 - Los escenarios de Lighthouse, 404/500, red caída y fallbacks no se ejecutaron de forma independiente en esta revisión.
-```
+
 
 **20:51**
 ```
@@ -151,10 +151,10 @@ Los dos hallazgos de la code review resueltos: el cierre documental (AT CLOSE) c
 - Nada del resto del spec cambia por la corrección.
 
 ## Correcciones manuales
-<completar: ajustes que hiciste antes de commitear; si no hay, escribir "ninguna">
+ninguna
 
 ## Captura
-<PEGAR captura del chat con este mensaje y la respuesta, con la fecha visible>
+![Resultado](./images/prompt-15-DesarrolladorJSasincronico.png)
 
 ## Aplicación
 Rama `feature/dev-async-fetch-api-implementacion`: commit de corrección de código (RC02) y commit de documentación (RC01 y este registro).
