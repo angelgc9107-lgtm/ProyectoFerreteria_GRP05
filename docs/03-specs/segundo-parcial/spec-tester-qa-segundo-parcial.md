@@ -171,7 +171,7 @@ la corrección con el responsable.
       a las 13:06 GMT-3, antes de la ejecución de TC-11 a las 13:37 GMT-3.
 - [x] `api.spec.js` verifica éxito, error HTTP, error de red y procesamiento
       con `map`, `filter` y `reduce`; incluye DOM si corresponde.
-- [ ] `library.spec.js` verifica inicialización, configuración, funcionalidad
+- [x] `library.spec.js` verifica inicialización, configuración, funcionalidad
       principal, errores e interacción con el sistema según la librería elegida.
 - [ ] Los nuevos specs se ejecutan en el runner Jasmine; la suite existente
       sigue pasando y `script.spec.js` y `models.spec.js` se actualizan si
@@ -204,7 +204,8 @@ la corrección con el responsable.
 ## AT CLOSE — Se completa al cerrar la tarea (evidencia)
 
 > AT CLOSE parcialmente actualizado: se documentan TC-11, las pruebas
-> funcionales Fetch/API y TC-12, además del estado de las Issues asociadas.
+> funcionales Fetch/API y SweetAlert2, y TC-12, además del estado de las Issues
+> asociadas.
 > No representa el cierre definitivo; los demás apartados permanecen pendientes.
 
 ### Prompt exacto y contexto
@@ -536,9 +537,186 @@ No se redactó ni utilizó un prompt independiente adicional.
 - PR #217 está disponible y es ancestro de la rama activa: merge `ca9458f29d283e010c3fd2cafb5d931e3e70b1bb`. Se probó sobre `feature/tester-qa-js-testing-suite`, HEAD `5d6ba92`, con los cambios de QA de esta tarea.
 - GitHub Copilot Agent Mode: **no utilizado**; el trabajo se realizó en Copilot SDK en VS Code, sin invocar Agent Mode.
 
+### Prompt exacto de pruebas SweetAlert2
+
+```text
+Vamos a continuar con las tareas del rol Tester QA/JS - Testing Avanzado del Segundo Parcial de FerroLab.
+
+Las PR #220 y #221 ya fueron integradas en develop.
+
+En esta etapa debemos realizar las pruebas funcionales correspondientes a la implementación de SweetAlert2 realizada por el Desarrollador JS de Librerías Externas.
+
+Antes de comenzar:
+
+1. Verificar que estamos trabajando sobre feature/tester-qa-js-testing-suite.
+2. Verificar que la rama está actualizada respecto de develop.
+3. Leer las consignas del Segundo Parcial disponibles en el proyecto.
+4. Leer el plan y el SPEC aprobado del Tester QA/JS.
+5. Leer el SPEC del Desarrollador JS de Librerías Externas.
+6. Identificar las PR y commits correspondientes a la implementación de SweetAlert2 y a la corrección de Google Maps de la PR #221.
+7. Analizar los archivos funcionales involucrados.
+8. Revisar las pruebas existentes y el runner general de Jasmine.
+
+IMPLEMENTACIÓN DE PRUEBAS
+
+Crear el archivo js/test/library.spec.js, respetando la planificación del SPEC aprobado.
+
+Las pruebas deben cubrir:
+
+- Inicialización de SweetAlert2.
+- Configuración de la librería.
+- Funcionalidades principales.
+- Confirmación y cancelación de operaciones.
+- Manejo de errores.
+- Integración con el sistema.
+- Comportamiento del DOM.
+- Accesibilidad, navegación mediante teclado y gestión del foco.
+- Casos límite que correspondan a la implementación real.
+
+Revisar las 27 pruebas existentes relacionadas con SweetAlert2 dentro de script.spec.js.
+
+Evaluar cuáles corresponde trasladar a library.spec.js y cuáles deben mantenerse como pruebas de integración del controlador.
+
+Evitar duplicaciones innecesarias y conservar la cobertura existente.
+
+No eliminar pruebas sin justificarlo.
+
+INVESTIGACIÓN DE FALLO ANTERIOR
+
+Durante la etapa de testing de Fetch se detectó un fallo en una ejecución manual de Jasmine:
+
+- Seed: 61496.
+- Resultado: 489/490 pruebas aprobadas.
+- Archivo: script.spec.js.
+- Prueba: desde el carrito abierto: foco en Cancelar, Esc cierra solo el diálogo y el foco vuelve al botón.
+- Error: La condición no se cumplió a tiempo.
+
+El fallo no se reprodujo posteriormente mediante Playwright MCP.
+
+Investigar este comportamiento, intentar reproducirlo y determinar si corresponde a un problema funcional, de sincronización de las pruebas o del entorno de ejecución.
+
+No modificar código funcional ni debilitar las pruebas para obtener resultados favorables.
+
+INTEGRACIÓN Y EJECUCIÓN
+
+- Integrar library.spec.js al runner general de Jasmine.
+- Ejecutar las pruebas específicas de la librería.
+- Ejecutar todas las pruebas de regresión.
+- Verificar que las 22 pruebas de Fetch continúan funcionando.
+- Verificar las pruebas de modelos, servicios, almacenamiento y controlador.
+- Ejecutar la herramienta de cobertura V8.
+- Registrar cobertura de líneas, funciones y ramas.
+- Comparar los resultados con la cobertura obtenida durante la etapa anterior.
+
+EVIDENCIAS
+
+Utilizar Playwright MCP, si está disponible, para ejecutar las pruebas y obtener capturas reales.
+
+Guardar las evidencias en js/test/capturas/.
+
+Registrar:
+
+- Fecha de ejecución.
+- Navegador y versión.
+- Seed utilizado.
+- Cantidad total de pruebas.
+- Pruebas aprobadas.
+- Pruebas fallidas.
+- Pruebas pendientes.
+- Resultados específicos de library.spec.js.
+- Resultados de cobertura V8.
+
+DOCUMENTACIÓN
+
+Actualizar:
+
+- js/test/testing-doc.md.
+- docs/04-testing/testing-doc.md, si corresponde.
+- docs/03-specs/segundo-parcial/spec-tester-qa-segundo-parcial.md, sección AT CLOSE.
+
+Documentar el prompt completo utilizado, los archivos de contexto, las herramientas de IA realmente utilizadas, los resultados obtenidos y las intervenciones realizadas.
+
+Conservar toda la documentación anterior.
+
+Si se detectan problemas funcionales, preparar propuestas de Issues detalladas, sin publicarlas automáticamente.
+
+RESTRICCIONES
+
+- No modificar el apartado BEFORE del SPEC.
+- No modificar código funcional del proyecto.
+- No realizar correcciones correspondientes a otros roles.
+- No modificar ni cerrar las Issues #212, #213 y #214.
+- No ejecutar Lighthouse TC-13 todavía.
+- No modificar el changelog todavía.
+- No realizar git add, commit ni push.
+- No realizar merge.
+- No eliminar los worktrees existentes.
+- No inventar resultados ni evidencias.
+
+Al finalizar, presentar un informe detallado con:
+
+1. Archivos analizados.
+2. Archivos creados y modificados.
+3. Pruebas implementadas.
+4. Pruebas trasladadas desde script.spec.js, si corresponde.
+5. Resultados de Jasmine.
+6. Resultados de cobertura V8.
+7. Resultado de la investigación del fallo de foco.
+8. Evidencias generadas.
+9. Problemas detectados.
+10. Tareas pendientes.
+```
+
+Contexto utilizado: `plan.md`, este SPEC, `spec-dev-libreria-externa.md`,
+`docs/02-prompts/prompts-13.md`, `docs/07-librerias/libreria-doc.md`, `docs/04-testing/testing-doc.md`,
+`docs/04-testing/test-case-12-lighthouse-post-fetch.md`, `js/test/testing-doc.md`,
+`js/services/ServicioDialogos.js`, `js/script.js`, `index.html`, `css/components.css`,
+`js/test/test-runner.html`, `js/test/script.spec.js`, `js/test/api.spec.js` y
+`js/test/herramientas/cobertura-v8.js`; el historial Git identifica #216, #220
+y #221. No se encontró un archivo separado de consignas del Segundo Parcial
+entre los archivos del proyecto revisados. IA: Copilot SDK en VS Code; no se
+utilizó GitHub Copilot Agent Mode.
+
+### Resultados de SweetAlert2 y regresión
+
+En `c008e2fa8cf92f6312efc75479fcf19aeefa9315`, igual a `origin/develop`, se
+agregaron nueve pruebas del wrapper y SweetAlert2 real. Se conservaron las 27
+pruebas previas del controlador, sin trasladarlas: dependen de sus fixtures y
+verifican flujos de integración. No se modificaron pruebas existentes.
+`library.spec.js` se integró al runner como módulo ES.
+
+Playwright MCP, Chromium 158.0.0.0, HTTP en puerto 18765 y semilla `61496`:
+**501 aprobadas, 0 fallidas, 0 pendientes**; modelos 89, storage 189, servicios
+50, API 22, library 9 y controlador 142. La ejecución filtrada de library
+aprobó 9/9. Antes de agregarla se ejecutaron 492/492 con la misma semilla.
+La comprobación de Tab, Shift+Tab y Escape usa eventos sintéticos y no
+sustituye pruebas manuales de accesibilidad.
+
+El fallo manual previo (489/490, puerto 8000, semilla `61496`) no se reprodujo
+en estas corridas. La espera que falló combina desaparición del diálogo y
+retorno del foco con límite de tres segundos; no hay evidencia suficiente
+para atribuirla a un fallo funcional, de sincronización o de entorno. Cambian
+commit, cantidad de pruebas, puerto y entorno del navegador. Se descartó
+una corrida que servía el runner antiguo desde caché y se repitió con caché
+deshabilitada y contexto aislado.
+
+Cobertura independiente `node js/test/herramientas/cobertura-v8.js --detalle`,
+Playwright local, Chromium 159.0.8154.6, semilla `60944`: 501 specs, 0 failures;
+total 1949/1983 líneas (98,3 %), 258/259 funciones (99,6 %) y 733/746 ramas
+V8 aproximadas (98,3 %). `ServicioDialogos.js`: 63/63 líneas, 7/7 funciones y
+21/22 ramas. La corrida anterior (`88737`) registró 1935/1969, 257/258 y
+723/736 respectivamente; cambió la base de código y las ramas son aproximadas.
+
+Capturas: [semilla antes de library](../../../js/test/capturas/captura-seed-61496-antes-library-2026-11-27.png),
+[library filtrada](../../../js/test/capturas/captura-library-2026-11-27.png),
+[suite completa](../../../js/test/capturas/captura-jasmine-library-2026-11-27.png)
+y [cobertura independiente](../../../js/test/capturas/captura-cobertura-library-2026-11-27.png).
+Detalle y limitaciones en [testing-doc.md](../../../js/test/testing-doc.md).
+No se detectó un problema funcional nuevo que justifique un borrador de Issue.
+
 ### Resultados de Jasmine
 
-- **Resultado principal:** reejecución del 27/11/2026 por HTTP con Playwright MCP y Chromium 158: **490 pruebas aprobadas, 0 fallidas, 0 pendientes**, semilla `28453`; incluye **22/22 pruebas de API** y 27/27 de SweetAlert2.
+- **Resultado principal de la etapa Fetch/API:** reejecución del 27/11/2026 por HTTP con Playwright MCP y Chromium 158: **490 pruebas aprobadas, 0 fallidas, 0 pendientes**, semilla `28453`; incluye **22/22 pruebas de API** y 27/27 de SweetAlert2.
 - Ejecución manual informada por el usuario: **489 aprobadas y 1 fallida**, semilla `61496`, servidor HTTP en puerto `8000`. La prueba «desde el carrito abierto: foco en Cancelar, Esc cierra solo el diálogo y el foco vuelve al botón» falló con `La condición no se cumplió a tiempo.`, en `script.spec.js:2111:41` y `script.spec.js:2567:13`. No se reprodujo posteriormente mediante Playwright MCP; la causa permanece **pendiente de determinar**.
 - Corrida anterior con Jasmine 5.10.0, Chromium y Node 24.21.0: 490 pruebas ejecutadas, 490 aprobadas, 0 fallidas y 0 pendientes (semilla `47158`). Resultado por suite: `models.spec.js` 89/89; `script.spec.js` 140/140; `storage.spec.js` 189/189; `services.spec.js` 50/50; `api.spec.js` 22/22.
 - Cobertura V8 anterior (medición aproximada de bloques): `apiService.js` 124/129 líneas (96,1 %), 11/11 funciones (100 %), 56/58 ramas (96,6 %); `ProcesadorCatalogo.js` 59/60 líneas (98,3 %), 18/18 funciones (100 %), 24/25 ramas (96,0 %). Total medido: 1935/1969 líneas (98,3 %), 257/258 funciones (99,6 %) y 725/738 ramas (98,2 %). El detalle y sus limitaciones se documentan en `js/test/testing-doc.md`.
@@ -645,14 +823,28 @@ Evidencias originales:
 |---|---|---|---|
 | [#212](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/212) | Performance inferior al umbral mínimo | @alandox1 — Desarrollador JS Asíncrono | Abierta; corrección y verificación pendientes |
 | [#213](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/213) | Desplazamientos visuales durante la carga (CLS) | @LuchoBarrionuevo13 — Tester QA/JS | Abierta; corrección y verificación pendientes |
-| [#214](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/214) | Best Practices y cookies de terceros de Google Maps | @Piastrellini — Desarrollador JS de Librerías Externas | Abierta; corrección y verificación pendientes |
+| [#214](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/214) | Best Practices y cookies de terceros de Google Maps | @Piastrellini — Desarrollador JS de Librerías Externas | Cerrada en GitHub; verificación preliminar realizada |
 
 Las tres Issues corresponden a problemas detectados durante el Baseline,
 previo a la incorporación de Fetch y SweetAlert2, y siguen observándose en
 TC-12. Según lo informado, las Issues fueron actualizadas con los resultados
-de TC-12 y el coordinador definió los responsables de la tabla. Permanecen
-abiertas, pendientes de corrección y verificación; RC03 permanece abierto.
+de TC-12 y el coordinador definió los responsables de la tabla. La corrección
+y verificación final de #212 y #213 siguen pendientes; RC03 permanece abierto.
 Los borradores previos se conservan como referencia histórica en el TC-12.
+
+#### Seguimiento preliminar de #214
+
+La PR #221 de Thiago se integró en `develop`. Según lo informado por el
+usuario, se realizó una verificación preliminar sobre la rama de esa PR:
+Performance **97**, Accessibility **100**, Best Practices **100**, SEO **100**
+y CLS **0.075**. No se detectaron solicitudes de Google Maps con el filtro
+`maps` durante la carga inicial y se comprobó manualmente el botón **Ver mapa**.
+Se informó al coordinador para gestionar el cierre. Estos resultados informados
+corresponden a una verificación preliminar, **no al TC-13 oficial**.
+
+La consulta de GitHub confirmó que #214 está **cerrada**, con cierre registrado
+el 27/11/2026 a las 05:33:04 UTC por @angelgc9107-lgtm. Esta comprobación no
+modifica la Issue ni sustituye la auditoría TC-13 pendiente.
 
 Para el seguimiento de las Issues, usar como referencias el [commit del
 Baseline](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/commit/0aec81a3d836968ee2e585fcddf4fa03418e659e),
@@ -671,8 +863,8 @@ desmarcarla manualmente en GitHub.
 ### Pendientes para completar AT CLOSE
 
 - TC-13 y su comparación con TC-12 permanecen pendientes.
-- Implementar y probar `library.spec.js` en la etapa correspondiente.
+- Completar la validación manual de accesibilidad y teclado real de SweetAlert2.
 - Investigar la causa del fallo manual de SweetAlert2 con las condiciones
   restantes de esa ejecución y, si están disponibles, su captura y consola.
-- Corrección y verificación de las Issues #212, #213 y #214.
+- Corrección y verificación final de las Issues #212 y #213.
 - Mantener RC03 abierto hasta que el equipo indique su resolución.

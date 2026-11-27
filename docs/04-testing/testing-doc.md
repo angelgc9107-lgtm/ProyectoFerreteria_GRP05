@@ -31,8 +31,9 @@ El commit de referencia del Baseline es
 Las Issues [#212](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/212),
 [#213](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/213)
 y [#214](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/214)
-fueron creadas y permanecen abiertas; la corrección y verificación siguen
-pendientes. En TC-11, el Coordinador/DevOps indicó
+fueron creadas a partir del Baseline. La corrección y verificación final de
+#212 y #213 siguen pendientes; el seguimiento posterior de #214 se indica
+abajo. En TC-11, el Coordinador/DevOps indicó
 mantener RC03 abierto hasta que se subieran Fetch y SweetAlert2. RC03 continúa
 abierto; TC-12 se ejecutó posteriormente y TC-13 sigue pendiente.
 
@@ -59,8 +60,8 @@ SweetAlert2. El servidor y el worktree se verificaron posteriormente.
 
 Performance y Best Practices no cumplen ≥95. El CLS subió aproximadamente
 55.4 % y las capturas muestran una `section` desplazada; la causa no está
-confirmada. Best Practices mantiene el hallazgo de cookies de Maps. Las
-Issues #212, #213 y #214 siguen abiertas. No se puede
+confirmada. En esa auditoría, Best Practices mantenía el hallazgo de cookies
+de Maps. No se puede
 atribuir la variación a Fetch ni garantizar idénticas condiciones de red y
 caché; faltan parámetros del Baseline.
 
@@ -71,13 +72,39 @@ el coordinador definió estos responsables:
 |---|---|---|
 | #212 | @alandox1 — Desarrollador JS Asíncrono | Abierta; corrección y verificación pendientes |
 | #213 | @LuchoBarrionuevo13 — Tester QA/JS | Abierta; corrección y verificación pendientes |
-| #214 | @Piastrellini — Desarrollador JS de Librerías Externas | Abierta; corrección y verificación pendientes |
+| #214 | @Piastrellini — Desarrollador JS de Librerías Externas | Cerrada en GitHub; verificación preliminar realizada |
 
 El [TC-12](./test-case-12-lighthouse-post-fetch.md) contiene análisis,
 recomendaciones, comparación y los borradores previos como referencia histórica.
 Las [14 capturas](./screenshots/tc-12/) se enlazan individualmente allí.
-Quedan pendientes TC-13, `library.spec.js`, las correcciones y su
-verificación. RC03 sigue abierto.
+Quedan pendientes TC-13 y la verificación final de #212 y #213. RC03 sigue abierto.
+
+### Seguimiento preliminar de #214
+
+La PR #221 de Thiago se integró en `develop`. Según lo informado por el
+usuario, en una verificación preliminar sobre su rama se obtuvieron
+Performance **97**, Accessibility **100**, Best Practices **100**, SEO **100**
+y CLS **0.075**. No se detectaron solicitudes de Google Maps con el filtro
+`maps` durante la carga inicial; se comprobó manualmente el botón **Ver mapa**
+y se informó al coordinador para gestionar el cierre.
+
+GitHub confirma que #214 está **cerrada**, con cierre registrado el
+27/11/2026 a las 05:33:04 UTC por @angelgc9107-lgtm. La verificación
+informada es preliminar y **no corresponde al TC-13 oficial**, que permanece
+pendiente.
+
+## Segundo Parcial — Pruebas funcionales SweetAlert2
+
+El 27/11/2026 se incorporó `library.spec.js` al runner y se conservaron las
+27 pruebas de integración del controlador. Playwright MCP ejecutó la suite
+completa en Chromium 158: **501 aprobadas, 0 fallidas, 0 pendientes**, semilla
+`61496`; incluye 9/9 pruebas nuevas y 22/22 de API. La medición V8 independiente
+con Playwright local registró 501 specs y 0 failures. El fallo manual anterior
+de foco no se reprodujo y su causa sigue pendiente de investigación.
+
+Los detalles, la comparación de cobertura y las capturas se encuentran en
+[la documentación Jasmine](../../js/test/testing-doc.md). TC-13 sigue
+pendiente; no se ejecutó una auditoría Lighthouse en esta etapa.
 
 ## Resumen de Issues — Momento 1 (Testing pre-merge)
 
