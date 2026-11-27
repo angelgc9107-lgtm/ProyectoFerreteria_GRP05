@@ -45,9 +45,9 @@ Implementación del consumo asíncrono mediante Fetch API y promesas, utilizando
 - `changelog.md`.
 
 #### Criterios de revisión y aprobación — Planificación
-- [ ] El BEFORE del spec se encuentra commiteado antes de escribir código e incluye la selección y justificación de la fuente de datos, el diseño de los estados de carga, las funciones de orden superior previstas y los criterios de aceptación.
-- [ ] El BEFORE define la estructura y responsabilidades de apiService.js, la estrategia de gestión de errores, reintentos y fallbacks, la validación y sanitización de datos, y la integración con el DOM, POO y Storage, respetando las responsabilidades de js/script.js como controlador.
-- [ ] Se planifican los casos de prueba en coordinación con el Tester QA y las verificaciones necesarias para evitar regresiones en los cuatro flujos existentes.
+- [X] El BEFORE del spec se encuentra commiteado antes de escribir código e incluye la selección y justificación de la fuente de datos, el diseño de los estados de carga, las funciones de orden superior previstas y los criterios de aceptación.
+- [X] El BEFORE define la estructura y responsabilidades de apiService.js, la estrategia de gestión de errores, reintentos y fallbacks, la validación y sanitización de datos, y la integración con el DOM, POO y Storage, respetando las responsabilidades de js/script.js como controlador.
+- [X] Se planifican los casos de prueba en coordinación con el Tester QA y las verificaciones necesarias para evitar regresiones en los cuatro flujos existentes.
 #### Criterios de revisión y aprobación
 - [ ] Se implementa el consumo asíncrono de datos mediante `fetch()` y promesas.
 - [ ] Se verifica el estado de la respuesta HTTP y se procesa correctamente el JSON.
@@ -345,14 +345,22 @@ Para cada una de las cuatro PRs mínimas (y las adicionales, si corresponde) se 
 | Revisión | PR / enlace | Rol | Fecha | Resultado |
 |---|---|---|---|---|
 | 1 | [PR: 208](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/208) | Tester QA/JS - Testing Avanzado | 26/11/2026 | Mergeado |
-| 2 | [PR: 211](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/211) | Desarrollador JS Asíncrono (Fetch & APIs) | 26/11/2026 | Pendiente RC |
-| 3 | [PR: 215](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/215) | Tester QA/JS - Testing Avanzado | 26/11/2026 | Pendiente RC |
-| 4 | Pendiente | Pendiente | Pendiente | Pendiente |
+| 2 | [PR: 211](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/211) | Desarrollador JS Asíncrono (Fetch & APIs) | 26/11/2026 | Mergeado |
+| 3 | [PR: 215](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/215) | Tester QA/JS - Testing Avanzado | 26/11/2026 | Mergeado |
+| 4 | [PR: 216](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/216) | Desarrollador JS Librerías Externas | 26/11/2026 | Mergeado |
+| 5 | [PR: 217](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/217) | Desarrollador JS Asíncrono (Fetch & APIs) | 26/11/2026 | Mergedo |
+| 7 | [PR: 219](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/219) | Desarrollador JS Librerías Externas | 27/11/2026 | Pendiente |
+| 8 | [PR: 220](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/220) | Tester QA/JS - Testing Avanzado | 27/11/2026 | Mergeado |
+| 9 | [PR: 221](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/221) | Desarrollador JS Librerías Externas | 27/11/2026 | Mergeado |
+| 9 | [PR: 222](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/222) | Tester QA/JS - Testing Avanzado | 27/11/2026 | Pendiente |
+
 
 #### Detalle de cada code review (repetir por PR)
 
 - **PR revisada y rol:** PR 208 - Tester QA/JS - Testing Avanzado .
 - **Prompt exacto utilizado (en bloque de código):**
+- **Respuesta Copilot**
+- **Capturas**
 
 
 
