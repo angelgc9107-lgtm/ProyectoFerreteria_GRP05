@@ -1078,6 +1078,25 @@ function cargarCatalogoEnPantalla() {
     return cargaCatalogoEnCurso;
 }
 
+const URL_MAPA = "https://www.google.com/maps?q=-34.8211567,-58.3908095&z=17&output=embed";
+
+/**
+ * Reemplaza la fachada del mapa por el iframe de Google Maps.
+ * Se ejecuta solo con el clic del usuario en «Ver mapa».
+ */
+function cargarMapa() {
+    const contenedor = document.querySelector("#mapa-ubicacion");
+    if (!contenedor) return;
+
+    const iframe = document.createElement("iframe");
+    iframe.src = URL_MAPA;
+    iframe.title = "Mapa con la ubicacion de FerroLab";
+    iframe.referrerPolicy = "no-referrer-when-downgrade";
+    iframe.allowFullscreen = true;
+
+    contenedor.replaceChildren(iframe);
+    iframe.focus();
+}
 
 function inicializarEventos() {
     renderizarMetodosPago();
@@ -1392,7 +1411,13 @@ function inicializarEventos() {
             );
         }
     });
-
+    
+    // MAPA
+    // El iframe de Google Maps se crea recién cuando el usuario lo pide,
+    // para no cargar sus cookies de terceros al abrir la página.
+    document
+        .querySelector('[data-action="cargar-mapa"]')
+        ?.addEventListener("click", cargarMapa, { once: true });
     // Arranca la carga asíncrona del catálogo una vez registrados los eventos.
     cargarCatalogoEnPantalla();
 }

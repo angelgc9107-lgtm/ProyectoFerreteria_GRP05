@@ -245,12 +245,12 @@
             </section>
             <section class="col-12 col-md-6 ms-lg-auto" aria-labelledby="direccion">
                 <h2 id="direccion">Ubicacion</h2>
-                <div class="ratio ratio-16x9">
-                    <iframe src="https://www.google.com/maps?q=-34.8211567,-58.3908095&z=17&output=embed"
-                            title="Mapa con la ubicacion de FerroLab"
-                            loading="lazy"
-                            referrerpolicy="no-referrer-when-downgrade"
-                            allowfullscreen></iframe>
+                <div class="ratio ratio-16x9" id="mapa-ubicacion">
+                    <div class="mapa-fachada">
+                        <p>El mapa se carga desde Google Maps, que usa cookies de terceros.</p>
+                        <button type="button" class="btn btn-light btn-sm" data-action="cargar-mapa">Ver mapa</button>
+                        <a href="https://www.google.com/maps?q=-34.8211567,-58.3908095&z=17" target="_blank" rel="noopener noreferrer">Abrir en Google Maps</a>
+                    </div>
                 </div>
             </section>
         </div>

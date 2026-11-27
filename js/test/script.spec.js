@@ -2573,3 +2573,32 @@ describe("Controlador - diálogos de confirmación (SweetAlert2)", function () {
         }, TIEMPO_CARGA_MS);
     });
 });
+
+
+// ---------------------------------------------------------------------------
+// Mapa de ubicación (issue #214): Google Maps se carga solo a pedido
+// ---------------------------------------------------------------------------
+
+describe("Controlador - mapa de ubicación (issue #214)", function () {
+    it("al abrir la página no hay iframe de Google Maps: se muestra la fachada con «Ver mapa» y el enlace externo", function () {
+        expect(q("#mapa-ubicacion iframe")).toBeNull();
+        expect(qa('iframe[src*="google."]').length).toBe(0);
+        expect(q('#mapa-ubicacion [data-action="cargar-mapa"]')).not.toBeNull();
+
+        const enlace = q("#mapa-ubicacion a");
+        expect(enlace.href).toContain("google.com/maps");
+        expect(enlace.target).toBe("_blank");
+        expect(enlace.rel).toContain("noopener");
+    });
+
+    it("al hacer clic en «Ver mapa» se crea el iframe con su título y recibe el foco", function () {
+        clic(q('[data-action="cargar-mapa"]'));
+
+        const iframe = q("#mapa-ubicacion iframe");
+        expect(iframe).not.toBeNull();
+        expect(iframe.src).toContain("output=embed");
+        expect(iframe.title).toBe("Mapa con la ubicacion de FerroLab");
+        expect(q('[data-action="cargar-mapa"]')).toBeNull();
+        expect(doc.activeElement).toBe(iframe);
+    });
+});
