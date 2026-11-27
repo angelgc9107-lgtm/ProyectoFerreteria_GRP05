@@ -17,6 +17,25 @@ incluye Fetch/API y SweetAlert2, pero es anterior a la corrección de Maps de
 #221. No confundir esta auditoría con la verificación preliminar independiente
 de #221.
 
+Desde TC-12, la [PR #216](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/216)
+incorporó SweetAlert2 mediante `ServicioDialogos` en tres puntos, conforme al
+[SPEC del Desarrollador JS de Librerías Externas](../03-specs/segundo-parcial/spec-dev-libreria-externa.md):
+
+- **Eliminar un producto:** se solicita confirmación con su nombre y cantidad;
+  al cancelar, el carrito no cambia.
+- **Confirmar el pedido:** se muestran total financiado, método y cuotas;
+  al cancelar se conserva el resumen sin consumir un número de pedido.
+  Sin resumen pendiente se muestra el error existente, sin diálogo.
+- **Cancelar el pedido:** si hay datos del cliente o un pedido pendiente, se
+  confirma su descarte; se conservan carrito y condiciones de pago. Si no hay
+  datos ni resumen, se cancela directamente. Rechazar el diálogo conserva los
+  datos y el resumen.
+
+La corrección de Google Maps se incorporó posteriormente en la
+[PR #221](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/221),
+no en el commit auditado. Las variaciones de Lighthouse no se atribuyen
+automáticamente a SweetAlert2 ni a esa corrección.
+
 ## Condiciones y trazabilidad
 
 | Dato | Segunda ejecución |
@@ -47,20 +66,27 @@ diferencia exclusivamente a Fetch o SweetAlert2.
 
 ## Resultados y comparación
 
-| Categoría | TC-11 | TC-12 | TC-13 primera | TC-13 segunda | Segunda frente a ≥95 |
-|---|---:|---:|---:|---:|---|
-| Performance | 92 | 86 | 75 | 96 | Cumple |
-| Accessibility | 100 | 100 | 100 | 100 | Cumple |
-| Best Practices | 77 | 77 | 100 | 100 | Cumple |
-| SEO | 100 | 100 | 100 | 100 | Cumple |
+Las diferencias son restas del valor posterior menos el anterior; TC-13 en
+las tres columnas de diferencias corresponde a la **segunda ejecución**.
+Las diferencias de categorías se expresan en puntos.
 
-| Métrica | TC-11 | TC-12 | TC-13 primera | TC-13 segunda |
-|---|---:|---:|---:|---:|
-| FCP | 0.5 s | 0.5 s | 0.5 s | 0.5 s |
-| LCP | 1.1 s | 1.2 s | 1.4 s | 1.2 s |
-| TBT | 0 ms | 0 ms | 0 ms | 0 ms |
-| CLS | 0.148 | 0.230 | 0.555 | 0.075 |
-| Speed Index | 0.5 s | 0.5 s | 0.5 s | 0.5 s |
+| Categoría | TC-11 | TC-12 | TC-13 primera | TC-13 segunda | TC-12 − TC-11 | TC-13 − TC-12 | TC-13 − TC-11 | Segunda frente a ≥95 |
+|---|---:|---:|---:|---:|---:|---:|---:|---|
+| Performance | 92 | 86 | 75 | 96 | -6 | +10 | +4 | Cumple |
+| Accessibility | 100 | 100 | 100 | 100 | 0 | 0 | 0 | Cumple |
+| Best Practices | 77 | 77 | 100 | 100 | 0 | +23 | +23 | Cumple |
+| SEO | 100 | 100 | 100 | 100 | 0 | 0 | 0 | Cumple |
+
+| Métrica | TC-11 | TC-12 | TC-13 primera | TC-13 segunda | TC-12 − TC-11 | TC-13 − TC-12 | TC-13 − TC-11 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| FCP | 0.5 s | 0.5 s | 0.5 s | 0.5 s | 0 s | 0 s | 0 s |
+| LCP | 1.1 s | 1.2 s | 1.4 s | 1.2 s | +0.1 s | 0 s | +0.1 s |
+| TBT | 0 ms | 0 ms | 0 ms | 0 ms | 0 ms | 0 ms | 0 ms |
+| CLS | 0.148 | 0.230 | 0.555 | 0.075 | +0.082 | -0.155 | -0.073 |
+| Speed Index | 0.5 s | 0.5 s | 0.5 s | 0.5 s | 0 s | 0 s | 0 s |
+
+La primera ejecución obtuvo **75 puntos en Performance**, por debajo del
+umbral mínimo de **95** establecido en el SPEC; no cumple ese criterio.
 
 En TC-12, después de Fetch, Performance bajó 6 puntos y CLS aumentó 0.082
 respecto de TC-11; Best Practices, Accessibility y SEO no variaron. En la
@@ -143,11 +169,44 @@ La segunda ejecución muestra 100 puntos y 13 auditorías aprobadas:
 13. Page has valid source maps.
 
 El commit auditado no contiene la corrección de Maps de #221. El resultado
-`Avoids third-party cookies` y el puntaje de 100 no prueban por sí solos que
-el problema estuviera corregido en ese commit, ni atribuyen la mejora a
-SweetAlert2 o #221. #214, responsable @Piastrellini, está cerrada en GitHub
-tras la integración de #221 y su verificación preliminar independiente; esta
-auditoría histórica no sustituye esa verificación.
+`Avoids third-party cookies` y la comprobación aprobada del panel Issues no
+demuestran el número exacto de cookies ni el comportamiento después de
+activar el mapa. El puntaje de 100 tampoco prueba que el problema estuviera
+corregido en ese commit ni se atribuye a SweetAlert2 o #221. Esta auditoría
+histórica **no valida la corrección #221**.
+
+### Verificación preliminar independiente de #221
+
+En un worktree de la rama de corrección, sobre el
+[commit `c1e02d8`](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/commit/c1e02d88cc7cc37a3fba105b355237d588cd7711),
+se informó una medición independiente de Performance **97**, Accessibility
+**100**, Best Practices **100**, SEO **100** y CLS **0.075**. Según el
+[registro publicado de QA en #221](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/221#issuecomment-7210389785),
+se comprobó el botón **Ver mapa**, la visualización del mapa después de
+pulsarlo y que no se observaron solicitudes coincidentes con el filtro `maps`
+durante la carga inicial. No se inspeccionaron específicamente las cookies
+después de activar el mapa. El registro es anterior al merge, no una
+verificación definitiva sobre `develop`.
+
+No se localizaron capturas que acrediten específicamente la medición 97 ni
+la comprobación manual; se conserva el comentario publicado como evidencia
+de lo informado. Las capturas versionadas de la PR
+([puntuaciones](./screenshots/issue-214/01-lighthouse-puntajes.png) y
+[Best Practices](./screenshots/issue-214/02-best-practices.png)) muestran
+otra medición con Performance **91** y Best Practices **100**; no son
+evidencia de la medición 97 ni de las cookies tras la interacción.
+
+La [PR #221](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/221)
+de @Piastrellini — Desarrollador JS de Librerías Externas — fue
+[aprobada](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/221#pullrequestreview-6083871842) y se integró en
+`develop` mediante el [merge `bbff1fe`](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/commit/bbff1fe926b842a57c40458a3296824de5d45bc0).
+La [Issue #214](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/214)
+está cerrada; su cierre se coordinó tras la integración. Solicitar al
+coordinador confirmar el cierre teniendo en cuenta la inspección pendiente
+de cookies después de activar el mapa y la verificación definitiva sobre
+`develop`; no se reabre ni se afirma que esas comprobaciones hayan ocurrido.
+La [evaluación previa del coordinador](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/214#issuecomment-7210641964)
+era anterior al merge y al cierre.
 
 ## Evidencias originales
 
@@ -179,44 +238,44 @@ primera**. La captura adicional de la segunda muestra 96 y CLS 0.075.
 5. [Accessibility](./screenshots/tc-13/primera-ejecucion/05-accessibility.png).
 6. [Best Practices](./screenshots/tc-13/primera-ejecucion/06-best-practices.png).
 
-## Seguimiento y borradores de comentarios
+## Seguimiento de Issues
 
-En la consulta de GitHub, #212 y #213 figuran abiertas y #214 cerrada. Los
-responsables informados por el coordinador son @alandox1 para #212,
-@LuchoBarrionuevo13 para #213 y @Piastrellini para #214; GitHub no muestra
-asignados formales en #212 ni #213. Los siguientes comentarios son borradores:
-no se publicaron ni se modificaron las Issues.
+Los resultados de TC-13 ya se incorporaron a las Issues y se anunciaron en
+los comentarios publicados de [#212](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/212#issuecomment-7211819949)
+y [#213](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/213#issuecomment-7211904775).
+Ambas siguen **abiertas** hasta verificar sus respectivas correcciones.
+El historial previo de TC-11 y TC-12 se conserva en las Issues y en sus
+respectivos test cases.
 
-### Borrador para #212 — Performance
+| Issue | Responsable comunicado por el coordinador | Assignees en GitHub |
+|---|---|---|
+| #212 | [@alandox1 — Desarrollador JS Asíncrono](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/212#issuecomment-7209702999) | @alandox1 |
+| #213 | [@LuchoBarrionuevo13 — Tester QA/JS, Testing Avanzado](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/213#issuecomment-7209708881) | @angelgc9107-lgtm |
 
-> **TC-13 Post Library — 27/11/2026.** En el commit histórico
-> `5d6ba926db00137fb53eace818ef5fe8d362bf17`, la primera ejecución obtuvo
-> Performance 75 y la segunda, con ventana maximizada, 96; TC-11 y TC-12
-> obtuvieron 92 y 86. Se toma la segunda como referencia por sus condiciones
-> de visualización, sin descartar la primera. Persisten oportunidades estimadas:
-> caché 878 KiB, imágenes 862 KiB, recursos bloqueantes 150 ms, JavaScript
-> minificable 51 KiB y no utilizado 59 KiB; revisar también la prioridad de la
-> imagen LCP. Lighthouse y Chromium difieren de TC-11/TC-12 y no se conservaron
-> todas las condiciones anteriores, por lo que no se atribuyen las variaciones
-> a una funcionalidad. Solicitar a @alandox1 revisar las recomendaciones y
-> verificar las correcciones en `develop` actualizado. No cerrar basándose en
-> este resultado histórico.
+La consulta actual muestra una discrepancia en #213 entre el responsable
+comunicado y el Assignee formal; coordinar su confirmación sin modificar la
+Issue. Referencias directas para ambas Issues:
+[commit auditado](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/commit/5d6ba926db00137fb53eace818ef5fe8d362bf17),
+[puntuaciones y métricas de la segunda ejecución](./screenshots/tc-13/01-lighthouse-scores-and-metrics.png),
+[Insights de Performance](./screenshots/tc-13/02-performance-insights.png),
+[CLS](./screenshots/tc-13/06-layout-shift-culprits.png) y
+[puntuaciones de la primera ejecución](./screenshots/tc-13/primera-ejecucion/01-lighthouse-scores.png).
+Todas las capturas se enlazan también en la sección anterior.
 
-### Borrador para #213 — CLS
-
-> **TC-13 Post Library — 27/11/2026.** En el commit histórico
-> `5d6ba926db00137fb53eace818ef5fe8d362bf17`, CLS fue 0.555 en la primera
-> ejecución y 0.075 en la segunda, con ventana maximizada; TC-11 y TC-12
-> registraron 0.148 y 0.230. Lighthouse identifica una `section` con
-> contribución 0.075 en la segunda. Investigar distribución dinámica,
-> reserva de espacio y comportamiento responsive en diferentes condiciones;
-> no se ha confirmado la causa ni la influencia de la ventana. Las versiones
-> y condiciones no son totalmente equivalentes. Verificar sobre `develop`
-> actualizado y no cerrar basándose únicamente en esta medición histórica.
+El SHA anteriormente registrado en ambas Issues era
+`5d6ba9206db00137fb53eace818ef5fe8d362bf17`. La corrección manual ya fue
+realizada: ambos cuerpos muestran y enlazan el commit correcto
+`5d6ba926db00137fb53eace818ef5fe8d362bf17`. Los cuerpos enumeran las
+capturas como rutas y nombres de archivo, no como enlaces directos; las
+capturas se enlazan directamente en este documento. No se modificaron las
+Issues durante esta revisión.
 
 ## Pendientes
 
-- Compartir los borradores con los responsables cuando se autorice.
+- Coordinar la discrepancia del Assignee de #213; si se requieren enlaces
+  directos a las capturas en las Issues, acordar su actualización manual.
 - Investigar las variaciones y verificar #212 y #213 sobre `develop` actualizado
   después de las correcciones acordadas.
+- Solicitar al coordinador confirmar el cierre de #214 con la limitación
+  pendiente de cookies y de verificación definitiva sobre `develop`.
 - Mantener RC03 abierto hasta que el equipo indique su resolución.

@@ -842,7 +842,8 @@ coincidencia de los archivos principales servidos con el checkout y el commit.
 La verificación posterior no acredita por sí sola el estado de caché del
 navegador durante la auditoría.
 
-Se conserva la primera ejecución: **75 / 100 / 100 / 100**, CLS **0.555**.
+Se conserva la primera ejecución: **75 / 100 / 100 / 100**, CLS **0.555**;
+Performance 75 está por debajo del umbral mínimo de 95.
 La segunda, con ventana maximizada, se toma como referencia por sus
 condiciones de visualización: **96 / 100 / 100 / 100**, CLS **0.075**,
 27/11/2026 a las 03:19 GMT-3, Lighthouse 13.3.0, Chromium 150.0.7871.250,
@@ -881,10 +882,16 @@ la primera ejecución requiere investigar el responsive y el contenido dinámico
 sin atribuir la causa a SweetAlert2. Best Practices 100 no prueba que Maps
 estuviera corregido en este commit anterior a #221.
 
-Los resultados completos, limitaciones, 18 capturas y borradores separados
-para #212 y #213 se conservan en [TC-13 — Lighthouse Post Library](../../04-testing/test-case-13-lighthouse-post-library.md).
+Los resultados completos, limitaciones, 18 capturas y seguimiento se conservan
+en [TC-13 — Lighthouse Post Library](../../04-testing/test-case-13-lighthouse-post-library.md).
+TC-13 ya fue publicado en [#212](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/212#issuecomment-7211819949)
+y [#213](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/213#issuecomment-7211904775).
 Ambas Issues siguen abiertas y requieren verificación final sobre `develop`
-actualizado. #214 permanece cerrada tras su verificación preliminar separada.
+actualizado. Sus cuerpos ya fueron corregidos manualmente y enlazan el
+[commit histórico auditado](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/commit/5d6ba926db00137fb53eace818ef5fe8d362bf17).
+Las capturas figuran allí como rutas y nombres, y se enlazan directamente
+en la documentación de TC-13.
+#214 permanece cerrada tras su verificación preliminar separada.
 
 ### Issues reportadas
 
@@ -900,28 +907,36 @@ TC-12. Según lo informado, las Issues fueron actualizadas con los resultados
 de TC-12 y el coordinador definió los responsables de la tabla. La corrección
 y verificación final de #212 y #213 siguen pendientes; RC03 permanece abierto.
 Los borradores previos se conservan como referencia histórica en el TC-12.
+La consulta actual muestra como Assignees formales a @alandox1,
+@angelgc9107-lgtm y @Piastrellini, respectivamente. En #213, el Assignee
+difiere del responsable comunicado @LuchoBarrionuevo13; coordinar su
+confirmación sin modificar la Issue.
 
 #### Seguimiento preliminar de #214
 
-La PR #221 de Thiago se integró en `develop`. Según lo informado por el
-usuario, se realizó una verificación preliminar sobre la rama de esa PR:
+La [PR #221](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/221)
+de Thiago fue [aprobada](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/221#pullrequestreview-6083871842)
+y se integró en `develop`. Según el [registro publicado de QA](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/221#issuecomment-7210389785),
+se realizó una verificación preliminar sobre la rama de esa PR:
 Performance **97**, Accessibility **100**, Best Practices **100**, SEO **100**
 y CLS **0.075**. No se detectaron solicitudes de Google Maps con el filtro
-`maps` durante la carga inicial y se comprobó manualmente el botón **Ver mapa**.
-Se informó al coordinador para gestionar el cierre. Estos resultados informados
+`maps` durante la carga inicial y se comprobó el botón **Ver mapa** y la
+visualización posterior del mapa. No se inspeccionaron las cookies después de
+activarlo. No se localizaron capturas específicas de esta medición; las
+capturas de #221 con Performance 91 son de otra medición. Estos resultados informados
 corresponden a una verificación preliminar, **no al TC-13 oficial**.
 
 La consulta de GitHub confirmó que #214 está **cerrada**, con cierre registrado
 el 27/11/2026 a las 05:33:04 UTC por @angelgc9107-lgtm. Esta comprobación no
-modifica la Issue ni sustituye la auditoría TC-13 documentada arriba.
+modifica la Issue ni sustituye la auditoría TC-13 documentada arriba. Solicitar
+al coordinador confirmar el cierre con la inspección de cookies pendiente.
 
 Para el seguimiento de las Issues, usar como referencias el [commit del
 Baseline](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/commit/0aec81a3d836968ee2e585fcddf4fa03418e659e),
 el [TC-11](../../04-testing/test-case-11-lighthouse-baseline.md) y las
 [12 capturas](../../04-testing/screenshots/tc-11/). En una revisión anterior
 de #212, la tarea “Implementar las mejoras correspondientes” aparecía marcada
-como completada sin evidencia de corrección; revisar si todavía corresponde
-desmarcarla manualmente en GitHub.
+sin evidencia de corrección; en la consulta actual figura desmarcada.
 
 ### Ajustes manuales a las pruebas generadas mediante IA
 
@@ -931,8 +946,11 @@ desmarcarla manualmente en GitHub.
 
 ### Pendientes para completar AT CLOSE
 
-- Compartir, si se autoriza, los borradores de comentarios de TC-13 para
-  #212 y #213 y verificar ambas Issues sobre `develop` actualizado.
+- Coordinar la discrepancia del Assignee de #213 y verificar #212 y #213
+  sobre `develop` actualizado. Si se requieren enlaces directos a capturas
+  en las Issues, acordar su actualización manual.
+- Solicitar confirmación del cierre de #214 con la inspección de cookies
+  posterior a activar el mapa pendiente.
 - Validar la accesibilidad de SweetAlert2 con tecnologías de asistencia; la
   navegación manual con teclado indicada arriba ya fue comprobada.
 - Investigar la causa del fallo manual de SweetAlert2 con las condiciones
