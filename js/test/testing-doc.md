@@ -3,7 +3,96 @@
 Proyecto FerroLab - Actividad Obligatoria N°4 y Segundo Parcial - Programación Web I
 Módulos testeados: `js/api/*.js`, `js/models/*.js`, `js/services/*.js`, `js/utils/storage.js` y `js/script.js` | Framework: Jasmine 5.10.0 (CDN)
 
-## Segundo Parcial — Fetch/API y regresión (corrida actual)
+## Segundo Parcial — SweetAlert2 y regresión (27/11/2026)
+
+Se evaluó `feature/tester-qa-js-testing-suite`, HEAD
+`c008e2fa8cf92f6312efc75479fcf19aeefa9315`, igual a `origin/develop` después
+de las PR #220 y #221; SweetAlert2 se integró en #216. Se añadieron nueve
+pruebas en `library.spec.js` para `ServicioDialogos`: configuración y textos
+planos; valores predeterminados; confirmación estricta, cancelación y espera
+asíncrona; foco y destino modal; origen desconectado; movimiento reducido;
+errores de la librería y fallback. Una prueba usa SweetAlert2 real para
+comprobar `role`, `aria-modal`, Tab, Shift+Tab, Escape y retorno del foco.
+Los eventos de teclado son sintéticos: no sustituyen la comprobación manual
+con teclado físico y tecnologías de asistencia.
+
+Se conservaron las 27 pruebas de SweetAlert2 en `script.spec.js`: verifican
+los flujos de controlador, el CDN y la integración real con Bootstrap. No se
+trasladaron ni eliminaron; las pruebas nuevas cubren el contrato directo del
+wrapper. El runner incorpora `library.spec.js` como módulo ES.
+
+### Ejecuciones y fallo de foco
+
+- Antes de agregar la suite, Playwright MCP y Chromium 158.0.0.0 ejecutaron
+  492/492 pruebas, 0 fallidas, semilla `61496`, por HTTP en puerto `18765`.
+- Con la nueva suite, la ejecución filtrada por `ServicioDialogos - ` obtuvo
+  **9/9 aprobadas, 0 fallidas y 0 pendientes**, semilla `61496`.
+- La suite completa en Playwright MCP y Chromium 158.0.0.0 obtuvo **501
+  ejecutadas, 501 aprobadas, 0 fallidas y 0 pendientes**, semilla `61496`:
+  modelos 89, storage 189, servicios 50, API 22, biblioteca 9 y controlador
+  142, incluidas las 27 de SweetAlert2. Se usó `http-server` 14.1.1 en
+  `127.0.0.1:18765`, con caché deshabilitada.
+- La ejecución manual informada previamente sigue registrada más abajo:
+  489 aprobadas, 1 fallida, semilla `61496`, puerto 8000. El fallo no se
+  reprodujo en las dos corridas completas anteriores. La semilla no reproduce
+  por sí sola el entorno ni el conjunto de pruebas: aquí hay otro commit,
+  puerto y navegador controlado por Playwright.
+- La línea `script.spec.js:2567` de la ejecución original esperaba que
+  desapareciera el contenedor y volviera el foco, mediante un sondeo con
+  límite de tres segundos. Foco, animaciones, programación de tareas y
+  carga del CDN son condiciones posibles a investigar, no causas probadas.
+  No se puede clasificar aún como fallo funcional, de sincronización o del
+  entorno; faltan datos de la ejecución manual y una reproducción.
+- Durante la validación se detectó una respuesta cacheada del runner que
+  todavía mostraba 492 pruebas después del cambio. Se descartó esa corrida y
+  se repitió con caché deshabilitada y contexto aislado; los 501 corresponden
+  al runner actualizado.
+
+### Cobertura V8 independiente
+
+`node js/test/herramientas/cobertura-v8.js --detalle`, Playwright local y
+Chromium 159.0.8154.6: **501 specs, 0 failures**, semilla `60944`.
+Es una ejecución distinta de Playwright MCP.
+
+| Medición | Líneas | Funciones | Ramas V8 aproximadas |
+|---|---:|---:|---:|
+| Anterior, semilla `88737` | 1935/1969 (98,3 %) | 257/258 (99,6 %) | 723/736 (98,2 %) |
+| Actual, total | 1949/1983 (98,3 %) | 258/259 (99,6 %) | 733/746 (98,3 %) |
+| Actual, `ServicioDialogos.js` | 63/63 (100 %) | 7/7 (100 %) | 21/22 (95,5 %) |
+| Actual, `apiService.js` | 124/129 (96,1 %) | 11/11 (100 %) | 57/59 (96,6 %) |
+| Actual, `ProcesadorCatalogo.js` | 59/60 (98,3 %) | 18/18 (100 %) | 24/25 (96,0 %) |
+
+Las bases de código y pruebas difieren por la integración de #221 y las
+nuevas pruebas; la variación de ramas es aproximada y no demuestra una mejora
+causal. No se detectaron problemas funcionales nuevos en estas ejecuciones.
+
+Evidencias: [semilla antes de library](./capturas/captura-seed-61496-antes-library-2026-11-27.png),
+[suite library filtrada](./capturas/captura-library-2026-11-27.png),
+[suite completa](./capturas/captura-jasmine-library-2026-11-27.png) y
+[salida de cobertura V8](./capturas/captura-cobertura-library-2026-11-27.png).
+La captura de cobertura muestra la salida textual de la ejecución independiente.
+No se ejecutó Lighthouse TC-13.
+
+### Validación manual de SweetAlert2 (27/11/2026)
+
+Según lo informado por el usuario, realizó personalmente la validación con
+resultados favorables:
+
+- Visualización correcta del diálogo y foco inicial en **Cancelar**.
+- Navegación correcta con Tab y Shift + Tab; Escape cancela el diálogo.
+- Al cancelar, el carrito permanece abierto y el foco vuelve al botón de
+  eliminación.
+- Al confirmar, se elimina el producto y se actualizan la cantidad de productos
+  y el total.
+
+Las capturas muestran el [diálogo de confirmación](./capturas/captura-sweetalert2-confirmacion-manual-2026-11-27.png)
+y el [carrito después de la eliminación](./capturas/captura-sweetalert2-eliminacion-manual-2026-11-27.png).
+La navegación con teclado fue comprobada manualmente por el usuario, no por
+las capturas. El fallo anterior relacionado con el foco no se reprodujo en
+esta validación manual; su causa original continúa sin determinarse. Esta
+comprobación no es una nueva ejecución de Jasmine.
+
+## Segundo Parcial — Fetch/API y regresión (etapa anterior)
 
 ### Reejecución del 27/11/2026 y resultado manual informado
 
@@ -81,6 +170,10 @@ Antes de esta corrección, la suite de la PR #169 tenía **220 specs y 3 failure
 
 ## Estructura de la suite
 
+La siguiente estructura de cuatro archivos y 451 pruebas corresponde al
+historial de la cuarta entrega; no describe el runner actual del Segundo
+Parcial, cuyos resultados se documentan al inicio de este archivo.
+
 En la tercera entrega `js/script.js` tenía la lógica y usaba `prompt()`/`alert()`. En la cuarta entrega se separó en capas y hay un archivo spec por cada una:
 
 | Módulo | Qué contiene | Spec | Specs |
@@ -91,7 +184,7 @@ En la tercera entrega `js/script.js` tenía la lógica y usaba `prompt()`/`alert
 | `js/script.js` | Controlador: eventos y DOM | `js/test/script.spec.js` | 116 |
 | | | **Total** | **451** |
 
-`js/test/test-runner.html` carga los cuatro specs como módulos ES. `js/test/models-test-runner.html` es el runner independiente que armó el Desarrollador JS POO para sus modelos y se conserva.
+En esa etapa, `js/test/test-runner.html` cargaba los cuatro specs como módulos ES. `js/test/models-test-runner.html` es el runner independiente que armó el Desarrollador JS POO para sus modelos y se conserva.
 
 ## Ejecución de Tests
 

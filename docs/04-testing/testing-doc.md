@@ -1,6 +1,6 @@
 # Testing Doc — Actividad Obligatoria N°2, Primer Parcial y Segundo Parcial
 
-Índice central de test cases y resumen de issues. Los test cases 1 a 10 se ejecutaron con **Playwright MCP** (vía Claude Code — ver nota en spec-qa.md sobre el cambio de herramienta) y corresponden a la Actividad Obligatoria N°2 y al Primer Parcial. TC-11 y TC-12 corresponden al Segundo Parcial y se ejecutaron manualmente con Lighthouse.
+Índice central de test cases y resumen de issues. Los test cases 1 a 10 se ejecutaron con **Playwright MCP** (vía Claude Code — ver nota en spec-qa.md sobre el cambio de herramienta) y corresponden a la Actividad Obligatoria N°2 y al Primer Parcial. TC-11, TC-12 y TC-13 corresponden al Segundo Parcial y se ejecutaron manualmente con Lighthouse.
 
 ## Índice de Test Cases
 
@@ -18,6 +18,7 @@
 | 10 | [test-case-10.md](test-case-10.md) | Input range de filtro de precio (interacción, sincronización con output) | Playwright MCP |
 | 11 | [test-case-11-lighthouse-baseline.md](test-case-11-lighthouse-baseline.md) | Baseline Lighthouse Desktop / Navigation sobre `develop` | Chrome DevTools Lighthouse 13.5.0 |
 | 12 | [test-case-12-lighthouse-post-fetch.md](test-case-12-lighthouse-post-fetch.md) | Lighthouse Post Fetch, comparación con TC-11 | Chrome DevTools Lighthouse 13.5.0 |
+| 13 | [test-case-13-lighthouse-post-library.md](test-case-13-lighthouse-post-library.md) | Lighthouse Post Library, comparación con TC-12 | Chrome DevTools Lighthouse 13.3.0 |
 
 ## Segundo Parcial — TC-11 Lighthouse Baseline
 
@@ -31,10 +32,11 @@ El commit de referencia del Baseline es
 Las Issues [#212](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/212),
 [#213](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/213)
 y [#214](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/214)
-fueron creadas y permanecen abiertas; la corrección y verificación siguen
-pendientes. En TC-11, el Coordinador/DevOps indicó
+fueron creadas a partir del Baseline. La corrección y verificación final de
+#212 y #213 siguen pendientes; el seguimiento posterior de #214 se indica
+abajo. En TC-11, el Coordinador/DevOps indicó
 mantener RC03 abierto hasta que se subieran Fetch y SweetAlert2. RC03 continúa
-abierto; TC-12 se ejecutó posteriormente y TC-13 sigue pendiente.
+abierto; TC-12 y TC-13 se ejecutaron posteriormente.
 
 ## Segundo Parcial — TC-12 Lighthouse Post Fetch
 
@@ -59,8 +61,8 @@ SweetAlert2. El servidor y el worktree se verificaron posteriormente.
 
 Performance y Best Practices no cumplen ≥95. El CLS subió aproximadamente
 55.4 % y las capturas muestran una `section` desplazada; la causa no está
-confirmada. Best Practices mantiene el hallazgo de cookies de Maps. Las
-Issues #212, #213 y #214 siguen abiertas. No se puede
+confirmada. En esa auditoría, Best Practices mantenía el hallazgo de cookies
+de Maps. No se puede
 atribuir la variación a Fetch ni garantizar idénticas condiciones de red y
 caché; faltan parámetros del Baseline.
 
@@ -71,13 +73,112 @@ el coordinador definió estos responsables:
 |---|---|---|
 | #212 | @alandox1 — Desarrollador JS Asíncrono | Abierta; corrección y verificación pendientes |
 | #213 | @LuchoBarrionuevo13 — Tester QA/JS | Abierta; corrección y verificación pendientes |
-| #214 | @Piastrellini — Desarrollador JS de Librerías Externas | Abierta; corrección y verificación pendientes |
+| #214 | @Piastrellini — Desarrollador JS de Librerías Externas | Cerrada en GitHub; verificación preliminar realizada |
 
 El [TC-12](./test-case-12-lighthouse-post-fetch.md) contiene análisis,
 recomendaciones, comparación y los borradores previos como referencia histórica.
 Las [14 capturas](./screenshots/tc-12/) se enlazan individualmente allí.
-Quedan pendientes TC-13, `library.spec.js`, las correcciones y su
-verificación. RC03 sigue abierto.
+Los responsables fueron comunicados por el coordinador; la consulta actual
+confirma además los Assignees formales @alandox1 en #212,
+@angelgc9107-lgtm en #213 y @Piastrellini en #214. El Assignee de #213
+difiere de @LuchoBarrionuevo13, responsable comunicado; coordinar su
+confirmación sin modificar la Issue. Queda pendiente la
+verificación final de #212 y #213. RC03 sigue abierto.
+
+### Seguimiento preliminar de #214
+
+La [PR #221](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/221)
+de Thiago fue [aprobada](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/221#pullrequestreview-6083871842)
+y se integró en `develop`. Según el
+[registro publicado de QA](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/221#issuecomment-7210389785),
+en una verificación preliminar sobre su rama se obtuvieron
+Performance **97**, Accessibility **100**, Best Practices **100**, SEO **100**
+y CLS **0.075**. No se detectaron solicitudes de Google Maps con el filtro
+`maps` durante la carga inicial; se comprobó el botón **Ver mapa** y la
+visualización del mapa después de pulsarlo. No se inspeccionaron las cookies
+después de activarlo. No se localizaron capturas específicas de esa medición;
+las capturas de #221 con Performance 91 son de otra medición, como se detalla
+en [TC-13](./test-case-13-lighthouse-post-library.md).
+
+GitHub confirma que #214 está **cerrada**, con cierre registrado el
+27/11/2026 a las 05:33:04 UTC por @angelgc9107-lgtm. La verificación
+informada es preliminar y **no corresponde al TC-13 oficial**, documentado
+por separado a continuación. Queda solicitar al coordinador la confirmación
+del cierre con la inspección de cookies pendiente.
+
+## Segundo Parcial — TC-13 Lighthouse Post Library
+
+El usuario ejecutó dos mediciones manuales sobre el [commit histórico
+`5d6ba926db00137fb53eace818ef5fe8d362bf17`](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/commit/5d6ba926db00137fb53eace818ef5fe8d362bf17), posterior a Fetch y SweetAlert2
+y anterior a la corrección de Maps de #221. La segunda, realizada el 27/11/2026
+a las 03:19 GMT-3 con la ventana maximizada, se usa como referencia principal:
+Performance **96**, Accessibility **100**, Best Practices **100**, SEO **100**
+y CLS **0.075**. La primera obtuvo **75, 100, 100, 100** y CLS **0.555**;
+Performance 75 no cumple el mínimo de 95. Se conserva sin descartar. La diferencia de visualización es una posible
+influencia, no una causa confirmada.
+
+| Categoría o métrica | TC-11 | TC-12 | TC-13 segunda |
+|---|---:|---:|---:|
+| Performance | 92 | 86 | 96 |
+| Accessibility | 100 | 100 | 100 |
+| Best Practices | 77 | 77 | 100 |
+| SEO | 100 | 100 | 100 |
+| FCP | 0.5 s | 0.5 s | 0.5 s |
+| LCP | 1.1 s | 1.2 s | 1.2 s |
+| TBT | 0 ms | 0 ms | 0 ms |
+| CLS | 0.148 | 0.230 | 0.075 |
+| Speed Index | 0.5 s | 0.5 s | 0.5 s |
+
+TC-13 utilizó Lighthouse 13.3.0 y Chromium 150.0.7871.250; TC-11 y TC-12
+registraron 13.5.0 y 158.0.0.0. Los parámetros anteriores de red y caché
+están incompletos, por lo que las diferencias no demuestran causalidad. En la
+segunda ejecución persisten recomendaciones estimadas de caché, imágenes,
+recursos bloqueantes y JavaScript; Lighthouse identifica una `section` con
+CLS 0.075 y recomienda evaluar la prioridad de la imagen LCP. Best Practices
+100 no demuestra que Maps estuviera corregido en el commit histórico.
+
+El [TC-13](./test-case-13-lighthouse-post-library.md) conserva el análisis,
+las **18 capturas** (12 de la segunda ejecución y 6 de la primera), las
+limitaciones y el seguimiento. Los resultados ya se publicaron en
+[#212](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/212#issuecomment-7211819949)
+y [#213](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/213#issuecomment-7211904775);
+ambas permanecen abiertas y su verificación final sobre `develop` actualizado
+sigue pendiente. Referencias directas:
+[segunda ejecución](./screenshots/tc-13/01-lighthouse-scores-and-metrics.png),
+[CLS](./screenshots/tc-13/06-layout-shift-culprits.png) y
+[primera ejecución](./screenshots/tc-13/primera-ejecucion/01-lighthouse-scores.png).
+El SHA TC-13 fue corregido manualmente y los cuerpos de ambas Issues enlazan
+el commit correcto indicado arriba. Enumeran las capturas como rutas y nombres,
+no como enlaces directos; estos se conservan en la documentación. #214
+continúa cerrada y su verificación preliminar se mantiene separada.
+
+## Segundo Parcial — Pruebas funcionales SweetAlert2
+
+El 27/11/2026 se incorporó `library.spec.js` al runner y se conservaron las
+27 pruebas de integración del controlador. Playwright MCP ejecutó la suite
+completa en Chromium 158: **501 aprobadas, 0 fallidas, 0 pendientes**, semilla
+`61496`; incluye 9/9 pruebas nuevas y 22/22 de API. La medición V8 independiente
+con Playwright local registró 501 specs y 0 failures. El fallo manual anterior
+de foco no se reprodujo y su causa sigue pendiente de investigación.
+
+Los detalles, la comparación de cobertura y las capturas se encuentran en
+[la documentación Jasmine](../../js/test/testing-doc.md). En aquella etapa de
+pruebas no se ejecutó Lighthouse; TC-13 se realizó posteriormente.
+
+### Validación manual de SweetAlert2 (27/11/2026)
+
+Según lo informado por el usuario, comprobó personalmente que el diálogo se
+visualiza correctamente y que el foco inicial está en **Cancelar**. También
+verificó Tab, Shift + Tab y la cancelación con Escape: el carrito permanece
+abierto y el foco vuelve al botón de eliminación. Al confirmar, el producto se
+elimina y se actualizan la cantidad de productos y el total.
+
+Las capturas muestran el [diálogo de confirmación](../../js/test/capturas/captura-sweetalert2-confirmacion-manual-2026-11-27.png)
+y el [carrito después de la eliminación](../../js/test/capturas/captura-sweetalert2-eliminacion-manual-2026-11-27.png);
+la navegación con teclado fue comprobada manualmente por el usuario y no se
+deduce de las imágenes. El fallo anterior relacionado con el foco no se
+reprodujo en esta validación manual; su causa original sigue sin determinarse.
+Esta comprobación no es una nueva ejecución de Jasmine ni la auditoría TC-13.
 
 ## Resumen de Issues — Momento 1 (Testing pre-merge)
 
