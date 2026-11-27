@@ -126,7 +126,7 @@ Motivos:
 - [ ] La PR se mergea a `develop` recién después de que Fetch esté integrado y TC-12 esté ejecutado y documentado (sección 6).
 - [X] `docs/07-librerias/libreria-doc.md` completo: nombre, versión, propósito, instalación, ejemplos de uso, enlaces a la documentación oficial y capturas en `docs/07-librerias/screenshots/`.
 - [X] Código documentado con JSDoc, sin `alert()`, `confirm()` ni `prompt()`.
-- [ ] Rama `feature/dev-libreria-externa-sweetalert2`, issue asociada, PR hacia `develop` revisada por el Coordinador/DevOps y entrada en `changelog.md`.
+- [X] Rama `feature/dev-libreria-externa-sweetalert2`, issue asociada, PR hacia `develop` revisada por el Coordinador/DevOps y entrada en `changelog.md`.
 
 ## 6. Herramientas y coordinación
 
@@ -139,7 +139,7 @@ Motivos:
 
 **Orden de integración a `develop` (RC01):**
 
-1. Fetch integrado y revisado en `develop` (PR #211).
+1. Fetch integrado y revisado en `develop` (PR #217; la #211 era el spec del rol).
 2. El Tester QA/JS ejecuta y documenta **TC-12** (Lighthouse post-Fetch) sobre `develop`.
 3. Recién entonces se mergea esta PR a `develop`.
 4. El Tester QA/JS ejecuta **TC-13** (Lighthouse post-librería) y lo compara con TC-12.
@@ -274,7 +274,7 @@ Sobre el código que generó Claude Code no se hicieron cambios manuales: se rev
 | Se aceptaron tres decisiones que el BEFORE no tenía: `titleText` en lugar de `title` (en SweetAlert2 `title` se interpreta como HTML), protección contra doble clic mientras el diálogo está abierto, y que cancelar con el formulario vacío no pregunte. | Las dos primeras corrigen riesgos reales (inyección de HTML y acciones repetidas); la tercera evita preguntar cuando no hay datos que perder. |
 | Se aceptó `console.error` (y no `console.warn`) cuando la librería no cargó, como decía el BEFORE. | Es lo especificado en la sección 4. |
 | Actualización del BEFORE por la revisión de la PR #216: orden de integración con TC-12 (RC01), matriz de regresión de los cuatro flujos (RC02) y criterios de compatibilidad con Bootstrap (RC03). | Pedido del Coordinador/DevOps en la revisión. Los agregados están marcados en el BEFORE con su RC. |
-| Orden real de trabajo: el código se escribió en la rama el 26/11 a las 12:30, antes del merge de Fetch a `develop` (18:16). El merge de esta PR queda condicionado a TC-12 (criterio de la sección 5, todavía sin tildar). | Se deja constancia para que el orden de integración a `develop` no se confunda con el orden de desarrollo en la rama. |
+| Orden real de trabajo: el código se escribió en la rama el 26/11 a las 12:30, antes de que Fetch estuviera en `develop` (PR #217, mergeada a las 23:00). Antes de pedir el merge se trajo `develop` a la rama, se resolvieron los conflictos con Fetch y la suite quedó en 468 specs, 0 failures. | Se deja constancia para que el orden de desarrollo en la rama no se confunda con el orden de integración a `develop`. |
 | Claude Code cambió la base de la rama: salía de un `develop` local desactualizado y la rebasó sobre `origin/develop` antes de empezar, conservando el commit del spec. Se verificó con `git log` antes de publicar la rama. | Sin `js/services/` ni el `script.js` actual, la integración no se podía hacer sobre la base anterior. |
 
 ## 4. Resumen de los puntos de integración y mejora de la experiencia
