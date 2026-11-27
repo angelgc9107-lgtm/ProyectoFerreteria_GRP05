@@ -13,8 +13,9 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 - [feature/dev-libreria-externa-sweetalert2] [Segundo Parcial] Desarrollador JS Librerías Externas: SweetAlert2 11.26.25 por CDN, wrapper `ServicioDialogos`, confirmación al eliminar del carrito, confirmar y cancelar el pedido, `libreria-doc.md` con capturas y spec - PR: [#216](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/216) - Issue: [#209](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/209) - @Piastrellini (Desarrollador JS Librerías Externas)
 - [feature/dev-async-fetch-api-implementacion] [Segundo Parcial] Implementación del consumo asíncrono del catálogo (apiService, ProcesadorCatalogo, carga con estados en script.js) - PR: [#217](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/217) - Issue: [#210](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/210) - @alandox1 (Desarrollador JS Asíncrono)
 
-### Fixed
 
+### Fixed
+- [fix/layout-shift-cls]fix: corrección de CLS en Desktop y Mobile y documentación de evidencias PR: [#223](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/223) — Issue: [#213](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/213) — @angelgc9107-lgtm (Coordinador/Devops)
 - [feature/issue-214-mapa-cookies-terceros] [Segundo Parcial] Google Maps se carga a pedido («Ver mapa») para no cargar cookies de terceros al abrir la página: Best Practices de 77 a 100 en Lighthouse - PR: [#221](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/221) - Issue: [#214](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/214) - @Piastrellini (Desarrollador JS Librerías Externas)
 
 ## [Release Actividad Obligatoria N°4] - 2026-11-22
