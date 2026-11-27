@@ -299,6 +299,7 @@ En los tres casos un doble clic no repite la acción. Si el CDN no carga, la apl
 ## 5. Coordinación e issues respondidas
 
 - **Tester QA/JS:** `script.spec.js` instala un doble de `Swal` en cada test (`instalarDobleSwal()`) y las acciones con diálogo se esperan con `clicYEsperar()`. Se le pasan esas funciones y la API del wrapper (`confirmar`, `disponible`) para `library.spec.js` y para el Test Case 13 de Lighthouse (post-librería).
+- **Lighthouse TC-12 y TC-13:** documentados en [test-case-12-lighthouse-post-fetch.md](../../04-testing/test-case-12-lighthouse-post-fetch.md) (commit `ca9458f`, post-Fetch) y [test-case-13-lighthouse-post-library.md](../../04-testing/test-case-13-lighthouse-post-library.md) (commit `5d6ba92`, post-librería). `library.spec.js` se incorporó en la PR #222.
 - **Desarrollador JS Asíncrono:** el diálogo de «Eliminar» toma el nombre del producto del modelo `Carrito` y lo muestra como texto plano, así que funciona igual con productos que vengan de la API.
 - **Coordinador/DevOps:** carpeta `docs/07-librerias/`, como en su spec del Segundo Parcial. La PR se mergea después de la de Fetch.
 - **Issue asociada:** [#209](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/209).
