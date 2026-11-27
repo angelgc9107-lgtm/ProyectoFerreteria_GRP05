@@ -73,6 +73,25 @@ Evidencias: [semilla antes de library](./capturas/captura-seed-61496-antes-libra
 La captura de cobertura muestra la salida textual de la ejecución independiente.
 No se ejecutó Lighthouse TC-13.
 
+### Validación manual de SweetAlert2 (27/11/2026)
+
+Según lo informado por el usuario, realizó personalmente la validación con
+resultados favorables:
+
+- Visualización correcta del diálogo y foco inicial en **Cancelar**.
+- Navegación correcta con Tab y Shift + Tab; Escape cancela el diálogo.
+- Al cancelar, el carrito permanece abierto y el foco vuelve al botón de
+  eliminación.
+- Al confirmar, se elimina el producto y se actualizan la cantidad de productos
+  y el total.
+
+Las capturas muestran el [diálogo de confirmación](./capturas/captura-sweetalert2-confirmacion-manual-2026-11-27.png)
+y el [carrito después de la eliminación](./capturas/captura-sweetalert2-eliminacion-manual-2026-11-27.png).
+La navegación con teclado fue comprobada manualmente por el usuario, no por
+las capturas. El fallo anterior relacionado con el foco no se reprodujo en
+esta validación manual; su causa original continúa sin determinarse. Esta
+comprobación no es una nueva ejecución de Jasmine.
+
 ## Segundo Parcial — Fetch/API y regresión (etapa anterior)
 
 ### Reejecución del 27/11/2026 y resultado manual informado
@@ -151,6 +170,10 @@ Antes de esta corrección, la suite de la PR #169 tenía **220 specs y 3 failure
 
 ## Estructura de la suite
 
+La siguiente estructura de cuatro archivos y 451 pruebas corresponde al
+historial de la cuarta entrega; no describe el runner actual del Segundo
+Parcial, cuyos resultados se documentan al inicio de este archivo.
+
 En la tercera entrega `js/script.js` tenía la lógica y usaba `prompt()`/`alert()`. En la cuarta entrega se separó en capas y hay un archivo spec por cada una:
 
 | Módulo | Qué contiene | Spec | Specs |
@@ -161,7 +184,7 @@ En la tercera entrega `js/script.js` tenía la lógica y usaba `prompt()`/`alert
 | `js/script.js` | Controlador: eventos y DOM | `js/test/script.spec.js` | 116 |
 | | | **Total** | **451** |
 
-`js/test/test-runner.html` carga los cuatro specs como módulos ES. `js/test/models-test-runner.html` es el runner independiente que armó el Desarrollador JS POO para sus modelos y se conserva.
+En esa etapa, `js/test/test-runner.html` cargaba los cuatro specs como módulos ES. `js/test/models-test-runner.html` es el runner independiente que armó el Desarrollador JS POO para sus modelos y se conserva.
 
 ## Ejecución de Tests
 

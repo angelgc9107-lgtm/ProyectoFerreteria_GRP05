@@ -173,7 +173,7 @@ la corrección con el responsable.
       con `map`, `filter` y `reduce`; incluye DOM si corresponde.
 - [x] `library.spec.js` verifica inicialización, configuración, funcionalidad
       principal, errores e interacción con el sistema según la librería elegida.
-- [ ] Los nuevos specs se ejecutan en el runner Jasmine; la suite existente
+- [x] Los nuevos specs se ejecutan en el runner Jasmine; la suite existente
       sigue pasando y `script.spec.js` y `models.spec.js` se actualizan si
       corresponde, manteniendo o mejorando la cobertura existente.
 - [ ] TC-11 se realizó sobre la rama `develop`, después del backport aprobado
@@ -714,6 +714,21 @@ y [cobertura independiente](../../../js/test/capturas/captura-cobertura-library-
 Detalle y limitaciones en [testing-doc.md](../../../js/test/testing-doc.md).
 No se detectó un problema funcional nuevo que justifique un borrador de Issue.
 
+### Validación manual de SweetAlert2 (27/11/2026)
+
+Según lo informado por el usuario, comprobó personalmente la visualización
+correcta del diálogo, el foco inicial en **Cancelar**, la navegación con Tab y
+Shift + Tab y la cancelación con Escape. Al cancelar, el carrito permaneció
+abierto y el foco volvió al botón de eliminación. Al confirmar, se eliminó el
+producto y se actualizaron la cantidad de productos y el total.
+
+Evidencias: [diálogo de confirmación](../../../js/test/capturas/captura-sweetalert2-confirmacion-manual-2026-11-27.png)
+y [carrito después de la eliminación](../../../js/test/capturas/captura-sweetalert2-eliminacion-manual-2026-11-27.png).
+Las capturas evidencian el diálogo y la eliminación; la navegación con teclado
+fue comprobada manualmente por el usuario. El fallo anterior relacionado con
+el foco no se reprodujo en esta validación manual y su causa original continúa
+sin determinarse. No se trata de una nueva ejecución de Jasmine ni del TC-13.
+
 ### Resultados de Jasmine
 
 - **Resultado principal de la etapa Fetch/API:** reejecución del 27/11/2026 por HTTP con Playwright MCP y Chromium 158: **490 pruebas aprobadas, 0 fallidas, 0 pendientes**, semilla `28453`; incluye **22/22 pruebas de API** y 27/27 de SweetAlert2.
@@ -863,7 +878,8 @@ desmarcarla manualmente en GitHub.
 ### Pendientes para completar AT CLOSE
 
 - TC-13 y su comparación con TC-12 permanecen pendientes.
-- Completar la validación manual de accesibilidad y teclado real de SweetAlert2.
+- Validar la accesibilidad de SweetAlert2 con tecnologías de asistencia; la
+  navegación manual con teclado indicada arriba ya fue comprobada.
 - Investigar la causa del fallo manual de SweetAlert2 con las condiciones
   restantes de esa ejecución y, si están disponibles, su captura y consola.
 - Corrección y verificación final de las Issues #212 y #213.

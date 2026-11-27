@@ -106,6 +106,21 @@ Los detalles, la comparación de cobertura y las capturas se encuentran en
 [la documentación Jasmine](../../js/test/testing-doc.md). TC-13 sigue
 pendiente; no se ejecutó una auditoría Lighthouse en esta etapa.
 
+### Validación manual de SweetAlert2 (27/11/2026)
+
+Según lo informado por el usuario, comprobó personalmente que el diálogo se
+visualiza correctamente y que el foco inicial está en **Cancelar**. También
+verificó Tab, Shift + Tab y la cancelación con Escape: el carrito permanece
+abierto y el foco vuelve al botón de eliminación. Al confirmar, el producto se
+elimina y se actualizan la cantidad de productos y el total.
+
+Las capturas muestran el [diálogo de confirmación](../../js/test/capturas/captura-sweetalert2-confirmacion-manual-2026-11-27.png)
+y el [carrito después de la eliminación](../../js/test/capturas/captura-sweetalert2-eliminacion-manual-2026-11-27.png);
+la navegación con teclado fue comprobada manualmente por el usuario y no se
+deduce de las imágenes. El fallo anterior relacionado con el foco no se
+reprodujo en esta validación manual; su causa original sigue sin determinarse.
+Esta comprobación no es una nueva ejecución de Jasmine ni la auditoría TC-13.
+
 ## Resumen de Issues — Momento 1 (Testing pre-merge)
 
 Ejecutado contra la rama `feature/responsive-design-add-responsive-styles` (incluye CSS de
