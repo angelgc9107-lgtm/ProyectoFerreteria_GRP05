@@ -14,7 +14,7 @@ Este archivo se actualiza con cada Pull Request para registrar avances y correcc
 
 ### Fixed
 
-- [feature/issue-214-mapa-cookies-terceros] [Segundo Parcial] Google Maps se carga a pedido («Ver mapa») para no cargar cookies de terceros al abrir la página: Best Practices de 77 a 100 en Lighthouse - PR: [#<N° PR>](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/<N° PR>) - Issue: [#214](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/214) - @Piastrellini (Desarrollador JS Librerías Externas)
+- [feature/issue-214-mapa-cookies-terceros] [Segundo Parcial] Google Maps se carga a pedido («Ver mapa») para no cargar cookies de terceros al abrir la página: Best Practices de 77 a 100 en Lighthouse - PR: [#221](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/221) - Issue: [#214](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/214) - @Piastrellini (Desarrollador JS Librerías Externas)
 
 ## [Release Actividad Obligatoria N°4] - 2026-11-22
 
