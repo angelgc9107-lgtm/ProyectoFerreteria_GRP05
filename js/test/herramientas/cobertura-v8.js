@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Mide la cobertura de líneas, funciones y ramas de js/models/, js/services/,
- * js/utils/storage.js y js/script.js mientras corre la suite completa de
+ * Mide la cobertura de líneas, funciones y ramas de js/api/, js/models/,
+ * js/services/, js/utils/storage.js y js/script.js mientras corre la suite completa de
  * js/test/test-runner.html en Chromium.
  *
  * Usa la cobertura de código de V8 que expone Playwright (page.coverage). No forma
@@ -36,7 +36,7 @@ const { chromium } = require("playwright");
 
 const RAIZ = path.resolve(__dirname, "../../..");
 const RUNNER = "/js/test/test-runner.html";
-const ARCHIVOS = /\/js\/((?:models|services|utils)\/[A-Za-z]+\.js|script\.js)$/;
+const ARCHIVOS = /\/js\/((?:api|models|services|utils)\/[A-Za-z]+\.js|script\.js)$/;
 const TIPOS = {
     ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8",
     ".css": "text/css; charset=utf-8", ".png": "image/png", ".json": "application/json",

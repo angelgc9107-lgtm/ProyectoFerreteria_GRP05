@@ -1,7 +1,64 @@
 # Documentación de Testing - Suite Jasmine
 
-Proyecto FerroLab - Actividad Obligatoria N°4 - Programación Web I
-Módulos testeados: `js/models/*.js`, `js/services/*.js`, `js/utils/storage.js` y `js/script.js` | Framework: Jasmine 5.10.0 (CDN)
+Proyecto FerroLab - Actividad Obligatoria N°4 y Segundo Parcial - Programación Web I
+Módulos testeados: `js/api/*.js`, `js/models/*.js`, `js/services/*.js`, `js/utils/storage.js` y `js/script.js` | Framework: Jasmine 5.10.0 (CDN)
+
+## Segundo Parcial — Fetch/API y regresión (corrida actual)
+
+### Reejecución del 27/11/2026 y resultado manual informado
+
+Se volvió a ejecutar el runner completo en Chromium 158 mediante **Playwright MCP**, servido por HTTP desde la raíz del proyecto (`http://127.0.0.1:18765/js/test/test-runner.html`), sobre `HEAD` `5d6ba92` y los cambios de QA sin commitear. **490 pruebas ejecutadas: 490 aprobadas, 0 fallidas, 0 pendientes**, con la semilla `28453`. Las 22 pruebas de `api.spec.js` y las 27 de la suite de diálogos SweetAlert2 aprobaron. Dentro de estas últimas aprobaron los dos casos con la librería real y la comprobación de hashes SRI del CDN.
+
+El usuario informó una ejecución manual distinta: **489 aprobadas y 1 fallida**, semilla `61496`, con servidor HTTP en el puerto `8000`. La prueba «desde el carrito abierto: foco en Cancelar, Esc cierra solo el diálogo y el foco vuelve al botón» falló con `La condición no se cumplió a tiempo.`, en `script.spec.js:2111:41` y `script.spec.js:2567:13`. Este resultado no se descarta ni se presenta como aprobado. El fallo no se reprodujo posteriormente con Playwright MCP, por lo que su causa **no está determinada**. Las pruebas existentes incluyen dependencias de CDN, foco, animaciones y tiempos de espera; son condiciones a comparar, no causas comprobadas. Para investigar siguen pendientes la versión del navegador y, de ser posible, una captura del panel de fallos de Jasmine y la consola. La semilla informada permite repetir la secuencia mediante `http://localhost:8000/js/test/test-runner.html?seed=61496`.
+
+Se ejecutó además una medición **independiente** con `node js/test/herramientas/cobertura-v8.js --detalle` (Chromium mediante Playwright local, no MCP): **490 specs, 0 failures**, semilla `88737`. La captura reproduce íntegramente la salida textual obtenida en esa medición:
+
+| Archivo | Líneas | Funciones | Ramas V8 aproximadas |
+|---|---:|---:|---:|
+| `js/api/apiService.js` | 124/129 (96,1 %) | 11/11 (100 %) | 57/59 (96,6 %) |
+| `js/services/ProcesadorCatalogo.js` | 59/60 (98,3 %) | 18/18 (100 %) | 24/25 (96,0 %) |
+| **Total medido** | **1935/1969 (98,3 %)** | **257/258 (99,6 %)** | **723/736 (98,2 %)** |
+
+Evidencias obtenidas con Playwright MCP:
+
+- [Resultado general de Jasmine](./capturas/captura-jasmine-segundo-parcial-2026-11-27.png).
+- [Las 22 pruebas de API](./capturas/captura-api-22-pruebas-2026-11-27.png).
+- [Las 27 pruebas de SweetAlert2](./capturas/captura-sweetalert2-2026-11-27.png).
+- [Salida de cobertura V8 y ramas sin cubrir](./capturas/captura-cobertura-v8-2026-11-27.png).
+
+Las capturas de API y SweetAlert2 muestran una vista del reporte de la **misma corrida completa**, con las demás suites ocultadas después de la ejecución; no son ejecuciones filtradas ni cambian los resultados de Jasmine. La captura de cobertura muestra la salida de la medición independiente, servida como texto local para fotografiarla; los totales de ramas pueden variar entre corridas por la forma en que V8 informa los bloques.
+
+### Corrida anterior del 26/11/2026
+
+**Fecha:** 26/11/2026. **Rama:** `feature/tester-qa-js-testing-suite`.
+**Código de Alan evaluado:** merge de la PR #217, commit `ca9458f29d283e010c3fd2cafb5d931e3e70b1bb`; la suite se ejecutó sobre `HEAD` `5d6ba92` más los cambios de QA de esta tarea.
+
+La suite se ejecutó desde `js/test/test-runner.html` por HTTP. La verificación final fue `node js/test/herramientas/cobertura-v8.js --detalle`, que levanta un servidor local temporal, abre el runner en Chromium y mide cobertura V8.
+
+**Resultado final: 490 specs, 0 failures, 0 pendientes** (Jasmine 5.10.0; semilla aleatoria `47158`).
+
+| Suite | Specs aprobados | Fallidos |
+|---|---:|---:|
+| `models.spec.js` | 89 | 0 |
+| `storage.spec.js` | 189 | 0 |
+| `services.spec.js` | 50 | 0 |
+| `api.spec.js` | 22 | 0 |
+| `script.spec.js` | 140 | 0 |
+| **Total** | **490** | **0** |
+
+`api.spec.js` cubre respuestas válidas y argumentos de `fetch`, errores HTTP y de red diferenciados, reintentos y espera creciente, callback de reintento fallido, timeout, JSON y estructura inválidos, fetch no disponible, fallback por caché/local, caché no persistible, colecciones inválidas/vacías, duplicados, normalización, construcción, resumen `reduce`, agrupación y estados DOM de carga, éxito, error y recuperación por reintento. Los dobles sustituyen `fetch`; ninguna prueba consulta un servicio de API externo. El DOM se crea en iframes `srcdoc` y se restaura la clave de caché al terminar.
+
+**Cobertura V8 de los módulos del catálogo:**
+
+| Archivo | Líneas | Funciones | Ramas |
+|---|---:|---:|---:|
+| `js/api/apiService.js` | 124/129 (96,1 %) | 11/11 (100 %) | 56/58 (96,6 %) |
+| `js/services/ProcesadorCatalogo.js` | 59/60 (98,3 %) | 18/18 (100 %) | 24/25 (96,0 %) |
+| **Total medido por la herramienta** | **1935/1969 (98,3 %)** | **257/258 (99,6 %)** | **725/738 (98,2 %)** |
+
+La cobertura de ramas es la aproximación de bloques de V8 descrita en «Cómo se mide cada número»; puede variar según la compilación/semilla y no equivale a Istanbul/c8. El detalle también marca la salida del ciclo de reintentos de `obtenerJson`, el `catch` defensivo de lectura de caché (`apiService.js`) y la última defensa de construcción de `Producto` (`ProcesadorCatalogo.js`). El primer camino no es alcanzable por el bucle sin condición; los otros dos corresponden a defensas detrás de validaciones/abstracciones que ya capturan los errores según sus contratos. No se modificó código funcional para alcanzar porcentajes.
+
+**Hallazgos y regresiones:** la primera corrida de desarrollo detectó cuatro fallos del propio test harness al intentar espiar métodos de `FachadaStorage`, que es inmutable (`Object.freeze`). Se ajustaron esas pruebas para usar la fachada real y aislar/restaurar la clave de caché. En esa corrida final no hubo fallos Jasmine ni regresiones detectadas; no hubo borradores de Issues nuevos. #212, #213 y #214 siguen siendo hallazgos preexistentes del TC-11 y no se modificaron. La evidencia de esa corrida quedó en la sesión; las capturas posteriores se indican arriba.
 
 ## Índice
 1. [Estructura de la suite](#estructura-de-la-suite)
@@ -16,7 +73,7 @@ Módulos testeados: `js/models/*.js`, `js/services/*.js`, `js/utils/storage.js` 
 
 ---
 
-## Estado de la corrida (leer primero)
+## Historial de la corrida de la cuarta entrega
 
 Corrida completa de `test-runner.html` sobre la rama `release/cuarta-entrega` con las PR #167, #168, #169 (Desarrollador JS Eventos + DOM), #172 (Local y Session Storage) y #175 (POO) ya integradas, más los specs agregados en esta corrección de QA: **425 specs, 0 failures** (tres corridas con semillas distintas). Sin los specs de esta corrección, la rama de release tenía 405 specs, 0 failures. Después se agregó el spec de la corrección de RC51 (`Pedido.fromJSON()` lee el número una sola vez), y la suite quedó en **426 specs, 0 failures**. Con las PR #186 y #188 (Eventos + DOM) integradas pasó a 441 specs, y con los 10 specs agregados en esta corrección (RC81 a RC84: 3 de fallos de persistencia de `ConfirmadorPedidos`, 4 de `ValidacionPedido` y 3 del controlador) quedó en **451 specs, 0 failures** (tres corridas con semillas distintas).
 
@@ -450,5 +507,6 @@ La suite de la tercera entrega (143 tests sobre funciones con `prompt()` y `aler
 
 ---
 
-**Última Actualización:** 2026-11-25 (corrección de RC51: `Pedido.fromJSON()` y cobertura de modelos; antes, 2026-11-23, correcciones de la revisión de la cuarta entrega sobre la rama de release con las PR #167, #168 y #169)
+**Última Actualización:** 27/11/2026 (testing funcional Fetch/API del Segundo Parcial; antes, 2026-11-25, corrección de RC51: `Pedido.fromJSON()` y cobertura de modelos; antes, 2026-11-23, correcciones de la revisión de la cuarta entrega sobre la rama de release con las PR #167, #168 y #169)
 **Tester/QA Engineer:** Alan Diaz (@alandox1)
+**Tester QA/JS - Segundo Parcial:** @LuchoBarrionuevo13
