@@ -17,6 +17,8 @@ import { cargarCatalogo } from "./api/apiService.js";
 // Es null mientras se espera la primera respuesta.
 let catalogo = null;
 let cargaCatalogoEnCurso = null;
+// Ofertas vigentes del catálogo cargado; vacío si no se pudieron calcular.
+let ofertasVigentes = [];
 const carrito = FachadaStorage.cargarCarrito();
 let pagoActual = null;
 let pedidoPendiente = null;
@@ -165,10 +167,8 @@ function limpiarEstadoControl(control) {
 function renderizarCatalogo(productos) {
     const fragmento = document.createDocumentFragment();
 
-    const ofertas = ServicioOfertas.obtenerOfertas(catalogo);
-
     const ofertasPorCodigo = new Map(
-        ofertas.map((oferta) => [oferta.codigo, oferta])
+        ofertasVigentes.map((oferta) => [oferta.codigo, oferta])
     );
 
     productos.forEach((producto) => {
@@ -634,10 +634,9 @@ function cancelarPedido() {
  * @returns {void}
  */
 function renderizarOfertas() {
-    const ofertas = ServicioOfertas.obtenerOfertas(catalogo);
     const fragmento = document.createDocumentFragment();
 
-    ofertas.forEach((oferta) => {
+    ofertasVigentes.forEach((oferta) => {
         const columna = document.createElement("div");
         columna.className = "col-12 col-md-6 col-lg-4";
 
@@ -693,6 +692,24 @@ function renderizarOfertas() {
     elementos.ofertasProductos.replaceChildren(fragmento);
 }
 
+
+/**
+ * Calcula las ofertas del catálogo recién cargado, de forma independiente.
+ * `ServicioOfertas` exige que estén sus tres productos promocionados con un
+ * precio válido; con un catálogo parcial (por ejemplo, un registro descartado)
+ * lanza una excepción. En ese caso las ofertas se omiten (queda la lista vacía:
+ * sin tarjetas de oferta ni precio anterior), el detalle va a `console.error`
+ * y el catálogo principal se muestra igual.
+ * @returns {void}
+ */
+function actualizarOfertasVigentes() {
+    try {
+        ofertasVigentes = ServicioOfertas.obtenerOfertas(catalogo);
+    } catch (error) {
+        console.error("No se pudieron calcular las ofertas; se omiten.", error);
+        ofertasVigentes = [];
+    }
+}
 
 /**
  * Renderiza dinámicamente la tabla de precios
@@ -878,7 +895,8 @@ function describirCarga({ origen, error, descartados, resumen }) {
     const respaldo = origen === "cache"
         ? "Mostramos la última versión guardada."
         : "Mostramos el catálogo local.";
-    const pasajero = error.tipo === "red" || (error.tipo === "http" && error.estado >= 500);
+    const pasajero = error.tipo === "red" ||
+        (error.tipo === "http" && error.estado >= 500 && error.estado < 600);
     let causa;
     if (pasajero) {
         causa = origen === "cache" ? "No pudimos actualizar el catálogo." : "No pudimos conectarnos.";
@@ -919,6 +937,7 @@ function cargarCatalogoEnPantalla() {
             });
 
             catalogo = resultado.catalogo;
+            actualizarOfertasVigentes();
             renderizarCategorias();
             if ([...elementos.categoria.options].some((opcion) => opcion.value === categoriaPrevia)) {
                 elementos.categoria.value = categoriaPrevia;
