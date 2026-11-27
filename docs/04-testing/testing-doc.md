@@ -267,6 +267,29 @@ Las pruebas experimentales justifican ambas alturas, dado que permitieron obtene
 
 **Evidencias:** [Capturas de la Issue #213](./screenshots/Issue-213/).
 
+### 4. Comparación con las auditorías históricas
+
+Se compararon los resultados obtenidos después de la corrección de la Issue #213 con los valores de CLS registrados en las auditorías anteriores del proyecto.
+
+| Auditoría | CLS obtenido |
+|---|---:|
+| TC-11 — Baseline inicial | 0.148 |
+| TC-12 — Post Fetch | 0.230 |
+| TC-13 — Post Library (ventana reducida) | 0.555 |
+| TC-13 — Post Library (ventana maximizada) | 0.075 |
+| Issue #213 — Desktop corregido | 0.000 |
+| Issue #213 — Mobile corregido | 0.000 |
+
+Los resultados muestran una mejora de la estabilidad visual respecto de las auditorías históricas, alcanzando un CLS de 0.000 en Desktop y Mobile bajo las condiciones evaluadas.
+
+#### Limitaciones de comparabilidad
+
+Las auditorías históricas se realizaron sobre diferentes versiones del proyecto, con distintas dimensiones de ventana y versiones de Lighthouse.
+
+Además, no se dispone de un registro completo de las condiciones de red y caché de todas las auditorías anteriores.
+
+Por este motivo, la comparación permite observar la evolución del CLS, pero no establecer una equivalencia directa entre todas las mediciones ni atribuir exclusivamente las diferencias a la corrección implementada.
+
 ### Conclusión
 
 La corrección permitió reducir el CLS un 100 % en Desktop y Mobile, obteniendo un valor de 0.000 en ambas auditorías y mejorando el resultado original del TC-11 (0.148).
