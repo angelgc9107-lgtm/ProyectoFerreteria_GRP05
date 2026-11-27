@@ -352,25 +352,24 @@ Para cada una de las cuatro PRs mínimas (y las adicionales, si corresponde) se 
 | 7 | [PR: 219](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/219) | Desarrollador JS Librerías Externas | 27/11/2026 | Pendiente |
 | 8 | [PR: 220](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/220) | Tester QA/JS - Testing Avanzado | 27/11/2026 | Mergeado |
 | 9 | [PR: 221](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/221) | Desarrollador JS Librerías Externas | 27/11/2026 | Mergeado |
-| 9 | [PR: 222](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/222) | Tester QA/JS - Testing Avanzado | 27/11/2026 | Pendiente |
-
-
-#### Detalle de cada code review (repetir por PR)
-
-- **PR revisada y rol:** PR 208 - Tester QA/JS - Testing Avanzado .
-- **Prompt exacto utilizado (en bloque de código):**
-- **Respuesta Copilot**
-- **Capturas**
+| 10 | [PR: 222](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/222) | Tester QA/JS - Testing Avanzado | 27/11/2026 | Pendiente |
+| 11 | [PR: ](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/222) | Tester QA/JS - Testing Avanzado | 27/11/2026 | Pendiente |
+| 12 | [PR: ](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/222) | Tester QA/JS - Testing Avanzado | 27/11/2026 | Pendiente |
+| 13 | [PR: ](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/222) | Tester QA/JS - Testing Avanzado | 27/11/2026 | Pendiente |
 
 
 
 ### Correcciones de AO4, aprobación y backport inicial
 
-Pendiente.
+[[GRUPO N°5] [Backport Cuarta Entrega] Sincronización de master hacia develop](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/206).
 
 ### Integración de ramas feature y coordinación de auditorías Lighthouse
 
-Pendiente.
+[feature/tester-qa-js-testing-suite](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/208)
+[feature/dev-async-fetch-api](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/211)
+[feature/dev-libreria-externa-sweetalert2](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/216)
+[]()
+
 
 ### Actualización de README.md, changelog.md y estructura del proyecto
 
@@ -378,7 +377,7 @@ Pendiente.
 
 ### Gestión de issues y GitHub Projects
 
-Pendiente.
+
 
 ### Preparación de release, GitHub Pages, Slack y entrega en campus
 
@@ -404,4 +403,62 @@ Pendiente.
 
 ### Justificación y evidencias
 
+#### Detalle de cada code review (repetir por PR)
+
+- **PR revisada y rol:** PR 208 - Tester QA/JS - Testing Avanzado .
+- **Archivos diff de contexto**
+- `docs/03-specs/segundo-parcial/spec-coord-devops-segundo-parcial.md`
+- `docs/03-specs/segundo-parcial/spec-tester-qa-segundo-parcial.md`
+- **
+- **Prompt exacto utilizado (en bloque de código):**
+```
+# Code Review N.º 1 – Spec Tester QA/JS
+## Rol y objetivo
+Asumí el rol de Coordinador/DevOps y revisor técnico.
+Realizá una code review del spec del Tester QA/JS, verificando el cumplimiento de los requisitos del docente y de los criterios establecidos en el spec del Coordinador/DevOps.
+## Archivos de contexto
+
+- `docs/03-specs/segundo-parcial/spec-tester-qa-segundo-parcial.md`: archivo objeto de revisión.
+- `docs/03-specs/segundo-parcial/spec-coord-devops-segundo-parcial.md`: criterios de coordinación y aprobación.
+
+## Requisitos obligatorios del spec
+- Plan de testing funcional: qué casos de éxito, error HTTP, error de red y procesamiento con map/filter/reduce se van a cubrir en api.spec.js, y qué casos (inicialización, configuración, funcionalidad principal, errores) se van a cubrir en library.spec.js.
+- Plan de auditorías Lighthouse: en qué momentos se va a correr (baseline, post-fetch, post-librería) y los umbrales mínimos definidos (Performance ≥95, Accessibility ≥95, Best Practices ≥95, SEO ≥95).
+- Herramientas a utilizar: Copilot Agent (si corresponde) para generación de tests, con justificación.
+- Criterios de aceptación en formato checklist: api.spec.js y library.spec.js completos, los 3 test cases de Lighthouse documentados con comparaciones, issues creadas y asignadas a los roles correspondientes.
+
+## Verificaciones solicitadas
+
+- Verificar el cumplimiento de cada requisito obligatorio
+- Verificar el cumplimiento de todos los criterios aplicables al Tester QA/JS establecidos en el spec del Coordinador/DevOps.
+- Validar que la planificación respete el orden de integración a develop y las dependencias entre los roles.
+- Verificar que las auditorías Lighthouse se planifiquen en los tres momentos correspondientes.
+- Verificar que los criterios de aceptación sean claros, completos y verificables.
+- Identificar omisiones, contradicciones y posibles problemas en la planificación.
+- Verificar que se contemple la documentación de resultados, issues, contribuciones en changelog.md y prompts originales utilizados, si corresponde.
+- Verificar que el spec BEFORE haya sido commiteado antes de comenzar las pruebas, si el historial está disponible.
+
+## Resultado esperado
+1. Una tabla de cumplimiento de los requisitos, indicando requisito, fuente, evidencia y estado (Cumple, No cumple, Cumple parcialmente o No verificable).
+2. Los hallazgos identificados, utilizando la siguiente estructura:
+### RC01 – Título del hallazgo
+
+- Severidad: Crítico / Alto / Medio / Bajo.
+- Archivo:
+- Línea o rango de líneas:
+- Requisito incumplido:
+- Problema detectado:
+- Corrección solicitada:
+- Comentario inline para GitHub:
+3. Recomendaciones no bloqueantes, si corresponde.
+4. Resultado final de la revisión: APPROVE, REQUEST CHANGES o COMMENT, con su justificación.
+## Restricciones
+- Evaluar exclusivamente la etapa BEFORE del spec del Tester QA/JS.
+- No exigir pruebas implementadas, auditorías ejecutadas ni evidencias correspondientes a la etapa AT CLOSE.
+- No generar Request Changes por requisitos ajenos al rol o mejoras opcionales.
+- No inventar requisitos, evidencias ni números de línea.
+- No modificar archivos, realizar commits, aprobar PRs ni realizar merges.
+
+Realizá únicamente la code review. La decisión final será responsabilidad del Coordinador/DevOps. Si el coordinador lo autoriza se puede comentar los hallazgos
+```
 Pendiente. Se incorporarán los enlaces a commits, PRs, issues, comentarios de revisión, capturas y demás evidencias correspondientes al trabajo efectivamente realizado.
