@@ -146,6 +146,12 @@ nav .dropdown-toggle:focus-visible {
     text-decoration: underline;
 }
 
+/* Reserva de espacio para reducir el CLS durante
+   la carga asíncrona de las ofertas. */
+#ofertas-productos {
+    min-height: 308px;
+}
+
 #ofertas article,
 #catalogo article {
     display: flex;

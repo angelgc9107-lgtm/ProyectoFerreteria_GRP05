@@ -185,3 +185,55 @@ Hallazgos documentados en los test cases que no constituyen defectos funcionales
 - Iniciar Playwright MCP desde el entorno local
 - Ejecutar la validación de los test cases mediante Playwright MCP (no vía `npm test`)
 - Revisar los resultados y capturas bajo `docs/04-testing/`
+
+
+## Resolución de Issue #213 — Desplazamientos visuales durante la carga (CLS)
+
+**Issue:** [#213 — Desplazamientos visuales durante la carga (CLS)](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/213)  
+**Fecha:** 27/11/2026.  
+**Herramientas:** Chrome DevTools, Local Overrides y Lighthouse.
+
+### Problema detectado
+
+El contenedor `#ofertas-productos` no reservaba espacio suficiente durante la carga asíncrona de las ofertas mediante Fetch. La incorporación dinámica de las tarjetas provocaba el desplazamiento de las secciones inferiores de la página.
+
+### Corrección realizada
+
+Se realizaron pruebas experimentales mediante Local Overrides y mediciones de la altura del contenedor en Desktop y Mobile.
+
+Una vez comprobada la efectividad de la solución, se incorporaron las siguientes modificaciones:
+
+- `css/components.css`: se estableció una altura mínima de 308 px para el contenedor `#ofertas-productos`.
+- `css/responsive.css`: se estableció una altura mínima de 915 px dentro de la media query de Mobile (`max-width: 767.98px`).
+
+No se realizaron modificaciones en HTML, JavaScript ni en la implementación de Fetch.
+
+### Resultados de Lighthouse
+
+Se ejecutaron nuevas auditorías sobre el código corregido, obteniendo los siguientes resultados:
+
+| Indicador | Desktop antes | Desktop después | Mobile antes | Mobile después |
+|---|---:|---:|---:|---:|
+| Performance | 56 | 63 | 42 | 63 |
+| Accessibility | 100 | 100 | 100 | 100 |
+| Best Practices | 100 | 100 | 100 | 100 |
+| SEO | 100 | 100 | 100 | 100 |
+| FCP | 1.6 s | 1.7 s | 2.8 s | 3.0 s |
+| LCP | 4.6 s | 5.4 s | 9.9 s | 10.1 s |
+| TBT | 0 ms | 0 ms | 0 ms | 0 ms |
+| CLS | 0.183 | 0.000 | 0.656 | 0.000 |
+| Speed Index | 3.2 s | 3.4 s | 5.9 s | 7.0 s |
+
+### Evidencias
+
+Las capturas correspondientes a las auditorías iniciales, experimentales y definitivas se almacenarán en:
+
+`docs\04-testing\screenshots\Issue-213`
+
+### Conclusión
+
+La corrección permitió reducir el CLS un 100 % en Desktop y Mobile, obteniendo un valor de 0.000 en ambas auditorías y mejorando el resultado original del TC-11 (0.148).
+
+Las optimizaciones adicionales de Performance corresponden a la Issue #212 y quedan fuera del alcance de esta corrección.
+
+**Estado:** Corrección implementada y validada localmente. Pendiente de integración y cierre de la Issue #213.

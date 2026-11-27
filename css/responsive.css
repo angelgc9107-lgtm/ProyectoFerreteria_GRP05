@@ -15,6 +15,11 @@
    MOBILE — hasta 767px
    ========================================================== */
 @media (max-width: 767.98px) {
+     /* Reserva de espacio para evitar desplazamientos visuales
+    durante la carga asíncrona de ofertas en una columna. */
+    #ofertas-productos {
+        min-height: 915px;
+    }
 
      /* --- Header mobile: primera fila con logo, carrito y sesión
        centrados entre sí; el buscador y la navegación ocupan cada
