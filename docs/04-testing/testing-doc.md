@@ -190,26 +190,76 @@ Hallazgos documentados en los test cases que no constituyen defectos funcionales
 ## Resolución de Issue #213 — Desplazamientos visuales durante la carga (CLS)
 
 **Issue:** [#213 — Desplazamientos visuales durante la carga (CLS)](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/213)  
+**PR:** [#223 — Corrección de CLS y documentación de evidencias](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/223)  
 **Fecha:** 27/11/2026.  
-**Herramientas:** Chrome DevTools, Local Overrides y Lighthouse.
+**Herramientas:** Chrome DevTools, Local Overrides, Lighthouse DevTools y Lighthouse CLI.
 
 ### Problema detectado
 
 El contenedor `#ofertas-productos` no reservaba espacio suficiente durante la carga asíncrona de las ofertas mediante Fetch. La incorporación dinámica de las tarjetas provocaba el desplazamiento de las secciones inferiores de la página.
 
+El problema fue identificado inicialmente en Desktop y Mobile. Posteriormente, se amplió la evaluación a Tablet mediante Lighthouse CLI, detectándose también desplazamientos visuales en resoluciones intermedias.
+
 ### Corrección realizada
 
-Se realizaron pruebas experimentales mediante Local Overrides y mediciones de la altura del contenedor en Desktop y Mobile.
-Una vez comprobada la efectividad de la solución, se incorporaron las siguientes modificaciones:
+Se realizaron mediciones de la altura del contenedor y pruebas experimentales para determinar el espacio necesario antes de finalizar la carga asíncrona de las ofertas.
 
-- `css/components.css`: se estableció una altura mínima de 308 px para el contenedor `#ofertas-productos`.
+Se incorporaron las siguientes modificaciones:
+
+- `css/components.css`: se estableció una altura mínima general de 308 px para el contenedor `#ofertas-productos`.
 - `css/responsive.css`: se estableció una altura mínima de 915 px dentro de la media query de Mobile (`max-width: 767.98px`).
+- `css/responsive.css`: se incorporó una media query independiente para resoluciones entre 768 px y 991.98 px, estableciendo una altura mínima de 615 px para Tablet.
 
 No se realizaron modificaciones en HTML, JavaScript ni en la implementación de Fetch.
 
-### Resultados de Lighthouse
+### 1. Mediciones reales del contenedor
 
-Se ejecutaron nuevas auditorías sobre el código corregido, obteniendo los siguientes resultados:
+Se realizaron mediciones mediante la consola de Chrome DevTools sobre el contenedor `#ofertas-productos`, una vez finalizada la carga asíncrona de las ofertas.
+
+| Dispositivo | Ancho de ventana | Altura real del contenedor | Altura mínima seleccionada |
+|---|---:|---:|---:|
+| Desktop | 1277 px | 307.55859375 px | 308 px |
+| Tablet | 768 px | 614.34375 px | 615 px |
+| Mobile | 400 px | 914.34375 px | 915 px |
+
+Las alturas mínimas se determinaron redondeando hacia arriba los valores obtenidos.
+
+La diferencia entre las alturas responde a la distribución responsive de las tarjetas de ofertas:
+
+- Desktop: tres columnas y una fila.
+- Tablet: dos columnas y dos filas.
+- Mobile: una columna y tres filas.
+
+Para realizar las mediciones y verificar los estilos aplicados se utilizó el siguiente comando:
+
+```javascript
+console.table({
+    anchoVentana: window.innerWidth,
+    altoVentana: window.innerHeight,
+    altoContenedor: document.querySelector("#ofertas-productos").getBoundingClientRect().height,
+    alturaMinima: getComputedStyle(document.querySelector("#ofertas-productos")).minHeight
+});
+```
+
+### 2. Resultados de las pruebas experimentales en Desktop y Mobile
+
+Se utilizó Local Overrides de Chrome DevTools para evaluar diferentes alturas mínimas sin modificar inicialmente el código fuente del proyecto.
+
+Posteriormente, se ejecutaron auditorías Lighthouse para comprobar el impacto sobre el CLS.
+
+| Dispositivo | Altura mínima aplicada | CLS obtenido |
+|---|---:|---:|
+| Desktop | Sin corrección | 0.183 |
+| Desktop | 308 px | 0.000 |
+| Mobile | Sin corrección | 0.656 |
+| Mobile | 308 px | 0.208 |
+| Mobile | 915 px | 0.000 |
+
+Los resultados demostraron que la altura mínima de 308 px era suficiente para Desktop, pero no para Mobile, donde todavía se producían desplazamientos visuales.
+
+### 3. Resultados de las auditorías iniciales sobre el código corregido
+
+Una vez incorporadas las correcciones para Desktop y Mobile, se ejecutaron nuevas auditorías Lighthouse.
 
 | Indicador | Desktop antes | Desktop después | Mobile antes | Mobile después |
 |---|---:|---:|---:|---:|
@@ -223,51 +273,217 @@ Se ejecutaron nuevas auditorías sobre el código corregido, obteniendo los sigu
 | CLS | 0.183 | 0.000 | 0.656 | 0.000 |
 | Speed Index | 3.2 s | 3.4 s | 5.9 s | 7.0 s |
 
-### Evidencias
+Se alcanzó un CLS de 0.000 en ambas modalidades, eliminando los desplazamientos visuales registrados en las auditorías iniciales.
 
-### 1. Mediciones reales del contenedor
+Si bien Performance presentó una mejora en su puntuación, las métricas FCP, LCP y Speed Index registraron variaciones desfavorables. Por lo tanto, no se considera que la corrección del CLS represente una optimización general de todas las métricas de rendimiento.
 
-Se realizaron mediciones mediante la consola de Chrome DevTools sobre el contenedor `#ofertas-productos`, una vez finalizada la carga asíncrona de las ofertas.
+**Commit de la corrección inicial:** [7ff4f86ffd3528d6f5fdfdd5334468384a1fad3d](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/223/changes/7ff4f86ffd3528d6f5fdfdd5334468384a1fad3d).
 
-| Dispositivo | Ancho de ventana | Altura real del contenedor | Altura mínima seleccionada |
-|---|---:|---:|---:|
-| Desktop | 1277 px | 307.55859375 px | 308 px |
-| Mobile | 400 px | 914.34375 px | 915 px |
+### 4. Ampliación de las pruebas a Tablet mediante Lighthouse CLI
 
-Las alturas mínimas se determinaron redondeando hacia arriba los valores obtenidos.
+El panel Lighthouse de Chrome DevTools ofrece los perfiles Desktop y Mobile, sin una opción específica para Tablet.
 
-### 2. Resultados de las pruebas experimentales
+Para ampliar el alcance de las verificaciones, se utilizó Lighthouse CLI, que permite configurar dimensiones personalizadas mediante los parámetros `screenEmulation`.
 
-Se utilizó Local Overrides de Chrome DevTools para evaluar diferentes alturas mínimas sin modificar el código fuente del proyecto. Posteriormente, se ejecutaron auditorías Lighthouse para comprobar el impacto sobre el CLS.
+Se seleccionó una resolución de 768 × 1024 px en orientación vertical.
 
-| Dispositivo | Altura mínima aplicada | CLS obtenido |
+#### Comando utilizado
+
+```powershell
+lighthouse http://127.0.0.1:8000/ --form-factor=mobile --screenEmulation.mobile --screenEmulation.width=768 --screenEmulation.height=1024 --screenEmulation.deviceScaleFactor=2 --output=html --output-path="./lighthouse-tablet.html" --view
+```
+
+#### Condiciones de ejecución de la auditoría inicial
+
+| Parámetro | Configuración |
+|---|---|
+| Fecha | 27/11/2026 |
+| Hora | 18:47 GMT-3 |
+| URL | `http://127.0.0.1:8000/` |
+| Herramienta | Lighthouse CLI |
+| Versión de Lighthouse | 13.6.0 |
+| Versión de Chromium | 158.0.0.0 |
+| Modo | Navigation |
+| Perfil de evaluación | Mobile |
+| Perfil indicado en el informe | Emulated Moto G Power |
+| Resolución configurada | 768 × 1024 px |
+| Orientación | Vertical |
+| Device Scale Factor | 2 |
+| Throttling | Slow 4G |
+| Tipo de carga | Initial page load |
+| Tipo de sesión | Single page session |
+| Servidor local | http-server |
+| Caché del navegador | Limpiada antes de la auditoría |
+
+El informe identifica el perfil de emulación como Moto G Power debido a la utilización del perfil Mobile. Las dimensiones personalizadas se encuentran respaldadas por el comando ejecutado mediante CLI.
+
+#### Problema detectado en Tablet
+
+La auditoría inicial obtuvo los siguientes resultados:
+
+| Indicador | Resultado |
+|---|---:|
+| Performance | 55 |
+| Accessibility | 100 |
+| Best Practices | 100 |
+| SEO | 100 |
+| CLS | 0.465 |
+
+Mediante el apartado `Layout shift culprits`, Lighthouse identificó como elemento afectado a:
+
+```html
+<section aria-label="Servicios de FerroLab">
+```
+
+La sección presentó un desplazamiento correspondiente al CLS total registrado de 0.465.
+
+Posteriormente, mediante Chrome DevTools, se verificó que el contenedor de ofertas tenía una altura real de 614.34375 px, mientras que la altura mínima aplicada era de 308 px.
+
+La altura mínima existente resultaba insuficiente para reservar el espacio requerido por las dos filas de ofertas.
+
+### 5. Corrección específica para Tablet
+
+A partir de las mediciones realizadas, se determinó una altura mínima de 615 px para resoluciones intermedias.
+
+Durante las verificaciones se detectó que la media query de Tablet había quedado inicialmente anidada dentro de la media query de Mobile.
+
+Esta ubicación impedía su aplicación, dado que ambas condiciones de ancho eran incompatibles.
+
+Se corrigió la estructura de `css/responsive.css`, dejando ambas media queries independientes.
+
+#### Estilos aplicados en `css/components.css`
+
+```css
+#ofertas-productos {
+    min-height: 308px;
+}
+```
+
+#### Estilos aplicados en `css/responsive.css`
+
+```css
+@media (max-width: 767.98px) {
+    #ofertas-productos {
+        min-height: 915px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    #ofertas-productos {
+        min-height: 615px;
+    }
+}
+```
+
+Los rangos seleccionados responden a los cambios en la distribución responsive de las tarjetas de ofertas.
+
+Durante una ejecución preliminar de Lighthouse se obtuvieron los siguientes resultados:
+
+| Indicador | Tablet inicial | Ejecución preliminar |
 |---|---:|---:|
-| Desktop | Sin corrección | 0.183 |
-| Desktop | 308 px | 0.000 |
-| Mobile | Sin corrección | 0.656 |
-| Mobile | 308 px | 0.208 |
-| Mobile | 915 px | 0.000 |
+| Performance | 55 | 74 |
+| Accessibility | 100 | 100 |
+| Best Practices | 100 | 100 |
+| SEO | 100 | 100 |
+| CLS | 0.465 | 0.000 |
 
-Los resultados demostraron que la altura mínima de 308 px era suficiente para Desktop, pero no para Mobile, donde todavía se producían desplazamientos visuales.
+#### Métricas de la ejecución preliminar
 
-### 3. Evidencias de los estilos aplicados y justificación de las alturas seleccionadas
+| Métrica | Resultado |
+|---|---:|
+| FCP | 2.1 s |
+| LCP | 7.1 s |
+| TBT | 0 ms |
+| CLS | 0.000 |
+| Speed Index | 2.1 s |
 
-[fix: corrección de CLS en Desktop y Mobile y documentación de evidencias "Commit 7ff4f86ffd3528d6f5fdfdd5334468384a1fad3d"](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/223/changes/7ff4f86ffd3528d6f5fdfdd5334468384a1fad3d)
+Debido a que posteriormente se identificó la ubicación incorrecta de la media query, estos resultados se conservan como evidencia preliminar y no se utilizan por sí solos para validar la aplicación definitiva de los 615 px.
 
-A partir de las mediciones y los resultados experimentales, se incorporaron las siguientes correcciones al código fuente:
+Una vez corregida la estructura de las media queries, se repitió la auditoría Lighthouse y se obtuvo nuevamente un CLS de 0.000.
 
-- **`css/components.css`:** se estableció una altura mínima de 308 px para el contenedor `#ofertas-productos`.
-- **`css/responsive.css`:** se estableció una altura mínima de 915 px para el mismo contenedor dentro de la media query `max-width: 767.98px`.
+### 6. Verificaciones de estilos y comportamiento responsive
 
-Se verificaron los estilos aplicados mediante la consola de Chrome DevTools, utilizando `getComputedStyle()` para consultar la propiedad `minHeight`.
+Se utilizaron las funciones `getComputedStyle()` y `matchMedia()` para verificar las alturas mínimas aplicadas y el cumplimiento de las condiciones de las media queries.
 
-Las alturas seleccionadas permiten reservar el espacio necesario antes de que finalice la carga asíncrona de las ofertas, evitando el desplazamiento de las secciones inferiores.
+```javascript
+getComputedStyle(
+    document.querySelector("#ofertas-productos")
+).minHeight
+```
 
-Las pruebas experimentales justifican ambas alturas, dado que permitieron obtener un CLS de 0.000 en Desktop y Mobile bajo las condiciones evaluadas.
+```javascript
+window.matchMedia(
+    "(min-width: 768px) and (max-width: 991.98px)"
+).matches
+```
 
-**Evidencias:** [Capturas de la Issue #213](./screenshots/Issue-213/).
+Durante las verificaciones se registraron las siguientes mediciones:
 
-### 4. Comparación con las auditorías históricas
+| Resolución | Altura real | Altura mínima registrada | Distribución |
+|---|---:|---:|---|
+| 768 × 1024 px | 614.34375 px | 308 px | Dos columnas |
+| 960 × 1440 px | 600 px | 308 px | Dos columnas |
+| 1032 × 1376 px | 308 px | 308 px | Tres columnas |
+
+Las mediciones de 768 px y 960 px permitieron identificar la necesidad de una corrección específica para Tablet y detectar que la media query no se estaba aplicando correctamente.
+
+La medición de 1032 px permitió verificar que, al superar el breakpoint de 992 px, las ofertas recuperaban la distribución de tres columnas y la altura mínima de 308 px.
+
+Después de corregir las media queries, quedaron establecidos los siguientes valores:
+
+| Rango de resolución | Altura mínima definida |
+|---|---:|
+| Hasta 767.98 px | 915 px |
+| Desde 768 px hasta 991.98 px | 615 px |
+| Desde 992 px | 308 px |
+
+Las verificaciones visuales realizadas permitieron observar la distribución de las ofertas en diferentes resoluciones. Las comprobaciones corresponden exclusivamente a las dimensiones evaluadas y no representan una validación exhaustiva de todos los anchos posibles.
+
+### 7. Auditorías definitivas y pruebas de regresión mediante Lighthouse CLI
+
+Después de corregir la ubicación de la media query de Tablet, se ejecutaron nuevas auditorías Lighthouse en Desktop, Tablet y Mobile para verificar la efectividad de la solución y detectar posibles regresiones relacionadas con CLS.
+
+#### Desktop
+
+```powershell
+lighthouse http://127.0.0.1:8000/ --preset=desktop --output=html --output-path="./lighthouse-desktop-definitivo.html" --view
+```
+
+#### Tablet
+
+```powershell
+lighthouse http://127.0.0.1:8000/ --form-factor=mobile --screenEmulation.mobile --screenEmulation.width=768 --screenEmulation.height=1024 --screenEmulation.deviceScaleFactor=2 --output=html --output-path="./lighthouse-tablet-definitivo.html" --view
+```
+
+#### Mobile
+
+```powershell
+lighthouse http://127.0.0.1:8000/ --form-factor=mobile --screenEmulation.mobile --screenEmulation.width=400 --screenEmulation.height=844 --screenEmulation.deviceScaleFactor=2 --output=html --output-path="./lighthouse-mobile-definitivo.html" --view
+```
+
+#### Resultados definitivos de CLS
+
+| Dispositivo | Altura mínima definida | CLS inicial | CLS definitivo | Estado |
+|---|---:|---:|---:|---|
+| Desktop | 308 px | 0.183 | 0.000 | PASS |
+| Tablet | 615 px | 0.465 | 0.000 | PASS |
+| Mobile | 915 px | 0.656 | 0.000 | PASS |
+
+Las tres auditorías definitivas obtuvieron un CLS de 0.000, confirmando que no se detectaron desplazamientos visuales durante las cargas evaluadas.
+
+La incorporación de la media query específica para Tablet no produjo regresiones en el CLS de Desktop ni Mobile bajo las condiciones evaluadas.
+
+El estado PASS corresponde exclusivamente a la verificación de CLS y no implica el cumplimiento del umbral de Performance de 95 puntos.
+
+#### Trazabilidad de las auditorías definitivas
+
+Las auditorías definitivas se realizaron localmente mediante Lighthouse CLI sobre el código que incorpora las tres alturas mínimas.
+
+Las condiciones efectivas de cada ejecución deberán quedar respaldadas mediante las capturas de los informes correspondientes.
+
+**Commit definitivo:** pendiente de registrar una vez commiteada la corrección de Tablet.
+
+### 8. Comparación con las auditorías históricas
 
 Se compararon los resultados obtenidos después de la corrección de la Issue #213 con los valores de CLS registrados en las auditorías anteriores del proyecto.
 
@@ -277,23 +493,60 @@ Se compararon los resultados obtenidos después de la corrección de la Issue #2
 | TC-12 — Post Fetch | 0.230 |
 | TC-13 — Post Library (ventana reducida) | 0.555 |
 | TC-13 — Post Library (ventana maximizada) | 0.075 |
+| Issue #213 — Desktop sin corrección | 0.183 |
+| Issue #213 — Tablet sin corrección específica | 0.465 |
+| Issue #213 — Mobile sin corrección | 0.656 |
 | Issue #213 — Desktop corregido | 0.000 |
+| Issue #213 — Tablet corregido | 0.000 |
 | Issue #213 — Mobile corregido | 0.000 |
 
-Los resultados muestran una mejora de la estabilidad visual respecto de las auditorías históricas, alcanzando un CLS de 0.000 en Desktop y Mobile bajo las condiciones evaluadas.
+Los resultados muestran una mejora de la estabilidad visual respecto de las auditorías históricas, alcanzando un CLS de 0.000 en las tres modalidades evaluadas.
 
-#### Limitaciones de comparabilidad
+### 9. Limitaciones de comparabilidad y mantenimiento
 
-Las auditorías históricas se realizaron sobre diferentes versiones del proyecto, con distintas dimensiones de ventana y versiones de Lighthouse.
+Las auditorías históricas se realizaron sobre diferentes versiones del proyecto, utilizando distintas dimensiones de ventana, versiones de Lighthouse y configuraciones del navegador.
 
 Además, no se dispone de un registro completo de las condiciones de red y caché de todas las auditorías anteriores.
 
-Por este motivo, la comparación permite observar la evolución del CLS, pero no establecer una equivalencia directa entre todas las mediciones ni atribuir exclusivamente las diferencias a la corrección implementada.
+Las pruebas iniciales de Desktop y Mobile se realizaron mediante Lighthouse integrado en Chrome DevTools, mientras que las verificaciones definitivas se realizaron mediante Lighthouse CLI.
+
+Por este motivo, la comparación permite observar la evolución del CLS, pero no establecer una equivalencia directa entre todas las mediciones ni atribuir exclusivamente las variaciones de Performance a la corrección implementada.
+
+Las pruebas en Tablet utilizaron dimensiones personalizadas y el perfil de evaluación Mobile, debido a que Lighthouse no dispone de un perfil de puntuación exclusivo para Tablet.
+
+Las alturas mínimas de 308 px, 615 px y 915 px se determinaron en función del contenido y la distribución actual de las ofertas.
+
+En caso de modificarse la cantidad de productos, el contenido de las tarjetas, los estilos o los breakpoints responsive, deberán revisarse las alturas mínimas y ejecutarse nuevas verificaciones para evitar desplazamientos visuales o espacios vacíos excesivos.
+
+### 10. Evidencias
+
+Las evidencias correspondientes a la resolución de la Issue #213 se encuentran organizadas en:
+
+[Capturas de la Issue #213](./screenshots/Issue-213/).
+
+Las evidencias recopiladas comprenden:
+
+- Mediciones reales del contenedor en Desktop, Tablet y Mobile.
+- Verificación de las alturas mínimas mediante Chrome DevTools.
+- Resultados de las pruebas experimentales con Local Overrides.
+- Auditorías iniciales de Desktop y Mobile.
+- Comando de configuración de Lighthouse CLI para Tablet.
+- Condiciones de ejecución de la auditoría inicial de Tablet.
+- Identificación del elemento afectado mediante `Layout shift culprits`.
+- Resultados de la auditoría preliminar de Tablet.
+- Mediciones y verificaciones visuales en diferentes resoluciones responsive.
+
+Se deberán incorporar los enlaces individuales a las capturas de las auditorías definitivas de Desktop, Tablet y Mobile, sus condiciones de ejecución y las verificaciones visuales finales.
+
 
 ### Conclusión
 
-La corrección permitió reducir el CLS un 100 % en Desktop y Mobile, obteniendo un valor de 0.000 en ambas auditorías y mejorando el resultado original del TC-11 (0.148).
+La corrección permitió reducir el CLS un 100 % respecto de los valores iniciales registrados en Desktop, Tablet y Mobile, obteniendo un valor de 0.000 en las tres auditorías definitivas.
+
+La utilización de Lighthouse CLI permitió ampliar el alcance de las pruebas a resoluciones intermedias, identificar un problema no contemplado inicialmente y verificar su resolución mediante una media query específica para Tablet.
+
+Las pruebas de regresión confirmaron que la incorporación de la nueva media query no afectó negativamente los resultados de CLS de Desktop ni Mobile bajo las condiciones evaluadas.
 
 Las optimizaciones adicionales de Performance corresponden a la Issue #212 y quedan fuera del alcance de esta corrección.
 
-**Estado:** Corrección implementada y validada localmente. Pendiente de integración y cierre de la Issue #213.
+**Estado:** Corrección implementada y validada localmente mediante Lighthouse CLI en Desktop, Tablet y Mobile. Pendiente de completar la trazabilidad documental, integración de la PR y cierre de la Issue #213.

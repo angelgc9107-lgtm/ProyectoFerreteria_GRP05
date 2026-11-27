@@ -14,17 +14,19 @@
 /* ==========================================================
    MOBILE — hasta 767px
    ========================================================== */
+/* Mobile: ofertas distribuidas en una columna */
 @media (max-width: 767.98px) {
-     /* Reserva de espacio para evitar desplazamientos visuales
-    durante la carga asíncrona de ofertas en una columna. */
     #ofertas-productos {
         min-height: 915px;
     }
-    /*No se realizaron auditorías específicas para Tablet debido a que Lighthouse
-    solo dispone de los perfiles Desktop y Mobile. Por lo tanto, la estabilidad
-    visual en resoluciones intermedias no pudo ser verificada y podría verse
-    afectada por las alturas mínimas implementadas o por futuros cambios en
-    el contenido y diseño de las ofertas. */
+}
+
+/* Tablet: ofertas distribuidas en dos columnas */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    #ofertas-productos {
+        min-height: 615px;
+    }
+}
 
      /* --- Header mobile: primera fila con logo, carrito y sesión
        centrados entre sí; el buscador y la navegación ocupan cada
