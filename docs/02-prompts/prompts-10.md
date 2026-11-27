@@ -2,7 +2,7 @@
 
 **Integrante:** Alan Díaz
 **Rol:** Desarrollador JS Asíncrono (Fetch & APIs)
-**Modelo de IA:** Claude (Anthropic) — <completar con la versión que muestre la captura>
+**Modelo de IA:** Claude (Anthropic)
 **Método de prompt:** Role prompting
 **Fecha y hora:** 26/11/2026, 14:22 (hora de Argentina)
 **Spec asociado:** `docs/03-specs/segundo-parcial/spec-dev-async-fetch.md`
@@ -43,10 +43,9 @@ Spec actualizado (`spec-dev-async-fetch.md`):
 No hay código nuevo: solo el spec.
 
 ## Correcciones manuales
-<completar: ajustes que hiciste antes de commitear; si no hay, escribir "ninguna">
+ninguna
 
 ## Captura
-<PEGAR captura del chat con este prompt y la respuesta, con la fecha visible>
-
+![Resultado](./images/prompt-10-DesarrolladorJSasincronico.png)
 ## Aplicación
 Rama `feature/dev-async-fetch-api`, segundo commit (correcciones de la revisión de Angel sobre la PR del spec).

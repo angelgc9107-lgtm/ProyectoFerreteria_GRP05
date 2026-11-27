@@ -1,92 +1,76 @@
 # Prompt 12
 
-**Integrante:** Thiago Piastrellini
-**Rol:** Desarrollador JS Librerías Externas
-**Modelo de IA:** Claude Code (Anthropic) — Opus 5.5
-**Método de prompt:** Role prompting con prompt estructurado (contexto, tarea, requisitos, tests, restricciones y formato de salida)
-**Fecha y hora:** 26/11/2026, alrededor de las 11:54 (hora de Argentina); la sesión terminó a las 12:09
-**Spec asociado:** `docs/03-specs/segundo-parcial/spec-dev-libreria-externa.md` (sección BEFORE como especificación; el prompt queda registrado en el AT CLOSE)
+**Integrante:** Alan Díaz
+**Rol:** Desarrollador JS Asíncrono (Fetch & APIs)
+**Modelo de IA:** Claude (Anthropic) — <completar con la versión que muestre la captura>
+**Método de prompt:** Prompt estructurado (armado previamente por la IA a pedido del integrante y enviado de vuelta como archivo adjunto)
+**Fecha y hora:** 26/11/2026, 19:23 (hora de Argentina)
+**Spec asociado:** `docs/03-specs/segundo-parcial/spec-dev-async-fetch.md`
 
 ## Prompt exacto
-```
-Actuá como un desarrollador senior de JavaScript (ES6, módulos, sin frameworks) y especialista en accesibilidad.
+Mensaje original: el texto completo adjunto como archivo `.txt` (con la indicación previa del integrante: «listo ya se mergeo mi parte, ahora segui con el trabajo y dame el prompt, acordate que si hay algo en el trabajo q si o si necesita evidencia de prompt hace el prompt, pasamelo y te lo paso asi lo haces»).
 
-CONTEXTO
-Proyecto FerroLab (ferretería), Programación Web I – Segundo Parcial. Mi rol: Desarrollador JS Librerías Externas.
-Leé antes de escribir código:
-- docs/03-specs/segundo-parcial/spec-dev-libreria-externa.md (sección BEFORE: es la especificación a cumplir)
-- index.html, js/script.js, css/styles.css, css/components.css
-- js/services/FachadaStorage.js (como ejemplo del estilo de wrapper del proyecto)
-- js/test/script.spec.js y js/test/test-runner.html
+**19:23** (adjunto: archivo de texto)
+```
+Actuá como Desarrollador JS Asíncrono (Fetch & APIs) del proyecto FerroLab (Programación Web I, UCES, grupo GRP05, Segundo Parcial 2026). Soy Alan Díaz.
 
 TAREA
-Integrar SweetAlert2 11.26.25 por CDN para pedir confirmación antes de:
-1. Eliminar un producto del carrito (data-action="eliminar-carrito").
-2. Confirmar el pedido (data-action="confirmar-pedido"), mostrando total financiado, método de pago y cuotas.
-3. Cancelar el pedido (data-action="cancelar-pedido").
+Implementá el código de mi rol siguiendo al pie de la letra el spec ya mergeado `docs/03-specs/segundo-parcial/spec-dev-async-fetch.md` (secciones 1 a 7). Es la implementación completa: el consumo asíncrono del catálogo con `fetch`, con estados de carga, manejo de errores, fallbacks y procesamiento con `map` / `filter` / `reduce`.
 
-REQUISITOS
-- index.html: CSS y JS de jsDelivr con versión fija, integrity, crossorigin y defer, usando exactamente
-  los hashes SRI del spec. El CSS de la librería va antes del CSS propio; el script, antes de js/script.js.
-- Crear js/services/ServicioDialogos.js como wrapper: confirmar(opciones) → Promise<boolean> y
-  disponible() → boolean. script.js nunca usa Swal directamente.
-- Si la librería no cargó, la acción se ejecuta como hoy, sin confirmación, sin lanzar excepciones.
-  Si Swal.fire() falla, registrar el error y dejar continuar la acción.
-- Seguridad: mostrar los textos con la opción text, nunca html (llevan nombres de productos).
-- Accesibilidad: foco inicial en "Cancelar" en acciones que pierden datos, Esc cancela, el foco vuelve
-  al botón que abrió el diálogo, respetar prefers-reduced-motion. El carrito es un Offcanvas de
-  Bootstrap que atrapa el foco: verificá que el diálogo se pueda usar con teclado desde ahí y que
-  Esc cierre solo el diálogo y no el carrito.
-- Estética: buttonsStyling: false + customClass con clases propias definidas en css/components.css,
-  usando las variables de css/styles.css (colores, tipografía, espaciados). No modificar el CSS de la librería.
-- El caso "confirmar sin resumen pendiente" debe seguir mostrando su error actual sin abrir el diálogo (RC24).
-- JSDoc en todas las funciones nuevas. Sin alert(), confirm() ni prompt().
+BASE DE TRABAJO
+- Partí del estado más reciente de `develop` (incluye el spec de mi rol y el trabajo del Tester QA/JS).
+- Rama: `feature/dev-async-fetch-api-implementacion` → `develop`.
+- No modifiques lo que hicieron otros roles: `js/models/` (Producto, Catalogo, etc.), `js/utils/storage.js`, `js/services/FachadaStorage.js` ni los specs y documentos del Tester QA/JS.
 
-TESTS
-- La suite actual (js/test/test-runner.html) tiene que seguir en 0 failures. Los specs de los flujos
-  esperan que eliminar, confirmar y cancelar tengan efecto inmediato: proponé cómo mantenerlos sin
-  debilitarlos.
-- Agregar en script.spec.js una suite que pruebe los 3 puntos con un doble de Swal: confirmar,
-  cancelar, contenido del diálogo, el caso RC24, la falla de la librería y la carga del CDN con SRI.
+ARCHIVOS A ENTREGAR
+1. `api/productos.json`: los 9 productos de `js/data/productosIniciales.js`, con el formato `{ "version": 1, "productos": [...] }`, sin cambiar códigos, textos ni precios. Verificá con un script que el contenido coincide exactamente con `productosIniciales`.
+2. `js/api/apiService.js`: con el contrato del spec (sección 4.1): `ErrorApi`, `obtenerJson`, `obtenerCatalogoRemoto` y `cargarCatalogo`, con sus opciones (`tiempoLimiteMs` 8000, `reintentos` 2, `esperaBaseMs` 500, `fetchFn`, `esperarFn`, `alReintentar`) y el `ResultadoCarga`. Respaldo: caché con `FachadaStorage` y luego `productosIniciales`. No toca el DOM. JSDoc en todo.
+3. `js/services/ProcesadorCatalogo.js`: `filtrarValidos`, `construirProductos`, `resumirCatalogo` y `agruparPorCategoria`, como funciones puras, con las reglas de la sección 4.3 (tipos, vacíos, `trim`, precio, códigos duplicados con la misma regla que `Catalogo`, validados antes de armar el catálogo).
+4. `js/script.js`: carga inicial asíncrona del catálogo con `await cargarCatalogo()`, mostrando los estados de la sección 2 (loading → success o advertencia de error con botón «Reintentar»), reutilizando `mostrarMensaje()` y los elementos que ya existen en `index.html`. Se distingue la disponibilidad del catálogo del mensaje: con caché o catálogo local el catálogo está disponible y los cuatro flujos funcionan. La búsqueda inicial corre cuando el catálogo queda disponible. `script.js` no llama a `fetch` directamente. Todo texto de la API se inserta con `textContent`.
+5. `index.html` y `css/components.css`: solo lo mínimo e indispensable (por ejemplo, `aria-busy` y el botón «Reintentar»), con clases de Bootstrap.
 
-NO HACER
-- No modificar js/models/, js/utils/storage.js ni otros servicios.
-- No agregar dependencias ni archivos fuera de los mencionados.
+REGLAS DE IMPLEMENTACIÓN
+- JavaScript con módulos ES, sin librerías nuevas, sin `alert()`, `confirm()` ni `prompt()`.
+- Los mensajes al usuario son exactamente los de la matriz de la sección 4.2 del spec.
+- El detalle técnico de los errores va a `console.error`, no a la pantalla.
+- Un solo pedido en vuelo: «Reintentar» no inicia otra carga si ya hay una en curso.
+- La carga asíncrona no debe empeorar el rendimiento de la página (no bloquear el render; el objetivo de Lighthouse es ≥ 95).
+- Si algo del spec no se puede cumplir tal cual con el código real, no lo cambies en silencio: avisame y proponé el ajuste.
 
-SALIDA
-Hacé los cambios en el repo y al final mostrame: lista de archivos tocados, decisiones que tomaste
-y por qué, y cómo verificar a mano cada punto de integración.
+PRUEBAS
+- Corré las suites existentes (models, storage, services, script) en un navegador real y reportame los resultados: cantidad de specs, fallos y cobertura si se puede medir.
+- Si la carga asíncrona rompe tests existentes de `script.spec.js`, hacé solo el cambio mínimo necesario para que esperen a que el catálogo esté disponible, y listame exactamente qué tests tocaste y por qué, para avisarle al Tester QA/JS. No crees `api.spec.js` ni `library.spec.js`: son del Tester QA/JS.
+- Verificá el comportamiento real con un navegador (Playwright): éxito, 404, 500, red caída, JSON inválido, estructura incorrecta, registros inválidos, y la búsqueda, el carrito, el pago y la confirmación funcionando con `origen` red, caché y local. Reportame qué se probó y el resultado, sin dar por pasado lo que no se corrió.
+
+ENTREGA
+- Los archivos en la estructura del repo, listos para copiar.
+- Un commit por tarea lógica, con mensajes descriptivos en español (por ejemplo, `feat: servicio de API con reintentos y fallbacks`).
+- La sección «AT CLOSE» del spec completa, como texto aparte para que la pegue yo: resumen de la integración con las clases POO y con Storage, issues respondidas (dejá los campos que dependen de mí como pendientes) y los ajustes manuales (pendientes, los completo yo).
+- La descripción de la PR en el formato del template del repo y la línea del `changelog.md` (con el número de PR pendiente).
+
+REGLAS
+- No inventes resultados: todo lo que no corras va como no verificado.
+- No modifiques nada en GitHub: entregame todo en local.
 ```
 
 ## Resultado esperado
-SweetAlert2 integrada por CDN con un wrapper propio, pidiendo confirmación en los tres puntos (eliminar del carrito, confirmar y cancelar el pedido), con la estética del sitio, accesible con teclado y con la suite de tests en 0 failures.
+La implementación completa del rol según el spec mergeado: `api/productos.json`, `js/api/apiService.js`, `js/services/ProcesadorCatalogo.js`, la carga asíncrona en `js/script.js` con sus estados, el mínimo de `index.html`, las suites existentes pasando y la verificación real en un navegador.
 
 ## Resultado obtenido
-Claude Code leyó el spec y los archivos indicados, verificó los hashes SRI contra lo que sirve jsDelivr y modificó cinco archivos:
+Archivos entregados, cada uno en su commit:
+- `api/productos.json`: 9 productos idénticos a `productosIniciales` (verificado con un script).
+- `js/services/ProcesadorCatalogo.js`: `filtrarValidos`, `construirProductos`, `resumirCatalogo` y `agruparPorCategoria`, con `map`, `filter` y `reduce`.
+- `js/api/apiService.js`: `ErrorApi`, `obtenerJson`, `obtenerCatalogoRemoto` y `cargarCatalogo` (tiempo límite, reintentos solo para red y 5xx, respaldo en caché y luego en el catálogo local).
+- `js/script.js` e `index.html`: carga asíncrona con estados, botón «Reintentar», un solo pedido en vuelo y controles deshabilitados mientras carga.
+- `js/test/script.spec.js`: cambio mínimo para esperar al catálogo (detalle en la descripción de la PR).
 
-- `index.html`: CSS y JS de SweetAlert2 11.26.25 con `integrity`, `crossorigin` y `defer`.
-- `js/services/ServicioDialogos.js` (nuevo): wrapper con `confirmar()` y `disponible()`.
-- `js/script.js`: los tres puntos de integración y protección contra doble clic.
-- `css/components.css`: bloque `.dialogo-confirmacion*` con las variables del sitio.
-- `js/test/script.spec.js`: los flujos existentes pasan por un doble de `Swal` y se agregó una suite de 27 specs.
-
-Decisiones que tomó por su cuenta y se aceptaron:
-
-- `titleText` en lugar de `title`, porque en SweetAlert2 `title` se interpreta como HTML.
-- Insertar el diálogo dentro del Offcanvas del carrito (`target`), porque la trampa de foco de Bootstrap le quitaba el foco.
-- `stopKeydownPropagation` para que `Esc` no cierre el carrito.
-- Ignorar clics mientras hay un diálogo abierto.
-- Cancelar sin preguntar si el formulario está vacío.
-
-También rebasó la rama sobre `origin/develop` porque partía de una base desactualizada.
-
-Resultado: **468 specs, 0 failures** (corrido con 3 semillas y con pruebas de mutación sobre el wrapper).
+Verificación: suites existentes 441 specs, 0 fallos; 35 comprobaciones con Playwright (éxito, 404, 500, red caída, JSON inválido, estructura incorrecta, registros inválidos, y los cuatro flujos con origen red, caché y local), todas coincidieron con lo esperado. No se midió la cobertura ni se corrió Lighthouse.
 
 ## Correcciones manuales
-Ninguna sobre el código generado. Se revisó el diff, se corrió la suite y se probaron a mano los tres puntos, incluido el uso con teclado desde el carrito y con el CDN bloqueado (detalle en la sección 3 del AT CLOSE del spec).
+ninguna
 
 ## Captura
-![Prompt enviado en Claude Code](./images/prompt-12-DesarrolladorJSLibreriasExternas.png)
+![Resultado](./images/prompt-12-DesarrolladorJSasincronico.png)
 
 ## Aplicación
-Rama `feature/dev-libreria-externa-sweetalert2` → `develop` (PR #216). Commit `9a4e456` (integración), posterior a los commits del spec BEFORE.
+Rama `feature/dev-async-fetch-api-implementacion`, implementación del rol.
