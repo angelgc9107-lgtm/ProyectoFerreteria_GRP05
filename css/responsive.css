@@ -14,13 +14,6 @@
 /* ==========================================================
    MOBILE — hasta 767px
    ========================================================== */
-/* Reserva de espacio para ofertas distribuidas en dos columnas */
-@media (min-width: 768px) and (max-width: 991.98px) {
-    #ofertas-productos {
-        min-height: 615px;
-    }
-}
-
 /* MOBILE — Ofertas distribuidas en una columna */
 @media (max-width: 767.98px) {
     #ofertas-productos {
@@ -120,6 +113,13 @@
    Ajustes específicos para evitar superposiciones y overflow
    heredados del layout de escritorio.
    ========================================================== */
+/* Reserva de espacio para ofertas distribuidas en dos columnas */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    #ofertas-productos {
+        min-height: 615px;
+    }
+}
+
 @media (min-width: 768px) and (max-width: 1023.98px) {
 
     /* --- Header: primera fila de controles y navegación debajo --- */
