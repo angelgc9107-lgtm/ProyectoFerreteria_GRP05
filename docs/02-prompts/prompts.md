@@ -13,3 +13,6 @@
 - [Prompt 11 — Casos de QA de validación y sanitización del spec (Desarrollador JS Asíncrono)](./prompts-11.md)
 - [Prompt 12 — Integración de SweetAlert2 (Desarrollador JS Librerías Externas)](./prompts-12.md)
 - [Prompt 13 — Integración de SweetAlert2 (Desarrollador JS Librerías Externas)](./prompts-13.md)
+- [Prompt 14 — Correcciones de la code review de la implementación, RC01 y RC02 (Desarrollador JS Asíncrono)](./prompts-14.md)
+- [Prompt 15 — Corrección RC03: ofertas independientes con catálogo parcial (Desarrollador JS Asíncrono)](./prompts-15.md)
+- [Prompt 16 — Rendimiento: CLS y recursos de la issue de Lighthouse (Desarrollador JS Asíncrono)](./prompts-16.md)
