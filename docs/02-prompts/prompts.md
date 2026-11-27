@@ -11,4 +11,5 @@
 - [Prompt 9 — Generación de spec-dev-async-fetch.md (Desarrollador JS Asíncrono)](./prompts-9.md)
 - [Prompt 10 — Correcciones de la revisión del spec (Desarrollador JS Asíncrono)](./prompts-10.md)
 - [Prompt 11 — Casos de QA de validación y sanitización del spec (Desarrollador JS Asíncrono)](./prompts-11.md)
-- [Prompt 12 — Implementación del rol: consumo asíncrono del catálogo con fetch (Desarrollador JS Asíncrono)](./prompts-12.md)
+- [Prompt 12 — Integración de SweetAlert2 (Desarrollador JS Librerías Externas)](./prompts-12.md)
+- [Prompt 13 — Integración de SweetAlert2 (Desarrollador JS Librerías Externas)](./prompts-13.md)
