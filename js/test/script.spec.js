@@ -37,16 +37,33 @@ let valoresOriginalesStorage;
 // Utilidades
 // ---------------------------------------------------------------------------
 
-function abrirApp() {
-    return new Promise((resolve) => {
-        const iframe = document.createElement("iframe");
-        iframe.title = "app-bajo-prueba";
-        iframe.style.cssText =
+/**
+ * Espera a que la aplicación termine la carga asíncrona del catálogo: script.js
+ * marca `#catalogo[data-catalogo="disponible"]` cuando el catálogo ya se puede usar
+ * (con cualquier origen: red, caché o local).
+ */
+async function esperarCatalogoDisponible(documento, limiteMs = 5000) {
+    const inicio = Date.now();
+    while (documento.querySelector("#catalogo")?.dataset.catalogo !== "disponible") {
+        if (Date.now() - inicio > limiteMs) {
+            throw new Error("El catálogo no quedó disponible a tiempo.");
+        }
+        await new Promise((resolver) => setTimeout(resolver, 10));
+    }
+}
+
+async function abrirApp() {
+    const iframe = await new Promise((resolve) => {
+        const nuevo = document.createElement("iframe");
+        nuevo.title = "app-bajo-prueba";
+        nuevo.style.cssText =
             "position:fixed;left:-10000px;top:0;width:1280px;height:900px;border:0;";
-        iframe.addEventListener("load", () => resolve(iframe), { once: true });
-        iframe.src = URL_APP;
-        document.body.append(iframe);
+        nuevo.addEventListener("load", () => resolve(nuevo), { once: true });
+        nuevo.src = URL_APP;
+        document.body.append(nuevo);
     });
+    await esperarCatalogoDisponible(iframe.contentDocument);
+    return iframe;
 }
 
 const q = (selector) => doc.querySelector(selector);
@@ -231,7 +248,9 @@ async function recargarApp() {
 describe("Controlador - carga inicial", function () {
     it("muestra los 9 productos del catálogo y el mensaje de resultados", function () {
         expect(codigosVisibles().length).toBe(9);
-        expect(texto("#catalogo-mensaje")).toBe("9 producto(s) encontrado(s).");
+        // Con la carga asíncrona, el mensaje inicial es el de éxito de la carga (spec §2);
+        // el «N producto(s) encontrado(s)» aparece desde la primera búsqueda del usuario.
+        expect(texto("#catalogo-mensaje")).toMatch(/^9 producto\(s\) cargado\(s\) en 5 categoría\(s\)\./);
     });
 
     it("arranca con el carrito vacío y el botón de compra deshabilitado", function () {
@@ -370,6 +389,17 @@ describe("Controlador - RC60: separación de datos del catálogo", function () {
 
     it("RC60 - el controlador importa los productos sin declararlos localmente", async function () {
 
+        // Desde la carga asíncrona, el controlador pide el catálogo a apiService.js, que
+        // es quien importa los datos locales (respaldo). El controlador sigue sin declararlos.
+        const respuestaApi = await fetch(
+            new URL("../api/apiService.js", import.meta.url),
+            { cache: "no-store" }
+        );
+        expect(respuestaApi.ok).toBeTrue();
+        expect((await respuestaApi.text()).replace(/\s/g, "").replaceAll("'", '"')).toContain(
+            'import{productosIniciales}from"../data/productosIniciales.js"'
+        );
+
         const respuesta = await fetch(
             new URL("../script.js", import.meta.url),
             { cache: "no-store" }
@@ -382,10 +412,6 @@ describe("Controlador - RC60: separación de datos del catálogo", function () {
         const codigoNormalizado = codigo
             .replace(/\s/g, "")
             .replaceAll("'", '"');
-
-        expect(codigoNormalizado).toContain(
-            'import{productosIniciales}from"./data/productosIniciales.js"'
-        );
 
         expect(codigoNormalizado).not.toContain(
             "constproductosIniciales="
@@ -1347,6 +1373,7 @@ describe("Controlador - RC62: persistencia de pedidos", function () {
 
         win = marco.contentWindow;
         doc = marco.contentDocument;
+        await esperarCatalogoDisponible(doc);
 
         expect(JSON.parse(
             win.localStorage.getItem(CLAVE_HISTORIAL)
@@ -1818,7 +1845,7 @@ describe("Controlador - rutas defensivas y de error", function () {
      * srcdoc (mismo origen). Antes de cargar script.js se registran los errores
      * y los console.error de esa página.
      */
-    async function abrirAppModificada(modificar) {
+    async function abrirAppModificada(modificar, esperarCatalogo = true) {
         const html = await (await fetch(URL_APP)).text();
         const pagina = new DOMParser().parseFromString(html, "text/html");
         modificar(pagina);
@@ -1840,6 +1867,7 @@ describe("Controlador - rutas defensivas y de error", function () {
         document.body.append(iframe);
         await cargado;
         await pausa(50);
+        if (esperarCatalogo) await esperarCatalogoDisponible(iframe.contentDocument);
         return iframe;
     }
 
@@ -1946,7 +1974,7 @@ describe("Controlador - rutas defensivas y de error", function () {
     });
 
     it("una página a la que le falta un elemento obligatorio avisa y no registra eventos", async function () {
-        const iframe = await abrirAppModificada((pagina) => pagina.querySelector("#form-pago").remove());
+        const iframe = await abrirAppModificada((pagina) => pagina.querySelector("#form-pago").remove(), false);
         try {
             const ventana = iframe.contentWindow;
             expect(ventana.__logs.some((l) => l.includes("No se encontró el elemento requerido: #form-pago"))).toBeTrue();

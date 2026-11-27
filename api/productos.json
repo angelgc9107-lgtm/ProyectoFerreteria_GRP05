@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "productos": [
+    {
+      "codigo": "GUANTES-001",
+      "nombre": "Guantes moteados multiuso maxima calidad",
+      "categoria": "Herramientas manuales",
+      "descripcion": "Proteccion multiuso para trabajos de ferreteria y mantenimiento.",
+      "precio": 4401
+    },
+    {
+      "codigo": "DESTORNILLADOR-001",
+      "nombre": "Destornillador punta plana Black Jack 8 x 200 mm",
+      "categoria": "Herramientas manuales",
+      "descripcion": "Destornillador con punta plana para tareas de ajuste y reparacion.",
+      "precio": 6026
+    },
+    {
+      "codigo": "PINZA-001",
+      "nombre": "Pinza punta curva mini 5 pulgadas ideal electronica",
+      "categoria": "Herramientas manuales",
+      "descripcion": "Pinza compacta para trabajos de precision en electronica.",
+      "precio": 6426
+    },
+    {
+      "codigo": "ENCHUFE-001",
+      "nombre": "Enchufe adaptador cubo 5 tomas 3 patas 10 amp",
+      "categoria": "Electricidad",
+      "descripcion": "Adaptador electrico con cinco tomas para conectar herramientas y equipos.",
+      "precio": 10282
+    },
+    {
+      "codigo": "MARTILLO-001",
+      "nombre": "Martillo galponero mango de fibra acero forjado Black Jack",
+      "categoria": "Herramientas manuales",
+      "descripcion": "Martillo robusto para tareas de obra, reparacion y mantenimiento.",
+      "precio": 16000
+    },
+    {
+      "codigo": "PALA-001",
+      "nombre": "Pala de punta chapa acero estampada cabo metalico",
+      "categoria": "Jardineria",
+      "descripcion": "Herramienta de punta para tareas de jardineria y movimiento de tierra.",
+      "precio": 21329
+    },
+    {
+      "codigo": "AMOLADORA-001",
+      "nombre": "Amoladora angular inalambrica DeWalt Flexvolt DCG416B",
+      "categoria": "Herramientas electricas",
+      "descripcion": "Amoladora inalambrica para cortar, desbastar y trabajar distintos materiales.",
+      "precio": 50000
+    },
+    {
+      "codigo": "KIT-TAPONES-001",
+      "nombre": "Kit juego tapones para cano de termofusion",
+      "categoria": "Accesorios",
+      "descripcion": "Juego de tapones y obturadores para instalaciones de agua.",
+      "precio": 55000
+    },
+    {
+      "codigo": "TALADRO-001",
+      "nombre": "Taladro atornillador inalambrico 10 mm 20 V",
+      "categoria": "Herramientas electricas",
+      "descripcion": "Atornillador inalambrico para perforar y ajustar en distintos proyectos.",
+      "precio": 79999
+    }
+  ]
+}

@@ -216,7 +216,7 @@ Se revisaron las PRs #140, #141, #144, #150, #156 y #157. La decisión de aproba
 
 | Nombre y Apellido | Matrícula | Usuario de GitHub | Rol (Cuarta Entrega) |
 |-----| ----- | ------ | ------ |
-| Luciano Barrionuevo | 156398 | @LuchoBarrionuevo13 | Desarrollador JS POO |
-| Alan Diaz | 152841 | @alandox1 |Coordinador / DevOps + Tester QA |
-| Angel Cuarteron | 159438 | @angelgc9107-lgtm | Desarrollador JS Eventos + DOM |
-| Thiago Piastrellini | 158097 | @Piastrellini | Desarrollador JS Local y Session Storage |
+| Luciano Barrionuevo | 156398 | @LuchoBarrionuevo13 | Tester QA/JS |
+| Alan Diaz | 152841 | @alandox1 |Desarrollador JS Asíncrono |
+| Angel Cuarteron | 159438 | @angelgc9107-lgtm | Coordinador/DevOps |
+| Thiago Piastrellini | 158097 | @Piastrellini | Desarrollador JS Librerías Externas |

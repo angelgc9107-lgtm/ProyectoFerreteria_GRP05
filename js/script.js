@@ -1,6 +1,5 @@
 import { Producto } from "./models/Producto.js";
 import { FachadaStorage } from "./services/FachadaStorage.js";
-import { Catalogo } from "./models/Catalogo.js";
 import { Carrito } from "./models/Carrito.js";
 import { Pago } from "./models/Pago.js";
 import { Pedido } from "./models/Pedido.js";
@@ -12,9 +11,14 @@ import { IMAGENES_CATALOGO } from "./data/imagenesCatalogo.js";
 import { ServicioCategorias } from "./services/ServicioCategorias.js";
 import { ServicioOpcionesPago } from "./services/ServicioOpcionesPago.js";
 import { validarCampoPedido } from "./services/ValidacionPedido.js";
-import { productosIniciales } from "./data/productosIniciales.js";
+import { cargarCatalogo } from "./api/apiService.js";
 
-const catalogo = new Catalogo(productosIniciales.map((datos) => new Producto(datos)));
+// El catálogo se carga de forma asíncrona (api/productos.json, con respaldos).
+// Es null mientras se espera la primera respuesta.
+let catalogo = null;
+let cargaCatalogoEnCurso = null;
+// Ofertas vigentes del catálogo cargado; vacío si no se pudieron calcular.
+let ofertasVigentes = [];
 const carrito = FachadaStorage.cargarCarrito();
 let pagoActual = null;
 let pedidoPendiente = null;
@@ -45,6 +49,7 @@ const elementos = {
     resultados: elemento("#resultados-catalogo"),
     tablaPreciosCuerpo: elemento("#tabla-precios-cuerpo"),
     catalogoMensaje: elemento("#catalogo-mensaje"),
+    reintentarCatalogo: elemento("#reintentar-catalogo", false),
     carritoItems: elemento("#carrito-items"),
     carritoMensaje: elemento("#carrito-mensaje"),
     carritoTotal: elemento("#carrito-total"),
@@ -71,7 +76,9 @@ const elementos = {
 // antes de inicializar los eventos de la aplicación.
 const elementosFaltantes = Object.entries(elementos)
     .filter(([nombre, control]) =>
-        nombre !== "estadoAplicacion" && control === null
+        nombre !== "estadoAplicacion" &&
+        nombre !== "reintentarCatalogo" &&
+        control === null
     )
     .map(([nombre]) => nombre);
 
@@ -160,10 +167,8 @@ function limpiarEstadoControl(control) {
 function renderizarCatalogo(productos) {
     const fragmento = document.createDocumentFragment();
 
-    const ofertas = ServicioOfertas.obtenerOfertas(catalogo);
-
     const ofertasPorCodigo = new Map(
-        ofertas.map((oferta) => [oferta.codigo, oferta])
+        ofertasVigentes.map((oferta) => [oferta.codigo, oferta])
     );
 
     productos.forEach((producto) => {
@@ -246,6 +251,8 @@ function renderizarCatalogo(productos) {
 
 
 function buscarYMostrarCatalogo() {
+    if (!catalogo) return;
+
     const criterios = {
         texto: elementos.busqueda.value,
         categoria: elementos.categoria.value,
@@ -627,10 +634,9 @@ function cancelarPedido() {
  * @returns {void}
  */
 function renderizarOfertas() {
-    const ofertas = ServicioOfertas.obtenerOfertas(catalogo);
     const fragmento = document.createDocumentFragment();
 
-    ofertas.forEach((oferta) => {
+    ofertasVigentes.forEach((oferta) => {
         const columna = document.createElement("div");
         columna.className = "col-12 col-md-6 col-lg-4";
 
@@ -686,6 +692,24 @@ function renderizarOfertas() {
     elementos.ofertasProductos.replaceChildren(fragmento);
 }
 
+
+/**
+ * Calcula las ofertas del catálogo recién cargado, de forma independiente.
+ * `ServicioOfertas` exige que estén sus tres productos promocionados con un
+ * precio válido; con un catálogo parcial (por ejemplo, un registro descartado)
+ * lanza una excepción. En ese caso las ofertas se omiten (queda la lista vacía:
+ * sin tarjetas de oferta ni precio anterior), el detalle va a `console.error`
+ * y el catálogo principal se muestra igual.
+ * @returns {void}
+ */
+function actualizarOfertasVigentes() {
+    try {
+        ofertasVigentes = ServicioOfertas.obtenerOfertas(catalogo);
+    } catch (error) {
+        console.error("No se pudieron calcular las ofertas; se omiten.", error);
+        ofertasVigentes = [];
+    }
+}
 
 /**
  * Renderiza dinámicamente la tabla de precios
@@ -806,11 +830,147 @@ function renderizarCuotas(metodo) {
 }
 
 
+// ---------------------------------------------------------------------------
+// CARGA ASÍNCRONA DEL CATÁLOGO
+// Se distinguen dos cosas: la DISPONIBILIDAD del catálogo (hay uno usable, venga
+// de la red, de la caché o del catálogo local) y el ESTADO VISUAL del mensaje
+// (loading, success o una advertencia de error si se usó un respaldo).
+// ---------------------------------------------------------------------------
+
+/**
+ * Habilita o deshabilita los controles de búsqueda y filtros del catálogo.
+ * @param {boolean} habilitar true para habilitarlos.
+ * @returns {void}
+ */
+function habilitarControlesCatalogo(habilitar) {
+    [elementos.busqueda, elementos.categoria, elementos.orden, elementos.activarPrecio]
+        .forEach((control) => {
+            control.disabled = !habilitar;
+        });
+    elementos.precio.disabled = !habilitar || !elementos.activarPrecio.checked;
+    elementos.formBusqueda.querySelectorAll("button").forEach((boton) => {
+        boton.disabled = !habilitar;
+    });
+}
+
+/**
+ * Registra en el DOM el estado de disponibilidad del catálogo.
+ * @param {"cargando"|"disponible"} estado Disponibilidad actual.
+ * @param {string} [origen] Origen de los datos ("red", "cache" o "local").
+ * @returns {void}
+ */
+function marcarEstadoCatalogo(estado, origen = "") {
+    elementos.seccionCatalogo.dataset.catalogo = estado;
+    if (origen) {
+        elementos.seccionCatalogo.dataset.origen = origen;
+    } else {
+        delete elementos.seccionCatalogo.dataset.origen;
+    }
+    elementos.resultados.setAttribute("aria-busy", String(estado === "cargando"));
+}
+
+/**
+ * Elige el texto y el tipo del mensaje según cómo terminó la carga.
+ * El detalle técnico del error no se muestra: ya quedó en `console.error`.
+ * @param {import("./api/apiService.js").ResultadoCarga} resultado Resultado de la carga.
+ * @returns {{texto: string, tipo: "success"|"error"}} Mensaje para el usuario.
+ */
+function describirCarga({ origen, error, descartados, resumen }) {
+    if (origen === "red") {
+        if (descartados.length > 0) {
+            return {
+                texto: `Se cargaron ${resumen.total} productos (${descartados.length} descartados por datos inválidos).`,
+                tipo: "success"
+            };
+        }
+        const categorias = Object.keys(resumen.porCategoria).length;
+        return {
+            texto: `${resumen.total} producto(s) cargado(s) en ${categorias} categoría(s). ` +
+                `Precios de ${FormateadorMoneda.formatear(resumen.precioMinimo)} ` +
+                `a ${FormateadorMoneda.formatear(resumen.precioMaximo)}.`,
+            tipo: "success"
+        };
+    }
+
+    const respaldo = origen === "cache"
+        ? "Mostramos la última versión guardada."
+        : "Mostramos el catálogo local.";
+    const pasajero = error.tipo === "red" ||
+        (error.tipo === "http" && error.estado >= 500 && error.estado < 600);
+    let causa;
+    if (pasajero) {
+        causa = origen === "cache" ? "No pudimos actualizar el catálogo." : "No pudimos conectarnos.";
+    } else if (error.tipo === "http") {
+        causa = "No encontramos el catálogo.";
+    } else if (error.tipo === "formato") {
+        causa = "El catálogo recibido no es válido.";
+    } else {
+        causa = "El catálogo no tiene productos disponibles.";
+    }
+    return { texto: `${causa} ${respaldo}`, tipo: "error" };
+}
+
+/**
+ * Carga el catálogo y actualiza la pantalla: loading, luego las tarjetas y el
+ * mensaje de éxito o de advertencia. Si ya hay una carga en curso, devuelve esa
+ * misma promesa (un solo pedido en vuelo). No rechaza.
+ * @returns {Promise<void>} Se resuelve cuando la pantalla quedó actualizada.
+ */
+function cargarCatalogoEnPantalla() {
+    if (cargaCatalogoEnCurso) return cargaCatalogoEnCurso;
+
+    cargaCatalogoEnCurso = (async () => {
+        const categoriaPrevia = elementos.categoria.value;
+
+        marcarEstadoCatalogo("cargando");
+        habilitarControlesCatalogo(false);
+        elementos.reintentarCatalogo?.setAttribute("hidden", "");
+        mostrarMensaje(elementos.catalogoMensaje, "Cargando catálogo…", "loading");
+
+        try {
+            const resultado = await cargarCatalogo({
+                alReintentar: () => mostrarMensaje(
+                    elementos.catalogoMensaje,
+                    "No pudimos conectarnos. Reintentando…",
+                    "loading"
+                )
+            });
+
+            catalogo = resultado.catalogo;
+            actualizarOfertasVigentes();
+            renderizarCategorias();
+            if ([...elementos.categoria.options].some((opcion) => opcion.value === categoriaPrevia)) {
+                elementos.categoria.value = categoriaPrevia;
+            }
+            renderizarOfertas();
+            renderizarTablaPrecios();
+            habilitarControlesCatalogo(true);
+            marcarEstadoCatalogo("disponible", resultado.origen);
+            buscarYMostrarCatalogo();
+
+            // El mensaje de la carga se muestra después de la búsqueda inicial,
+            // que también escribe en el mismo elemento.
+            const { texto, tipo } = describirCarga(resultado);
+            mostrarMensaje(elementos.catalogoMensaje, texto, tipo);
+            if (resultado.origen !== "red") {
+                elementos.reintentarCatalogo?.removeAttribute("hidden");
+            }
+        } catch (error) {
+            console.error("No se pudo mostrar el catálogo.", error);
+            habilitarControlesCatalogo(Boolean(catalogo));
+            marcarEstadoCatalogo(catalogo ? "disponible" : "cargando");
+            mostrarMensaje(elementos.catalogoMensaje, "No pudimos mostrar el catálogo.", "error");
+            elementos.reintentarCatalogo?.removeAttribute("hidden");
+        } finally {
+            cargaCatalogoEnCurso = null;
+        }
+    })();
+
+    return cargaCatalogoEnCurso;
+}
+
+
 function inicializarEventos() {
-    renderizarCategorias();
-    renderizarOfertas();
-    buscarYMostrarCatalogo();
-    renderizarTablaPrecios();
     renderizarMetodosPago();
     renderizarCuotas("");
     renderizarCarrito();
@@ -885,6 +1045,8 @@ function inicializarEventos() {
 
         if (!accion || !evento.currentTarget.contains(accion)) return;
 
+        if (!catalogo) return;
+
         const codigo = accion.dataset.productCode;
 
         procesarOperacionCarrito(
@@ -893,6 +1055,7 @@ function inicializarEventos() {
     }
 
     elementos.seccionCatalogo.addEventListener("click", manejarAgregarCarrito);
+    elementos.reintentarCatalogo?.addEventListener("click", cargarCatalogoEnPantalla);
     elementos.seccionOfertas.addEventListener("click", manejarAgregarCarrito);
 
 
@@ -1125,6 +1288,8 @@ function inicializarEventos() {
         }
     });
 
+    // Arranca la carga asíncrona del catálogo una vez registrados los eventos.
+    cargarCatalogoEnPantalla();
 }
 
 if (document.readyState === "loading") {

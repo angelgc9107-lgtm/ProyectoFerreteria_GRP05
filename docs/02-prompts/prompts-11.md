@@ -30,10 +30,10 @@ Spec actualizado:
 No hay código nuevo: solo el spec.
 
 ## Correcciones manuales
-<completar: ajustes que hiciste antes de commitear; si no hay, escribir "ninguna">
+ninguna
 
 ## Captura
-<PEGAR captura del chat con este mensaje y la respuesta, con la fecha visible>
+![Resultado](./images/prompt-11-DesarrolladorJSasincronico.png)
 
 ## Aplicación
 Rama `feature/dev-async-fetch-api`, commit de correcciones de la cuarta revisión de la PR.
