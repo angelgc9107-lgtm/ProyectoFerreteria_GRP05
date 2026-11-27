@@ -200,7 +200,6 @@ El contenedor `#ofertas-productos` no reservaba espacio suficiente durante la ca
 ### Corrección realizada
 
 Se realizaron pruebas experimentales mediante Local Overrides y mediciones de la altura del contenedor en Desktop y Mobile.
-
 Una vez comprobada la efectividad de la solución, se incorporaron las siguientes modificaciones:
 
 - `css/components.css`: se estableció una altura mínima de 308 px para el contenedor `#ofertas-productos`.
@@ -226,9 +225,47 @@ Se ejecutaron nuevas auditorías sobre el código corregido, obteniendo los sigu
 
 ### Evidencias
 
-Las capturas correspondientes a las auditorías iniciales, experimentales y definitivas se almacenarán en:
+### 1. Mediciones reales del contenedor
 
-`docs\04-testing\screenshots\Issue-213`
+Se realizaron mediciones mediante la consola de Chrome DevTools sobre el contenedor `#ofertas-productos`, una vez finalizada la carga asíncrona de las ofertas.
+
+| Dispositivo | Ancho de ventana | Altura real del contenedor | Altura mínima seleccionada |
+|---|---:|---:|---:|
+| Desktop | 1277 px | 307.55859375 px | 308 px |
+| Mobile | 400 px | 914.34375 px | 915 px |
+
+Las alturas mínimas se determinaron redondeando hacia arriba los valores obtenidos.
+
+### 2. Resultados de las pruebas experimentales
+
+Se utilizó Local Overrides de Chrome DevTools para evaluar diferentes alturas mínimas sin modificar el código fuente del proyecto. Posteriormente, se ejecutaron auditorías Lighthouse para comprobar el impacto sobre el CLS.
+
+| Dispositivo | Altura mínima aplicada | CLS obtenido |
+|---|---:|---:|
+| Desktop | Sin corrección | 0.183 |
+| Desktop | 308 px | 0.000 |
+| Mobile | Sin corrección | 0.656 |
+| Mobile | 308 px | 0.208 |
+| Mobile | 915 px | 0.000 |
+
+Los resultados demostraron que la altura mínima de 308 px era suficiente para Desktop, pero no para Mobile, donde todavía se producían desplazamientos visuales.
+
+### 3. Evidencias de los estilos aplicados y justificación de las alturas seleccionadas
+
+[fix: corrección de CLS en Desktop y Mobile y documentación de evidencias "Commit 7ff4f86ffd3528d6f5fdfdd5334468384a1fad3d"](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/223/changes/7ff4f86ffd3528d6f5fdfdd5334468384a1fad3d)
+
+A partir de las mediciones y los resultados experimentales, se incorporaron las siguientes correcciones al código fuente:
+
+- **`css/components.css`:** se estableció una altura mínima de 308 px para el contenedor `#ofertas-productos`.
+- **`css/responsive.css`:** se estableció una altura mínima de 915 px para el mismo contenedor dentro de la media query `max-width: 767.98px`.
+
+Se verificaron los estilos aplicados mediante la consola de Chrome DevTools, utilizando `getComputedStyle()` para consultar la propiedad `minHeight`.
+
+Las alturas seleccionadas permiten reservar el espacio necesario antes de que finalice la carga asíncrona de las ofertas, evitando el desplazamiento de las secciones inferiores.
+
+Las pruebas experimentales justifican ambas alturas, dado que permitieron obtener un CLS de 0.000 en Desktop y Mobile bajo las condiciones evaluadas.
+
+**Evidencias:** [Capturas de la Issue #213](./screenshots/Issue-213/).
 
 ### Conclusión
 
