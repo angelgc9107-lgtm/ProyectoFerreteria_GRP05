@@ -203,9 +203,9 @@ la corrección con el responsable.
 
 ## AT CLOSE — Se completa al cerrar la tarea (evidencia)
 
-> AT CLOSE parcialmente actualizado: se documentan TC-11 y las pruebas
-> funcionales Fetch/API, además del estado de las Issues asociadas. No representa
-> el cierre definitivo; los demás apartados permanecen pendientes.
+> AT CLOSE parcialmente actualizado: se documentan TC-11, las pruebas
+> funcionales Fetch/API y TC-12, además del estado de las Issues asociadas.
+> No representa el cierre definitivo; los demás apartados permanecen pendientes.
 
 ### Prompt exacto y contexto
 
@@ -576,31 +576,91 @@ Evidencias: [12 capturas de TC-11](../../04-testing/screenshots/tc-11/).
 
 | Test case | Estado | Comparación |
 |---|---|---|
-| 12 — Post Fetch | Pendiente | Frente a TC-11: pendiente |
+| 12 — Post Fetch | Ejecutado manualmente el 27/11/2026, 00:56 GMT-3 | Comparado con TC-11; detalle abajo |
 | 13 — Post Library | Pendiente | Frente a TC-12: pendiente |
+
+#### TC-12 — Lighthouse Post Fetch
+
+La auditoría se ejecutó manualmente en Chrome DevTools sobre
+`http://127.0.0.1:8000/`, con `http-server` 14.1.1, Lighthouse 13.5.0,
+Chromium 158.0.0.0, Navigation, Emulated Desktop, Custom throttling, Initial
+page load y Single page session. Se utilizó un worktree independiente del
+commit `ca9458f29d283e010c3fd2cafb5d931e3e70b1bb`, posterior a Fetch (#217)
+y anterior a SweetAlert2.
+
+Una verificación **posterior** comprobó el PID 35784 y su directorio en el
+worktree, el HEAD, respuestas HTTP 200 para `index.html`, `apiService.js`,
+`productos.json` y `script.js` coincidentes con el commit, la importación y
+ejecución de `cargarCatalogo`, ausencia de referencias funcionales a
+SweetAlert2 y HTTP 404 para `ServicioDialogos.js`. El `index.html` tenía un
+objeto Git distinto del repositorio original y del Baseline. La verificación
+posterior no acredita por sí sola el proceso durante la auditoría.
+
+| Categoría | TC-11 | TC-12 | Diferencia |
+|---|---:|---:|---:|
+| Performance | 92 | 86 | -6 |
+| Accessibility | 100 | 100 | 0 |
+| Best Practices | 77 | 77 | 0 |
+| SEO | 100 | 100 | 0 |
+
+| Métrica | TC-11 | TC-12 | Diferencia |
+|---|---:|---:|---:|
+| FCP | 0.5 s | 0.5 s | 0 s |
+| LCP | 1.1 s | 1.2 s | +0.1 s |
+| TBT | 0 ms | 0 ms | 0 ms |
+| CLS | 0.148 | 0.230 | +0.082 |
+| Speed Index | 0.5 s | 0.5 s | 0 s |
+
+Performance y Best Practices no cumplen ≥95; Accessibility y SEO sí. El
+incremento de CLS es aproximadamente 55.4 %. Lighthouse identifica una
+`section` con score 0.230 y recomienda `fetchpriority="high"` para la imagen
+LCP. Reservar espacio para contenido dinámico y evaluar la prioridad de la
+imagen son recomendaciones a investigar, no correcciones verificadas. Las
+29 cookies y el issue Cookie de Google Maps ya estaban en TC-11. No se
+estableció que Fetch causara las diferencias; una sola medición y los datos
+de red/caché no conservados del Baseline limitan la comparación.
+
+Análisis completo, Insights, Diagnostics y borradores de comentarios para
+#212, #213 y #214: [TC-12 — Lighthouse Post Fetch](../../04-testing/test-case-12-lighthouse-post-fetch.md).
+Evidencias originales:
+
+1. [Puntuaciones](../../04-testing/screenshots/tc-12/01-lighthouse-scores.png).
+2. [Métricas](../../04-testing/screenshots/tc-12/02-performance-metrics.png).
+3. [Insights](../../04-testing/screenshots/tc-12/03-performance-insights.png).
+4. [Diagnostics](../../04-testing/screenshots/tc-12/04-performance-diagnostics.png).
+5. [Accessibility](../../04-testing/screenshots/tc-12/05-accessibility.png).
+6. [Best Practices](../../04-testing/screenshots/tc-12/06-best-practices.png).
+7. [SEO](../../04-testing/screenshots/tc-12/07-seo.png).
+8. [Condiciones](../../04-testing/screenshots/tc-12/08-lighthouse-execution-conditions.png).
+9. [Issue Cookie de Maps](../../04-testing/screenshots/tc-12/09-google-maps-devtools-issue.png).
+10. [Cookies de Maps 1](../../04-testing/screenshots/tc-12/10-google-maps-cookies-1.png).
+11. [Cookies de Maps 2](../../04-testing/screenshots/tc-12/11-google-maps-cookies-2.png).
+12. [Cookies de Maps 3](../../04-testing/screenshots/tc-12/12-google-maps-cookies-3.png).
+13. [Layout shift culprits](../../04-testing/screenshots/tc-12/13-layout-shift-culprits.png).
+14. [LCP request discovery](../../04-testing/screenshots/tc-12/14-lcp-request-discovery.png).
 
 ### Issues reportadas
 
 | Issue | Problema | Responsable | Estado |
 |---|---|---|---|
-| [#212](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/212) | Performance inferior al umbral mínimo | Pendiente de asignación | Abierta |
-| [#213](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/213) | Desplazamientos visuales durante la carga (CLS) | Pendiente de asignación | Abierta |
-| [#214](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/214) | Best Practices y cookies de terceros de Google Maps | Pendiente de asignación | Abierta |
+| [#212](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/212) | Performance inferior al umbral mínimo | @alandox1 — Desarrollador JS Asíncrono | Abierta; corrección y verificación pendientes |
+| [#213](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/213) | Desplazamientos visuales durante la carga (CLS) | @LuchoBarrionuevo13 — Tester QA/JS | Abierta; corrección y verificación pendientes |
+| [#214](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/214) | Best Practices y cookies de terceros de Google Maps | @Piastrellini — Desarrollador JS de Librerías Externas | Abierta; corrección y verificación pendientes |
 
 Las tres Issues corresponden a problemas detectados durante el Baseline,
-previo a la incorporación de Fetch y SweetAlert2. Permanecen abiertas y sin
-responsables asignados; el Coordinador/DevOps definirá las asignaciones
-posteriormente. Por indicación expresa del coordinador, RC03 permanece abierto
-hasta que Alan y Thiago suban sus respectivas implementaciones de Fetch y
-SweetAlert2. La resolución y verificación de los problemas siguen pendientes.
+previo a la incorporación de Fetch y SweetAlert2, y siguen observándose en
+TC-12. Según lo informado, las Issues fueron actualizadas con los resultados
+de TC-12 y el coordinador definió los responsables de la tabla. Permanecen
+abiertas, pendientes de corrección y verificación; RC03 permanece abierto.
+Los borradores previos se conservan como referencia histórica en el TC-12.
 
-Para actualizar manualmente las Issues, usar como referencias el [commit del
+Para el seguimiento de las Issues, usar como referencias el [commit del
 Baseline](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/commit/0aec81a3d836968ee2e585fcddf4fa03418e659e),
 el [TC-11](../../04-testing/test-case-11-lighthouse-baseline.md) y las
-[12 capturas](../../04-testing/screenshots/tc-11/). En #212, la tarea
-“Implementar las mejoras correspondientes” aparece marcada como completada,
-pero no se hicieron correcciones funcionales; debe desmarcarse manualmente en
-GitHub. No se modificaron las Issues desde esta documentación.
+[12 capturas](../../04-testing/screenshots/tc-11/). En una revisión anterior
+de #212, la tarea “Implementar las mejoras correspondientes” aparecía marcada
+como completada sin evidencia de corrección; revisar si todavía corresponde
+desmarcarla manualmente en GitHub.
 
 ### Ajustes manuales a las pruebas generadas mediante IA
 
@@ -610,10 +670,9 @@ GitHub. No se modificaron las Issues desde esta documentación.
 
 ### Pendientes para completar AT CLOSE
 
-- TC-12 y TC-13, incluidas las comparaciones entre auditorías, permanecen
-  pendientes y no se ejecutaron en esta tarea.
+- TC-13 y su comparación con TC-12 permanecen pendientes.
 - Implementar y probar `library.spec.js` en la etapa correspondiente.
 - Investigar la causa del fallo manual de SweetAlert2 con las condiciones
   restantes de esa ejecución y, si están disponibles, su captura y consola.
-- Asignación, resolución y verificación de las Issues #212, #213 y #214.
-- Mantener RC03 abierto hasta que Alan y Thiago suban Fetch y SweetAlert2.
+- Corrección y verificación de las Issues #212, #213 y #214.
+- Mantener RC03 abierto hasta que el equipo indique su resolución.

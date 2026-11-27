@@ -1,6 +1,6 @@
 # Testing Doc — Actividad Obligatoria N°2, Primer Parcial y Segundo Parcial
 
-Índice central de test cases ejecutados con **Playwright MCP** (vía Claude Code — ver nota en spec-qa.md sobre el cambio de herramienta) y resumen de issues creados con **GitHub MCP**. Los test cases 1 a 5 corresponden a la Actividad Obligatoria N°2, los test cases 6 a 10 al Primer Parcial (migración a Bootstrap y componentes avanzados), y el TC-11 al Segundo Parcial (Lighthouse Baseline).
+Índice central de test cases y resumen de issues. Los test cases 1 a 10 se ejecutaron con **Playwright MCP** (vía Claude Code — ver nota en spec-qa.md sobre el cambio de herramienta) y corresponden a la Actividad Obligatoria N°2 y al Primer Parcial. TC-11 y TC-12 corresponden al Segundo Parcial y se ejecutaron manualmente con Lighthouse.
 
 ## Índice de Test Cases
 
@@ -17,6 +17,7 @@
 | 9 | [test-case-9.md](test-case-9.md) | Iframe de Google Maps (carga, responsive, ausencia de overflow) | Playwright MCP |
 | 10 | [test-case-10.md](test-case-10.md) | Input range de filtro de precio (interacción, sincronización con output) | Playwright MCP |
 | 11 | [test-case-11-lighthouse-baseline.md](test-case-11-lighthouse-baseline.md) | Baseline Lighthouse Desktop / Navigation sobre `develop` | Chrome DevTools Lighthouse 13.5.0 |
+| 12 | [test-case-12-lighthouse-post-fetch.md](test-case-12-lighthouse-post-fetch.md) | Lighthouse Post Fetch, comparación con TC-11 | Chrome DevTools Lighthouse 13.5.0 |
 
 ## Segundo Parcial — TC-11 Lighthouse Baseline
 
@@ -30,10 +31,53 @@ El commit de referencia del Baseline es
 Las Issues [#212](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/212),
 [#213](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/213)
 y [#214](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/214)
-fueron creadas y permanecen abiertas, sin responsables asignados; la resolución
-y verificación siguen pendientes. RC03 permanece abierto por indicación del
-Coordinador/DevOps hasta que Alan y Thiago suban sus implementaciones de Fetch
-y SweetAlert2. TC-12 y TC-13 siguen pendientes.
+fueron creadas y permanecen abiertas; la corrección y verificación siguen
+pendientes. En TC-11, el Coordinador/DevOps indicó
+mantener RC03 abierto hasta que se subieran Fetch y SweetAlert2. RC03 continúa
+abierto; TC-12 se ejecutó posteriormente y TC-13 sigue pendiente.
+
+## Segundo Parcial — TC-12 Lighthouse Post Fetch
+
+TC-12 se ejecutó manualmente el 27/11/2026 a las 00:56 GMT-3 en el commit
+`ca9458f29d283e010c3fd2cafb5d931e3e70b1bb`, después de Fetch y antes de
+SweetAlert2. El servidor y el worktree se verificaron posteriormente.
+
+| Categoría | TC-11 | TC-12 | Diferencia |
+|---|---:|---:|---:|
+| Performance | 92 | 86 | -6 |
+| Accessibility | 100 | 100 | 0 |
+| Best Practices | 77 | 77 | 0 |
+| SEO | 100 | 100 | 0 |
+
+| Métrica | TC-11 | TC-12 | Diferencia |
+|---|---:|---:|---:|
+| FCP | 0.5 s | 0.5 s | 0 s |
+| LCP | 1.1 s | 1.2 s | +0.1 s |
+| TBT | 0 ms | 0 ms | 0 ms |
+| CLS | 0.148 | 0.230 | +0.082 |
+| Speed Index | 0.5 s | 0.5 s | 0 s |
+
+Performance y Best Practices no cumplen ≥95. El CLS subió aproximadamente
+55.4 % y las capturas muestran una `section` desplazada; la causa no está
+confirmada. Best Practices mantiene el hallazgo de cookies de Maps. Las
+Issues #212, #213 y #214 siguen abiertas. No se puede
+atribuir la variación a Fetch ni garantizar idénticas condiciones de red y
+caché; faltan parámetros del Baseline.
+
+Según lo informado, las Issues se actualizaron con los resultados de TC-12 y
+el coordinador definió estos responsables:
+
+| Issue | Responsable | Estado |
+|---|---|---|
+| #212 | @alandox1 — Desarrollador JS Asíncrono | Abierta; corrección y verificación pendientes |
+| #213 | @LuchoBarrionuevo13 — Tester QA/JS | Abierta; corrección y verificación pendientes |
+| #214 | @Piastrellini — Desarrollador JS de Librerías Externas | Abierta; corrección y verificación pendientes |
+
+El [TC-12](./test-case-12-lighthouse-post-fetch.md) contiene análisis,
+recomendaciones, comparación y los borradores previos como referencia histórica.
+Las [14 capturas](./screenshots/tc-12/) se enlazan individualmente allí.
+Quedan pendientes TC-13, `library.spec.js`, las correcciones y su
+verificación. RC03 sigue abierto.
 
 ## Resumen de Issues — Momento 1 (Testing pre-merge)
 
