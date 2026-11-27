@@ -1,6 +1,6 @@
 # Testing Doc — Actividad Obligatoria N°2, Primer Parcial y Segundo Parcial
 
-Índice central de test cases y resumen de issues. Los test cases 1 a 10 se ejecutaron con **Playwright MCP** (vía Claude Code — ver nota en spec-qa.md sobre el cambio de herramienta) y corresponden a la Actividad Obligatoria N°2 y al Primer Parcial. TC-11 y TC-12 corresponden al Segundo Parcial y se ejecutaron manualmente con Lighthouse.
+Índice central de test cases y resumen de issues. Los test cases 1 a 10 se ejecutaron con **Playwright MCP** (vía Claude Code — ver nota en spec-qa.md sobre el cambio de herramienta) y corresponden a la Actividad Obligatoria N°2 y al Primer Parcial. TC-11, TC-12 y TC-13 corresponden al Segundo Parcial y se ejecutaron manualmente con Lighthouse.
 
 ## Índice de Test Cases
 
@@ -18,6 +18,7 @@
 | 10 | [test-case-10.md](test-case-10.md) | Input range de filtro de precio (interacción, sincronización con output) | Playwright MCP |
 | 11 | [test-case-11-lighthouse-baseline.md](test-case-11-lighthouse-baseline.md) | Baseline Lighthouse Desktop / Navigation sobre `develop` | Chrome DevTools Lighthouse 13.5.0 |
 | 12 | [test-case-12-lighthouse-post-fetch.md](test-case-12-lighthouse-post-fetch.md) | Lighthouse Post Fetch, comparación con TC-11 | Chrome DevTools Lighthouse 13.5.0 |
+| 13 | [test-case-13-lighthouse-post-library.md](test-case-13-lighthouse-post-library.md) | Lighthouse Post Library, comparación con TC-12 | Chrome DevTools Lighthouse 13.3.0 |
 
 ## Segundo Parcial — TC-11 Lighthouse Baseline
 
@@ -35,7 +36,7 @@ fueron creadas a partir del Baseline. La corrección y verificación final de
 #212 y #213 siguen pendientes; el seguimiento posterior de #214 se indica
 abajo. En TC-11, el Coordinador/DevOps indicó
 mantener RC03 abierto hasta que se subieran Fetch y SweetAlert2. RC03 continúa
-abierto; TC-12 se ejecutó posteriormente y TC-13 sigue pendiente.
+abierto; TC-12 y TC-13 se ejecutaron posteriormente.
 
 ## Segundo Parcial — TC-12 Lighthouse Post Fetch
 
@@ -77,7 +78,7 @@ el coordinador definió estos responsables:
 El [TC-12](./test-case-12-lighthouse-post-fetch.md) contiene análisis,
 recomendaciones, comparación y los borradores previos como referencia histórica.
 Las [14 capturas](./screenshots/tc-12/) se enlazan individualmente allí.
-Quedan pendientes TC-13 y la verificación final de #212 y #213. RC03 sigue abierto.
+Queda pendiente la verificación final de #212 y #213. RC03 sigue abierto.
 
 ### Seguimiento preliminar de #214
 
@@ -90,8 +91,45 @@ y se informó al coordinador para gestionar el cierre.
 
 GitHub confirma que #214 está **cerrada**, con cierre registrado el
 27/11/2026 a las 05:33:04 UTC por @angelgc9107-lgtm. La verificación
-informada es preliminar y **no corresponde al TC-13 oficial**, que permanece
-pendiente.
+informada es preliminar y **no corresponde al TC-13 oficial**, documentado
+por separado a continuación.
+
+## Segundo Parcial — TC-13 Lighthouse Post Library
+
+El usuario ejecutó dos mediciones manuales sobre el commit histórico
+`5d6ba926db00137fb53eace818ef5fe8d362bf17`, posterior a Fetch y SweetAlert2
+y anterior a la corrección de Maps de #221. La segunda, realizada el 27/11/2026
+a las 03:19 GMT-3 con la ventana maximizada, se usa como referencia principal:
+Performance **96**, Accessibility **100**, Best Practices **100**, SEO **100**
+y CLS **0.075**. La primera obtuvo **75, 100, 100, 100** y CLS **0.555**;
+se conserva sin descartar. La diferencia de visualización es una posible
+influencia, no una causa confirmada.
+
+| Categoría o métrica | TC-11 | TC-12 | TC-13 segunda |
+|---|---:|---:|---:|
+| Performance | 92 | 86 | 96 |
+| Accessibility | 100 | 100 | 100 |
+| Best Practices | 77 | 77 | 100 |
+| SEO | 100 | 100 | 100 |
+| FCP | 0.5 s | 0.5 s | 0.5 s |
+| LCP | 1.1 s | 1.2 s | 1.2 s |
+| TBT | 0 ms | 0 ms | 0 ms |
+| CLS | 0.148 | 0.230 | 0.075 |
+| Speed Index | 0.5 s | 0.5 s | 0.5 s |
+
+TC-13 utilizó Lighthouse 13.3.0 y Chromium 150.0.7871.250; TC-11 y TC-12
+registraron 13.5.0 y 158.0.0.0. Los parámetros anteriores de red y caché
+están incompletos, por lo que las diferencias no demuestran causalidad. En la
+segunda ejecución persisten recomendaciones estimadas de caché, imágenes,
+recursos bloqueantes y JavaScript; Lighthouse identifica una `section` con
+CLS 0.075 y recomienda evaluar la prioridad de la imagen LCP. Best Practices
+100 no demuestra que Maps estuviera corregido en el commit histórico.
+
+El [TC-13](./test-case-13-lighthouse-post-library.md) conserva el análisis,
+las **18 capturas** (12 de la segunda ejecución y 6 de la primera), las
+limitaciones y borradores separados para #212 y #213. Ambas Issues permanecen
+abiertas y su verificación final sobre `develop` actualizado sigue pendiente;
+#214 continúa cerrada y su verificación preliminar se mantiene separada.
 
 ## Segundo Parcial — Pruebas funcionales SweetAlert2
 
@@ -103,8 +141,8 @@ con Playwright local registró 501 specs y 0 failures. El fallo manual anterior
 de foco no se reprodujo y su causa sigue pendiente de investigación.
 
 Los detalles, la comparación de cobertura y las capturas se encuentran en
-[la documentación Jasmine](../../js/test/testing-doc.md). TC-13 sigue
-pendiente; no se ejecutó una auditoría Lighthouse en esta etapa.
+[la documentación Jasmine](../../js/test/testing-doc.md). En aquella etapa de
+pruebas no se ejecutó Lighthouse; TC-13 se realizó posteriormente.
 
 ### Validación manual de SweetAlert2 (27/11/2026)
 

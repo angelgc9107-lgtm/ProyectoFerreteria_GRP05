@@ -176,16 +176,16 @@ la corrección con el responsable.
 - [x] Los nuevos specs se ejecutan en el runner Jasmine; la suite existente
       sigue pasando y `script.spec.js` y `models.spec.js` se actualizan si
       corresponde, manteniendo o mejorando la cobertura existente.
-- [ ] TC-11 se realizó sobre la rama `develop`, después del backport aprobado
+- [x] TC-11 se realizó sobre la rama `develop`, después del backport aprobado
       de la Actividad Obligatoria N.º 4 y antes de incorporar Fetch o la
       librería externa; TC-12 después de Fetch en `develop`; TC-13 después de
       la librería en `develop`.
-- [ ] Cada auditoría registra las cuatro puntuaciones, FCP, LCP, TBT, CLS,
+- [x] Cada auditoría registra las cuatro puntuaciones, FCP, LCP, TBT, CLS,
       Speed Index, condiciones de medición, problemas y capturas.
 - [ ] En cada auditoría Performance, Accessibility, Best Practices y SEO
       alcanzan al menos 95 puntos; los resultados y correcciones están
       respaldados por evidencia.
-- [ ] TC-12 compara numéricamente sus puntajes y métricas con TC-11, y TC-13
+- [x] TC-12 compara numéricamente sus puntajes y métricas con TC-11, y TC-13
       con TC-12; ambas auditorías analizan el impacto de cada funcionalidad
       sobre rendimiento, accesibilidad, buenas prácticas y SEO, identifican
       mejoras y regresiones, documentan las recomendaciones de optimización de
@@ -204,8 +204,8 @@ la corrección con el responsable.
 ## AT CLOSE — Se completa al cerrar la tarea (evidencia)
 
 > AT CLOSE parcialmente actualizado: se documentan TC-11, las pruebas
-> funcionales Fetch/API y SweetAlert2, y TC-12, además del estado de las Issues
-> asociadas.
+> funcionales Fetch/API y SweetAlert2, TC-12 y TC-13, además del estado de las
+> Issues asociadas.
 > No representa el cierre definitivo; los demás apartados permanecen pendientes.
 
 ### Prompt exacto y contexto
@@ -770,7 +770,7 @@ Evidencias: [12 capturas de TC-11](../../04-testing/screenshots/tc-11/).
 | Test case | Estado | Comparación |
 |---|---|---|
 | 12 — Post Fetch | Ejecutado manualmente el 27/11/2026, 00:56 GMT-3 | Comparado con TC-11; detalle abajo |
-| 13 — Post Library | Pendiente | Frente a TC-12: pendiente |
+| 13 — Post Library | Ejecutado manualmente; segunda ejecución 27/11/2026, 03:19 GMT-3 | Comparado con TC-12; detalle abajo |
 
 #### TC-12 — Lighthouse Post Fetch
 
@@ -832,6 +832,60 @@ Evidencias originales:
 13. [Layout shift culprits](../../04-testing/screenshots/tc-12/13-layout-shift-culprits.png).
 14. [LCP request discovery](../../04-testing/screenshots/tc-12/14-lcp-request-discovery.png).
 
+#### TC-13 — Lighthouse Post Library
+
+El usuario ejecutó la auditoría sobre el commit histórico de `develop`
+`5d6ba926db00137fb53eace818ef5fe8d362bf17`, posterior a Fetch y al merge de
+SweetAlert2 (#216), pero anterior a la corrección de Maps (#221). Se verificó
+el servidor `http-server` 14.1.1 en el puerto 8000, con `max-age=3600`, y la
+coincidencia de los archivos principales servidos con el checkout y el commit.
+La verificación posterior no acredita por sí sola el estado de caché del
+navegador durante la auditoría.
+
+Se conserva la primera ejecución: **75 / 100 / 100 / 100**, CLS **0.555**.
+La segunda, con ventana maximizada, se toma como referencia por sus
+condiciones de visualización: **96 / 100 / 100 / 100**, CLS **0.075**,
+27/11/2026 a las 03:19 GMT-3, Lighthouse 13.3.0, Chromium 150.0.7871.250,
+Navigation, Emulated Desktop, Custom throttling, Initial page load y Single
+page session. La ventana de la primera no estaba maximizada; su influencia
+es posible, no una causa confirmada.
+
+| Categoría o métrica | TC-11 | TC-12 | TC-13 segunda |
+|---|---:|---:|---:|
+| Performance | 92 | 86 | 96 |
+| Accessibility | 100 | 100 | 100 |
+| Best Practices | 77 | 77 | 100 |
+| SEO | 100 | 100 | 100 |
+| FCP | 0.5 s | 0.5 s | 0.5 s |
+| LCP | 1.1 s | 1.2 s | 1.2 s |
+| TBT | 0 ms | 0 ms | 0 ms |
+| CLS | 0.148 | 0.230 | 0.075 |
+| Speed Index | 0.5 s | 0.5 s | 0.5 s |
+
+Después de Fetch se observó una disminución de Performance y un aumento de
+CLS; en la segunda ejecución Post Library se observaron una recuperación de
+Performance y Best Practices y una reducción del CLS. Accessibility y SEO
+se mantuvieron en 100. No se pueden atribuir esas diferencias a las
+funcionalidades: TC-11 y TC-12 usaron Lighthouse 13.5.0 y Chromium 158.0.0.0
+y no se conservaron todas las condiciones anteriores de red y caché.
+
+El registro de las tres auditorías reúne las puntuaciones, métricas,
+condiciones disponibles, problemas y capturas. Los parámetros originales de
+red y caché no se conservaron completamente; esta limitación está documentada
+en los test cases y no permite garantizar condiciones equivalentes.
+
+Lighthouse muestra oportunidades estimadas de caché, imágenes, recursos
+bloqueantes y JavaScript, recomienda evaluar la prioridad de la imagen LCP
+y señala una `section` con contribución 0.075 al CLS. La diferencia frente a
+la primera ejecución requiere investigar el responsive y el contenido dinámico
+sin atribuir la causa a SweetAlert2. Best Practices 100 no prueba que Maps
+estuviera corregido en este commit anterior a #221.
+
+Los resultados completos, limitaciones, 18 capturas y borradores separados
+para #212 y #213 se conservan en [TC-13 — Lighthouse Post Library](../../04-testing/test-case-13-lighthouse-post-library.md).
+Ambas Issues siguen abiertas y requieren verificación final sobre `develop`
+actualizado. #214 permanece cerrada tras su verificación preliminar separada.
+
 ### Issues reportadas
 
 | Issue | Problema | Responsable | Estado |
@@ -859,7 +913,7 @@ corresponden a una verificación preliminar, **no al TC-13 oficial**.
 
 La consulta de GitHub confirmó que #214 está **cerrada**, con cierre registrado
 el 27/11/2026 a las 05:33:04 UTC por @angelgc9107-lgtm. Esta comprobación no
-modifica la Issue ni sustituye la auditoría TC-13 pendiente.
+modifica la Issue ni sustituye la auditoría TC-13 documentada arriba.
 
 Para el seguimiento de las Issues, usar como referencias el [commit del
 Baseline](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/commit/0aec81a3d836968ee2e585fcddf4fa03418e659e),
@@ -877,7 +931,8 @@ desmarcarla manualmente en GitHub.
 
 ### Pendientes para completar AT CLOSE
 
-- TC-13 y su comparación con TC-12 permanecen pendientes.
+- Compartir, si se autoriza, los borradores de comentarios de TC-13 para
+  #212 y #213 y verificar ambas Issues sobre `develop` actualizado.
 - Validar la accesibilidad de SweetAlert2 con tecnologías de asistencia; la
   navegación manual con teclado indicada arriba ya fue comprobada.
 - Investigar la causa del fallo manual de SweetAlert2 con las condiciones
