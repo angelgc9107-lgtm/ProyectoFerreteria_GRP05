@@ -1,0 +1,6 @@
+PÁGINA  HTTP 500: pedidos=3 origen=local mensaje="No pudimos conectarnos. Mostramos el catálogo local."
+PÁGINA  HTTP 503: pedidos=3 origen=local mensaje="No pudimos conectarnos. Mostramos el catálogo local."
+PÁGINA  HTTP 599: pedidos=3 origen=local mensaje="No pudimos conectarnos. Mostramos el catálogo local."
+PÁGINA  HTTP 404: pedidos=1 origen=local mensaje="No encontramos el catálogo. Mostramos el catálogo local."
+PÁGINA  HTTP 600: pedidos=1 origen=local mensaje="No encontramos el catálogo. Mostramos el catálogo local."
+MÓDULO: {"301":{"tipo":"http","estado":301,"pedidos":1},"404":{"tipo":"http","estado":404,"pedidos":1},"499":{"tipo":"http","estado":499,"pedidos":1},"500":{"tipo":"http","estado":500,"pedidos":3},"599":{"tipo":"http","estado":599,"pedidos":3},"600":{"tipo":"http","estado":600,"pedidos":1}}

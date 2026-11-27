@@ -1,0 +1,52 @@
+angel {
+ "tablet": {
+  "corridas": [
+   0.14,
+   0.14,
+   0.14
+  ],
+  "mediana": 0.14,
+  "culpables": [
+   "0.140  SECTION. | SECTION.",
+   "0.000  BUTTON."
+  ]
+ },
+ "ventanaChica": {
+  "corridas": [
+   0,
+   0,
+   0
+  ],
+  "mediana": 0,
+  "culpables": [
+   "0.000  BUTTON."
+  ]
+ },
+ "maximizada": {
+  "corridas": [
+   0,
+   0,
+   0
+  ],
+  "mediana": 0,
+  "culpables": []
+ },
+ "escritorio": {
+  "corridas": [
+   0,
+   0,
+   0
+  ],
+  "mediana": 0,
+  "culpables": []
+ },
+ "movil": {
+  "corridas": [
+   0,
+   0,
+   0
+  ],
+  "mediana": 0,
+  "culpables": []
+ }
+}
