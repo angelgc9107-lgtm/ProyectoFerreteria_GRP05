@@ -123,7 +123,7 @@ Motivos:
 - [X] Desde el carrito (`Offcanvas` de Bootstrap) el diálogo se usa con teclado: foco inicial en «Cancelar», `Tab` no sale del diálogo, `Esc` cierra solo el diálogo (el carrito queda abierto) y el foco vuelve al botón que lo abrió.
 - [X] El diálogo se muestra por encima del carrito y del resto de la página (apilamiento / `z-index`) en escritorio y en 390 px de ancho.
 - [X] SweetAlert2 no introduce conflictos con Bootstrap ni con los módulos existentes: la suite completa de `js/test/test-runner.html` sigue en 0 failures.
-- [ ] La PR se mergea a `develop` recién después de que Fetch esté integrado y TC-12 esté ejecutado y documentado (sección 6).
+- [ ] La PR se mergea a `develop` recién después de que Fetch esté integrado y TC-12 esté ejecutado y documentado (sección 6). **No cumplido:** la PR #216 se mergeó el 26/11 a las 23:45, antes de que TC-12 estuviera ejecutado (ver AT CLOSE, sección 3).
 - [X] `docs/07-librerias/libreria-doc.md` completo: nombre, versión, propósito, instalación, ejemplos de uso, enlaces a la documentación oficial y capturas en `docs/07-librerias/screenshots/`.
 - [X] Código documentado con JSDoc, sin `alert()`, `confirm()` ni `prompt()`.
 - [X] Rama `feature/dev-libreria-externa-sweetalert2`, issue asociada, PR hacia `develop` revisada por el Coordinador/DevOps y entrada en `changelog.md`.
@@ -139,7 +139,7 @@ Motivos:
 
 **Orden de integración a `develop` (RC01):**
 
-1. Fetch integrado y revisado en `develop` (PR #217; la #211 era el spec del rol).
+1. Fetch integrado y revisado en `develop` (PR #217; la #211 es el spec del rol).
 2. El Tester QA/JS ejecuta y documenta **TC-12** (Lighthouse post-Fetch) sobre `develop`.
 3. Recién entonces se mergea esta PR a `develop`.
 4. El Tester QA/JS ejecuta **TC-13** (Lighthouse post-librería) y lo compara con TC-12.
@@ -274,7 +274,7 @@ Sobre el código que generó Claude Code no se hicieron cambios manuales: se rev
 | Se aceptaron tres decisiones que el BEFORE no tenía: `titleText` en lugar de `title` (en SweetAlert2 `title` se interpreta como HTML), protección contra doble clic mientras el diálogo está abierto, y que cancelar con el formulario vacío no pregunte. | Las dos primeras corrigen riesgos reales (inyección de HTML y acciones repetidas); la tercera evita preguntar cuando no hay datos que perder. |
 | Se aceptó `console.error` (y no `console.warn`) cuando la librería no cargó, como decía el BEFORE. | Es lo especificado en la sección 4. |
 | Actualización del BEFORE por la revisión de la PR #216: orden de integración con TC-12 (RC01), matriz de regresión de los cuatro flujos (RC02) y criterios de compatibilidad con Bootstrap (RC03). | Pedido del Coordinador/DevOps en la revisión. Los agregados están marcados en el BEFORE con su RC. |
-| Orden real de trabajo: el código se escribió en la rama el 26/11 a las 12:30, antes de que Fetch estuviera en `develop` (PR #217, mergeada a las 23:00). Antes de pedir el merge se trajo `develop` a la rama, se resolvieron los conflictos con Fetch y la suite quedó en 468 specs, 0 failures. | Se deja constancia para que el orden de desarrollo en la rama no se confunda con el orden de integración a `develop`. |
+| Orden real de trabajo: el código se escribió en la rama el 26/11 a las 12:30, antes de que Fetch se integrara a `develop` (PR #217, mergeada el 26/11 a las 23:00). Esta PR (#216) se mergeó a las 23:45 del mismo día, antes de ejecutar TC-12, así que el criterio de orden de la sección 5 queda sin cumplir. | Se deja constancia para que el orden de integración a `develop` no se confunda con el orden de desarrollo en la rama. La versión anterior de esta fila citaba por error la PR #211 (spec de Fetch, mergeada a las 18:16) como si fuera la integración. |
 | Claude Code cambió la base de la rama: salía de un `develop` local desactualizado y la rebasó sobre `origin/develop` antes de empezar, conservando el commit del spec. Se verificó con `git log` antes de publicar la rama. | Sin `js/services/` ni el `script.js` actual, la integración no se podía hacer sobre la base anterior. |
 
 ## 4. Resumen de los puntos de integración y mejora de la experiencia
