@@ -1,7 +1,153 @@
 # Documentación de Testing - Suite Jasmine
 
-Proyecto FerroLab - Actividad Obligatoria N°4 - Programación Web I
-Módulos testeados: `js/models/*.js`, `js/services/*.js`, `js/utils/storage.js` y `js/script.js` | Framework: Jasmine 5.10.0 (CDN)
+Proyecto FerroLab - Actividad Obligatoria N°4 y Segundo Parcial - Programación Web I
+Módulos testeados: `js/api/*.js`, `js/models/*.js`, `js/services/*.js`, `js/utils/storage.js` y `js/script.js` | Framework: Jasmine 5.10.0 (CDN)
+
+## Segundo Parcial — SweetAlert2 y regresión (27/11/2026)
+
+Se evaluó `feature/tester-qa-js-testing-suite`, HEAD
+`c008e2fa8cf92f6312efc75479fcf19aeefa9315`, igual a `origin/develop` después
+de las PR #220 y #221; SweetAlert2 se integró en #216. Se añadieron nueve
+pruebas en `library.spec.js` para `ServicioDialogos`: configuración y textos
+planos; valores predeterminados; confirmación estricta, cancelación y espera
+asíncrona; foco y destino modal; origen desconectado; movimiento reducido;
+errores de la librería y fallback. Una prueba usa SweetAlert2 real para
+comprobar `role`, `aria-modal`, Tab, Shift+Tab, Escape y retorno del foco.
+Los eventos de teclado son sintéticos: no sustituyen la comprobación manual
+con teclado físico y tecnologías de asistencia.
+
+Se conservaron las 27 pruebas de SweetAlert2 en `script.spec.js`: verifican
+los flujos de controlador, el CDN y la integración real con Bootstrap. No se
+trasladaron ni eliminaron; las pruebas nuevas cubren el contrato directo del
+wrapper. El runner incorpora `library.spec.js` como módulo ES.
+
+### Ejecuciones y fallo de foco
+
+- Antes de agregar la suite, Playwright MCP y Chromium 158.0.0.0 ejecutaron
+  492/492 pruebas, 0 fallidas, semilla `61496`, por HTTP en puerto `18765`.
+- Con la nueva suite, la ejecución filtrada por `ServicioDialogos - ` obtuvo
+  **9/9 aprobadas, 0 fallidas y 0 pendientes**, semilla `61496`.
+- La suite completa en Playwright MCP y Chromium 158.0.0.0 obtuvo **501
+  ejecutadas, 501 aprobadas, 0 fallidas y 0 pendientes**, semilla `61496`:
+  modelos 89, storage 189, servicios 50, API 22, biblioteca 9 y controlador
+  142, incluidas las 27 de SweetAlert2. Se usó `http-server` 14.1.1 en
+  `127.0.0.1:18765`, con caché deshabilitada.
+- La ejecución manual informada previamente sigue registrada más abajo:
+  489 aprobadas, 1 fallida, semilla `61496`, puerto 8000. El fallo no se
+  reprodujo en las dos corridas completas anteriores. La semilla no reproduce
+  por sí sola el entorno ni el conjunto de pruebas: aquí hay otro commit,
+  puerto y navegador controlado por Playwright.
+- La línea `script.spec.js:2567` de la ejecución original esperaba que
+  desapareciera el contenedor y volviera el foco, mediante un sondeo con
+  límite de tres segundos. Foco, animaciones, programación de tareas y
+  carga del CDN son condiciones posibles a investigar, no causas probadas.
+  No se puede clasificar aún como fallo funcional, de sincronización o del
+  entorno; faltan datos de la ejecución manual y una reproducción.
+- Durante la validación se detectó una respuesta cacheada del runner que
+  todavía mostraba 492 pruebas después del cambio. Se descartó esa corrida y
+  se repitió con caché deshabilitada y contexto aislado; los 501 corresponden
+  al runner actualizado.
+
+### Cobertura V8 independiente
+
+`node js/test/herramientas/cobertura-v8.js --detalle`, Playwright local y
+Chromium 159.0.8154.6: **501 specs, 0 failures**, semilla `60944`.
+Es una ejecución distinta de Playwright MCP.
+
+| Medición | Líneas | Funciones | Ramas V8 aproximadas |
+|---|---:|---:|---:|
+| Anterior, semilla `88737` | 1935/1969 (98,3 %) | 257/258 (99,6 %) | 723/736 (98,2 %) |
+| Actual, total | 1949/1983 (98,3 %) | 258/259 (99,6 %) | 733/746 (98,3 %) |
+| Actual, `ServicioDialogos.js` | 63/63 (100 %) | 7/7 (100 %) | 21/22 (95,5 %) |
+| Actual, `apiService.js` | 124/129 (96,1 %) | 11/11 (100 %) | 57/59 (96,6 %) |
+| Actual, `ProcesadorCatalogo.js` | 59/60 (98,3 %) | 18/18 (100 %) | 24/25 (96,0 %) |
+
+Las bases de código y pruebas difieren por la integración de #221 y las
+nuevas pruebas; la variación de ramas es aproximada y no demuestra una mejora
+causal. No se detectaron problemas funcionales nuevos en estas ejecuciones.
+
+Evidencias: [semilla antes de library](./capturas/captura-seed-61496-antes-library-2026-11-27.png),
+[suite library filtrada](./capturas/captura-library-2026-11-27.png),
+[suite completa](./capturas/captura-jasmine-library-2026-11-27.png) y
+[salida de cobertura V8](./capturas/captura-cobertura-library-2026-11-27.png).
+La captura de cobertura muestra la salida textual de la ejecución independiente.
+No se ejecutó Lighthouse TC-13.
+
+### Validación manual de SweetAlert2 (27/11/2026)
+
+Según lo informado por el usuario, realizó personalmente la validación con
+resultados favorables:
+
+- Visualización correcta del diálogo y foco inicial en **Cancelar**.
+- Navegación correcta con Tab y Shift + Tab; Escape cancela el diálogo.
+- Al cancelar, el carrito permanece abierto y el foco vuelve al botón de
+  eliminación.
+- Al confirmar, se elimina el producto y se actualizan la cantidad de productos
+  y el total.
+
+Las capturas muestran el [diálogo de confirmación](./capturas/captura-sweetalert2-confirmacion-manual-2026-11-27.png)
+y el [carrito después de la eliminación](./capturas/captura-sweetalert2-eliminacion-manual-2026-11-27.png).
+La navegación con teclado fue comprobada manualmente por el usuario, no por
+las capturas. El fallo anterior relacionado con el foco no se reprodujo en
+esta validación manual; su causa original continúa sin determinarse. Esta
+comprobación no es una nueva ejecución de Jasmine.
+
+## Segundo Parcial — Fetch/API y regresión (etapa anterior)
+
+### Reejecución del 27/11/2026 y resultado manual informado
+
+Se volvió a ejecutar el runner completo en Chromium 158 mediante **Playwright MCP**, servido por HTTP desde la raíz del proyecto (`http://127.0.0.1:18765/js/test/test-runner.html`), sobre `HEAD` `5d6ba92` y los cambios de QA sin commitear. **490 pruebas ejecutadas: 490 aprobadas, 0 fallidas, 0 pendientes**, con la semilla `28453`. Las 22 pruebas de `api.spec.js` y las 27 de la suite de diálogos SweetAlert2 aprobaron. Dentro de estas últimas aprobaron los dos casos con la librería real y la comprobación de hashes SRI del CDN.
+
+El usuario informó una ejecución manual distinta: **489 aprobadas y 1 fallida**, semilla `61496`, con servidor HTTP en el puerto `8000`. La prueba «desde el carrito abierto: foco en Cancelar, Esc cierra solo el diálogo y el foco vuelve al botón» falló con `La condición no se cumplió a tiempo.`, en `script.spec.js:2111:41` y `script.spec.js:2567:13`. Este resultado no se descarta ni se presenta como aprobado. El fallo no se reprodujo posteriormente con Playwright MCP, por lo que su causa **no está determinada**. Las pruebas existentes incluyen dependencias de CDN, foco, animaciones y tiempos de espera; son condiciones a comparar, no causas comprobadas. Para investigar siguen pendientes la versión del navegador y, de ser posible, una captura del panel de fallos de Jasmine y la consola. La semilla informada permite repetir la secuencia mediante `http://localhost:8000/js/test/test-runner.html?seed=61496`.
+
+Se ejecutó además una medición **independiente** con `node js/test/herramientas/cobertura-v8.js --detalle` (Chromium mediante Playwright local, no MCP): **490 specs, 0 failures**, semilla `88737`. La captura reproduce íntegramente la salida textual obtenida en esa medición:
+
+| Archivo | Líneas | Funciones | Ramas V8 aproximadas |
+|---|---:|---:|---:|
+| `js/api/apiService.js` | 124/129 (96,1 %) | 11/11 (100 %) | 57/59 (96,6 %) |
+| `js/services/ProcesadorCatalogo.js` | 59/60 (98,3 %) | 18/18 (100 %) | 24/25 (96,0 %) |
+| **Total medido** | **1935/1969 (98,3 %)** | **257/258 (99,6 %)** | **723/736 (98,2 %)** |
+
+Evidencias obtenidas con Playwright MCP:
+
+- [Resultado general de Jasmine](./capturas/captura-jasmine-segundo-parcial-2026-11-27.png).
+- [Las 22 pruebas de API](./capturas/captura-api-22-pruebas-2026-11-27.png).
+- [Las 27 pruebas de SweetAlert2](./capturas/captura-sweetalert2-2026-11-27.png).
+- [Salida de cobertura V8 y ramas sin cubrir](./capturas/captura-cobertura-v8-2026-11-27.png).
+
+Las capturas de API y SweetAlert2 muestran una vista del reporte de la **misma corrida completa**, con las demás suites ocultadas después de la ejecución; no son ejecuciones filtradas ni cambian los resultados de Jasmine. La captura de cobertura muestra la salida de la medición independiente, servida como texto local para fotografiarla; los totales de ramas pueden variar entre corridas por la forma en que V8 informa los bloques.
+
+### Corrida anterior del 26/11/2026
+
+**Fecha:** 26/11/2026. **Rama:** `feature/tester-qa-js-testing-suite`.
+**Código de Alan evaluado:** merge de la PR #217, commit `ca9458f29d283e010c3fd2cafb5d931e3e70b1bb`; la suite se ejecutó sobre `HEAD` `5d6ba92` más los cambios de QA de esta tarea.
+
+La suite se ejecutó desde `js/test/test-runner.html` por HTTP. La verificación final fue `node js/test/herramientas/cobertura-v8.js --detalle`, que levanta un servidor local temporal, abre el runner en Chromium y mide cobertura V8.
+
+**Resultado final: 490 specs, 0 failures, 0 pendientes** (Jasmine 5.10.0; semilla aleatoria `47158`).
+
+| Suite | Specs aprobados | Fallidos |
+|---|---:|---:|
+| `models.spec.js` | 89 | 0 |
+| `storage.spec.js` | 189 | 0 |
+| `services.spec.js` | 50 | 0 |
+| `api.spec.js` | 22 | 0 |
+| `script.spec.js` | 140 | 0 |
+| **Total** | **490** | **0** |
+
+`api.spec.js` cubre respuestas válidas y argumentos de `fetch`, errores HTTP y de red diferenciados, reintentos y espera creciente, callback de reintento fallido, timeout, JSON y estructura inválidos, fetch no disponible, fallback por caché/local, caché no persistible, colecciones inválidas/vacías, duplicados, normalización, construcción, resumen `reduce`, agrupación y estados DOM de carga, éxito, error y recuperación por reintento. Los dobles sustituyen `fetch`; ninguna prueba consulta un servicio de API externo. El DOM se crea en iframes `srcdoc` y se restaura la clave de caché al terminar.
+
+**Cobertura V8 de los módulos del catálogo:**
+
+| Archivo | Líneas | Funciones | Ramas |
+|---|---:|---:|---:|
+| `js/api/apiService.js` | 124/129 (96,1 %) | 11/11 (100 %) | 56/58 (96,6 %) |
+| `js/services/ProcesadorCatalogo.js` | 59/60 (98,3 %) | 18/18 (100 %) | 24/25 (96,0 %) |
+| **Total medido por la herramienta** | **1935/1969 (98,3 %)** | **257/258 (99,6 %)** | **725/738 (98,2 %)** |
+
+La cobertura de ramas es la aproximación de bloques de V8 descrita en «Cómo se mide cada número»; puede variar según la compilación/semilla y no equivale a Istanbul/c8. El detalle también marca la salida del ciclo de reintentos de `obtenerJson`, el `catch` defensivo de lectura de caché (`apiService.js`) y la última defensa de construcción de `Producto` (`ProcesadorCatalogo.js`). El primer camino no es alcanzable por el bucle sin condición; los otros dos corresponden a defensas detrás de validaciones/abstracciones que ya capturan los errores según sus contratos. No se modificó código funcional para alcanzar porcentajes.
+
+**Hallazgos y regresiones:** la primera corrida de desarrollo detectó cuatro fallos del propio test harness al intentar espiar métodos de `FachadaStorage`, que es inmutable (`Object.freeze`). Se ajustaron esas pruebas para usar la fachada real y aislar/restaurar la clave de caché. En esa corrida final no hubo fallos Jasmine ni regresiones detectadas; no hubo borradores de Issues nuevos. #212, #213 y #214 siguen siendo hallazgos preexistentes del TC-11 y no se modificaron. La evidencia de esa corrida quedó en la sesión; las capturas posteriores se indican arriba.
 
 ## Índice
 1. [Estructura de la suite](#estructura-de-la-suite)
@@ -16,13 +162,17 @@ Módulos testeados: `js/models/*.js`, `js/services/*.js`, `js/utils/storage.js` 
 
 ---
 
-## Estado de la corrida (leer primero)
+## Historial de la corrida de la cuarta entrega
 
 Corrida completa de `test-runner.html` sobre la rama `release/cuarta-entrega` con las PR #167, #168, #169 (Desarrollador JS Eventos + DOM), #172 (Local y Session Storage) y #175 (POO) ya integradas, más los specs agregados en esta corrección de QA: **425 specs, 0 failures** (tres corridas con semillas distintas). Sin los specs de esta corrección, la rama de release tenía 405 specs, 0 failures. Después se agregó el spec de la corrección de RC51 (`Pedido.fromJSON()` lee el número una sola vez), y la suite quedó en **426 specs, 0 failures**. Con las PR #186 y #188 (Eventos + DOM) integradas pasó a 441 specs, y con los 10 specs agregados en esta corrección (RC81 a RC84: 3 de fallos de persistencia de `ConfirmadorPedidos`, 4 de `ValidacionPedido` y 3 del controlador) quedó en **451 specs, 0 failures** (tres corridas con semillas distintas).
 
 Antes de esta corrección, la suite de la PR #169 tenía **220 specs y 3 failures**. Los tres eran specs desactualizados respecto del controlador (no defectos del código); se adaptaron y el detalle está en [Hallazgos e Issues](#hallazgos-e-issues). El código de producción (`js/script.js`, `index.html`, `js/models/`, `js/services/`, `js/utils/`) no fue modificado por esta corrección de QA, y tampoco la documentación de trazabilidad de los cuatro flujos que agregó la PR #169, que se conserva tal cual.
 
 ## Estructura de la suite
+
+La siguiente estructura de cuatro archivos y 451 pruebas corresponde al
+historial de la cuarta entrega; no describe el runner actual del Segundo
+Parcial, cuyos resultados se documentan al inicio de este archivo.
 
 En la tercera entrega `js/script.js` tenía la lógica y usaba `prompt()`/`alert()`. En la cuarta entrega se separó en capas y hay un archivo spec por cada una:
 
@@ -34,7 +184,7 @@ En la tercera entrega `js/script.js` tenía la lógica y usaba `prompt()`/`alert
 | `js/script.js` | Controlador: eventos y DOM | `js/test/script.spec.js` | 116 |
 | | | **Total** | **451** |
 
-`js/test/test-runner.html` carga los cuatro specs como módulos ES. `js/test/models-test-runner.html` es el runner independiente que armó el Desarrollador JS POO para sus modelos y se conserva.
+En esa etapa, `js/test/test-runner.html` cargaba los cuatro specs como módulos ES. `js/test/models-test-runner.html` es el runner independiente que armó el Desarrollador JS POO para sus modelos y se conserva.
 
 ## Ejecución de Tests
 
@@ -450,5 +600,6 @@ La suite de la tercera entrega (143 tests sobre funciones con `prompt()` y `aler
 
 ---
 
-**Última Actualización:** 2026-11-25 (corrección de RC51: `Pedido.fromJSON()` y cobertura de modelos; antes, 2026-11-23, correcciones de la revisión de la cuarta entrega sobre la rama de release con las PR #167, #168 y #169)
+**Última Actualización:** 27/11/2026 (testing funcional Fetch/API del Segundo Parcial; antes, 2026-11-25, corrección de RC51: `Pedido.fromJSON()` y cobertura de modelos; antes, 2026-11-23, correcciones de la revisión de la cuarta entrega sobre la rama de release con las PR #167, #168 y #169)
 **Tester/QA Engineer:** Alan Diaz (@alandox1)
+**Tester QA/JS - Segundo Parcial:** @LuchoBarrionuevo13
