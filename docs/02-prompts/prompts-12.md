@@ -2,7 +2,7 @@
 
 **Integrante:** Alan Díaz
 **Rol:** Desarrollador JS Asíncrono (Fetch & APIs)
-**Modelo de IA:** Claude (Anthropic) — <completar con la versión que muestre la captura>
+**Modelo de IA:** Claude (Anthropic) 
 **Método de prompt:** Prompt estructurado (armado previamente por la IA a pedido del integrante y enviado de vuelta como archivo adjunto)
 **Fecha y hora:** 26/11/2026, 19:23 (hora de Argentina)
 **Spec asociado:** `docs/03-specs/segundo-parcial/spec-dev-async-fetch.md`

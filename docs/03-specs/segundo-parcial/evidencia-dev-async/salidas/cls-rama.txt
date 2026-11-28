@@ -1,0 +1,59 @@
+rama {
+ "tablet": {
+  "corridas": [
+   0.003,
+   0.003,
+   0.003
+  ],
+  "mediana": 0.003,
+  "culpables": [
+   "0.003  SECTION.",
+   "0.000  BUTTON."
+  ]
+ },
+ "ventanaChica": {
+  "corridas": [
+   0.178,
+   0.178,
+   0.178
+  ],
+  "mediana": 0.178,
+  "culpables": [
+   "0.178  SECTION. | SECTION.",
+   "0.000  BUTTON."
+  ]
+ },
+ "maximizada": {
+  "corridas": [
+   0.077,
+   0.077,
+   0.077
+  ],
+  "mediana": 0.077,
+  "culpables": [
+   "0.077  SECTION. | SECTION. | #catalogo"
+  ]
+ },
+ "escritorio": {
+  "corridas": [
+   0.149,
+   0.149,
+   0.149
+  ],
+  "mediana": 0.149,
+  "culpables": [
+   "0.149  SECTION. | SECTION. | #catalogo"
+  ]
+ },
+ "movil": {
+  "corridas": [
+   0.666,
+   0.666,
+   0.666
+  ],
+  "mediana": 0.666,
+  "culpables": [
+   "0.666  SECTION. | SECTION."
+  ]
+ }
+}

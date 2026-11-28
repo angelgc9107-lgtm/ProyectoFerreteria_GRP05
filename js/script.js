@@ -191,6 +191,8 @@ function renderizarCatalogo(productos) {
             const imagen = document.createElement("img");
             imagen.src = rutaImagen;
             imagen.alt = producto.nombre;
+            // Las tarjetas del listado quedan debajo de la primera pantalla.
+            imagen.loading = "lazy";
             articulo.append(imagen);
         }
 

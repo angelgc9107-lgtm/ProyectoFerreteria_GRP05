@@ -359,35 +359,64 @@ Los tres Test Cases de Lighthouse (baseline, post-fetch y post-librería) son re
 
 ---
 
-# AT CLOSE — Se completa al cerrar la tarea (evidencia)
+ AT CLOSE — Se completa al cerrar la tarea (evidencia)
 
-_Esta sección se completa **después** de terminar el código, con el contenido real del trabajo._
+**PR de implementación:** #217 (`feature/dev-async-fetch-api-implementacion` → `develop`, mergeada). **Issue del spec:** #210. **PR de rendimiento (issue de Lighthouse):** #224 (`fix/lighthouse-rendimiento-fetch` → `develop`), asociada a la issue #212.
 
 ## 1. Prompt exacto utilizado y ajustes manuales realizados
 
-**Prompt exacto:** `docs/02-prompts/prompts-12.md` (implementación del rol). El spec se generó y corrigió con los prompts 9, 10 y 11.
+**Prompts exactos** (cada uno en su archivo de `docs/02-prompts/`):
+- `prompts-9.md`, `prompts-10.md` y `prompts-11.md`: generación del spec y correcciones de su revisión.
+- `prompts-12.md`: implementación del rol (código, pruebas y entrega).
+- `prompts-14.md`: correcciones de la code review de la PR de implementación (RC01 y RC02).
+- `prompts-15.md`: corrección RC03 de la code review (ofertas independientes con datos parciales).
+- `prompts-16.md`: tarea de rendimiento de la issue de Lighthouse (CLS y recursos).
+- `prompts-17.md`: correcciones de la revisión técnica de la PR #224 (auditoría de Lighthouse, trazabilidad y pruebas con evidencia).
 
-**Ajustes manuales realizados:** ninguna
+**Ajustes manuales realizados:** _PENDIENTE (los completa Alan: lo que cambió a mano antes de commitear; si no hubo, "ninguna")._
 
 ## 2. Resumen de la integración con las clases POO y con Storage
 
 - **Clases POO:** `construirProductos` crea instancias de `Producto` y `cargarCatalogo` arma un `Catalogo` con ellas, igual que antes. `Producto.js` y `Catalogo.js` no se modificaron. Los códigos repetidos se detectan antes de armar el `Catalogo` con `normalizarCodigo` (la misma regla que usa `Catalogo`), porque `Catalogo` lanza `RangeError` si recibe duplicados.
 - **Storage:** con la red funcionando, el catálogo (solo los registros válidos) se guarda con `FachadaStorage.guardarCatalogo()`; si la red falla, se lee con `FachadaStorage.cargarCatalogo()` y, si no hay caché usable, se usa `productosIniciales`. No se agregaron claves ni se tocaron `storage.js` ni `FachadaStorage.js`. Si no se puede guardar la caché, se registra en `console.error` y la carga continúa.
-- **Arquitectura:** `fetch` vive solo en `js/api/apiService.js`, que no toca el DOM. `ProcesadorCatalogo.js` son funciones puras (`map`, `filter`, `reduce`). `script.js` sigue siendo eventos y DOM: pide el catálogo con `await cargarCatalogo()`, muestra los estados con `mostrarMensaje()` y marca `#catalogo[data-catalogo]` (`cargando` / `disponible`) para distinguir la disponibilidad del mensaje. Con caché o catálogo local el catálogo queda disponible y los cuatro flujos funcionan (verificado en un navegador real). Todo texto de la API se inserta con `textContent`; `script.js` no usa `innerHTML`.
-- **Desvíos respecto del spec (a revisar):** opción extra `url` en `obtenerCatalogoRemoto`; `version` toma el valor 1 si el JSON no trae una versión numérica; atributos `data-catalogo` / `data-origen` en `#catalogo` y `aria-busy` en `#resultados-catalogo` como puntos de enganche para tests; el mensaje de carga se muestra después de la búsqueda inicial, así que reemplaza al «N producto(s) encontrado(s).» del primer renderizado; las advertencias usan el tipo `error` de `mostrarMensaje()` (no existe un tipo «advertencia»).
+- **Arquitectura:** `fetch` vive solo en `js/api/apiService.js`, que no toca el DOM. `ProcesadorCatalogo.js` son funciones puras (`map`, `filter`, `reduce`). `script.js` sigue siendo eventos y DOM: pide el catálogo con `await cargarCatalogo()`, muestra los estados con `mostrarMensaje()` y marca `#catalogo[data-catalogo]` (`cargando` / `disponible`) para distinguir la disponibilidad del mensaje. Con caché o catálogo local el catálogo queda disponible y los cuatro flujos funcionan. Todo texto de la API se inserta con `textContent`; `script.js` no usa `innerHTML`.
+- **Reintentos:** solo para red, tiempo agotado y HTTP 500–599 (2 reintentos, espera de 500 y 1000 ms). Los 4xx, los formatos inválidos y los datos inválidos no se reintentan.
+- **Desvíos respecto del spec:** opción extra `url` en `obtenerCatalogoRemoto`; `version` toma el valor 1 si el JSON no trae una versión numérica; atributos `data-catalogo` / `data-origen` en `#catalogo` y `aria-busy` en `#resultados-catalogo` como puntos de enganche para tests; el mensaje de carga se muestra después de la búsqueda inicial y reemplaza al «N producto(s) encontrado(s).» del primer renderizado; las advertencias de respaldo usan el tipo `error` de `mostrarMensaje()` (no existe un tipo «advertencia»); si las ofertas no se pueden calcular (falta un producto promocionado o su precio no es válido) se omiten y los productos promocionados que sí están se muestran sin imagen ni precio anterior, porque `ServicioOfertas` es «todo o nada» y no se modificó; un código HTTP fuera de 4xx y 5xx (por ejemplo 600) no se reintenta y muestra el mensaje de «No encontramos el catálogo», porque el spec solo define la matriz para 4xx y 5xx.
+
+### Pruebas ejecutadas
+
+| Prueba | Resultado |
+|---|---|
+| Suites existentes (models, storage, services, script) en Chromium con Jasmine | 441 specs, 0 fallos (antes y después de las correcciones RC02 y RC03; el total actual de `develop` con las suites del Tester es 501) |
+| Playwright (Chromium): éxito, 404, 500, red caída con y sin caché, JSON inválido, estructura incorrecta (3 variantes), registros inválidos parciales, todos inválidos, lista vacía, estado de carga, «Reintentar» con un solo pedido en vuelo, mensaje durante los reintentos, texto de la API sin ejecutarse como HTML, y búsqueda, carrito, pago y confirmación con origen red, caché y local | 35 comprobaciones, todas coinciden con lo esperado |
+| Reintentos por código HTTP (corrección RC02), en la página real: 500, 503, 599 / 404, 600 | 500, 503 y 599: 3 pedidos; 404 y 600: 1 pedido |
+| Reintentos por código HTTP con `fetchFn` de prueba: 301, 404, 499, 500, 599, 600 | 500 y 599: 3 pedidos; 301, 404, 499 y 600: 1 pedido |
+| Catálogo parcial (corrección RC03), Playwright: `AMOLADORA-001` con precio inválido, falta cada código promocional, precios iguales o mayores al anterior de la oferta, tres ofertas presentes con otro producto inválido, origen caché con catálogo parcial, «Reintentar» de catálogo completo a parcial y control completo; con el catálogo parcial, búsqueda, carrito, pago y confirmación | 12 comprobaciones, todas coinciden (antes de la corrección, el caso de `AMOLADORA-001` fallaba: 0 tarjetas y «No pudimos mostrar el catálogo») |
+| Rendimiento (issue de Lighthouse), Chromium con Playwright, red 1,6 Mbps / 150 ms y CPU 4× más lenta, 3 corridas por perfil: CLS en escritorio, tablet, móvil, ventana chica y maximizada, antes y después | `develop` sin cambios: 0,149 / **0,462** / 0,666 / 0,178 / 0,077. `develop` + rama de Angel (#213): 0 / 0,140 / 0 / 0 / 0. Solo la rama de esta tarea: 0,149 / 0,003 / 0,666 / 0,178 / 0,077. Combinada (#213 + esta tarea): 0 / 0,003 / 0 / 0 / 0. Salidas en `docs/03-specs/segundo-parcial/evidencia-dev-async/salidas/` (se corrigió el valor de tablet de `develop`, informado antes como 0,003) |
+| Elemento LCP medido con `PerformanceObserver` | `bienvenido2.png` (escritorio) y `bienvenido1.png` (móvil) |
+| Lighthouse en Chrome DevTools, ejecutado por Alan el 27/11/2026 (alrededor de las 15:01) sobre la rama de esta tarea **sola**, sin #213 | Performance 86, Accessibility 100, Best Practices 100, SEO 100. No alcanza el umbral de 95. Commit, versiones, servidor, ventana y métricas: _PENDIENTE (los completa Alan en `auditoria-lighthouse-pr224.md`)_ |
+| Suites completas en `develop` y en la rama de rendimiento (incluyen `api.spec.js` y `library.spec.js` del Tester QA/JS) | 501 specs, 1 fallo y 3 pendientes en `develop`, en la rama y en la combinación local con #213. El fallo es el mismo en las tres: la prueba con SweetAlert2 real necesita el CDN, que no es accesible desde el entorno de pruebas. Commits probados y salidas completas en `docs/03-specs/segundo-parcial/evidencia-dev-async/` |
+| Módulos en el navegador: tiempo límite (50 ms), reintentos con espera creciente, no reintento en 404, `ErrorApi` con tipo inválido, `cargarCatalogo` sin rechazos, reglas de `ProcesadorCatalogo` | Coincide con lo esperado |
+
+### No verificado
+
+- Cobertura de código (no se midió).
+- Puntaje de Performance de Lighthouse de la versión combinada (rama + #213): no se midió. La auditoría de Alan (86) fue sobre la rama sola y Claude no puede ejecutar Lighthouse en su entorno de pruebas (sin acceso al CDN). La verificación final con Lighthouse sobre `develop` actualizado le corresponde al Tester QA/JS.
+- Efecto en el puntaje de las propuestas de `PROPUESTAS-RENDIMIENTO.md` (no aplicadas).
+- Origen local con catálogo parcial: no aplica, porque el catálogo local siempre trae los tres productos promocionados.
+- Otros navegadores: solo se probó en Chromium.
+- Tiempo límite real de 8 s: se probó con 50 ms. Los errores 4xx y 5xx se simularon interceptando el pedido; no se probó contra un servidor real caído.
+- `api.spec.js` y `library.spec.js`: son del Tester QA/JS y no se crearon.
 
 ## 3. Issues respondidas y su resolución
 
-- **#210** (spec del rol): resuelta con la PR #211 (spec). Esta implementación se entrega en la PR #217. Completar aquí la respuesta y resolución registrada en la issue #210.
-
+- **Issue #210** (spec del rol): se resolvió con la PR #211 (spec, mergeada) y esta implementación se entregó en la PR #217. Respuesta registrada en la issue: _PENDIENTE (la completa Alan)._
 - **Comentarios de revisión de la PR #211** (3 + 2 + 1 de Angel y 3 de la revisión con IA): resueltos en el spec antes del merge.
-- **Pendiente de otros roles:** `api.spec.js` y `library.spec.js` (Tester QA/JS); avisarle de los cambios en `script.spec.js` (descritos en la PR).
-
-
-## 2. Resumen de la integración con las clases POO y con Storage
-
-_Pendiente._
-
-## 3. Issues respondidas y su resolución
-
-_Pendiente._
+- **Code review de la PR de implementación** (decisión: REQUEST CHANGES; hallazgos RC01 y RC02, y después RC03):
+  - **RC01 (AT CLOSE incompleto y con secciones duplicadas):** se reemplaza la sección completa por este único cierre, con las pruebas ejecutadas separadas de las no verificadas. Los dos datos que dependen de Alan (ajustes manuales y respuesta en la issue) figuran como pendientes hasta que los complete.
+  - **RC02 (reintento de códigos fuera de 5xx):** corregido. La condición pasó de `estado >= 500` a `estado >= 500 && estado < 600` en `apiService.js` y en `describirCarga()` de `script.js`. Verificado en el navegador (ver «Pruebas ejecutadas»).
+  - **RC03 (una respuesta parcialmente válida impedía renderizar todo el catálogo):** corregido solo en `js/script.js`. `ServicioOfertas.obtenerOfertas()` lanza una excepción si falta uno de sus tres productos promocionados o su precio no es válido, y se llamaba tanto en `renderizarOfertas()` como en `renderizarCatalogo()`. Ahora las ofertas se calculan una vez por carga en `actualizarOfertasVigentes()`: si fallan, se omiten (sección de ofertas vacía, detalle en `console.error`) y el catálogo principal se muestra igual. Verificado en el navegador (ver «Pruebas ejecutadas»). Limitación: cuando las ofertas fallan, los productos promocionados presentes se muestran sin imagen ni precio anterior; mostrarlos requeriría cambiar `ServicioOfertas` (de otro rol) y queda como propuesta.
+- **Issue de Lighthouse (TC-11, TC-12 y TC-13), asignada al rol por indicación del coordinador:** se corrigió lo de bajo riesgo que corresponde a la carga asíncrona. (1) CLS: con la rama `fix/layout-shift-cls` de Angel (#213) el CLS queda en 0 en escritorio y móvil, pero en tablet queda en 0,140 (en `develop` es 0,462) porque la reserva de 308 px no alcanza para las 2 columnas (~600 px); se agregó una regla para tablet (600 px) que lo deja en 0,003. Se probó reservar espacio también para el listado del catálogo, la tabla y el mensaje de carga y la medición no mostró un beneficio, por lo que no se incluyó. (2) LCP: `fetchpriority="high"` y `width`/`height` en las dos imágenes de bienvenida (son el elemento LCP medido) y `loading="lazy"` en las imágenes del listado. (3) Propuestas sin aplicar, con estimaciones: pasar las imágenes usadas a WebP (de 925.602 a 113.466 bytes), minificar CSS y JS, carga a pedido de SweetAlert2 (rol de Librerías Externas) y revisar la caché (depende del servidor). La issue sigue abierta hasta que el Tester QA/JS verifique con una nueva auditoría sobre `develop` actualizado.
+- **Revisión técnica de la PR #224 (issue #212):** RC01 (sin auditoría posterior a las correcciones): se documentó la auditoría sobre la rama sola (Performance 86, no alcanza el 95) y quedan pendientes la de la combinación con #213 y la verificación del Tester QA/JS; la issue #212 sigue abierta. RC02 (trazabilidad): descripción de la PR vinculada a #212 y línea en `changelog.md`. RC03 (pruebas sin evidencia verificable): commits probados y salidas completas en `docs/03-specs/segundo-parcial/evidencia-dev-async/`; el único fallo es idéntico en `develop` sin cambios.
+- **Continuación de la PR #224 (27/11/2026):** por una situación personal de Alan, la PR la continuó @Piastrellini, según lo registrado por el Coordinador/DevOps. Cambios: (1) se quitó la reserva de tablet de 600 px, porque la PR #223 ya reserva 615 px para el mismo rango y, combinadas, la de esta PR la pisaba (CLS 0,002–0,003 en tablet); (2) las imágenes de bienvenida pasaron a WebP (404 KB → 57 KB y 365 KB → 47 KB); (3) se completaron los datos pendientes de los prompts 14 a 17. Auditoría final sobre el commit `d2ca89d` (esta rama con `develop`, que incluye la #223), Lighthouse Navigation/Desktop, 3 corridas: **Performance 100**, Accessibility, Best Practices y SEO 100, FCP 0,5–0,6 s, **LCP 0,7 s**, TBT 0 ms, **CLS 0**. Suite completa en un equipo con internet: 501 specs, 0 failures. Detalle en `evidencia-dev-async/auditoria-lighthouse-pr224.md` y `evidencia-dev-async/pruebas-de-regresion-pr224.md`.
+- **Pendiente de otros roles:** `api.spec.js` y `library.spec.js` (Tester QA/JS), a quien se le avisaron los cambios en `script.spec.js` descritos en la PR #217 (confirmar con el Tester QA/JS).
