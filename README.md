@@ -256,11 +256,11 @@ En el Primer Parcial el mockup se adaptó a la grilla de Bootstrap 5: desktop de
 - [Specs del Primer Parcial](docs/03-specs/primer-parcial/)
 - [Specs de la Actividad Obligatoria N.º 3](docs/03-specs/actividad-obligatoria-3/)
 - [Specs de la Actividad Obligatoria N.º 4](docs/03-specs/actividad-obligatoria-4/)
-- [Specs del Segundo Parcial Integrador](docs\03-specs\segundo-parcial)
-  - [Tester QA/JS](docs\03-specs\segundo-parcial)
-  - [Desarrollador JS Asíncrono](docs\03-specs\segundo-parcial)
-  - [Coordinador/DevOps](docs\03-specs\segundo-parcial\spec-coord-devops-segundo-parcial.md)
-  - [Desarrollador JS Librerías Externas](docs\03-specs\segundo-parcial)
+- [Specs del Segundo Parcial Integrador](docs/03-specs/segundo-parcial/)
+  - [Tester QA/JS](docs/03-specs/segundo-parcial/spec-tester-qa-segundo-parcial.md)
+  - [Desarrollador JS Asíncrono](docs/03-specs/segundo-parcial/spec-dev-async-fetch.md)
+  - [Coordinador/DevOps](docs/03-specs/segundo-parcial/spec-coord-devops-segundo-parcial.md)
+  - [Desarrollador JS Librerías Externas](docs/03-specs/segundo-parcial/spec-dev-libreria-externa.md)
 **Diagramas**
  
 - [Diagramas de actividades](docs/05-diagramas/01-diagrama-de-actividades/diagramas-doc.md)
@@ -339,7 +339,7 @@ Se revisaron las PRs #140, #141, #144, #150, #156 y #157. La decisión de aproba
   cuatro flujos funcionales después de incorporar Fetch API y
   SweetAlert2.
 
-- **Resultado registrado (27/11/2026):** 490 specs, 0 failures
+- **Resultado registrado (27/11/2026):** 501 specs, 0 failures
   y 0 pendientes, mediante Playwright MCP.
 
   - Modelos: 89 pruebas.
@@ -367,7 +367,7 @@ Se revisaron las PRs #140, #141, #144, #150, #156 y #157. La decisión de aproba
 
 ## 👥 Integrantes del Grupo
 
-| Nombre y Apellido | Matrícula | Usuario de GitHub | Rol (Cuarta Entrega) |
+| Nombre y Apellido | Matrícula | Usuario de GitHub | Rol (Segundo Parcial) |
 |-----| ----- | ------ | ------ |
 | Luciano Barrionuevo | 156398 | @LuchoBarrionuevo13 | Tester QA/JS |
 | Alan Diaz | 152841 | @alandox1 |Desarrollador JS Asíncrono |

@@ -313,7 +313,13 @@ El Coordinador/DevOps será responsable de garantizar la resolución de la total
 - [X] Dadas las PRs de los demás integrantes, cuando se realiza la coordinación, entonces se documentan al menos cuatro PRs distintas revisadas mediante IA, con prompts.
 - [X] Dado un incumplimiento confirmado, cuando se revisa la PR, entonces se realizan comentarios inline y se solicitan Request Changes cuando corresponde.
 - [X] Dada una PR con Request Changes, cuando vuelve a revisión, entonces se verifica su resolución antes de aprobarla.
-- [X] Dadas las nuevas funcionalidades, cuando se integran en `develop`, entonces se respeta el orden de las tres auditorías Lighthouse.
+- [X] Dadas las nuevas funcionalidades, cuando se integran en `develop`, entonces se respeta el orden de las tres auditorías Lighthouse. (  **Cumplimiento parcial:** la rama correspondiente a la librería
+  externa se integró antes de ejecutar el TC-12 (Post Fetch).
+  Para preservar la evaluación de cada etapa, se realizaron las
+  auditorías sobre los estados correspondientes del repositorio.
+  La desviación del orden de integración y las medidas adoptadas
+  se encuentran documentadas en el spec del Desarrollador JS
+  Librerías Externas y en el hallazgo F02 de su PR.)
 - [X] Dadas las tareas del equipo, cuando se consulta GitHub Projects, entonces se identifican responsables, prioridades y estados.
 - [X] Dadas las contribuciones individuales, cuando se revisa el changelog, entonces se encuentran sus aportes y enlaces a PRs e issues.
 - [X] Dado el repositorio, cuando se prepara la entrega, entonces se verifica su visibilidad pública, colaboradores, estructura, protección de ramas y plantillas.
@@ -393,8 +399,15 @@ Pendiente al finalizar.
 
 ### Reasignaciones de responsabilidades y contingencias
 
-- No corresponde
+La PR [#224](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/224),
+iniciada por el Desarrollador JS Asíncrono (Fetch & APIs), debió ser
+retomada por el Desarrollador JS Librerías Externas debido a que
+el responsable original no disponía de acceso a una computadora
+para realizar las correcciones solicitadas mediante Request Changes (RC).
 
+Esta decisión fue coordinada para garantizar la continuidad de las
+tareas y evitar demoras que comprometieran los plazos de entrega
+del Segundo Parcial.
 
 ### Aprobación definitiva, merge, tag, release y backport final
 
