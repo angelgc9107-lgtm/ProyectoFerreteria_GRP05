@@ -145,6 +145,12 @@ nav .dropdown-toggle:focus-visible {
     color: var(--color-white);
     text-decoration: underline;
 }
+/* Reserva de espacio para reducir el CLS durante la carga asíncrona de
+   las ofertas (3 columnas, desde 992 px). Tablet (2 columnas) y Mobile
+   (1 columna) tienen su propia altura en responsive.css. */
+#ofertas-productos {
+    min-height: 308px;
+}
 
 #ofertas article,
 #catalogo article {
