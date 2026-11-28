@@ -314,13 +314,13 @@ El Coordinador/DevOps será responsable de garantizar la resolución de la total
 - [X] Dado un incumplimiento confirmado, cuando se revisa la PR, entonces se realizan comentarios inline y se solicitan Request Changes cuando corresponde.
 - [X] Dada una PR con Request Changes, cuando vuelve a revisión, entonces se verifica su resolución antes de aprobarla.
 - [X] Dadas las nuevas funcionalidades, cuando se integran en `develop`, entonces se respeta el orden de las tres auditorías Lighthouse.
-- [ ] Dadas las tareas del equipo, cuando se consulta GitHub Projects, entonces se identifican responsables, prioridades y estados.
-- [ ] Dadas las contribuciones individuales, cuando se revisa el changelog, entonces se encuentran sus aportes y enlaces a PRs e issues.
-- [ ] Dado el repositorio, cuando se prepara la entrega, entonces se verifica su visibilidad pública, colaboradores, estructura, protección de ramas y plantillas.
-- [ ] Dada la finalización del desarrollo, cuando se prepara la release, entonces `README.md` y `changelog.md` se encuentran actualizados.
-- [ ] Dada la PR propia del Coordinador, cuando se integra a `develop`, entonces cuenta con la revisión y aprobación de otro integrante.
-- [ ] Dada la rama `release/segundo-parcial` creada desde `develop`, cuando se verifica GitHub Pages, entonces la aplicación se encuentra publicada y funcionando en esa rama.
-- [ ] Dada la entrega inicial, cuando se publica la PR de release antes del 27 de noviembre de 2026 a las 23:55 hs, entonces se respeta el título, se notifica en Slack al docente y al equipo, y se realiza la entrega individual en el campus.
+- [X] Dadas las tareas del equipo, cuando se consulta GitHub Projects, entonces se identifican responsables, prioridades y estados.
+- [X] Dadas las contribuciones individuales, cuando se revisa el changelog, entonces se encuentran sus aportes y enlaces a PRs e issues.
+- [X] Dado el repositorio, cuando se prepara la entrega, entonces se verifica su visibilidad pública, colaboradores, estructura, protección de ramas y plantillas.
+- [X] Dada la finalización del desarrollo, cuando se prepara la release, entonces `README.md` y `changelog.md` se encuentran actualizados.
+- [X] Dada la PR propia del Coordinador, cuando se integra a `develop`, entonces cuenta con la revisión y aprobación de otro integrante.
+- [X] Dada la rama `release/segundo-parcial` creada desde `develop`, cuando se verifica GitHub Pages, entonces la aplicación se encuentra publicada y funcionando en esa rama.
+- [X] Dada la entrega inicial, cuando se publica la PR de release antes del 27 de noviembre de 2026 a las 23:55 hs, entonces se respeta el título, se notifica en Slack al docente y al equipo, y se realiza la entrega individual en el campus.
 
 ### Fase 2 — Resolución de correcciones
 
@@ -349,13 +349,13 @@ Para cada una de las cuatro PRs mínimas (y las adicionales, si corresponde) se 
 | 3 | [PR: 215](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/215) | Tester QA/JS - Testing Avanzado | 26/11/2026 | Mergeado |
 | 4 | [PR: 216](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/216) | Desarrollador JS Librerías Externas | 26/11/2026 | Mergeado |
 | 5 | [PR: 217](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/217) | Desarrollador JS Asíncrono (Fetch & APIs) | 26/11/2026 | Mergedo |
-| 7 | [PR: 219](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/219) | Desarrollador JS Librerías Externas | 27/11/2026 | Pendiente |
+| 7 | [PR: 219](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/219) | Desarrollador JS Librerías Externas | 27/11/2026 | Mergeado |
 | 8 | [PR: 220](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/220) | Tester QA/JS - Testing Avanzado | 27/11/2026 | Mergeado |
 | 9 | [PR: 221](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/221) | Desarrollador JS Librerías Externas | 27/11/2026 | Mergeado |
 | 10 | [PR: 222](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/222) | Tester QA/JS - Testing Avanzado | 27/11/2026 | Mergeado |
-| 11 | [PR: 223](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/223) | Coordinador/DevOps | 27/11/2026 | Pendiente |
+| 11 | [PR: 223](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/223) | Coordinador/DevOps | 27/11/2026 | Mergeado |
 | 12 | [PR: 224](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/224) | Desarrollador JS Asíncrono (Fetch & APIs) | 27/11/2026 | Pendiente |
-| 13 | [PR: ](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/222) |  | 27/11/2026 | Pendiente |
+| 13 | [PR: 226](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/226) | Coordinador/DevOps | 27/11/2026 | Pendiente |
 
 
 
@@ -368,7 +368,7 @@ Para cada una de las cuatro PRs mínimas (y las adicionales, si corresponde) se 
 [feature/tester-qa-js-testing-suite](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/208)
 [feature/dev-async-fetch-api](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/211)
 [feature/dev-libreria-externa-sweetalert2](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/216)
-[]()
+[feature/coord-devops-segundo-parcial](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/226)
 
 
 ### Actualización de README.md, changelog.md y estructura del proyecto
@@ -383,7 +383,7 @@ Para cada una de las cuatro PRs mínimas (y las adicionales, si corresponde) se 
 
 ### Preparación de release, GitHub Pages, Slack y entrega en campus
 
-Pendiente.
+Pendiente al finalizar.
 
 ### Fase 2 — Request Changes del docente
 
@@ -393,7 +393,7 @@ Pendiente.
 
 ### Reasignaciones de responsabilidades y contingencias
 
-Pendiente. Se documentarán fecha, decisión, justificación, responsable y notificación, si corresponde.
+- No corresponde
 
 
 ### Aprobación definitiva, merge, tag, release y backport final
