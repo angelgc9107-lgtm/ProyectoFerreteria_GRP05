@@ -2,7 +2,7 @@
 
 **Integrante:** Alan Díaz
 **Rol:** Desarrollador JS Asíncrono (Fetch & APIs)
-**Modelo de IA:** Claude (Anthropic); la versión exacta no se registró
+**Modelo de IA:** Claude (Anthropic) — Sonnet 5.5
 **Método de prompt:** Prompt estructurado (armado previamente por la IA a pedido del integrante y enviado de vuelta)
 **Fecha y hora:** 26/11/2026, 20:51 (hora de Argentina)
 **Spec asociado:** `docs/03-specs/segundo-parcial/spec-dev-async-fetch.md`
