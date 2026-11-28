@@ -2,7 +2,7 @@
 
 **Integrante:** Alan Díaz
 **Rol:** Desarrollador JS Asíncrono (Fetch & APIs)
-**Modelo de IA:** Claude (Anthropic) — <completar con la versión que muestre la captura>
+**Modelo de IA:** Claude (Anthropic); la versión exacta no se registró
 **Método de prompt:** Prompt estructurado (armado previamente por la IA a pedido del integrante y enviado de vuelta)
 **Fecha y hora:** 26/11/2026, 20:51 (hora de Argentina)
 **Spec asociado:** `docs/03-specs/segundo-parcial/spec-dev-async-fetch.md`
@@ -154,7 +154,7 @@ Los dos hallazgos de la code review resueltos: el cierre documental (AT CLOSE) c
 ninguna
 
 ## Captura
-![Resultado](./images/prompt-15-DesarrolladorJSasincronico.png)
+![Resultado](./images/prompt-14-DesarrolladorJSasincronico.png)
 
 ## Aplicación
 Rama `feature/dev-async-fetch-api-implementacion`: commit de corrección de código (RC02) y commit de documentación (RC01 y este registro).

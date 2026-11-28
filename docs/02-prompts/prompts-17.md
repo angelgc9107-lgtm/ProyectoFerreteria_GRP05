@@ -106,7 +106,7 @@ Atender los tres hallazgos de la revisión de la PR #224: documentar la auditor�
 <completar: ajustes que hiciste antes de commitear; si no hay, escribir "ninguna">
 
 ## Captura
-<PEGAR captura del chat con este mensaje y la respuesta, con la fecha visible>
+No se adjuntó captura de esta conversación. El registro disponible es el texto de la sección «Prompt exacto».
 
 ## Aplicación
 Rama `fix/lighthouse-rendimiento-fetch` (PR #224): commits de corrección de `prompts-16.md`, de evidencia (pruebas de regresión y auditoría), de `changelog.md` y de este registro.
