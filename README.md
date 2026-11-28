@@ -339,7 +339,7 @@ Se revisaron las PRs #140, #141, #144, #150, #156 y #157. La decisión de aproba
   cuatro flujos funcionales después de incorporar Fetch API y
   SweetAlert2.
 
-- **Resultado registrado (27/11/2026):** 501 specs, 0 failures
+- **Resultado registrado (27/11/2026):** 969 specs, 0 failures
   y 0 pendientes, mediante Playwright MCP.
 
   - Modelos: 89 pruebas.
@@ -357,6 +357,23 @@ Se revisaron las PRs #140, #141, #144, #150, #156 y #157. La decisión de aproba
   aprobadas y una fallida, relacionada con el manejo del foco
   en los diálogos de SweetAlert2. El fallo no se reprodujo
   posteriormente mediante Playwright MCP.
+
+  - **Pruebas de la librería externa (SweetAlert2):** 27 specs
+  incorporados en `js/test/script.spec.js`, dentro de la suite
+  «Controlador - diálogos de confirmación (SweetAlert2)».
+
+  - Inicialización y configuración de la librería.
+  - Confirmación de eliminación de productos del carrito.
+  - Confirmación y cancelación de pedidos.
+  - Prevención de acciones duplicadas.
+  - Accesibilidad, manejo del foco y tecla Escape.
+  - Compatibilidad con Bootstrap Offcanvas.
+  - Manejo de errores y ausencia de la librería.
+  - Seguridad e integridad de los recursos cargados mediante CDN.
+  - Verificación del funcionamiento con la librería real.
+
+- **Resultado de la ejecución completa:** 468 specs, 0 failures.
+- **Documentación:** [Integración de SweetAlert2](docs/07-librerias/libreria-doc.md).
 
 - **Documentación y evidencias:**
   - [Documentación de testing con Jasmine](js/test/testing-doc.md).
