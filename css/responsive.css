@@ -188,17 +188,3 @@
         min-height: 4rem;
     }
 }
-
-/* ==========================================================
-   TABLET — reserva de espacio de las ofertas (CLS)
-   Las ofertas se arman cuando llega el catálogo (carga asíncrona). La reserva
-   de 308 px es la de escritorio (3 columnas); en tablet las tarjetas pasan a
-   2 columnas y ocupan unos 600 px (medido en un navegador con el catálogo
-   completo), así que se reserva esa altura para que no se desplace el
-   contenido de abajo.
-   ========================================================== */
-@media (min-width: 768px) and (max-width: 991.98px) {
-    #ofertas-productos {
-        min-height: 600px;
-    }
-}
