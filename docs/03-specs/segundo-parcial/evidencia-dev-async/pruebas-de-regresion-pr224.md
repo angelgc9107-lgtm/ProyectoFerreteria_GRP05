@@ -9,7 +9,7 @@ Este documento responde al hallazgo RC03 de la revisión técnica de la PR #224:
 | Versión | Contenido | Commit |
 |---|---|---|
 | `develop` | Sin cambios (merge de la PR #222) | `5d578a9` |
-| Rama de esta PR | `develop` + commits de CLS en tablet, imágenes y documentación | `193614f` (entorno de pruebas). Tiene el mismo código que el `HEAD` de la rama tras aplicar los parches: `<completar: git rev-parse --short HEAD en tu repo>`. Los commits posteriores son solo documentación y no cambian el código probado. |
+| Rama de esta PR | `develop` + commits de CLS en tablet, imágenes y documentación | `193614f` (entorno de pruebas). Tiene el mismo código que el `HEAD` de la rama tras aplicar los parches: `41c557c` (último commit de Alan; el código no cambia desde `05c0970`). Los commits posteriores son solo documentación y no cambian el código probado. |
 | `develop` + PR #223 | `fix/layout-shift-cls` (Angel, #213) mergeada en `develop` de forma local | `71a7d0f` de la rama de Angel; merge local `da209e1` |
 | Combinada | Rama de esta PR + `fix/layout-shift-cls`, merge local sin publicar | `9c94a8a` |
 
@@ -69,3 +69,15 @@ Esta PR sola corrige solo tablet. Escritorio, móvil y las ventanas chica y maxi
 - Bootstrap se sirvió desde una copia local de la misma versión que usa `index.html` (5.3.8); los demás recursos del CDN se reemplazaron por archivos vacíos. La limitación de red y CPU es una aproximación a Lighthouse, no la reemplaza.
 - No se midió cobertura de código.
 - Los códigos HTTP 4xx y 5xx se simularon interceptando el pedido; no se probó contra un servidor real caído, ni el tiempo límite real de 8 s.
+
+## 5. Ejecución en un equipo con internet (continuación de la PR)
+
+**Fecha:** 27/11/2026 · **Responsable:** Thiago Piastrellini · **Navegador:** Chrome, con acceso al CDN.
+
+| Versión | Resultado | Evidencia |
+|---|---|---|
+| Rama con la quita de la reserva de tablet de 600 px y las imágenes WebP (código del commit `ccd5026`) | **501 specs, 0 failures** | `salidas/suite-thiago-501-0.png` |
+
+La prueba de SweetAlert2 real, que fallaba en el entorno sin acceso al CDN (sección 2), **pasa** en un equipo con internet. Confirma que ese fallo era del entorno y no del código.
+
+La versión final auditada con Lighthouse es el commit `d2ca89d` (esta rama con `develop`, que ya incluye la PR #223). Ver `auditoria-lighthouse-pr224.md`.
