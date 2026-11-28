@@ -1,0 +1,7 @@
+RESULT: 501 specs, 1 failure, 3 pending specs, randomized with seed 26041 (176s)
+FAILS: 1
+---
+ServicioDialogos - librería externa > ServicioDialogos - SweetAlert2 real > mantiene Tab dentro del diálogo y Escape cancela y devuelve el foco
+Error: SweetAlert2 no cargó desde el CDN para la prueba real.
+    at UserContext.<anonymous> (http://localhost:8777/js/test/library.spec.js:39:23)
+PAGE ERRORS: []

@@ -7,11 +7,13 @@
     <title>FerroLab | Ferreteria</title>
     <link rel="icon" type="image/png" href="assets/images/logo.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.25/dist/sweetalert2.min.css" integrity="sha384-dCW5imOdApH6OwpFau8cZNKjqVbJYnCA5q+8YsMYP3XwXKsV6Jfz1u6MZLnXaBsS" crossorigin="anonymous">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/responsive.css">
     <link rel="stylesheet" href="css/bootstrap-overrides.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.25/dist/sweetalert2.min.js" integrity="sha384-hW8ZCQHtRH+nVOAkHZ4amZvYsAtKn1ZOvMV6dNag1Rb1thWmLZMBKTRxFV0cOxiK" crossorigin="anonymous" defer></script>
 </head>
 <body>
     <!-- CSS futuro: organizar la cabecera en una barra superior oscura con logo, buscador, carrito y acceso a la cuenta, respetando la jerarquia visual del mockup. -->
@@ -71,10 +73,10 @@
         <section aria-labelledby="bienvenida">
             <div class="row g-0">
                 <div class="col-12 col-md-6">
-                    <img src="assets/images/bienvenido1.png" alt="Interior de FerroLab con herramientas y maquinas en exhibicion">
+                    <img src="assets/images/bienvenido1.webp" width="414" height="416" fetchpriority="high" alt="Interior de FerroLab con herramientas y maquinas en exhibicion">
                 </div>
                 <div class="col-12 col-md-6">
-                    <img src="assets/images/bienvenido2.png" alt="Pasillo interior de FerroLab con productos de ferreteria">
+                    <img src="assets/images/bienvenido2.webp" width="413" height="416" fetchpriority="high" alt="Pasillo interior de FerroLab con productos de ferreteria">
                 </div>
             </div>
             <h2 id="bienvenida">Bienvenidos a FerroLab</h2>
@@ -107,6 +109,7 @@
 
             <div class="col-12 col-md-8 col-lg-9">
                 <p id="catalogo-mensaje" role="status" aria-live="polite"></p>
+                <button type="button" class="btn btn-outline-secondary btn-sm mb-3" id="reintentar-catalogo" data-action="reintentar-catalogo" hidden>Reintentar</button>
                 <div class="row" id="resultados-catalogo"></div>
             </div>
             </div>
@@ -242,12 +245,12 @@
             </section>
             <section class="col-12 col-md-6 ms-lg-auto" aria-labelledby="direccion">
                 <h2 id="direccion">Ubicacion</h2>
-                <div class="ratio ratio-16x9">
-                    <iframe src="https://www.google.com/maps?q=-34.8211567,-58.3908095&z=17&output=embed"
-                            title="Mapa con la ubicacion de FerroLab"
-                            loading="lazy"
-                            referrerpolicy="no-referrer-when-downgrade"
-                            allowfullscreen></iframe>
+                <div class="ratio ratio-16x9" id="mapa-ubicacion">
+                    <div class="mapa-fachada">
+                        <p>El mapa se carga desde Google Maps, que usa cookies de terceros.</p>
+                        <button type="button" class="btn btn-light btn-sm" data-action="cargar-mapa">Ver mapa</button>
+                        <a href="https://www.google.com/maps?q=-34.8211567,-58.3908095&z=17" target="_blank" rel="noopener noreferrer">Abrir en Google Maps</a>
+                    </div>
                 </div>
             </section>
         </div>

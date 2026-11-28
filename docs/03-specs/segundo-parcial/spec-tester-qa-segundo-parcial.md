@@ -1,0 +1,959 @@
+# Spec — Tester QA/JS - Testing Avanzado (Segundo Parcial)
+
+**Rol:** Tester QA/JS - Testing Avanzado  
+**Proyecto:** FerroLab — Programación Web I  
+**Rama:** `feature/tester-qa-js-testing-suite` → `develop`
+
+> Este SPEC se debe commitear antes de comenzar la implementación. En esta
+> etapa solo se prepara el plan: no se implementan pruebas ni se ejecuta
+> Lighthouse.
+
+---
+
+## BEFORE — Se completa antes de escribir cualquier test
+
+### Qué se va a hacer y por qué
+
+Planificar pruebas funcionales con Jasmine para la integración asíncrona y la
+librería externa, y tres auditorías Lighthouse para detectar problemas y
+regresiones durante su integración. El plan general del proyecto contempla el
+catálogo y los flujos de compra, además de accesibilidad, SEO, mantenibilidad y
+compatibilidad; las nuevas pruebas deben preservar los comportamientos existentes
+que resulten afectados.
+
+La API, la librería y sus contratos todavía deben ser definidos por los
+desarrolladores responsables. No se presupone un proveedor, endpoint, formato
+de datos, interfaz ni comportamiento concreto: se ajustarán los casos al código
+y a los acuerdos reales antes de escribirlos.
+
+### Qué se reutiliza de la suite actual
+
+- `js/test/test-runner.html` carga Jasmine 5.10.0 desde CDN y los specs como
+  módulos ES; se sirve el proyecto por HTTP desde la raíz para ejecutarlo.
+- `models.spec.js` prueba las clases del dominio de forma aislada;
+  `script.spec.js` prueba eventos y DOM con copias de `index.html` en un
+  iframe y restaura el storage utilizado. `storage.spec.js` y
+  `services.spec.js` también forman parte de la suite.
+- Se conservarán las pruebas existentes y su aislamiento. La documentación de
+  `js/test/testing-doc.md` registra corridas anteriores; sus resultados no se
+  presentan como resultados del Segundo Parcial.
+- En la implementación se deberá integrar la carga de los nuevos specs al
+  runner existente, coordinando cualquier cambio necesario en ese archivo.
+
+### Plan de testing funcional con Jasmine
+
+Una vez acordados los contratos y disponibles las integraciones, escribir los
+tests contra la implementación real. Usar datos controlados y espías o dobles
+de Jasmine para evitar dependencia de la red y reproducir los errores; esperar
+las operaciones asíncronas antes de verificar sus resultados. Restaurar los
+espías y el estado compartido al terminar cada prueba.
+
+#### `js/test/api.spec.js` — Fetch y procesamiento
+
+| Caso | Qué se verificará |
+|---|---|
+| Respuesta exitosa | Simular una respuesta HTTP exitosa y comprobar el procesamiento y resultado esperados según el contrato acordado. |
+| Error HTTP | Simular una respuesta con `ok` falso y comprobar que se identifica y comunica el error según el contrato; distinguirla de un rechazo de red. |
+| Error de red | Simular el rechazo de `fetch` y verificar el manejo del fallo acordado. |
+| `map`, `filter` y `reduce` | Comprobar los resultados del procesamiento implementado con datos conocidos, incluyendo colección vacía cuando corresponda, sin probar únicamente el funcionamiento nativo de JavaScript. |
+| Integración con DOM | Si la funcionalidad modifica la interfaz, verificar el estado visible resultante y el tratamiento de errores conforme al contrato, aislando el DOM entre pruebas. |
+
+#### `js/test/library.spec.js` — librería externa
+
+| Caso | Qué se verificará |
+|---|---|
+| Inicialización | Que la integración inicialice la librería en las condiciones previstas. |
+| Configuración | Que las opciones relevantes transmitidas coincidan con las acordadas. |
+| Funcionalidad principal | Que la funcionalidad integrada produzca el resultado observable esperado. |
+| Errores | Que los fallos relevantes de inicialización o uso se manejen y comuniquen según el contrato. |
+| Interacción con el sistema | Que la librería interactúe correctamente con los módulos o la interfaz realmente involucrados, sin alterar los flujos existentes. |
+
+Para ambos archivos, cubrir caminos exitosos, errores y casos borde pertinentes.
+Usar dobles donde corresponda sin sustituir la verificación de la integración
+real. Revisar `script.spec.js` y `models.spec.js` y actualizarlos solo si las
+funcionalidades cambian sus contratos o requieren pruebas de regresión; mantener
+o mejorar la cobertura existente y ejecutar también las demás suites.
+
+### Plan de auditorías Lighthouse
+
+Ejecutar las auditorías sobre el sitio en los siguientes momentos:
+
+| Test case | Momento | Comparación |
+|---|---|---|
+| 11 — Baseline inicial | Sobre la rama `develop`, después del backport aprobado de la Actividad Obligatoria N.º 4 y antes de incorporar Fetch o la librería externa. | Punto de referencia inicial para TC-12 y TC-13. |
+| 12 — Post Fetch | Después de integrar la funcionalidad asíncrona en `develop`. | Comparar numéricamente puntajes y métricas con el baseline del TC-11; analizar impacto y recomendaciones Lighthouse. |
+| 13 — Post Library | Después de integrar la librería externa en `develop`. | Comparar numéricamente puntajes y métricas con TC-12; analizar impacto y recomendaciones Lighthouse. |
+
+En cada auditoría registrar:
+
+- Fecha, URL, rama y commit medido; navegador y versión de Lighthouse,
+  dispositivo o modo, configuración de red y caché y demás condiciones
+  relevantes. Mantener las condiciones equivalentes entre mediciones y
+  documentar cualquier diferencia que limite la comparación.
+- Puntajes de **Performance, Accessibility, Best Practices y SEO**, cada uno
+  con umbral mínimo **≥95**. Registrar el resultado real incluso si no alcanza
+  el umbral; conservar los resultados originales como evidencia y no presentar
+  una auditoría pendiente como aprobada. Reportar los incumplimientos mediante
+  Issues y verificar nuevamente los resultados después de las correcciones.
+- Valores y unidades de **FCP, LCP, TBT, CLS y Speed Index**; para CLS,
+  registrar el valor sin unidad.
+- Problemas encontrados, capturas del informe y enlaces a las Issues asociadas.
+
+Documentar cada resultado en su test case y guardar sus capturas en
+`docs/04-testing/screenshots/`. En TC-12 y TC-13 analizar el impacto de cada
+nueva funcionalidad sobre el rendimiento, la accesibilidad, las buenas
+prácticas y el SEO; identificar mejoras y regresiones respecto de la auditoría
+anterior; documentar las recomendaciones de optimización proporcionadas por
+Lighthouse; comparar numéricamente las diferencias de puntajes y métricas; y
+documentar las limitaciones de comparabilidad. Reportar los problemas
+detectados mediante Issues asignadas al responsable correspondiente y
+coordinar y verificar las correcciones necesarias ante hallazgos o puntajes
+inferiores a los umbrales.
+
+### Herramientas
+
+| Herramienta | Uso y justificación |
+|---|---|
+| Jasmine | Framework ya utilizado en el proyecto; permite pruebas de módulos, operaciones asíncronas, espías y verificación de resultados en el navegador. |
+| Lighthouse | Auditorías comparables de Performance, Accessibility, Best Practices y SEO, con las métricas y evidencias indicadas. |
+| GitHub Copilot Agent Mode | Asistir en la generación y revisión de pruebas usando los contratos y archivos reales como contexto. Revisar y ejecutar lo generado, corregir supuestos y registrar el prompt y los ajustes manuales; la IA no sustituye la validación del equipo. |
+| GitHub Issues | Registrar y asignar los problemas encontrados para su seguimiento y verificación. |
+
+### Orden y coordinación con el equipo
+
+1. Preparar y commitear este SPEC antes de implementar las pruebas; la PR del
+   trabajo tendrá como destino `develop`.
+2. Coordinar con el **Desarrollador JS Asíncrono** la API elegida, contratos,
+   procesamiento, manejo de errores, integración en DOM y disponibilidad de
+   su implementación para pruebas. Realizar TC-11 sobre la rama `develop`,
+   después del backport aprobado de la Actividad Obligatoria N.º 4 y antes de
+   incorporar Fetch o la librería externa.
+3. Coordinar con el **Desarrollador JS Librerías Externas** la librería elegida,
+   inicialización, configuración, comportamiento, errores y puntos de
+   integración, así como su disponibilidad para pruebas.
+4. Coordinar con el **Coordinador/DevOps** el orden de integración en
+   `develop`, las condiciones reproducibles de auditoría, la carga de los
+   nuevos specs en el runner y el seguimiento de Issues y PR. Ejecutar TC-12
+   después del merge de Fetch y TC-13 después del merge de la librería;
+   analizar en ambas auditorías el impacto en rendimiento, accesibilidad,
+   buenas prácticas y SEO, las mejoras y regresiones y las recomendaciones de
+   optimización de Lighthouse; comparar numéricamente puntajes y métricas,
+   documentar limitaciones de comparabilidad y reportar los problemas
+   mediante Issues asignadas al responsable correspondiente.
+5. Implementar y ejecutar las suites sobre los contratos reales, revisar
+   regresiones, documentar evidencias, comparar auditorías y completar AT CLOSE.
+
+Todos los problemas encontrados se reportarán mediante **Issues detalladas**
+asignadas al responsable correspondiente. Cada Issue incluirá título, contexto
+y versión o commit, pasos para reproducir, resultado esperado y obtenido,
+test o auditoría afectada y evidencia; se registrará su estado y se verificará
+la corrección con el responsable.
+
+### Entregables del rol
+
+- `js/test/api.spec.js`.
+- `js/test/library.spec.js`.
+- `js/test/script.spec.js` y `js/test/models.spec.js`, si corresponde.
+- `js/test/testing-doc.md`, actualizado con ejecución, suites y resultados.
+- `docs/04-testing/testing-doc.md`, actualizado con el índice y seguimiento.
+- `docs/04-testing/test-case-11-lighthouse-baseline.md`.
+- `docs/04-testing/test-case-12-lighthouse-post-fetch.md`.
+- `docs/04-testing/test-case-13-lighthouse-post-library.md`.
+- `docs/04-testing/screenshots/`, con las capturas correspondientes.
+- `changelog.md`, con la entrada del trabajo.
+- Este SPEC, previo a la implementación.
+
+### Criterios de aceptación
+
+- [x] Este SPEC está commiteado antes de implementar cualquier prueba o
+      ejecutar Lighthouse; la versión con las correcciones RC01/RC02 quedó
+      registrada en el commit [`6cf9536`](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/commit/6cf9536b8f0ccff2bc6403173fb2849ea14246b5)
+      a las 13:06 GMT-3, antes de la ejecución de TC-11 a las 13:37 GMT-3.
+- [x] `api.spec.js` verifica éxito, error HTTP, error de red y procesamiento
+      con `map`, `filter` y `reduce`; incluye DOM si corresponde.
+- [x] `library.spec.js` verifica inicialización, configuración, funcionalidad
+      principal, errores e interacción con el sistema según la librería elegida.
+- [x] Los nuevos specs se ejecutan en el runner Jasmine; la suite existente
+      sigue pasando y `script.spec.js` y `models.spec.js` se actualizan si
+      corresponde, manteniendo o mejorando la cobertura existente.
+- [x] TC-11 se realizó sobre la rama `develop`, después del backport aprobado
+      de la Actividad Obligatoria N.º 4 y antes de incorporar Fetch o la
+      librería externa; TC-12 después de Fetch en `develop`; TC-13 después de
+      la librería en `develop`.
+- [x] Cada auditoría registra las cuatro puntuaciones, FCP, LCP, TBT, CLS,
+      Speed Index, condiciones de medición, problemas y capturas.
+- [ ] En cada auditoría Performance, Accessibility, Best Practices y SEO
+      alcanzan al menos 95 puntos; los resultados y correcciones están
+      respaldados por evidencia.
+- [x] TC-12 compara numéricamente sus puntajes y métricas con TC-11, y TC-13
+      con TC-12; ambas auditorías analizan el impacto de cada funcionalidad
+      sobre rendimiento, accesibilidad, buenas prácticas y SEO, identifican
+      mejoras y regresiones, documentan las recomendaciones de optimización de
+      Lighthouse y las limitaciones de comparabilidad.
+- [ ] Los problemas detectados en TC-12 y TC-13 están reportados mediante
+      Issues asignadas al responsable correspondiente.
+- [ ] Todos los problemas encontrados están reportados en Issues detalladas,
+      asignadas al responsable correspondiente, con estado y verificación.
+- [ ] Los documentos de testing, test cases, capturas y `changelog.md` están
+      actualizados y AT CLOSE refleja exclusivamente lo realizado.
+- [ ] El trabajo se desarrolla en `feature/tester-qa-js-testing-suite` y su PR
+      tiene como destino `develop`.
+
+---
+
+## AT CLOSE — Se completa al cerrar la tarea (evidencia)
+
+> AT CLOSE parcialmente actualizado: se documentan TC-11, las pruebas
+> funcionales Fetch/API y SweetAlert2, TC-12 y TC-13, además del estado de las
+> Issues asociadas.
+> No representa el cierre definitivo; los demás apartados permanecen pendientes.
+
+### Prompt exacto y contexto
+
+Prompt exacto utilizado para generar `api.spec.js`:
+
+```
+# Segundo Parcial — Tester QA/JS - Testing Avanzado
+## Implementación de pruebas funcionales Fetch/API
+
+Proyecto: FerroLab
+Materia: Programación Web I
+Rol: Tester QA/JS - Testing Avanzado
+
+Rama de trabajo:
+feature/tester-qa-js-testing-suite
+
+Rama destino:
+develop
+
+## 1. Contexto
+
+El SPEC inicial de mi rol y la auditoría Lighthouse Baseline
+(TC-11) ya fueron aprobados.
+
+En esta etapa debo realizar las pruebas funcionales correspondientes
+al trabajo del Desarrollador JS Asíncrono (Alan).
+
+PR de referencia:
+
+#217 — [Segundo Parcial] Implementación del consumo asíncrono
+del catálogo (apiService, ProcesadorCatalogo, carga con estados
+en script.js).
+
+https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/217
+
+## 2. Lectura obligatoria del contexto
+
+Antes de implementar cualquier prueba, revisar:
+
+- plan.md.
+- El SPEC del Desarrollador JS Asíncrono.
+- docs/03-specs/segundo-parcial/spec-tester-qa-segundo-parcial.md.
+- Los archivos implementados o modificados en la PR #217.
+- La implementación de apiService.
+- La implementación de ProcesadorCatalogo.
+- Los cambios realizados en script.js.
+- js/test/test-runner.html.
+- js/test/models.spec.js.
+- js/test/script.spec.js.
+- js/test/storage.spec.js.
+- js/test/services.spec.js.
+- js/test/testing-doc.md.
+
+Verificar que la implementación de la PR #217 esté disponible
+en la rama de trabajo.
+
+Identificar los contratos reales, métodos, parámetros, retornos,
+dependencias, estados de carga y manejo de errores.
+
+No inventar métodos, endpoints, atributos ni funcionalidades.
+
+Si falta algún archivo o la implementación todavía no está
+disponible, informar el problema antes de continuar.
+
+## 3. Implementación de api.spec.js
+
+Crear el archivo:
+
+js/test/api.spec.js
+
+Utilizar Jasmine y mantener la estructura, convenciones y
+estilo de las pruebas existentes en FerroLab.
+
+Implementar los siguientes grupos de pruebas, respetando
+los contratos reales de la implementación de Alan.
+
+### 3.1. Respuestas exitosas de Fetch
+
+- Simular respuestas HTTP exitosas.
+- Verificar el procesamiento de los datos recibidos.
+- Verificar el resultado retornado por el servicio.
+- Comprobar la estructura de los datos según el contrato real.
+- Verificar la llamada a fetch y sus argumentos.
+
+### 3.2. Errores HTTP
+
+- Simular respuestas HTTP con ok igual a false.
+- Verificar el manejo de errores HTTP.
+- Comprobar que el error se comunica según la implementación.
+- Verificar que una respuesta HTTP fallida no se procesa
+  como una respuesta exitosa.
+
+### 3.3. Errores de red
+
+- Simular el rechazo de la promesa de fetch.
+- Verificar el manejo de errores de conexión.
+- Comprobar el comportamiento del sistema ante una falla de red.
+- Diferenciar los errores HTTP de los errores de red.
+
+### 3.4. ProcesadorCatalogo
+
+Analizar los métodos reales de ProcesadorCatalogo y verificar
+el procesamiento de datos mediante:
+
+- map.
+- filter.
+- reduce.
+
+Utilizar datos de prueba conocidos y comprobar los resultados
+esperados.
+
+No probar únicamente el comportamiento nativo de JavaScript.
+Las pruebas deben verificar los métodos implementados por Alan.
+
+### 3.5. Integración con el DOM
+
+Analizar los cambios realizados en script.js relacionados
+con la carga asíncrona del catálogo.
+
+Verificar los estados implementados realmente:
+
+- Estado de carga.
+- Carga exitosa del catálogo.
+- Renderizado de los productos.
+- Estado de error.
+- Estado vacío, si corresponde.
+- Recuperación o reintento, si existe.
+
+Comprobar que la integración asíncrona no afecte negativamente
+los comportamientos existentes.
+
+Mantener el aislamiento del DOM y restaurar el estado
+compartido después de cada prueba.
+
+### 3.6. Casos borde
+
+Incorporar los casos borde pertinentes según los contratos
+reales de la implementación:
+
+- Colecciones vacías.
+- Colecciones con un único elemento.
+- Datos inválidos o incompletos, si corresponde.
+- Resultados sin coincidencias.
+- Errores durante el procesamiento de datos.
+
+No exigir comportamientos que no estén definidos en el SPEC
+o en los contratos acordados.
+
+## 4. Buenas prácticas de testing
+
+- Utilizar describe, it, expect, beforeEach y afterEach
+  cuando corresponda.
+- Utilizar espías y dobles de Jasmine para simular fetch.
+- Evitar solicitudes reales a servicios externos.
+- Utilizar async/await para las operaciones asíncronas.
+- Restaurar los espías y el estado compartido.
+- Mantener las pruebas independientes entre sí.
+- Utilizar nombres descriptivos para cada caso.
+- Cubrir caminos exitosos, errores y casos borde.
+- No modificar el código funcional para forzar que las
+  pruebas sean aprobadas.
+- No ocultar ni eliminar pruebas fallidas.
+
+## 5. Integración con el runner existente
+
+Actualizar:
+
+js/test/test-runner.html
+
+Incorporar api.spec.js al runner Jasmine existente.
+
+Mantener la versión actual de Jasmine y la carga mediante
+módulos ES.
+
+Conservar todas las suites existentes.
+
+Revisar si los cambios de Alan requieren actualizar:
+
+- js/test/script.spec.js.
+- js/test/models.spec.js.
+
+Modificar estos archivos únicamente si resulta necesario
+por cambios reales en sus contratos o por pruebas de regresión.
+
+Justificar cualquier modificación realizada.
+
+No eliminar pruebas existentes para evitar errores.
+
+## 6. Ejecución y verificación
+
+Ejecutar la suite completa de Jasmine, incluyendo:
+
+- api.spec.js.
+- models.spec.js.
+- script.spec.js.
+- storage.spec.js.
+- services.spec.js.
+
+Utilizar el runner existente mediante un servidor HTTP local.
+
+Registrar:
+
+- Cantidad total de pruebas ejecutadas.
+- Cantidad de pruebas aprobadas.
+- Cantidad de pruebas fallidas.
+- Resultados por suite, cuando estén disponibles.
+- Errores encontrados.
+- Casos cubiertos.
+- Regresiones detectadas.
+
+Evaluar la cobertura de líneas, ramas y casos borde mediante
+evidencia disponible.
+
+Si no existe una herramienta de cobertura cuantitativa,
+aclarar esta limitación y no inventar porcentajes.
+
+Si no es posible ejecutar Jasmine desde el entorno disponible,
+indicarlo y proporcionar los pasos exactos para que pueda
+realizar la ejecución manualmente desde Chrome.
+
+No presentar pruebas no ejecutadas como aprobadas.
+
+## 7. Reporte de problemas
+
+Si se detectan errores en la implementación de Alan, preparar
+un borrador de Issue por cada problema independiente.
+
+Cada Issue deberá incluir:
+
+- Título.
+- Descripción.
+- Archivo y método afectado.
+- Commit evaluado.
+- Pasos para reproducir.
+- Resultado esperado.
+- Resultado obtenido.
+- Prueba Jasmine relacionada.
+- Evidencia.
+- Responsable sugerido: Desarrollador JS Asíncrono,
+  cuando corresponda.
+- Criterio de cierre.
+
+Diferenciar los problemas nuevos de los hallazgos existentes
+del Lighthouse Baseline:
+
+- Issue #212.
+- Issue #213.
+- Issue #214.
+
+No crear Issues duplicadas ni atribuir a Alan problemas
+preexistentes sin evidencia.
+
+## 8. Documentación
+
+Actualizar:
+
+js/test/testing-doc.md
+
+Documentar:
+
+- Objetivo de las pruebas Fetch/API.
+- Archivos evaluados.
+- Casos de prueba implementados.
+- Herramientas utilizadas.
+- Resultados reales de ejecución.
+- Errores y regresiones encontrados.
+- Limitaciones de testing.
+- Evidencias disponibles.
+
+Actualizar parcialmente el AT CLOSE de:
+
+docs/03-specs/segundo-parcial/spec-tester-qa-segundo-parcial.md
+
+Registrar:
+
+- El prompt exacto utilizado para generar las pruebas.
+- Los archivos realmente utilizados como contexto.
+- El uso de GitHub Copilot Agent Mode.
+- Las pruebas implementadas.
+- Los resultados reales de Jasmine.
+- Los ajustes manuales realizados, si corresponde.
+
+Mantener intacta la planificación aprobada de BEFORE.
+
+Conservar los resultados y evidencias originales del TC-11.
+
+Si existen apartados pendientes de validación manual,
+dejarlos expresamente como pendientes.
+
+## 9. Restricciones
+
+- Trabajar únicamente sobre mi rol de Tester QA/JS.
+- No modificar la implementación funcional de Alan.
+- No modificar archivos correspondientes a otros roles.
+- No modificar la planificación aprobada del SPEC.
+- No implementar library.spec.js todavía.
+- No realizar pruebas de la librería externa.
+- No ejecutar Lighthouse TC-12 todavía.
+- No ejecutar Lighthouse TC-13.
+- No alterar los resultados del TC-11.
+- No resolver RC03.
+- No cerrar las Issues #212, #213 y #214.
+- No crear Issues automáticamente.
+- No modificar el changelog.md todavía.
+- No crear nuevas ramas.
+- No realizar commits ni push.
+- No crear Pull Requests.
+- No inventar resultados ni evidencias.
+
+## 10. Resultado esperado
+
+Al finalizar, presentar un informe con:
+
+1. Resumen de la implementación de Alan analizada.
+2. Archivos y contratos identificados.
+3. Archivos creados y modificados.
+4. Pruebas implementadas en api.spec.js.
+5. Casos exitosos, errores y casos borde cubiertos.
+6. Resultados reales de ejecución de Jasmine.
+7. Cobertura y limitaciones.
+8. Problemas detectados y propuestas de Issues.
+9. Actualizaciones realizadas en la documentación.
+10. Pasos pendientes que requieren intervención manual.
+```
+
+No se redactó ni utilizó un prompt independiente adicional.
+- Archivos utilizados como contexto: `plan.md`; este SPEC; `spec-dev-async-fetch.md`; `api/productos.json`; `js/api/apiService.js`; `js/services/ProcesadorCatalogo.js`; `js/script.js`; `js/test/test-runner.html`; `models.spec.js`, `script.spec.js`, `storage.spec.js`, `services.spec.js` y `testing-doc.md`; además `js/models/Producto.js`, `js/models/Catalogo.js`, `js/services/FachadaStorage.js`, `js/utils/storage.js`, `index.html` y `js/test/herramientas/cobertura-v8.js`.
+- PR #217 está disponible y es ancestro de la rama activa: merge `ca9458f29d283e010c3fd2cafb5d931e3e70b1bb`. Se probó sobre `feature/tester-qa-js-testing-suite`, HEAD `5d6ba92`, con los cambios de QA de esta tarea.
+- GitHub Copilot Agent Mode: **no utilizado**; el trabajo se realizó en Copilot SDK en VS Code, sin invocar Agent Mode.
+
+### Prompt exacto de pruebas SweetAlert2
+
+```text
+Vamos a continuar con las tareas del rol Tester QA/JS - Testing Avanzado del Segundo Parcial de FerroLab.
+
+Las PR #220 y #221 ya fueron integradas en develop.
+
+En esta etapa debemos realizar las pruebas funcionales correspondientes a la implementación de SweetAlert2 realizada por el Desarrollador JS de Librerías Externas.
+
+Antes de comenzar:
+
+1. Verificar que estamos trabajando sobre feature/tester-qa-js-testing-suite.
+2. Verificar que la rama está actualizada respecto de develop.
+3. Leer las consignas del Segundo Parcial disponibles en el proyecto.
+4. Leer el plan y el SPEC aprobado del Tester QA/JS.
+5. Leer el SPEC del Desarrollador JS de Librerías Externas.
+6. Identificar las PR y commits correspondientes a la implementación de SweetAlert2 y a la corrección de Google Maps de la PR #221.
+7. Analizar los archivos funcionales involucrados.
+8. Revisar las pruebas existentes y el runner general de Jasmine.
+
+IMPLEMENTACIÓN DE PRUEBAS
+
+Crear el archivo js/test/library.spec.js, respetando la planificación del SPEC aprobado.
+
+Las pruebas deben cubrir:
+
+- Inicialización de SweetAlert2.
+- Configuración de la librería.
+- Funcionalidades principales.
+- Confirmación y cancelación de operaciones.
+- Manejo de errores.
+- Integración con el sistema.
+- Comportamiento del DOM.
+- Accesibilidad, navegación mediante teclado y gestión del foco.
+- Casos límite que correspondan a la implementación real.
+
+Revisar las 27 pruebas existentes relacionadas con SweetAlert2 dentro de script.spec.js.
+
+Evaluar cuáles corresponde trasladar a library.spec.js y cuáles deben mantenerse como pruebas de integración del controlador.
+
+Evitar duplicaciones innecesarias y conservar la cobertura existente.
+
+No eliminar pruebas sin justificarlo.
+
+INVESTIGACIÓN DE FALLO ANTERIOR
+
+Durante la etapa de testing de Fetch se detectó un fallo en una ejecución manual de Jasmine:
+
+- Seed: 61496.
+- Resultado: 489/490 pruebas aprobadas.
+- Archivo: script.spec.js.
+- Prueba: desde el carrito abierto: foco en Cancelar, Esc cierra solo el diálogo y el foco vuelve al botón.
+- Error: La condición no se cumplió a tiempo.
+
+El fallo no se reprodujo posteriormente mediante Playwright MCP.
+
+Investigar este comportamiento, intentar reproducirlo y determinar si corresponde a un problema funcional, de sincronización de las pruebas o del entorno de ejecución.
+
+No modificar código funcional ni debilitar las pruebas para obtener resultados favorables.
+
+INTEGRACIÓN Y EJECUCIÓN
+
+- Integrar library.spec.js al runner general de Jasmine.
+- Ejecutar las pruebas específicas de la librería.
+- Ejecutar todas las pruebas de regresión.
+- Verificar que las 22 pruebas de Fetch continúan funcionando.
+- Verificar las pruebas de modelos, servicios, almacenamiento y controlador.
+- Ejecutar la herramienta de cobertura V8.
+- Registrar cobertura de líneas, funciones y ramas.
+- Comparar los resultados con la cobertura obtenida durante la etapa anterior.
+
+EVIDENCIAS
+
+Utilizar Playwright MCP, si está disponible, para ejecutar las pruebas y obtener capturas reales.
+
+Guardar las evidencias en js/test/capturas/.
+
+Registrar:
+
+- Fecha de ejecución.
+- Navegador y versión.
+- Seed utilizado.
+- Cantidad total de pruebas.
+- Pruebas aprobadas.
+- Pruebas fallidas.
+- Pruebas pendientes.
+- Resultados específicos de library.spec.js.
+- Resultados de cobertura V8.
+
+DOCUMENTACIÓN
+
+Actualizar:
+
+- js/test/testing-doc.md.
+- docs/04-testing/testing-doc.md, si corresponde.
+- docs/03-specs/segundo-parcial/spec-tester-qa-segundo-parcial.md, sección AT CLOSE.
+
+Documentar el prompt completo utilizado, los archivos de contexto, las herramientas de IA realmente utilizadas, los resultados obtenidos y las intervenciones realizadas.
+
+Conservar toda la documentación anterior.
+
+Si se detectan problemas funcionales, preparar propuestas de Issues detalladas, sin publicarlas automáticamente.
+
+RESTRICCIONES
+
+- No modificar el apartado BEFORE del SPEC.
+- No modificar código funcional del proyecto.
+- No realizar correcciones correspondientes a otros roles.
+- No modificar ni cerrar las Issues #212, #213 y #214.
+- No ejecutar Lighthouse TC-13 todavía.
+- No modificar el changelog todavía.
+- No realizar git add, commit ni push.
+- No realizar merge.
+- No eliminar los worktrees existentes.
+- No inventar resultados ni evidencias.
+
+Al finalizar, presentar un informe detallado con:
+
+1. Archivos analizados.
+2. Archivos creados y modificados.
+3. Pruebas implementadas.
+4. Pruebas trasladadas desde script.spec.js, si corresponde.
+5. Resultados de Jasmine.
+6. Resultados de cobertura V8.
+7. Resultado de la investigación del fallo de foco.
+8. Evidencias generadas.
+9. Problemas detectados.
+10. Tareas pendientes.
+```
+
+Contexto utilizado: `plan.md`, este SPEC, `spec-dev-libreria-externa.md`,
+`docs/02-prompts/prompts-13.md`, `docs/07-librerias/libreria-doc.md`, `docs/04-testing/testing-doc.md`,
+`docs/04-testing/test-case-12-lighthouse-post-fetch.md`, `js/test/testing-doc.md`,
+`js/services/ServicioDialogos.js`, `js/script.js`, `index.html`, `css/components.css`,
+`js/test/test-runner.html`, `js/test/script.spec.js`, `js/test/api.spec.js` y
+`js/test/herramientas/cobertura-v8.js`; el historial Git identifica #216, #220
+y #221. No se encontró un archivo separado de consignas del Segundo Parcial
+entre los archivos del proyecto revisados. IA: Copilot SDK en VS Code; no se
+utilizó GitHub Copilot Agent Mode.
+
+### Resultados de SweetAlert2 y regresión
+
+En `c008e2fa8cf92f6312efc75479fcf19aeefa9315`, igual a `origin/develop`, se
+agregaron nueve pruebas del wrapper y SweetAlert2 real. Se conservaron las 27
+pruebas previas del controlador, sin trasladarlas: dependen de sus fixtures y
+verifican flujos de integración. No se modificaron pruebas existentes.
+`library.spec.js` se integró al runner como módulo ES.
+
+Playwright MCP, Chromium 158.0.0.0, HTTP en puerto 18765 y semilla `61496`:
+**501 aprobadas, 0 fallidas, 0 pendientes**; modelos 89, storage 189, servicios
+50, API 22, library 9 y controlador 142. La ejecución filtrada de library
+aprobó 9/9. Antes de agregarla se ejecutaron 492/492 con la misma semilla.
+La comprobación de Tab, Shift+Tab y Escape usa eventos sintéticos y no
+sustituye pruebas manuales de accesibilidad.
+
+El fallo manual previo (489/490, puerto 8000, semilla `61496`) no se reprodujo
+en estas corridas. La espera que falló combina desaparición del diálogo y
+retorno del foco con límite de tres segundos; no hay evidencia suficiente
+para atribuirla a un fallo funcional, de sincronización o de entorno. Cambian
+commit, cantidad de pruebas, puerto y entorno del navegador. Se descartó
+una corrida que servía el runner antiguo desde caché y se repitió con caché
+deshabilitada y contexto aislado.
+
+Cobertura independiente `node js/test/herramientas/cobertura-v8.js --detalle`,
+Playwright local, Chromium 159.0.8154.6, semilla `60944`: 501 specs, 0 failures;
+total 1949/1983 líneas (98,3 %), 258/259 funciones (99,6 %) y 733/746 ramas
+V8 aproximadas (98,3 %). `ServicioDialogos.js`: 63/63 líneas, 7/7 funciones y
+21/22 ramas. La corrida anterior (`88737`) registró 1935/1969, 257/258 y
+723/736 respectivamente; cambió la base de código y las ramas son aproximadas.
+
+Capturas: [semilla antes de library](../../../js/test/capturas/captura-seed-61496-antes-library-2026-11-27.png),
+[library filtrada](../../../js/test/capturas/captura-library-2026-11-27.png),
+[suite completa](../../../js/test/capturas/captura-jasmine-library-2026-11-27.png)
+y [cobertura independiente](../../../js/test/capturas/captura-cobertura-library-2026-11-27.png).
+Detalle y limitaciones en [testing-doc.md](../../../js/test/testing-doc.md).
+No se detectó un problema funcional nuevo que justifique un borrador de Issue.
+
+### Validación manual de SweetAlert2 (27/11/2026)
+
+Según lo informado por el usuario, comprobó personalmente la visualización
+correcta del diálogo, el foco inicial en **Cancelar**, la navegación con Tab y
+Shift + Tab y la cancelación con Escape. Al cancelar, el carrito permaneció
+abierto y el foco volvió al botón de eliminación. Al confirmar, se eliminó el
+producto y se actualizaron la cantidad de productos y el total.
+
+Evidencias: [diálogo de confirmación](../../../js/test/capturas/captura-sweetalert2-confirmacion-manual-2026-11-27.png)
+y [carrito después de la eliminación](../../../js/test/capturas/captura-sweetalert2-eliminacion-manual-2026-11-27.png).
+Las capturas evidencian el diálogo y la eliminación; la navegación con teclado
+fue comprobada manualmente por el usuario. El fallo anterior relacionado con
+el foco no se reprodujo en esta validación manual y su causa original continúa
+sin determinarse. No se trata de una nueva ejecución de Jasmine ni del TC-13.
+
+### Resultados de Jasmine
+
+- **Resultado principal de la etapa Fetch/API:** reejecución del 27/11/2026 por HTTP con Playwright MCP y Chromium 158: **490 pruebas aprobadas, 0 fallidas, 0 pendientes**, semilla `28453`; incluye **22/22 pruebas de API** y 27/27 de SweetAlert2.
+- Ejecución manual informada por el usuario: **489 aprobadas y 1 fallida**, semilla `61496`, servidor HTTP en puerto `8000`. La prueba «desde el carrito abierto: foco en Cancelar, Esc cierra solo el diálogo y el foco vuelve al botón» falló con `La condición no se cumplió a tiempo.`, en `script.spec.js:2111:41` y `script.spec.js:2567:13`. No se reprodujo posteriormente mediante Playwright MCP; la causa permanece **pendiente de determinar**.
+- Corrida anterior con Jasmine 5.10.0, Chromium y Node 24.21.0: 490 pruebas ejecutadas, 490 aprobadas, 0 fallidas y 0 pendientes (semilla `47158`). Resultado por suite: `models.spec.js` 89/89; `script.spec.js` 140/140; `storage.spec.js` 189/189; `services.spec.js` 50/50; `api.spec.js` 22/22.
+- Cobertura V8 anterior (medición aproximada de bloques): `apiService.js` 124/129 líneas (96,1 %), 11/11 funciones (100 %), 56/58 ramas (96,6 %); `ProcesadorCatalogo.js` 59/60 líneas (98,3 %), 18/18 funciones (100 %), 24/25 ramas (96,0 %). Total medido: 1935/1969 líneas (98,3 %), 257/258 funciones (99,6 %) y 725/738 ramas (98,2 %). El detalle y sus limitaciones se documentan en `js/test/testing-doc.md`.
+- Cobertura de una corrida independiente con Playwright local, `node js/test/herramientas/cobertura-v8.js --detalle`, semilla `88737`: 490 specs, 0 failures. `apiService.js`: 124/129 líneas, 11/11 funciones, 57/59 ramas; `ProcesadorCatalogo.js`: 59/60 líneas, 18/18 funciones, 24/25 ramas. Total: 1935/1969 líneas, 257/258 funciones y 723/736 ramas. La cobertura de ramas de V8 es aproximada y puede variar entre corridas.
+- Capturas: [resultado general](../../../js/test/capturas/captura-jasmine-segundo-parcial-2026-11-27.png), [22 pruebas de API](../../../js/test/capturas/captura-api-22-pruebas-2026-11-27.png), [27 pruebas de SweetAlert2](../../../js/test/capturas/captura-sweetalert2-2026-11-27.png) y [salida de cobertura V8](../../../js/test/capturas/captura-cobertura-v8-2026-11-27.png). Las dos vistas de suites proceden del reporte de la corrida completa, filtrado visualmente después de ejecutarla; la cobertura corresponde a la corrida independiente indicada.
+
+### Resultados de Lighthouse
+
+La auditoría TC-11 — Lighthouse Baseline se ejecutó manualmente mediante
+Chrome DevTools el 26/11/2026 a las 13:37 GMT-3. Performance y Best Practices
+no alcanzaron el umbral mínimo de 95 puntos.
+
+Commit de referencia del Baseline, verificado en el historial del repositorio:
+[`0aec81a3d836968ee2e585fcddf4fa03418e659e`](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/commit/0aec81a3d836968ee2e585fcddf4fa03418e659e).
+Los detalles de configuración y las condiciones no recuperables están
+documentados en [TC-11](../../04-testing/test-case-11-lighthouse-baseline.md).
+
+| Categoría | Resultado |
+|---|---:|
+| Performance | 92 |
+| Accessibility | 100 |
+| Best Practices | 77 |
+| SEO | 100 |
+
+| Métrica | Resultado |
+|---|---:|
+| FCP | 0.5 s |
+| LCP | 1.1 s |
+| TBT | 0 ms |
+| CLS | 0.148 |
+| Speed Index | 0.5 s |
+
+Documentación: [TC-11 — Lighthouse Baseline](../../04-testing/test-case-11-lighthouse-baseline.md).
+Evidencias: [12 capturas de TC-11](../../04-testing/screenshots/tc-11/).
+
+| Test case | Estado | Comparación |
+|---|---|---|
+| 12 — Post Fetch | Ejecutado manualmente el 27/11/2026, 00:56 GMT-3 | Comparado con TC-11; detalle abajo |
+| 13 — Post Library | Ejecutado manualmente; segunda ejecución 27/11/2026, 03:19 GMT-3 | Comparado con TC-12; detalle abajo |
+
+#### TC-12 — Lighthouse Post Fetch
+
+La auditoría se ejecutó manualmente en Chrome DevTools sobre
+`http://127.0.0.1:8000/`, con `http-server` 14.1.1, Lighthouse 13.5.0,
+Chromium 158.0.0.0, Navigation, Emulated Desktop, Custom throttling, Initial
+page load y Single page session. Se utilizó un worktree independiente del
+commit `ca9458f29d283e010c3fd2cafb5d931e3e70b1bb`, posterior a Fetch (#217)
+y anterior a SweetAlert2.
+
+Una verificación **posterior** comprobó el PID 35784 y su directorio en el
+worktree, el HEAD, respuestas HTTP 200 para `index.html`, `apiService.js`,
+`productos.json` y `script.js` coincidentes con el commit, la importación y
+ejecución de `cargarCatalogo`, ausencia de referencias funcionales a
+SweetAlert2 y HTTP 404 para `ServicioDialogos.js`. El `index.html` tenía un
+objeto Git distinto del repositorio original y del Baseline. La verificación
+posterior no acredita por sí sola el proceso durante la auditoría.
+
+| Categoría | TC-11 | TC-12 | Diferencia |
+|---|---:|---:|---:|
+| Performance | 92 | 86 | -6 |
+| Accessibility | 100 | 100 | 0 |
+| Best Practices | 77 | 77 | 0 |
+| SEO | 100 | 100 | 0 |
+
+| Métrica | TC-11 | TC-12 | Diferencia |
+|---|---:|---:|---:|
+| FCP | 0.5 s | 0.5 s | 0 s |
+| LCP | 1.1 s | 1.2 s | +0.1 s |
+| TBT | 0 ms | 0 ms | 0 ms |
+| CLS | 0.148 | 0.230 | +0.082 |
+| Speed Index | 0.5 s | 0.5 s | 0 s |
+
+Performance y Best Practices no cumplen ≥95; Accessibility y SEO sí. El
+incremento de CLS es aproximadamente 55.4 %. Lighthouse identifica una
+`section` con score 0.230 y recomienda `fetchpriority="high"` para la imagen
+LCP. Reservar espacio para contenido dinámico y evaluar la prioridad de la
+imagen son recomendaciones a investigar, no correcciones verificadas. Las
+29 cookies y el issue Cookie de Google Maps ya estaban en TC-11. No se
+estableció que Fetch causara las diferencias; una sola medición y los datos
+de red/caché no conservados del Baseline limitan la comparación.
+
+Análisis completo, Insights, Diagnostics y borradores de comentarios para
+#212, #213 y #214: [TC-12 — Lighthouse Post Fetch](../../04-testing/test-case-12-lighthouse-post-fetch.md).
+Evidencias originales:
+
+1. [Puntuaciones](../../04-testing/screenshots/tc-12/01-lighthouse-scores.png).
+2. [Métricas](../../04-testing/screenshots/tc-12/02-performance-metrics.png).
+3. [Insights](../../04-testing/screenshots/tc-12/03-performance-insights.png).
+4. [Diagnostics](../../04-testing/screenshots/tc-12/04-performance-diagnostics.png).
+5. [Accessibility](../../04-testing/screenshots/tc-12/05-accessibility.png).
+6. [Best Practices](../../04-testing/screenshots/tc-12/06-best-practices.png).
+7. [SEO](../../04-testing/screenshots/tc-12/07-seo.png).
+8. [Condiciones](../../04-testing/screenshots/tc-12/08-lighthouse-execution-conditions.png).
+9. [Issue Cookie de Maps](../../04-testing/screenshots/tc-12/09-google-maps-devtools-issue.png).
+10. [Cookies de Maps 1](../../04-testing/screenshots/tc-12/10-google-maps-cookies-1.png).
+11. [Cookies de Maps 2](../../04-testing/screenshots/tc-12/11-google-maps-cookies-2.png).
+12. [Cookies de Maps 3](../../04-testing/screenshots/tc-12/12-google-maps-cookies-3.png).
+13. [Layout shift culprits](../../04-testing/screenshots/tc-12/13-layout-shift-culprits.png).
+14. [LCP request discovery](../../04-testing/screenshots/tc-12/14-lcp-request-discovery.png).
+
+#### TC-13 — Lighthouse Post Library
+
+El usuario ejecutó la auditoría sobre el commit histórico de `develop`
+`5d6ba926db00137fb53eace818ef5fe8d362bf17`, posterior a Fetch y al merge de
+SweetAlert2 (#216), pero anterior a la corrección de Maps (#221). Se verificó
+el servidor `http-server` 14.1.1 en el puerto 8000, con `max-age=3600`, y la
+coincidencia de los archivos principales servidos con el checkout y el commit.
+La verificación posterior no acredita por sí sola el estado de caché del
+navegador durante la auditoría.
+
+Se conserva la primera ejecución: **75 / 100 / 100 / 100**, CLS **0.555**;
+Performance 75 está por debajo del umbral mínimo de 95.
+La segunda, con ventana maximizada, se toma como referencia por sus
+condiciones de visualización: **96 / 100 / 100 / 100**, CLS **0.075**,
+27/11/2026 a las 03:19 GMT-3, Lighthouse 13.3.0, Chromium 150.0.7871.250,
+Navigation, Emulated Desktop, Custom throttling, Initial page load y Single
+page session. La ventana de la primera no estaba maximizada; su influencia
+es posible, no una causa confirmada.
+
+| Categoría o métrica | TC-11 | TC-12 | TC-13 segunda |
+|---|---:|---:|---:|
+| Performance | 92 | 86 | 96 |
+| Accessibility | 100 | 100 | 100 |
+| Best Practices | 77 | 77 | 100 |
+| SEO | 100 | 100 | 100 |
+| FCP | 0.5 s | 0.5 s | 0.5 s |
+| LCP | 1.1 s | 1.2 s | 1.2 s |
+| TBT | 0 ms | 0 ms | 0 ms |
+| CLS | 0.148 | 0.230 | 0.075 |
+| Speed Index | 0.5 s | 0.5 s | 0.5 s |
+
+Después de Fetch se observó una disminución de Performance y un aumento de
+CLS; en la segunda ejecución Post Library se observaron una recuperación de
+Performance y Best Practices y una reducción del CLS. Accessibility y SEO
+se mantuvieron en 100. No se pueden atribuir esas diferencias a las
+funcionalidades: TC-11 y TC-12 usaron Lighthouse 13.5.0 y Chromium 158.0.0.0
+y no se conservaron todas las condiciones anteriores de red y caché.
+
+El registro de las tres auditorías reúne las puntuaciones, métricas,
+condiciones disponibles, problemas y capturas. Los parámetros originales de
+red y caché no se conservaron completamente; esta limitación está documentada
+en los test cases y no permite garantizar condiciones equivalentes.
+
+Lighthouse muestra oportunidades estimadas de caché, imágenes, recursos
+bloqueantes y JavaScript, recomienda evaluar la prioridad de la imagen LCP
+y señala una `section` con contribución 0.075 al CLS. La diferencia frente a
+la primera ejecución requiere investigar el responsive y el contenido dinámico
+sin atribuir la causa a SweetAlert2. Best Practices 100 no prueba que Maps
+estuviera corregido en este commit anterior a #221.
+
+Los resultados completos, limitaciones, 18 capturas y seguimiento se conservan
+en [TC-13 — Lighthouse Post Library](../../04-testing/test-case-13-lighthouse-post-library.md).
+TC-13 ya fue publicado en [#212](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/212#issuecomment-7211819949)
+y [#213](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/213#issuecomment-7211904775).
+Ambas Issues siguen abiertas y requieren verificación final sobre `develop`
+actualizado. Sus cuerpos ya fueron corregidos manualmente y enlazan el
+[commit histórico auditado](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/commit/5d6ba926db00137fb53eace818ef5fe8d362bf17).
+Las capturas figuran allí como rutas y nombres, y se enlazan directamente
+en la documentación de TC-13.
+#214 permanece cerrada tras su verificación preliminar separada.
+
+### Issues reportadas
+
+| Issue | Problema | Responsable | Estado |
+|---|---|---|---|
+| [#212](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/212) | Performance inferior al umbral mínimo | @alandox1 — Desarrollador JS Asíncrono | Abierta; corrección y verificación pendientes |
+| [#213](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/213) | Desplazamientos visuales durante la carga (CLS) | @LuchoBarrionuevo13 — Tester QA/JS | Abierta; corrección y verificación pendientes |
+| [#214](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/214) | Best Practices y cookies de terceros de Google Maps | @Piastrellini — Desarrollador JS de Librerías Externas | Cerrada en GitHub; verificación preliminar realizada |
+
+Las tres Issues corresponden a problemas detectados durante el Baseline,
+previo a la incorporación de Fetch y SweetAlert2, y siguen observándose en
+TC-12. Según lo informado, las Issues fueron actualizadas con los resultados
+de TC-12 y el coordinador definió los responsables de la tabla. La corrección
+y verificación final de #212 y #213 siguen pendientes; RC03 permanece abierto.
+Los borradores previos se conservan como referencia histórica en el TC-12.
+La consulta actual muestra como Assignees formales a @alandox1,
+@angelgc9107-lgtm y @Piastrellini, respectivamente. En #213, el Assignee
+difiere del responsable comunicado @LuchoBarrionuevo13; coordinar su
+confirmación sin modificar la Issue.
+
+#### Seguimiento preliminar de #214
+
+La [PR #221](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/221)
+de Thiago fue [aprobada](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/221#pullrequestreview-6083871842)
+y se integró en `develop`. Según el [registro publicado de QA](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/221#issuecomment-7210389785),
+se realizó una verificación preliminar sobre la rama de esa PR:
+Performance **97**, Accessibility **100**, Best Practices **100**, SEO **100**
+y CLS **0.075**. No se detectaron solicitudes de Google Maps con el filtro
+`maps` durante la carga inicial y se comprobó el botón **Ver mapa** y la
+visualización posterior del mapa. No se inspeccionaron las cookies después de
+activarlo. No se localizaron capturas específicas de esta medición; las
+capturas de #221 con Performance 91 son de otra medición. Estos resultados informados
+corresponden a una verificación preliminar, **no al TC-13 oficial**.
+
+La consulta de GitHub confirmó que #214 está **cerrada**, con cierre registrado
+el 27/11/2026 a las 05:33:04 UTC por @angelgc9107-lgtm. Esta comprobación no
+modifica la Issue ni sustituye la auditoría TC-13 documentada arriba. Solicitar
+al coordinador confirmar el cierre con la inspección de cookies pendiente.
+
+Para el seguimiento de las Issues, usar como referencias el [commit del
+Baseline](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/commit/0aec81a3d836968ee2e585fcddf4fa03418e659e),
+el [TC-11](../../04-testing/test-case-11-lighthouse-baseline.md) y las
+[12 capturas](../../04-testing/screenshots/tc-11/). En una revisión anterior
+de #212, la tarea “Implementar las mejoras correspondientes” aparecía marcada
+sin evidencia de corrección; en la consulta actual figura desmarcada.
+
+### Ajustes manuales a las pruebas generadas mediante IA
+
+- No se generaron pruebas mediante GitHub Copilot Agent Mode; el código de pruebas fue elaborado y ajustado directamente en esta interacción.
+- `FachadaStorage` es inmutable; los primeros intentos de espiar sus métodos fallaron por esa característica. Se ajustaron las pruebas para usar la fachada real y Web Storage aislado/restaurado, sin cambiar la implementación funcional.
+- Se amplió `js/test/herramientas/cobertura-v8.js` para incluir `js/api/`, de modo que la cobertura incluya `apiService.js`. `script.spec.js` y `models.spec.js` no requirieron cambios; sus suites se conservaron y aprobaron.
+
+### Pendientes para completar AT CLOSE
+
+- Coordinar la discrepancia del Assignee de #213 y verificar #212 y #213
+  sobre `develop` actualizado. Si se requieren enlaces directos a capturas
+  en las Issues, acordar su actualización manual.
+- Solicitar confirmación del cierre de #214 con la inspección de cookies
+  posterior a activar el mapa pendiente.
+- Validar la accesibilidad de SweetAlert2 con tecnologías de asistencia; la
+  navegación manual con teclado indicada arriba ya fue comprobada.
+- Investigar la causa del fallo manual de SweetAlert2 con las condiciones
+  restantes de esa ejecución y, si están disponibles, su captura y consola.
+- Corrección y verificación final de las Issues #212 y #213.
+- Mantener RC03 abierto hasta que el equipo indique su resolución.

@@ -28,13 +28,15 @@
 </head>
 <body>
   <!--
-    Tests. Cada spec importa por su cuenta el módulo que prueba (models y storage)
+    Cada spec importa los módulos que prueba (incluidos API y procesamiento)
     o abre index.html en un iframe (script.spec.js, que prueba el controlador).
     Los módulos se ejecutan antes del evento load, que es cuando Jasmine arranca.
   -->
   <script type="module" src="models.spec.js"></script>
   <script type="module" src="storage.spec.js"></script>
   <script type="module" src="services.spec.js"></script>
+  <script type="module" src="api.spec.js"></script>
+  <script type="module" src="library.spec.js"></script>
   <script type="module" src="script.spec.js"></script>
 </body>
 </html>
