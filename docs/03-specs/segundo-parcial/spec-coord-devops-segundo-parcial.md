@@ -361,8 +361,6 @@ Para cada una de las cuatro PRs mínimas (y las adicionales, si corresponde) se 
 
 ### Correcciones de AO4, aprobación y backport inicial
 
-
-
 [[GRUPO N°5] [Backport Cuarta Entrega] Sincronización de master hacia develop](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/206).
 
 ### Integración de ramas feature y coordinación de auditorías Lighthouse
@@ -375,11 +373,13 @@ Para cada una de las cuatro PRs mínimas (y las adicionales, si corresponde) se 
 
 ### Actualización de README.md, changelog.md y estructura del proyecto
 
-Pendiente.
+- README.md
+- changelog.md
+- Estructura correcta
 
 ### Gestión de issues y GitHub Projects
 
-
+[Kanban Segundo parcial](https://github.com/users/angelgc9107-lgtm/projects/6/views/1)
 
 ### Preparación de release, GitHub Pages, Slack y entrega en campus
 
@@ -395,13 +395,10 @@ Pendiente.
 
 Pendiente. Se documentarán fecha, decisión, justificación, responsable y notificación, si corresponde.
 
-### Obstáculos encontrados durante la coordinación y soluciones aplicadas
-
-Pendiente.
 
 ### Aprobación definitiva, merge, tag, release y backport final
 
-Pendiente.
+Pendiente fase 2.
 
 ### Justificación y evidencias
 

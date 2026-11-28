@@ -3,6 +3,8 @@
 Este archivo se actualiza con cada Pull Request para registrar avances y correcciones.
 
 ## [Unreleased]
+### Added
+- [feature/coord-devops-segundo-parcial]Segundo Parcial Coordinador/DevOps — Coordinación, code reviews, integración y actualización de documentación PR: [#226](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/pull/226) — Issue: [#225](https://github.com/angelgc9107-lgtm/ProyectoFerreteria_GRP05/issues/225) — @angelgc9107-lgtm (Coordinador/Devops)
 
 ## [Release Actividad Obligatoria N°4] - 2026-11-22
 
