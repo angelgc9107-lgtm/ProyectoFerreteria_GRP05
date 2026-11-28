@@ -103,7 +103,7 @@ Atender los tres hallazgos de la revisión de la PR #224: documentar la auditor�
 - **No verificado:** el puntaje de Lighthouse de la versión combinada, otros navegadores, cobertura, y que la prueba de SweetAlert2 real pase en un equipo con internet.
 
 ## Correcciones manuales
-<completar: ajustes que hiciste antes de commitear; si no hay, escribir "ninguna">
+No informadas por el integrante.
 
 ## Captura
 No se adjuntó captura de esta conversación. El registro disponible es el texto de la sección «Prompt exacto».
