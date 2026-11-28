@@ -50,6 +50,22 @@ completa, aplicando cuatro pilares técnicos:
 - Testing automatizado con Jasmine.
 Esta entrega se construye sobre las correcciones de la Actividad
 Obligatoria N.º 3 y es la base técnica del Segundo Parcial Integrador.
+
+**Segundo Parcial Integrador:** ampliar las funcionalidades de FerroLab
+mediante la incorporación de programación asíncrona, consumo de datos
+con Fetch API, integración de librerías externas y testing avanzado.
+
+Esta entrega incorpora cuatro pilares técnicos:
+
+- Consumo asíncrono de datos mediante Fetch API, promesas y async/await.
+- Procesamiento de datos mediante funciones de orden superior:
+  map(), filter() y reduce().
+- Integración de SweetAlert2 mediante CDN para mejorar la experiencia
+  del usuario.
+- Testing avanzado con Jasmine y auditorías Lighthouse.
+
+Se mantiene la separación de responsabilidades entre el controlador,
+las clases del dominio, los servicios y la capa de persistencia.
  
 ## 🛠️ Tecnologías utilizadas
  
@@ -64,6 +80,14 @@ Obligatoria N.º 3 y es la base técnica del Segundo Parcial Integrador.
 - Git y GitHub (control de versiones, Pull Requests, Issues, Projects, Pages y Releases)
 - GitHub Copilot Agent Mode y Claude (asistencia al desarrollo y code reviews del rol Coordinador / DevOps; en cada review se documenta la herramienta realmente usada)
 - Playwright (validación y pruebas en un navegador real): con Playwright MCP en las actividades anteriores y, en la cuarta entrega, ejecutado por script (ver «Limitaciones conocidas» más abajo)
+- Fetch API (consumo asíncrono de datos).
+- Promesas y async/await.
+- JSON (fuente de datos del catálogo de productos).
+- Programación funcional (map, filter y reduce).
+- SweetAlert2 (diálogos interactivos mediante CDN).
+- Lighthouse y Lighthouse CLI (auditorías de Performance,
+  Accessibility, Best Practices y SEO).
+- Chrome DevTools (diagnóstico, mediciones y pruebas de optimización).
 ## ✅ Funcionalidades
  
 - Visualización del catálogo de productos por categoría.
@@ -78,6 +102,20 @@ Obligatoria N.º 3 y es la base técnica del Segundo Parcial Integrador.
 - **Persistencia del carrito en Web Storage:** el carrito se guarda en `localStorage` (clave `app:carrito:items`) y se restaura al recargar la página. El controlador accede a través de la fachada `js/services/FachadaStorage.js` y no conoce claves ni detalles de `StorageUtil`. Si el navegador no permite guardar, la interfaz avisa y el carrito sigue funcionando en memoria.
 - Catálogo, ofertas, tabla de precios, categorías, métodos de pago y cuotas se dibujan desde JavaScript (`index.html` no repite productos ni precios); las ofertas y las opciones de pago salen de `ServicioOfertas` y `ServicioOpcionesPago`.
 - Pruebas automatizadas de modelos, servicios, storage y controlador con Jasmine.
+- Carga asíncrona del catálogo de productos mediante Fetch API
+  desde un archivo JSON.
+- Procesamiento, validación y sanitización de los datos recibidos.
+- Estados visuales de carga, éxito y error.
+- Manejo de errores HTTP y de red, con mecanismos de reintento.
+- Recuperación del catálogo mediante caché o datos locales cuando
+  no se encuentra disponible la fuente principal.
+- Integración dinámica de los datos obtenidos con el DOM y las
+  clases del dominio.
+- Confirmación de eliminación de productos del carrito mediante
+  SweetAlert2.
+- Confirmación y cancelación de pedidos mediante SweetAlert2.
+- Optimización de la estabilidad visual durante la carga asíncrona.
+- Carga diferida de Google Maps mediante interacción del usuario.
 ## ▶️ Cómo ejecutar el proyecto
  
 `index.html` carga el controlador como módulo ES6 (`<script type="module" src="js/script.js">`), por lo que **no funciona abriéndolo con `file://`**: hay que servirlo por HTTP. Desde la raíz del repositorio:
@@ -88,6 +126,21 @@ python -m http.server 8080
  
 - Sitio: <http://localhost:8080/index.html>
 - Pruebas: <http://localhost:8080/js/test/test-runner.html>
+
+### Alternativa - Ejecución mediante Node.js
+
+Desde la raíz del repositorio, ejecutar:
+
+    npx http-server -p 8000
+
+- Aplicación: http://127.0.0.1:8000/
+- Pruebas Jasmine: http://127.0.0.1:8000/js/test/test-runner.html
+
+La aplicación requiere un servidor HTTP para cargar los módulos ES6
+y realizar las solicitudes mediante Fetch API.
+
+SweetAlert2 se incorpora mediante CDN, por lo que requiere conexión
+a Internet para descargar sus recursos.
 ## 🏗️ Arquitectura del proyecto
  
 El código se organiza por responsabilidad:
@@ -102,28 +155,82 @@ El código se organiza por responsabilidad:
 | `js/test/` | Suites de Jasmine (`script.spec.js`, `models.spec.js`, `services.spec.js`, `storage.spec.js`), el runner `test-runner.html` y `testing-doc.md`. |
  
 ```
-.
+ProyectoFerreteria_GRP05/
 ├── .github/PULL_REQUEST_TEMPLATE/   # Plantillas de PR (feature y release)
-├── README.md
-├── changelog.md
-├── index.html
+├── README.md                       # Actualizado con información del Segundo Parcial
+├── changelog.md                    # Registro de contribuciones y correcciones
+├── index.html                      # Interfaz e integración de SweetAlert2 mediante CDN
 ├── css/
+│   ├── styles.css
+│   ├── components.css              # Estilos de componentes y correcciones de CLS
+│   ├── responsive.css              # Diseño responsive para Mobile, Tablet y Desktop
+│   └── bootstrap-overrides.css
+├── api/
+│   └── productos.json              # Fuente de datos del catálogo
 ├── js/
-│   ├── script.js                    # Controlador (eventos y DOM)
-│   ├── models/                      # Clases del dominio (POO)
-│   ├── services/                    # Fachada de storage, ofertas, categorías, opciones de pago, formateo
-│   ├── data/imagenesCatalogo.js     # Imágenes del catálogo
-│   ├── utils/storage.js             # Utilidades de storage
-│   └── test/                        # Jasmine: specs, runner, testing-doc.md y herramientas/ (cobertura)
+│   ├── script.js                   # Controlador principal (eventos, DOM y orquestación)
+│   ├── models/                     # Clases del dominio (POO)
+│   ├── services/                   # Servicios y separación de responsabilidades
+│   │   ├── ProcesadorCatalogo.js    # Validación y procesamiento de datos
+│   │   ├── ServicioDialogos.js      # Wrapper de SweetAlert2
+│   │   └── ...                     # Storage, ofertas, categorías, pagos y formateo
+│   ├── data/
+│   │   ├── imagenesCatalogo.js      # Imágenes del catálogo
+│   │   └── productosIniciales.js   # Catálogo local de respaldo
+│   ├── utils/
+│   │   └── storage.js              # Utilidades de Web Storage
+│   ├── api/
+│   │   └── apiService.js           # Fetch API, errores, reintentos y fallbacks
+│   └── test/                       # Testing automatizado con Jasmine
+│       ├── testing-doc.md          # Documentación y resultados de testing
+│       ├── test-runner.html        # Runner de Jasmine
+│       ├── script.spec.js          # Pruebas del controlador
+│       ├── models.spec.js          # Pruebas de las clases POO
+│       ├── services.spec.js        # Pruebas de los servicios
+│       ├── storage.spec.js         # Pruebas de almacenamiento
+│       ├── api.spec.js             # Pruebas de Fetch y procesamiento de datos
+│       ├── library.spec.js         # Pruebas de la librería externa
+│       ├── capturas/               # Evidencias de ejecución de Jasmine
+│       └── herramientas/           # Herramientas de medición de cobertura
 └── docs/
-    ├── 01-mockup/                   # Mockups y estados visuales (cuarta-entrega/)
-    ├── 02-prompts/
-    ├── 03-specs/                    # Un spec por rol y por actividad
-    ├── 04-testing/
+    ├── 01-mockup/                  # Mockups y estados visuales
+    ├── 02-prompts/                 # IA y Prompt Engineering
+    │   └── prompts.md
+    ├── 03-specs/                   # Especificaciones por rol y actividad
+    │   ├── actividad-obligatoria-1/
+    │   ├── actividad-obligatoria-2/
+    │   ├── primer-parcial/
+    │   ├── actividad-obligatoria-3/
+    │   ├── actividad-obligatoria-4/
+    │   └── segundo-parcial/
+    │       ├── spec-dev-async-fetch.md
+    │       ├── spec-dev-libreria-externa.md
+    │       ├── spec-tester-qa-segundo-parcial.md
+    │       └── spec-coord-devops-segundo-parcial.md
+    ├── 04-testing/                 # Documentación de testing y QA
+    │   ├── testing-doc.md          # Índice de pruebas, hallazgos y correcciones
+    │   ├── test-case-1.md
+    │   ├── test-case-2.md
+    │   ├── test-case-3.md
+    │   ├── test-case-4.md
+    │   ├── test-case-5.md
+    │   ├── ...                     # Test cases de entregas anteriores
+    │   ├── test-case-11-lighthouse-baseline.md
+    │   ├── test-case-12-lighthouse-post-fetch.md
+    │   ├── test-case-13-lighthouse-post-library.md
+    │   └── screenshots/
+    │       ├── tc-11/              # Evidencias Lighthouse Baseline
+    │       ├── tc-12/              # Evidencias Lighthouse Post Fetch
+    │       ├── tc-13/              # Evidencias Lighthouse Post Library
+    │       └── Issue-213/          # Evidencias e informes de corrección de CLS
     ├── 05-diagramas/
     │   ├── 01-diagrama-de-actividades/
     │   └── 02-diagrama-de-clases/
-    └── 06-storage/                  # storage-doc.md
+    ├── 06-storage/                 # Documentación de almacenamiento
+    │   └── storage-doc.md
+    └── 07-librerias/               # Documentación de librerías externas
+        ├── libreria-doc.md         # Integración y utilización de SweetAlert2
+        └── screenshots/            # Capturas de los puntos de integración
 ```
  
 ## 🎨 Maqueta de diseño web
@@ -149,11 +256,11 @@ En el Primer Parcial el mockup se adaptó a la grilla de Bootstrap 5: desktop de
 - [Specs del Primer Parcial](docs/03-specs/primer-parcial/)
 - [Specs de la Actividad Obligatoria N.º 3](docs/03-specs/actividad-obligatoria-3/)
 - [Specs de la Actividad Obligatoria N.º 4](docs/03-specs/actividad-obligatoria-4/)
-  - [Coordinador / DevOps](docs/03-specs/actividad-obligatoria-4/spec-devops.md)
-  - [Tester QA](docs/03-specs/actividad-obligatoria-4/spec-tester-qa.md)
-  - [Desarrollador JS Eventos + DOM](docs/03-specs/actividad-obligatoria-4/spec-dev-eventos-dom.md)
-  - [Desarrollador JS POO](docs/03-specs/actividad-obligatoria-4/spec-dev-poo.md)
-  - [Desarrollador JS Storage](docs/03-specs/actividad-obligatoria-4/spec-dev-storage.md)
+- [Specs del Segundo Parcial Integrador](docs\03-specs\segundo-parcial)
+  - [Tester QA/JS](docs\03-specs\segundo-parcial)
+  - [Desarrollador JS Asíncrono](docs\03-specs\segundo-parcial)
+  - [Coordinador/DevOps](docs\03-specs\segundo-parcial\spec-coord-devops-segundo-parcial.md)
+  - [Desarrollador JS Librerías Externas](docs\03-specs\segundo-parcial)
 **Diagramas**
  
 - [Diagramas de actividades](docs/05-diagramas/01-diagrama-de-actividades/diagramas-doc.md)
@@ -161,6 +268,7 @@ En el Primer Parcial el mockup se adaptó a la grilla de Bootstrap 5: desktop de
 **Storage**
  
 - [Estrategia de almacenamiento (localStorage vs sessionStorage)](docs/06-storage/storage-doc.md)
+
 **Testing**
  
 - [Índice de test cases (HTML/CSS)](docs/04-testing/testing-doc.md)
@@ -170,6 +278,7 @@ En el Primer Parcial el mockup se adaptó a la grilla de Bootstrap 5: desktop de
 **Gestión del proyecto**
  
 - [Tablero Kanban](https://github.com/users/angelgc9107-lgtm/projects/1)
+- [Tablero Kanban Segundo Parcial](https://github.com/users/angelgc9107-lgtm/projects/6/views/1)
 - [Índice de Prompts](docs/02-prompts/prompts.md)
 - [Changelog](changelog.md)
 - [Plantillas de Pull Request (feature y release)](.github/PULL_REQUEST_TEMPLATE/)
@@ -204,6 +313,8 @@ responsabilidad del rol Coordinador / DevOps. Los prompts utilizados, el
 resumen de cada review y los `CHANGES_REQUESTED` cargados se documentan en
 la [especificación del Coordinador / DevOps](docs/03-specs/actividad-obligatoria-4/spec-devops.md).
 Se revisaron las PRs #140, #141, #144, #150, #156 y #157. La decisión de aprobar e integrar cada cambio es del revisor humano.
+
+
  
 ## 🔀 Flujo de ramas y entrega
  
@@ -211,12 +322,54 @@ Se revisaron las PRs #140, #141, #144, #150, #156 y #157. La decisión de aproba
 - Las correcciones de la tercera entrega se hicieron con PRs `fix/...` contra `release/tercera-entrega` y se sincronizaron con `develop` mediante un backport.
 - La cuarta entrega sale de `release/cuarta-entrega`, con PR hacia `master`, y se publica como release `v1.2-cuarta-entrega`.
 
+### Pruebas incorporadas en el Segundo Parcial
+
+- **Consumo asíncrono de datos (`js/test/api.spec.js`):** 22 pruebas
+  que verifican respuestas exitosas, errores HTTP y de red, reintentos,
+  timeout, validación de JSON, mecanismos de respaldo mediante caché
+  y catálogo local, procesamiento mediante `map()`, `filter()` y
+  `reduce()`, y estados visuales de carga, éxito y error.
+
+- **Librerías externas (SweetAlert2):** 27 pruebas que verifican
+  la configuración de los diálogos, confirmación y cancelación de
+  operaciones, integración con el carrito, manejo del foco,
+  comportamiento de la tecla Escape y compatibilidad con Bootstrap.
+
+- **Pruebas de regresión:** verificación del funcionamiento de los
+  cuatro flujos funcionales después de incorporar Fetch API y
+  SweetAlert2.
+
+- **Resultado registrado (27/11/2026):** 490 specs, 0 failures
+  y 0 pendientes, mediante Playwright MCP.
+
+  - Modelos: 89 pruebas.
+  - Storage: 189 pruebas.
+  - Servicios: 50 pruebas.
+  - API: 22 pruebas.
+  - Controlador: 140 pruebas.
+
+- **Cobertura actualizada (V8 de Chromium):**
+  - Líneas: 98,3 %.
+  - Funciones: 99,6 %.
+  - Ramas: 98,2 %.
+
+- **Observaciones:** una ejecución manual registró 489 pruebas
+  aprobadas y una fallida, relacionada con el manejo del foco
+  en los diálogos de SweetAlert2. El fallo no se reprodujo
+  posteriormente mediante Playwright MCP.
+
+- **Documentación y evidencias:**
+  - [Documentación de testing con Jasmine](js/test/testing-doc.md).
+  - [Pruebas automatizadas de API](js/test/api.spec.js).
+  - [Evidencias de ejecución](js/test/capturas/).
+  - [Medición de cobertura con V8](js/test/herramientas/cobertura-v8.js).
+  - [Spec del Tester QA/JS](docs/03-specs/segundo-parcial/spec-tester-qa-segundo-parcial.md).
 
 ## 👥 Integrantes del Grupo
 
 | Nombre y Apellido | Matrícula | Usuario de GitHub | Rol (Cuarta Entrega) |
 |-----| ----- | ------ | ------ |
-| Luciano Barrionuevo | 156398 | @LuchoBarrionuevo13 | Desarrollador JS POO |
-| Alan Diaz | 152841 | @alandox1 |Coordinador / DevOps + Tester QA |
-| Angel Cuarteron | 159438 | @angelgc9107-lgtm | Desarrollador JS Eventos + DOM |
-| Thiago Piastrellini | 158097 | @Piastrellini | Desarrollador JS Local y Session Storage |
+| Luciano Barrionuevo | 156398 | @LuchoBarrionuevo13 | Tester QA/JS |
+| Alan Diaz | 152841 | @alandox1 |Desarrollador JS Asíncrono |
+| Angel Cuarteron | 159438 | @angelgc9107-lgtm | Coordinador/DevOps |
+| Thiago Piastrellini | 158097 | @Piastrellini | Desarrollador JS Librerías Externas |
