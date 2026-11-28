@@ -106,7 +106,11 @@ Atender los tres hallazgos de la revisión de la PR #224: documentar la auditor�
 No informadas por el integrante.
 
 ## Captura
-No se adjuntó captura de esta conversación. El registro disponible es el texto de la sección «Prompt exacto».
+![Revisión técnica pegada en el chat](./images/prompt-17-DesarrolladorJSasincronico-1.jpg)
+
+![Pedido de rehacer el prompt y prompt generado](./images/prompt-17-DesarrolladorJSasincronico-2.jpg)
+
+![Resultado: entrega-pr224.zip y corrección del CLS de tablet](./images/prompt-17-DesarrolladorJSasincronico-3.jpg)
 
 ## Aplicación
 Rama `fix/lighthouse-rendimiento-fetch` (PR #224): commits de corrección de `prompts-16.md`, de evidencia (pruebas de regresión y auditoría), de `changelog.md` y de este registro.
